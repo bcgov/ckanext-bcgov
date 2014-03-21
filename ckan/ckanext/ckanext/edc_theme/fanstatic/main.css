@@ -1,0 +1,76 @@
+/* ---- Global Styles ----------------------------------------- */
+body {
+	font-family: verdana, arial, sans-serif;
+	font-size: 13px;
+	color: #151515;
+}
+
+h1, h2, h3, h4, h5 {
+	color: #151515;
+	font-family: Century Gothic, sans-serif;
+	font-weight: normal;
+	line-height: 1.2 !important;
+}
+
+h1 {
+    font-size: 200%; /* 26px */
+    margin: 10px 0;
+}
+
+h2 {
+	font-size: 169%; /* 22px */
+    margin: 10px 0;
+}
+
+h3 {
+	font-size: 146%; /* 19px */
+	font-weight: bold;
+    margin: 10px 0;
+}
+
+h4 {
+	font-size: 123%; /* 16px */
+    margin: 10px 0;
+}
+
+h5 {
+	font-size: 100%; /* 13px */
+    margin: 5px 0;
+}
+
+a {
+	color: #1A5A96;
+	text-decoration: none;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+
+a[name] {
+	display: inline-block\9; /* IE 8 anchor name fix */
+	position: absolute\9; /* IE 8 anchor name fix */
+	*display: inline-block; /* IE 7 anchor name fix */
+	*position: relative\9; /* IE 8 anchor name fix */
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus {
+	outline: thin dotted #FF0000;
+	color: #FF0000;
+}
+
+p {
+	line-height: 18px;
+	padding: 9px 0;
+}
+
+img {
+	border: none;	
+}
+
+blockquote {
+	margin-left:40px;	
+}
+
