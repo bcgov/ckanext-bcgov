@@ -1,0 +1,6 @@
+#wrapper {overflow:hidden;background:none;}
+#footer {overflow:visible}
+
+#mobile-header, #m-nav-left {
+	display: none;
+}

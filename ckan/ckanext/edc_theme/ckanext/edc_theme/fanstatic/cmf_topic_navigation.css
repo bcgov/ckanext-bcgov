@@ -1,0 +1,64 @@
+ul.inPageNavigation {
+    width: 177px;
+    border: 1px solid #D9D9D9;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    padding: 6px 8px 20px;
+    /*position: relative;*/ 
+    /* Has to be here to render PIE properly in IE */
+    behavior: url(/assets/gov/css/PIE.htc);
+}
+
+ul.inPageNavigation li {
+	background-repeat: no-repeat;
+	padding-left: 11px;
+}
+
+ul.inPageNavigation li.closed {
+	background-image: url(/assets/gov/images/sidecolumnnav_closed.gif);
+}
+
+ul.inPageNavigation li.open {
+	background-image: url(/assets/gov/images/sidecolumnnav_open.gif);
+}
+
+ul.inPageNavigation li a {
+	color: #151515;
+	text-decoration: none;
+}
+
+ul.inPageNavigation li a:hover {
+	text-decoration: underline;
+}
+
+ul.inPageNavigation li {
+	margin-top: 8px;
+	background-position: 0 2px;
+	line-height: 14px;
+}
+
+ul.inPageNavigation li li {
+	font-size: 12px;
+	background-position: 0 0;
+}
+
+ul.inPageNavigation li li li {
+	font-size: 12px;
+}
+
+/* 5th-level */
+
+ul.inPageNavigation li li li li li {
+	font-size: 11px;
+	background-image: none;
+	margin-top: 6px;
+}
+
+ul.inPageNavigation li li li li li.open {
+	background-image: none;
+}
+
+ul.inPageNavigation li.current > a  {
+	color: #1A5A96;
+}

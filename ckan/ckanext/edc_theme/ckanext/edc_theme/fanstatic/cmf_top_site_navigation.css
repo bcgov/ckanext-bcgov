@@ -1,0 +1,243 @@
+/* ---- Accessibility Navigation Styles ----------------------------------- */
+
+#access li a {
+	position: absolute;
+	margin: 10px 0 0 -5000px;
+	padding: 5px 7px;
+}
+
+#access li a:focus {
+	margin-left: 0;
+}
+
+#row-navtheme a:focus,
+#row-header a:focus,
+#row-topsubthemenav a:focus,
+#row-botsubthemenav a:focus,
+#row-footer a:focus {
+	outline: thin dotted #E9BF5D;
+	color: #E9BF5D;
+}
+
+#media_links a:focus {
+	outline: thin dotted #FF0000;
+	color: #FF0000;	
+}
+
+/* ---- Navigation Overlay Styles ----------------------------------------- */
+
+#overlay {
+    position: absolute;
+    background-color: #000;
+    opacity: 0.3;
+    filter: alpha(opacity = 30);
+    z-index: 1;
+    display: none;
+    left: 0;
+    margin-top: 1px;
+    width: 100% !important;
+}
+
+.horizontalMenu li {
+	float: left;
+}
+
+.horizontalMenu li a {
+	text-align: center;
+	
+	/* W3C */
+	display:box;
+	box-orient:horizontal;
+	box-pack:center;
+	box-align:center;
+	
+	/* Firefox */
+	display:-moz-box;
+	-moz-box-orient:horizontal;
+	-moz-box-pack:center;
+	-moz-box-align:center;
+	
+	/* Safari and Chrome */
+	display:-webkit-box;
+	-webkit-box-orient:horizontal;
+	-webkit-box-pack:center;
+	-webkit-box-align:center;
+	
+	/* Has to be here to render PIE properly in IE */
+	behavior: url(/assets/gov/css/PIE.htc);
+}
+
+.themes {
+    background-color: #293649;
+}
+
+.themes, .themes menu {
+	height: 27px;
+}
+
+.themes menu {
+	width: 960px;
+	padding: 0;
+	margin: 0;
+}
+
+.themes li {
+	text-transform: uppercase;
+	list-style-type: none;
+}
+
+.themes li a {
+	padding: 7px 5px;
+	color: white;
+	text-decoration: none;
+}
+
+.themes li.current a {
+	color: #e9bf5d;
+}
+
+.themes li.flyoutMenuItem a {
+	float: left;
+}
+
+.flyoutMenuItem .clickTrigger {
+    float: left; 
+    width: 13px;
+    height: 14px;
+    padding: 7px 4px;
+    background: url(/assets/gov/images/site_navigation_global/arrow_spritemap.png) no-repeat;    
+    cursor: pointer;
+}
+
+.flyoutMenuItem:hover .clickTrigger,
+.flyoutMenuItem.activeNav .clickTrigger {
+    background-position: 4px -42px;
+    background-color: #d3dbe8;
+}
+
+.flyoutMenuItem .clickTrigger:hover {
+    background-position: 4px -77px;
+    background-color: #b7bcc2;
+}
+
+.flyoutMenuItem:hover a,
+.flyoutMenuItem.activeNav a {
+    background-color: #E7EAF1;     
+    color: #384556 !important;    
+    text-decoration: underline;
+    border-bottom: 1px solid #E7EAF1;
+}
+
+div.flyout {
+    display: none; 
+    position: absolute;  
+    top: 68px;
+    width: 736px;
+    height: 267px;
+    background: url(/assets/gov/images/site_navigation_global/nav_bg.png) no-repeat;  
+    padding: 0 49px;
+    padding-bottom: 57px;    
+    z-index: 500;
+}
+
+div.flyout h2 {
+	height: 24px;
+	padding: 10px 0;
+	padding-left: 237px;
+	margin: 0;
+	font-family: Century Gothic, sans-serif;
+	line-height: 24px;
+}
+div.flyout a {
+   color: #151515;
+}
+div.flyout a:hover {
+	text-decoration: underline;
+}
+
+div.flyout img {
+	position: relative;
+	width: 220px;
+	height: 267px;
+	top: -44px;
+	left: -3px;
+}
+
+div.flyout ul.sectionLinks {
+	position: absolute;
+	top: 40px;
+	left: 46px;
+	width: 289px;
+	margin-top: 12px;
+	margin-left: 220px;
+	padding-left: 0;
+	list-style-position: outside;
+}
+
+div.flyout ul.sectionLinks li {
+	padding: 4px 0 4px 0;
+	padding-left: 21px;
+	line-height: 13px;
+	cursor: pointer;
+	list-style-type: none;
+}
+
+div.flyout div.topDestinations {
+	position: absolute;
+	top: 46px;
+	left: 48px;
+	width: 227px;
+	margin-left: 509px;
+}
+
+div.flyout div.topDestinations h3 {
+	margin: 17px 0 12px 19px;
+	font-family: Century Gothic, sans-serif;
+}
+
+div.flyout div.topDestinations ul {
+	font-family: verdana, sans-serif;
+	padding-left: 0;
+	margin-left: 19px;
+	margin-top: 0;
+	margin-bottom: 0;	
+}
+
+div.flyout div.topDestinations ul li {
+	padding: 4px 0;
+	list-style-type: none;
+}
+
+div.flyout div.topDestinations ul li a {
+	text-decoration: none;
+}
+
+div.flyout div.topDestinations ul li a:hover {
+	text-decoration: underline;
+}
+
+#services_header {
+	height: 40px;
+	margin-right: 38px;
+}
+
+#services_header a.serviceLink {
+	color: white;
+	text-decoration: none;
+	padding: 5px 10px;
+	border-left: 1px solid #9e9e9c;	
+	float: right;
+	margin: 10px 0 0;
+}
+
+#services_header a.serviceLink:hover {
+	color: #e9bf5d;
+}
+
+#services_header a.forms {
+	background-image: url(/assets/gov/images/icon_services.png);
+	background-repeat: no-repeat;
+	padding-left: 27px;
+	border: none;	
+}
+

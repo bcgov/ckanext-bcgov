@@ -1,0 +1,339 @@
+body {
+  margin-top: 31px;
+  background-image: none!important;
+}
+
+.account-masthead {
+  background: #556072;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.masthead {
+  background: #394559;
+}
+
+.site-footer {
+  background: #3a4559;
+}
+
+[role=main], .main {
+  background: transparent;
+  position: static;
+}
+
+.alert-info {
+  background: #E8EDF6;
+  color: #151515;
+  border-color: #e0e4ec;
+}
+
+.centerComponents
+{
+  margin:auto;
+  text-align:left;
+}
+
+#access {
+    display: none;
+}
+
+.themes {
+  height: 28px;
+}
+
+.themes menu {
+  width: 960px;
+  margin: 0 auto;
+}
+
+.subthemes menu {
+  width: 960px;
+  margin: 0 auto;
+}
+
+.flyout {
+  margin-left: -5px;
+  top: 99px!important;
+}
+
+#banner {
+  width: 960px;
+  margin: 0 auto;
+}
+
+#navigation {
+  background-color: #293649;
+}
+
+#services_header {
+  width: 960px;
+  margin: 0 auto;
+}
+
+#row-topsubthemenav {
+  width: 960px;
+  margin: 0 auto;
+}
+
+footer.site-footer {
+  padding: 0;
+}
+
+footer.site-footer .container {
+  width: auto;
+}
+
+footer.site-footer #footer #media_links a {
+  color: #1A5A96;
+}
+
+#debug-block {
+  background: #3a4559;
+  width: 100%;
+}
+
+#debug-block a {
+  background: #fff;
+  opacity: 1!important;
+  padding: 10px;
+}
+
+#c1345851942349
+{
+  min-height:20px;
+  height:auto !important;
+  margin:0 auto;
+  background-color: #394559;
+}
+
+#c1345851942344
+{
+  min-height:80px;
+  height:auto !important;
+  height:80px;
+  margin:0 auto;
+  background-color: #394559;
+}
+
+#c1345851942347
+{
+  min-height:30px;
+  height:auto !important;
+  height:30px;
+  margin: 0 auto 15px auto;
+  background: #556072;
+}
+
+#element2
+{
+  width:970px;
+  display:inline;
+  float:left;
+}
+
+#c1345851942346
+{
+  width:590px;
+  min-height:20px;
+  height:auto !important;
+  height:20px;
+  display:inline;
+  float:left;
+}
+
+#c1357685662360
+{
+  width:143px;
+  min-height:30px;
+  height:auto !important;
+  height:30px;
+  margin:0 7px 0 230px;
+  display:inline;
+  float:left;
+}
+
+#c1348631307127
+{
+  width:960px;
+  min-height:120px;
+  height:auto !important;
+  height:120px;
+  margin:10px 10px 0 0;
+  display:inline;
+  float:left;
+}
+
+#c1345851942339
+{
+  width:960px;
+  min-height:50px;
+  height:auto !important;
+  height:50px;
+  margin:20px 10px 0 0;
+  display:inline;
+  float:left;
+}
+
+#element3
+{
+  width:970px;
+  display:inline;
+  float:left;
+}
+
+#element4
+{
+  width:700px;
+  display:inline;
+  float:left;
+}
+
+#c1345851942342
+{
+  width:700px;
+  min-height:80px;
+  height:auto !important;
+  height:80px;
+  margin:20px 0 0 0;
+  display:inline;
+  float:left;
+}
+
+#c1345851942351
+{
+  width:700px;
+  min-height:70px;
+  height:auto !important;
+  height:70px;
+  margin:20px 0 0 0;
+  display:inline;
+  float:left;
+}
+
+#element5
+{
+  width:700px;
+  display:inline;
+  float:left;
+}
+
+#c1345851942340
+{
+  width:340px;
+  min-height:60px;
+  height:auto !important;
+  height:60px;
+  margin:20px 0 0 0;
+  display:inline;
+  float:left;
+}
+
+#c1345851942341
+{
+  width:340px;
+  min-height:60px;
+  height:auto !important;
+  height:60px;
+  margin:20px 0 0 20px;
+  display:inline;
+  float:left;
+}
+
+#element6
+{
+  width:250px;
+  margin:0 0 0 20px;
+  display:inline;
+  float:left;
+}
+
+#c1347334124735
+{
+  width:250px;
+  min-height:50px;
+  height:auto !important;
+  height:50px;
+  margin:20px 0 0 0;
+  display:inline;
+  float:left;
+}
+
+#c1350825978892
+{
+  width:250px;
+  min-height:70px;
+  height:auto !important;
+  height:70px;
+  margin:20px 0 0 0;
+  display:inline;
+  float:left;
+}
+
+#c1345851942338
+{
+  width:240px;
+  min-height:90px;
+  height:auto !important;
+  height:90px;
+  margin:20px 10px 0 0;
+  display:inline;
+  float:left;
+}
+
+#c1348029032286
+{
+  width:960px;
+  min-height:10px;
+  height:auto !important;
+  height:10px;
+  margin:20px 10px 0 0;
+  display:inline;
+  float:left;
+}
+
+#c1345851942348
+{
+  min-height:40px;
+  height:auto !important;
+  height:40px;
+  margin:0 auto;
+}
+
+#c1345851942350
+{
+  width:960px;
+  min-height:40px;
+  height:auto !important;
+  height:40px;
+  margin:0 auto;
+}
+
+#c1345851942343
+{
+  width:960px;
+  min-height:50px;
+  height:auto !important;
+  height:50px;
+  margin:0 auto;
+}
+
+/* CKAN overrides */
+ul,
+menu {
+    margin: 0;
+}
+
+ul li,
+menu li {
+    line-height: 13px;
+}
+
+.subthemes li a {
+    line-height: 13px;
+}
+
+#services_header {
+    line-height: 13px;
+}

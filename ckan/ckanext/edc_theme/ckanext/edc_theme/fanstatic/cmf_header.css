@@ -1,0 +1,141 @@
+#banner {
+    height: 105px;
+    background-color: #394559;
+	font-family: verdana,arial,sans-serif;	
+}
+
+#banner .logo {
+	display: block;
+	float: left;
+	width: 204px;
+	height: 70px;
+	margin: 17px 0;
+	background: url(/assets/gov/images/bc_logo_blue.png) no-repeat;
+}
+
+#banner h1 {
+	display: block;
+	float: left;
+	width: 380px;
+	margin: 34px 20px;
+	font-family: Century Gothic, verdana, sans-serif;
+	font-size: 30px;
+	font-weight: normal;
+	color: white;
+}
+
+#searchArea {
+    	float: right;      
+	height: 24px;
+    	margin: 40px -5px 40px 0;
+}
+
+#searchArea #search{
+	float:right;
+	height:23px;
+}
+
+#searchArea #search input#searchBox {
+	width: 260px;
+	color: black;
+	font-style: normal;
+	background: #fff;
+	border: 3px solid white;
+	border-radius: 3px;
+	position: relative;
+    /* Has to be here to render PIE properly in IE */
+    behavior: url(/assets/gov/css/PIE.htc);
+	float: left;
+	margin-bottom:1px;
+	padding-left:5px;
+	height:19px;
+}   
+
+#searchArea #search input#searchBox.placeholder {
+	background: #fff url(/assets/gov/images/bg_search_placeholder.png) no-repeat;
+}  
+
+#searchArea #search .SubmitLinkButton {
+	color: white;
+	cursor: pointer;
+	float: left;
+	padding: 6px 9px;
+}
+
+/* for search box with typeahead */
+
+#searchArea #typeAhead{
+	float:left;
+    border-image: none;
+    border-radius: 2px;
+    border-style: none solid solid;
+    float: left;
+    margin-top: 0;
+	position:absolute;
+	z-index:100; 
+	background-color:#394559;
+	width:260px;
+	border:none;
+}
+
+#searchArea #typeAhead #keyword_list{
+	font-size:12px;  
+	list-style:none;
+	padding-left:0;
+	height:100%;
+	float:left;
+	margin-top:0;
+	margin-left: 0;
+}
+
+#searchArea #typeAhead #keyword_list .kl_item{
+    padding-left: 5px;
+	float:left;
+	width:255px;;
+	height:20px;
+	padding-bottom:1px;
+	line-height:16px;
+}
+
+#searchArea #typeAhead #keyword_list .kl_item span#suggestion{
+	float:right;
+	font-size:10px;
+	color:green;
+}
+
+li.kl_item_selected{
+	background:none repeat scroll 0 0 #0000CC;
+	color:white;
+}
+
+#searchArea #typeAhead #keyword_list .kl_item a.a_item{
+	margin:0;
+	color:#000;
+	float:left;
+    padding-bottom: 2px;
+    padding-top: 2px;
+	height:17px;
+}
+
+#searchArea #typeAhead #keyword_list .kl_item_selected a.a_item{
+	margin:0;
+	color:white;
+	float:left;
+    padding-bottom: 2px;
+    padding-top: 2px;
+	height:17px;	
+}
+
+#keyword_list span#closeLi{
+ 	float:right; 
+ 	margin-bottom:5px; 
+ 	margin-right:5px;
+}
+
+#keyword_list span#closeLi a{
+	color:#0000CC;
+}
+
+#keyword_list span#closeLi a:hover{
+	cursor:pointer;
+}
