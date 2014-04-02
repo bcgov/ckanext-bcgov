@@ -1,4 +1,3 @@
-setup.py
 ckanext/__init__.py
 ckanext/edc_theme/__init__.py
 ckanext/edc_theme/plugin.py

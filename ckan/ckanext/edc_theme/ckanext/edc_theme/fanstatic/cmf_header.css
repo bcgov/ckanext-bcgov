@@ -10,7 +10,7 @@
 	width: 204px;
 	height: 70px;
 	margin: 17px 0;
-	background: url(/assets/gov/images/bc_logo_blue.png) no-repeat;
+	background: url(/pub/edc/assets/gov/images/bc_logo_blue.png) no-repeat;
 }
 
 #banner h1 {
@@ -44,7 +44,7 @@
 	border-radius: 3px;
 	position: relative;
     /* Has to be here to render PIE properly in IE */
-    behavior: url(/assets/gov/css/PIE.htc);
+    behavior: url(/pub/edc/assets/gov/css/PIE.htc);
 	float: left;
 	margin-bottom:1px;
 	padding-left:5px;
@@ -52,7 +52,7 @@
 }   
 
 #searchArea #search input#searchBox.placeholder {
-	background: #fff url(/assets/gov/images/bg_search_placeholder.png) no-repeat;
+	background: #fff url(/pub/edc/assets/gov/images/bg_search_placeholder.png) no-repeat;
 }  
 
 #searchArea #search .SubmitLinkButton {
