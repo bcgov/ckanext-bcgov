@@ -1,0 +1,184 @@
+[
+	{
+		"name": "dataset_type_vocab",
+		"tags": [
+					{"id": "001", "name" : "Application"},
+					{"id": "002", "name": "Non-Geospatial Dataset"},
+					{"id": "003", "name": "Geospatial Dataset"},
+					{"id": "004", "name": "Web Service"}
+				]
+	},
+    {
+        "name" : "dataset_date_type",
+        "tags" : [
+        			{"id": "001", "name": "Created"},
+        			{"id": "002", "name": "modified"},
+                  	{"id": "003", "name": "published"},
+                  	{"id": "004", "name": "Archived"},
+                  	{"id": "005", "name": "Destroyed"}
+                  ]
+    },
+    {
+    	"name" : "resource_format",
+    	"tags" : [
+    				{"id": "001", "name": "CSV"},
+    				{"id": "002", "name": "SHP"},
+    				{"id": "003", "name": "BDF"},
+    				{"id": "004", "name": "FGDB2"},
+    				{"id": "005", "name": "FGDB3"}
+    			]
+    },
+	{
+		"name" : "resource_status",
+		"tags" : [
+					{"id": "001", "name": "completed"}, 
+                    {"id": "002", "name": "historicalArchive"}, 
+                    {"id": "003", "name": "obsolete"},
+                    {"id": "004", "name": "onGoing"},
+                    {"id": "005", "name": "planned"},
+                    {"id": "006", "name": "required"},
+                    {"id": "007", "name": "underDevelopment"},
+                    {"id": "008", "name": "destroyed"}
+                  ]
+	},
+	{
+		"name" : "security_class",
+		"tags" : [
+					{"id": "001", "name": "Restricted to Government"},
+					{"id": "002", "name": "Confidential"}, 
+					{"id": "003", "name": "Restricted to Named User"}
+				  ]
+	},
+    {
+        "name" : "resource_update_cycle",
+        "tags" : [ 
+        			{"id": "001", "name": "continual"},
+                   	{"id": "002", "name": "daily"},
+                   	{"id": "003", "name": "weekly"},
+                   	{"id": "004", "name": "fortnightly"},
+                   	{"id": "005", "name": "monthly"},
+                   	{"id": "006", "name": "quarterly"},
+                   	{"id": "007", "name": "biannually"},
+                   	{"id": "008", "name": "annually"},
+                   	{"id": "009", "name": "asNeeded"},
+                   	{"id": "010", "name": "irregular"},
+                   	{"id": "011", "name": "notPlanned"},
+                   	{"id": "012", "name": "unknown"}
+                  ]
+ },
+ {
+ "name" : "metadata_hierarchy_level",
+ "tags" : [ 
+ 			{"id": "001", "name": "attribute"},
+            {"id": "002", "name": "attributeType"},
+            {"id": "003", "name": "collectionHardware"},
+            {"id": "004", "name": "collectionSession"},
+            {"id": "005", "name": "dataset"},
+            {"id": "006", "name": "series"},
+            {"id": "007", "name": "nonGeographicalDataset"},
+            {"id": "008", "name": "dimensionGroup"},
+            {"id": "009", "name": "feature"},
+            {"id": "010", "name": "featureType"},
+            {"id": "011", "name": "propertyType"},
+            {"id": "012", "name": "fieldSession"},
+            {"id": "013", "name": "software"},
+            {"id": "014", "name": "service"},
+            {"id": "015", "name": "model"},
+            {"id": "016", "name": "tile"},
+            {"id": "017", "name": "Not applicable"}
+          ]
+ },
+ {
+ 	"name" : "viewable",
+ 	"tags" : [
+ 				{"id": "001", "name": "Public"},
+ 				{"id": "002", "name": "Government"},
+ 				{"id": "003", "name": "Named users"}
+ 			]
+ },
+ {
+ 	"name" : "downloadable",
+ 	"tags" : [
+ 				{"id": "001", "name": "Public"},
+ 				{"id": "002", "name": "Government"},
+ 				{"id": "003", "name": "Named users"}
+ 			]
+ },
+ {
+ 	"name" : "iso_topic_category",
+ 	"tags" : [
+ 				{"id": "001", "name": "farming"},
+				{"id": "002", "name": "biota"},
+				{"id": "003", "name": "boundaries"},
+				{"id": "004", "name": "climatologyMeteorologyAtmosphere"},
+				{"id": "005", "name": "economy"},
+				{"id": "006", "name": "elevation"},
+				{"id": "007", "name": "environment"},
+				{"id": "008", "name": "geoscientificInformation"},
+				{"id": "008", "name": "health"},
+				{"id": "010", "name": "imageryBaseMapsEarthCover"},
+				{"id": "011", "name": "intelligenceMilitary"},
+				{"id": "012", "name": "inlandWaters"},
+				{"id": "013", "name": "location"},
+				{"id": "014", "name": "oceans"},
+				{"id": "015", "name": "planningCadastre"},
+				{"id": "016", "name": "society"},
+				{"id": "017", "name": "structure"},
+				{"id": "018", "name": "transportation"},
+				{"id": "019", "name": "utilitiesCommuncation"},
+				{"id": "020", "name": "Not applicable"}				
+			]
+ },
+ {
+ 	"name" : "metadata_visibility",
+ 	"tags" : [
+ 				{"id": "001", "name": "IDIR"},
+ 				{"id": "002", "name": "public"}
+ 			  ]
+ },
+ {
+ 	"name" : "resource_type",
+ 	"tags" : [
+ 				{"id": "001", "name": "report"},
+ 				{"id": "002", "name": "abstraction"},
+ 				{"id": "003", "name": "data"},
+ 				{"id": "004", "name": "spatial"},
+ 				{"id": "005", "name": "non-spatial"}
+ 			 ]
+ },
+ {
+ 	"name" : "resource_download_format",
+ 	"tags" : [ 
+ 				{"id": "001", "name": "pdf"},
+ 				{"id": "002", "name": "CSV"},
+ 				{"id": "003", "name": "doc"},
+ 				{"id": "004", "name": "xls"}
+ 			 ]
+ },
+ {
+ 	"name" : "object_relationships",
+ 	"tags" : [
+ 				{"id": "001", "name": "depends on"},
+ 				{"id": "002", "name": "drives from"},
+ 				{"id": "003", "name": "child of"},
+ 				{"id": "004", "name": "parent of"},
+ 				{"id": "005", "name": "used in"}
+ 			 ]
+ },
+ {
+ 	"name" : "contact_roles",
+ 	"tags" : [
+ 				{"id": "001", "name": "cusodian"},
+ 				{"id": "002", "name": "display contact"},
+ 				{"id": "003", "name": "internal contact"}
+ 			 ]
+ },
+ {
+ 	"name" : "resource_storage_access_method",
+ 	"tags" : [
+ 				{"id": "001", "name": "direct means"},
+ 				{"id": "002", "name": "indirect means"}
+ 			 ]
+ }
+ 
+]

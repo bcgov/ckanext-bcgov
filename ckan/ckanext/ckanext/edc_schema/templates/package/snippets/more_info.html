@@ -1,0 +1,85 @@
+{#
+  Provides input fields for links to more information about dataset.
+
+  info - List of links to more info about dataset.
+  errors   - A dict of errors for the fields.
+
+  Example:
+  	{snippet 'snippets/more_info.html', info_list=data.more_info, errors=errors %}
+
+#}
+
+
+{% import "macros/form.html" as form %}
+{% set info_list = info_list or [] %}
+
+<div id="info_panel" class="required control-list form-horizontal">
+	<div id="info_list">
+	{% for item in info_list %}
+		{% if errors.more_info %}
+			{% set link_error = errors.more_info[loop.index0].link %}
+		{% endif %}
+
+		<div id="more_info_{{ loop.index0 }}" class="more_info control-group">
+			<div class="row-fluid">
+				<div class="span10">
+					<div class="control-group">
+						<label for="field-more_info-{{ loop.index0 }}-link" class="control-label"><span class="control-required">*</span> More info</label>
+						<div class="controls{{ " error" if link_error }}">
+							<input id="field-more_info-{{ loop.index0 }}-link"
+						   	   		type="text"
+						   	   		name="more_info__{{ loop.index0 }}__link"
+						       		value="{{ item['link'] }}"
+						       		placeholder="http://www.data.gov.bc.ca/dbc/geographic"/>
+						    {% if link_error and link_error is iterable %}
+							   	 <span class="group-error error-block">{{ link_error|join(', ') }}</span>
+							{% endif %}
+					    </div>
+				    </div>
+				</div>
+				<div class="span2">
+				<div class="item-link"> <a href="javascript:remove_info_link({{ loop.index0 }})" class="btn btn-primary btn-xs">Delete </a> </div>
+				</div>
+				<input id="field-more_info-{{ loop.index0 }}-delete"
+				   			type="hidden"
+				   			name="more_info__{{ loop.index0 }}__delete"
+				   			value="{{ item['delete'] }}">
+			</div>
+		</div>
+	{% endfor %}
+
+	{% set len = info_list|count %}
+	{% if len == 0 %}
+		<div id="more_info_0" class="more_info control-group">
+			<div class="row-fluid">
+				<div class="span10">
+					<div class="control-group">
+						<label for="field-more_info-0-link" class="control-label"><span class="control-required">*</span> More info</label>
+						<div class="controls">
+							<input id="field-more_info-0-link"
+						   	   		type="text"
+						   	   		name="more_info__0__link"
+						       		value=""
+						       		placeholder="http://www.data.gov.bc.ca/dbc/geographic"/>
+					    </div>
+				    </div>
+				</div>
+				<div class="span2">
+				<div class="item-link"> <a href="javascript:remove_info_link(0)" class="btn btn-primary btn-xs">Delete </a> </div>
+				</div>
+				<input id="field-more_info-0-delete"
+				   			type="hidden"
+				   			name="more_info__0__delete"
+				   			value="0">
+			</div>
+		</div>
+	{% endif %}
+	</div>
+
+	<div id="add_info_link" align="center">
+		<a class="btn btn-primary" href="javascript:add_more_info();">
+			<i class="icon-plus-sign-alt"></i>
+			Add additional link
+		</a>
+	</div>
+</div>

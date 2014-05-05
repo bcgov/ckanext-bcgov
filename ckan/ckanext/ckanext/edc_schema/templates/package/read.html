@@ -1,0 +1,138 @@
+{% ckan_extends %}
+
+{% block primary_content_inner %}
+  {% block package_description %}
+    {% if pkg.private %}
+      <span class="dataset-private label label-inverse pull-right">
+        <i class="icon-lock"></i>
+        {{ _('Private') }}
+      </span>
+    {% endif %}
+    <h1>
+      {% block page_heading %}
+        {{ pkg.title or pkg.name }}
+        {% if pkg.state.startswith('draft') %}
+          [{{ _('Draft') }}]
+        {% endif %}
+      {% endblock %}
+    </h1>
+    {% block package_notes %}
+      {% if c.pkg_notes_formatted %}
+        <div class="notes embedded-content">
+          {{ c.pkg_notes_formatted }}
+        </div>
+      {% endif %}
+    {% endblock %}
+    {# FIXME why is this here? seems wrong #}
+    <span class="insert-comment-thread"></span>
+  {% endblock %}
+
+  {% block pakage_purpose %}
+        {% if pkg.purpose %}
+            <h2>Purpose</h2>
+            {{ pkg.purpose }}
+        {% endif %}
+    {% endblock %}
+
+  {% block package_tags %}
+    {% snippet "package/snippets/tags.html", tags=pkg.tags %}
+  {% endblock %}
+
+  {% block package_license %}
+    {% snippet "snippets/license.html", pkg_dict=pkg %}
+  {% endblock %}
+
+  {% block package_resources %}
+    {% snippet "package/snippets/resources_list.html", pkg=pkg, resources=pkg.resources %}
+  {% endblock %}
+
+  {% block package_thumbnail %}
+    {% snippet "package/snippets/thumbnail.html", pkg=pkg %}
+  {% endblock %}
+
+  {% block package_additional_info %}
+    <h2>Additional Information</h2>
+    <h2>Dataset Information</h2>
+    <table class="table dataset_view">
+    {% block package_type %}
+            <tr>
+                <td><strong>Record type</strong></td><td> {{ pkg.type }} </td>
+            </tr>
+    {% endblock %}
+
+    {# Displaying Organization and Branch names #}
+    {% block package_org %}
+        {% snippet 'package/snippets/org_view.html', org=pkg.org, branch=pkg.sub_org %}
+    {% endblock %}
+
+
+    {# Add our custom country_code field to the dataset read page. #}
+    {#
+        {% if pkg.get('security_class') %}
+        <section id="dataset-security_code" class="resources module-content">
+            {% set security_class = h.edc_tag_name('scurity_class', pkg.security_class[0]) %}
+            <p><strong>Security class</strong>: {{ security_class }}</p>
+        </section>
+        {% endif %}
+    #}
+
+    {# Showing dates #}
+    {% block package_dates %}
+        {% snippet 'package/snippets/dates_view.html', dates=pkg.dates%}
+    {% endblock %}
+
+    {% block package_resource_status %}
+        {% set resource_status = h.edc_tag_name('resource_status', pkg.resource_status) %}
+            <tr>
+                <td><strong>Resource Status</strong></td><td> {{ resource_status }} </td>
+            </tr>
+        {% if pkg.replacement_record %}
+            <tr>
+                <td><strong>Replacement Record</strong></td><td> {{ pkg.replacement_record }} </td>
+            </tr>
+        {% endif %}
+    {% endblock %}
+
+    {% block package_update_cycle %}
+        {% set update_cycle = h.edc_tag_name('resource_update_cycle', pkg.resource_update_cycle) %}
+            <tr>
+                <td><strong>Update Cycle</strong></td><td> {{ update_cycle }} </td>
+            </tr>
+    {% endblock %}
+
+    {% block package_iso_topic %}
+        {% set iso_topic_cat = h.edc_tag_name('iso_topic_category', pkg.iso_topic_cat) %}
+            <tr>
+                <td><strong>ISO Topic Category</strong></td><td> {{ iso_topic_cat }} </td>
+            </tr>
+    {% endblock %}
+
+    </table>
+
+    {# Displaying contact info #}
+    {% block package_contacts %}
+        {% snippet 'package/snippets/contacts_view.html', contacts=pkg.contacts %}
+    {% endblock %}
+  {% endblock %}
+
+{% endblock %}
+
+{% block secondary_content %}
+
+  {% block secondary_help_content %}{% endblock %}
+
+  {% block package_organization %}
+    {% if pkg.organization %}
+      {% snippet "snippets/organization.html", organization=pkg.organization, has_context_title=true %}
+    {% endif %}
+  {% endblock %}
+
+  {% block package_social %}
+    {% snippet "snippets/social.html" %}
+  {% endblock %}
+
+  {% block package_info %}
+    {% snippet "package/snippets/info.html", pkg=pkg %}
+  {% endblock %}
+
+{% endblock %}
