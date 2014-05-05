@@ -1,0 +1,22 @@
+{#
+  Shows the organization and branch names.
+
+  org : Organization ID.
+  branch : branch ID
+
+  Example:
+  	{% snippet 'package/snippets/org_view.html', org=pkg.org, branch=pkg.sub_org %}
+
+#}
+
+{% set org_name = h.edc_org_name(org) %}
+{% set branch_name = h.edc_org_name(branch) %}
+	<tr>
+		<td><strong>Organization</strong></td><td>{{ org_name }} </td>
+	</tr>
+	{% if branch_name %}
+		<tr>
+			<td><strong>Branch</strong></td><td>{{ branch_name }} </td>
+		</tr>
+	{% endif %}
+

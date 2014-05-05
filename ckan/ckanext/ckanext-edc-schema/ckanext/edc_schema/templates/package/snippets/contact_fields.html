@@ -1,0 +1,200 @@
+{#
+  adds input fields of contact information.
+
+  contacts - The contact fields to add (list of contacts).
+  errors   - A dict of errors for the fields.
+
+  Example:
+  	{snippet 'snippets/contact_fields.html', contacts=data.contacts, errors=errors %}
+
+#}
+
+{% import "macros/form.html" as form %}
+{% set contacts = contacts or [] %}
+{% set organizations_available = h.edc_orgs() %}
+
+<div id="contacts_panel" class="required control-list">
+	<div id="contacts_list">
+	{% for contact in contacts %}
+		{% if errors.contacts %}
+			{% set email_error = errors.contacts[loop.index0].email %}
+			{% set name_error = errors.contacts[loop.index0].name %}
+			{% set org_error = errors.contacts[loop.index0].organization %}
+			{% set role_error = errors.contacts[loop.index0].role %}
+			{% set contact_error = email_error or name_error or org_error or rol_error %}
+		{% endif %}
+
+		<div id="contact_{{ loop.index0 }}" class="contact control-group">
+			<div class="contacts row-fluid">
+				<div class="span6">
+					<div class="control-group">
+						<label for="field-contacts-{{ loop.index0 }}-name" class="control-label"><span class="control-required">*</span> Name</label>
+						<div class="controls{{ " error" if name_error }}">
+							<input id="field-contacts-{{ loop.index0 }}-name"
+						   	   		type="text"
+						   	   		name="contacts__{{ loop.index0 }}__name"
+						       		value="{{ contact['name'] }}"
+						       		placeholder="Contact name"/>
+						    {% if name_error and name_error is iterable %}
+							   	 <span class="group-error error-block">Name: {{ name_error|join(', ') }}</span>
+							{% endif %}
+					    </div>
+				    </div>
+				    <div class="control-group">
+				    	<label for="field-contacts-{{ loop.index0 }}-email" class="control-label"><span class="control-required">*</span> Email</label>
+				    	<div class="controls{{ " error" if email_error }}">
+							<input id="field-contacts-{{ loop.index0 }}-email"
+						   	   		type="text"
+						   	   		name="contacts__{{ loop.index0 }}__email"
+						   	   		value="{{ contact['email'] }}"
+						   	   		placeholder="Contact email"/>
+						   	{% if email_error and email_error is iterable %}
+							   	 <span class="group-error error-block">Email: {{ email_error|join(', ') }}</span>
+							{% endif %}
+						</div>
+				   	</div>
+				   	<div class="control-group">
+						{% set is_private = (contact.private and contact.private != _('Private')) %}
+						<label class="control-label"></label>
+						<div class="controls">
+							<div class="checkbox-inline">
+								<input id="field-contacts-{{ loop.index0 }}-private" type="checkbox" name="contacts__{{ loop.index0 }}__private" value="Private"
+									   {% if is_private %} checked="checked" {% endif %}>
+								<label for="field-contacts-{{ loop.index0 }}-private">Contact Displayed</label>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="span6">
+					<div class="control-group">
+				 		<label for="field-contacts-{{ loop.index0 }}-organization" class="control-label"><span class="control-required">*</span> Organization</label>
+				 		<div class="controls{{ " error" if org_error }}">
+				 			<select id="field-contacts-{{ loop.index0 }}-organization" name="contacts__{{ loop.index0 }}__organization" data-module="autocomplete" placeholder="Select an organization">s
+							 	<option value="">Select an organization</option>
+							 	{% for organization in organizations_available %}
+							 		{% set selected_org = contact.organization and organization.id == contact.organization %}
+									<option value="{{ organization.id }}" {% if selected_org %} selected="selected" {% endif %}> {{ organization.title }}</option>
+							 	{% endfor %}
+							 </select>
+							 {% if org_error and org_error is iterable %}
+								   	<span class="group-error error-block">Organization: {{ org_error|join(', ') }}</span>
+							 {% endif %}
+						</div>
+				 	</div>
+				 	<div class="control-group">
+				 		<label for="field-contacts-{{ loop.index0 }}-role" class="control-label"><span class="control-required">*</span> Role</label>
+				 		<div class="controls{{ " error" if role_error }}">
+						   	<select id="field-contacts-{{ loop.index0 }}-role" name="contacts__{{ loop.index0 }}__role" data-module="autocomplete" placeholder="Select a contact role">
+							   	<option value="">Select a contact role</option>
+							   	{% for role in h.edc_tags(_("contact_roles")) %}
+							   		{% set selected_role = contact.role and contact.role == role.id %}
+							   		<option value="{{ role.id }}" {% if selected_role %} selected="selected" {% endif %} >{{ role.name }}</option>
+							   	{% endfor %}
+						   	</select>
+						   	{% if role_error and role_error is iterable %}
+				   				<span class="group-error error-block">Role: {{ role_error|join(', ') }}</span>
+							{% endif %}
+					   	</div>
+				 	</div>
+				</div>
+				<div class="item-link"> <a href="javascript:remove_contact({{ loop.index0 }})" class="btn btn-primary btn-xs">Delete </a> </div>
+				<input id="field-contacts-{{ loop.index0 }}-delete"
+				   			type="hidden"
+				   			name="contacts__{{ loop.index0 }}__delete"
+				   			value="{{ contact['delete'] }}">
+		</div>
+	</div>
+	{% endfor %}
+
+	{% set len = contacts|count %}
+	{% if len == 0 %}
+		<div id="contact_0" class="control-group contact">
+			<div class="contacts row-fluid">
+				<div class="span6">
+					<div class="control-group control-full">
+						<label for="field-contacts-0-name" class="control-label"><span class="control-required">*</span> Name</label>
+						<div class="controls">
+							<input id="field-contacts-0-name"
+						   	   		type="text"
+						   	   		name="contacts__0__name"
+						       		placeholder="Contact name"/>
+					    </div>
+					</div>
+					<div class="control-group">
+						<label for="field-contacts-0-email" class="control-label"><span class="control-required">*</span> Email</label>
+						<div class="controls">
+						<input id="field-contacts-0-email"
+					   	   		type="text"
+					   	   		name="contacts__0__email"
+					   	   		placeholder="Contact email"/>
+					   	</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label"></label>
+						<div class="controls">
+							<div class="checkbox-inline">
+								<input id="field-contacts-0-private" type="checkbox" name="contacts__0__private" value="Private" checked="checked">
+								<label for="field-contacts-0-private">Contact Displayed</label>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="span6">
+					<div class="control-group">
+						<label for="field-contacts-0-organization" class="control-label"><span class="control-required">*</span> Organization</label>
+						<div class="controls">
+						 	<select id="field-contacts-0-organization" name="contacts__0__organization" data-module="autocomplete" class="test-org" data-placeholder="Select an organization">
+						 		<option value="">Select an organization</option>
+						 		{% for organization in organizations_available %}
+									<option value="{{ organization.id }}"> {{ organization.name }}
+									</option>
+						 		{% endfor %}
+						 	</select>
+						</div>
+					</div>
+					<div class="control-group">
+					   	<label for="field-contacts-0-role" class="control-label"><span class="control-required">*</span> Role</label>
+					   	<div class="controls">
+						   	<select id="field-contacts-0-role" name="contacts__0__role" data-module="autocomplete" data-placeholder="Select a contact role">
+							   	<option value="">Select a contact role</option>
+							   	{% for role in h.edc_tags(_("contact_roles")) %}
+							   		<option value="{{ role.id }}" >{{ role.name }}</option>
+							   	{% endfor %}
+						   	</select>
+						</div>
+					</div>
+				</div>
+			<div class="item-link"><a href="javascript:remove_contact(0)" class="btn btn-primary btn-xs">Delete </a></div>
+			<input id="field-contacts-0-delete"
+				   			type="hidden"
+				   			name="contacts__0__delete"
+				   			value="0">
+			</div>
+		</div>
+	{% endif %}
+	</div>
+
+	<script type="text/javascript">
+
+		//Create the list of contact roles.
+		var contact_roles = [];
+		{% for role in h.edc_tags(_("contact_roles"))  %}
+			contact_roles.push({ id : "{{ role.id }}",
+								 name: "{{ role.name}}"});
+		{% endfor %}
+
+		//Create the list of organizations.
+		var orgs = [];
+		{% for org in organizations_available %}
+			orgs.push({ id: "{{ org.id }}",
+						name: "{{ org.name }}"});
+		{% endfor %}
+	</script>
+
+	<div id="addContact" align="center">
+		<a class="btn btn-primary" href="javascript:add_contact(contact_roles, orgs);">
+			<i class="icon-plus-sign-alt"></i>
+			Add another contact
+		</a>
+	</div>
+</div>
