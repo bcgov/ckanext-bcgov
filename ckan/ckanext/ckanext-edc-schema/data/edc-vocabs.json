@@ -1,0 +1,224 @@
+[
+	{
+		"name": "dataset_type_vocab",
+		"tags": [
+					{"id": "001", "name": "Application"},
+					{"id": "002", "name": "Non-Geospatial Dataset"},
+					{"id": "003", "name": "Geospatial Dataset"},
+					{"id": "004", "name": "Web Service"}
+				]
+	},
+    {
+        "name" : "dataset_date_type",
+        "tags" : [
+        			{"id": "001", "name": "Created"},
+        			{"id": "002", "name": "Modified"},
+                  	{"id": "003", "name": "Published"},
+                  	{"id": "004", "name": "Archived"},
+                  	{"id": "005", "name": "Destroyed"}
+                  ]
+    },
+    {
+    	"name" : "resource_format",
+    	"tags" : [
+                {"id": "001", "name": "RDF"},
+                {"id": "002", "name": "KML"},
+                {"id": "003", "name": "KMZ"},
+                {"id": "004", "name": "Spreadsheet-XLS"},
+                {"id": "005", "name": "HTML"},
+                {"id": "006", "name": "XML"},
+                {"id": "007", "name": "Spreadsheet-ZIP"},
+                {"id": "008", "name": "FGDB"},
+                {"id": "009", "name": "CDED"},
+                {"id": "010", "name": "SHP"},
+                {"id": "011", "name": "Delimited text-JSON"},
+ 				{"id": "012", "name": "Delimited text-CSV"},
+                {"id": "013", "name": "Delimited text-TXT"},
+                {"id": "014", "name": "Geospatial PDF"},
+                {"id": "015", "name": "SDE-Oracle"},
+                {"id": "016", "name": "Unknown"}
+    			]
+    },
+	{
+		"name" : "resource_status",
+		"tags" : [
+					{"id": "001", "name": "completed"},
+                    {"id": "002", "name": "historicalArchive"},
+                    {"id": "003", "name": "obsolete"},
+                    {"id": "004", "name": "onGoing"},
+                    {"id": "005", "name": "planned"},
+                    {"id": "006", "name": "required"},
+                    {"id": "007", "name": "underDevelopment"},
+                    {"id": "008", "name": "destroyed"}
+                  ]
+	},
+	{
+		"name" : "security_class",
+		"tags" : [
+					{"id": "001", "name": "Restricted to Government"},
+					{"id": "002", "name": "Confidential"},
+					{"id": "003", "name": "Restricted to Named User"}
+				  ]
+	},
+ {
+ "name" : "metadata_hierarchy_level",
+ "tags" : [
+ 			{"id": "001", "name": "attribute"},
+            {"id": "002", "name": "attributeType"},
+            {"id": "003", "name": "collectionHardware"},
+            {"id": "004", "name": "collectionSession"},
+            {"id": "005", "name": "dataset"},
+            {"id": "006", "name": "series"},
+            {"id": "007", "name": "nonGeographicalDataset"},
+            {"id": "008", "name": "dimensionGroup"},
+            {"id": "009", "name": "feature"},
+            {"id": "010", "name": "featureType"},
+            {"id": "011", "name": "propertyType"},
+            {"id": "012", "name": "fieldSession"},
+            {"id": "013", "name": "software"},
+            {"id": "014", "name": "service"},
+            {"id": "015", "name": "model"},
+            {"id": "016", "name": "tile"},
+            {"id": "017", "name": "Unknown"}
+          ]
+ },
+ {
+ 	"name" : "viewable",
+ 	"tags" : [
+ 				{"id": "001", "name": "Public"},
+ 				{"id": "002", "name": "Government"},
+ 				{"id": "003", "name": "Named users"}
+ 			]
+ },
+ {
+ 	"name" : "downloadable",
+ 	"tags" : [
+ 				{"id": "001", "name": "Public"},
+ 				{"id": "002", "name": "Government"},
+ 				{"id": "003", "name": "Named users"}
+ 			]
+ },
+ {
+ 	"name" : "iso_topic_category",
+ 	"tags" : [
+ 				{"id": "001", "name": "farming"},
+				{"id": "002", "name": "biota"},
+				{"id": "003", "name": "boundaries"},
+				{"id": "004", "name": "climatologyMeteorologyAtmosphere"},
+				{"id": "005", "name": "economy"},
+				{"id": "006", "name": "elevation"},
+				{"id": "007", "name": "environment"},
+				{"id": "008", "name": "geoscientificInformation"},
+				{"id": "008", "name": "health"},
+				{"id": "010", "name": "imageryBaseMapsEarthCover"},
+				{"id": "011", "name": "intelligenceMilitary"},
+				{"id": "012", "name": "inlandWaters"},
+				{"id": "013", "name": "location"},
+				{"id": "014", "name": "oceans"},
+				{"id": "015", "name": "planningCadastre"},
+				{"id": "016", "name": "society"},
+				{"id": "017", "name": "structure"},
+				{"id": "018", "name": "transportation"},
+				{"id": "019", "name": "utilitiesCommuncation"},
+				{"id": "020", "name": "unknown"}
+			]
+ },
+ {
+ 	"name" : "metadata_visibility",
+ 	"tags" : [
+ 				{"id": "002", "name": "Public"},
+                {"id": "001", "name": "IDIR"}
+ 			  ]
+ },
+ {
+ 	"name" : "resource_type",
+ 	"tags" : [
+ 				{"id": "001", "name": "Data"},
+ 				{"id": "002", "name": "Abstraction"},
+ 				{"id": "003", "name": "Reports"}
+ 			 ]
+ },
+ {
+ 	"name" : "object_relationships",
+ 	"tags" : [
+ 				{"id": "001", "name": "depends on"},
+ 				{"id": "002", "name": "drives from"},
+ 				{"id": "003", "name": "child of"},
+ 				{"id": "004", "name": "parent of"},
+ 				{"id": "005", "name": "used in"}
+ 			 ]
+ },
+ {
+ 	"name" : "contact_roles",
+ 	"tags" : [
+ 				{"id": "001", "name": "custodian"},
+ 				{"id": "002", "name": "pointOfContact"},
+ 				{"id": "003", "name": "distributor"},
+                {"id": "004", "name": "businessExpert"}
+ 			 ]
+ },
+ {
+ 	"name" : "resource_storage_access_method",
+ 	"tags" : [
+ 				{"id": "001", "name": "Application"},
+ 				{"id": "002", "name": "Direct Access"},
+ 				{"id": "003", "name": "Indirect Access"},
+ 				{"id": "004", "name": "Service"}
+ 			 ]
+ },
+ {
+    "name": "resource_update_cycle",
+    "tags":  [
+                {"id": "001", "name": "continual"},
+                {"id": "002", "name": "daily"},
+                {"id": "003", "name": "weekly"},
+                {"id": "004", "name": "monthly"},
+                {"id": "005", "name": "quarterly"},
+                {"id": "006", "name": "biannually"},
+                {"id": "007", "name": "annually"},
+                {"id": "008", "name": "asNeeded"},
+                {"id": "009", "name": "irregular"},
+                {"id": "010", "name": "notPlanned"},
+                {"id": "011", "name": "unknown"}
+
+             ]
+
+ },
+ {
+    "name": "resource_storage_location",
+    "tags": [
+
+                {"id": "001", "name": "BCGW Data Store"},
+                {"id": "002", "name": "EDC Data Store"},
+                {"id": "003", "name": "FTP"}
+            ]
+ },
+ {
+    "name": "projection_name",
+    "tags": [
+                {"id": "3005", "name": "EPSG_3005 - NAD83 BC Albers"},
+                {"id": "3857", "name": "EPSG_3857 - WGS 84 Pseudo-Mercator -- Spherical Mercator"},
+                {"id": "4326", "name": "EPSG_4326 - WGS84 - World Geodetic System 1984"},
+                {"id": "26907", "name": "EPSG_26907 - NAD83 UTM zone 7N"},
+                {"id": "26707", "name": "EPSG_26707 - NAD27 UTM zone 7N"},
+                {"id": "32607", "name": "EPSG_32607 - WGS 84 UTM zone 7N"},
+                {"id": "4269", "name": "EPSG_4269 - NAD83"},
+                {"id": "26708", "name": "EPSG_26708 - NAD27 UTM zone 8N"},
+                {"id": "26709", "name": "EPSG_26709 - NAD27 UTM zone 9N"},
+                {"id": "26710", "name": "EPSG_26710 - NAD27 UTM zone 10N"},
+                {"id": "26711", "name": "EPSG_26711 - NAD27 UTM zone 11N"},
+                {"id": "26712", "name": "EPSG_26712 - NAD27 UTM zone 12N"},
+                {"id": "26908", "name": "EPSG_26908 - NAD83 UTM zone 8N"},
+                {"id": "26909", "name": "EPSG_26909 - NAD83 UTM zone 9N"},
+                {"id": "26910", "name": "EPSG_26910 - NAD83 UTM zone 10N"},
+                {"id": "26911", "name": "EPSG_26911 - NAD83 UTM zone 11N"},
+                {"id": "26912", "name": "EPSG_26912 - NAD83 UTM zone 12N"},
+                {"id": "32608", "name": "EPSG_32608 - WGS 84 UTM zone 8N"},
+                {"id": "32609", "name": "EPSG_32609 - WGS 84 UTM zone 9N"},
+                {"id": "32610", "name": "EPSG_32610 - WGS 84 UTM zone 10N"},
+                {"id": "32611", "name": "EPSG_32611 - WGS 84 UTM zone 11N"},
+                {"id": "32612", "name": "EPSG_32612 - WGS 84 UTM zone 12N"}
+            ]
+}
+
+]
