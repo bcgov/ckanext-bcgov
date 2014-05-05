@@ -72,9 +72,10 @@ class GsaSitemapController(BaseController):
         for pkg in query['results']:
             pkg_url = url_for(controller='package', action="read", id = pkg['name'])
             pkg_lastmod = url_for(controller='package', action="read", id = pkg['metadata_modified'])
-                        
+            output += "<url>"            
             output += "<loc>" + config.get('ckan.site_url') + pkg_url + "</loc>"
             output += "<lastmod>" + pkg_lastmod[9:-20] + "</lastmod>"
+            output += "</url>"  
         output += "</urlset>"    
         response.content_type = "text/xml"
         return output        
