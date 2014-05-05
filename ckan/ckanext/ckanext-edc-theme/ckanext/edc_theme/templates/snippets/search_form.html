@@ -1,0 +1,31 @@
+{% ckan_extends %}
+
+{# The blocks are switched around to allow for proper responsive layouts #}
+
+{% block search_sortby %}
+    <div class="row row-fluid">
+        {% if not no_title %}
+            <div class="col-sm-6">
+                <h2>{% snippet 'snippets/search_result_text.html', query=query, count=count, type=type %}</h2>
+            </div>
+        {% endif %}
+{% endblock %}
+
+{% block search_title %}
+    {% if sorting %}
+        <div class="col-sm-6">
+            <div class="form-select control-group control-order-by">
+                <label for="field-order-by">{{ _('Order by') }}</label>
+                <select id="field-order-by" name="sort">
+                {% for label, value in sorting %}
+                    {% if label and value %}
+                    <option value="{{ value }}"{% if sorting_selected == value %} selected="selected"{% endif %}>{{ label }}</option>
+                    {% endif %}
+                {% endfor %}
+                </select>
+                <button class="btn js-hide" type="submit">{{ _('Go') }}</button>
+            </div>
+        </div>
+    {% endif %}
+    </div>
+{% endblock %}

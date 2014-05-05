@@ -1,0 +1,91 @@
+<nav class="wb-menu visible-lg visible-md" role="navigation" data-trgt="wb-pnl">
+  <div class="main-navigation">
+  <div class="wrap">
+    <div class="pnl-start nvbar">
+      <h2>DataBC</h2>
+      <ul class="list-inline menu" role="menubar">
+          <li><a href="http://www.data.gov.bc.ca/dbc/about/index.page">What is DataBC?</a></li>
+          <li class="active"><a href="{{ h.url('../dataset') }}" class="logo" title="{{ g.site_title }} Home">Data Catalogue</a></li>
+          <li><a href="http://www.data.gov.bc.ca/dbc/geographic/index.page">Geographic Services</a></li>
+          <li><a href="http://blog.data.gov.bc.ca/">Blog</a></li>
+          <li><a href="https://extranet.gov.bc.ca/forms/dbc/contact/index.html">Contact</a></li>
+      </ul>
+      <div class="account-container">
+        <div class="container">
+          {% block header_account_container_content %}
+            {% if userobj %}
+              <div class="account avatar authed" data-module="me" data-me="{{ userobj.id }}">
+                <ul class="unstyled">
+                  {% block header_account_logged %}
+                  {% if userobj.sysadmin %}
+                    <li>
+                      <a href="{{ h.url_for(controller='admin', action='index') }}" title="{{ _('Sysadmin settings') }}">
+                        <i class="icon-legal"></i>
+                      </a>
+                    </li>
+                  {% endif %}
+                  <li>
+                    <a href="{{ h.url_for(controller='user', action='read', id=userobj.name) }}" class="image" title="{{ _('View profile') }}">
+                      {{ h.gravatar((userobj.email_hash if c and userobj else ''), size=22) }}
+                      <span class="username">{{ userobj.display_name }}</span>
+                    </a>
+                  </li>
+                  {% set new_activities = h.new_activities() %}
+                  <li class="notifications {% if new_activities > 0 %}notifications-important{% endif %}">
+                    {% set notifications_tooltip = ngettext('Dashboard (%(num)d new item)', 'Dashboard (%(num)d new items)', new_activities) %}
+                    <a href="{{ h.url_for(controller='user', action='dashboard') }}" title="{{ notifications_tooltip }}">
+                      <i class="icon-dashboard"></i>
+                      <span>{{ new_activities }}</span>
+                    </a>
+                  </li>
+                  {# % block header_account_settings_link %}
+                    <li>
+                      <a href="{{ h.url_for(controller='user', action='edit', id=userobj.name) }}" title="{{ _('Edit settings') }}">
+                        <i class="icon-cog"></i>
+                      </a>
+                    </li>
+                  {% endblock % #}
+                  {% block header_account_log_out_link %}
+                    <li>
+                      <a href="{{ h.url_for('/user/_logout') }}" title="{{ _('Log out') }}">
+                        <i class="icon-signout"></i>
+                      </a>
+                    </li>
+                  {% endblock %}
+                  {% endblock %}
+                </ul>
+                </ul>
+              </div>
+            {% else %}
+              <nav class="account not-authed">
+                <ul class="unstyled">
+                  {% block header_account_notlogged %}
+                    {% block header_account_notlogged_login %}
+                    <li>{% link_for _('Log in'), controller='user', action='login' %}</li>
+                    {% endblock %}
+                  {% endblock %}
+                </ul>
+              </nav>
+            {% endif %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <div class="sub-navigation">
+  <div class="wrap">
+    <div id="wb-sec">
+      <h2></h2>
+      <ul>
+          {{ h.build_nav_main(
+              ('search', _('Datasets')),
+              ('organizations_index', _('Organizations')),
+              ('group_index', _('Groups')),
+              ('about', _('About'))
+          ) }}
+      </ul>
+    </div>
+  </div>
+</div>
+</nav>
