@@ -1,0 +1,27 @@
+{% ckan_extends %}
+
+{% block custom_styles %}
+{{ super() }}
+{% resource 'idir/idir.css' %}
+{% endblock %}
+
+{% block primary_content %}
+  <section class="module">
+    <div class="module-content">
+      <h1 class="page-heading">{% block page_heading %}{{ _('Login') }}{% endblock %}</h1>
+
+
+      <fieldset>
+        <legend>
+          {# FIXME: Make this string translatable. #}
+          Use your IDIR username and password
+        </legend>
+        {% block form %}
+          {% snippet "snippets/login_form.html", action=c.login_handler, error_summary=error_summary %}
+        {% endblock %}
+      </fieldset>
+    </div>
+  </section>
+{% endblock %}
+
+{% block secondary_content %}{% endblock %}

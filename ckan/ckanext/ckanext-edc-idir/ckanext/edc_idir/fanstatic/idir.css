@@ -1,0 +1,12 @@
+[role=main] .primary {
+    width: 100%;
+    float: none;
+}
+
+.secondary {
+    display: none;
+}
+
+.wrapper {
+    background: transparent;
+}

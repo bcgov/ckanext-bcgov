@@ -1,0 +1,10 @@
+{% ckan_extends %}
+
+{% block header_account_log_out_link %}
+  <li>
+    <a href="/user/_logout" data-module="idir" data-module-action="logout"
+       title="{{ _('Log out') }}" >
+      <i class="icon-signout"></i>
+    </a>
+  </li>
+{% endblock %}

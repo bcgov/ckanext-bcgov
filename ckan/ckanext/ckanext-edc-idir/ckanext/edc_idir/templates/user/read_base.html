@@ -1,0 +1,7 @@
+{% ckan_extends %}
+
+{% block content_action %}
+  {% if c.is_sysadmin %}
+    {% link_for _('Manage'), controller='user', action='edit', id=user.name, class_='btn', icon='wrench' %}
+  {% endif %}
+{% endblock %}
