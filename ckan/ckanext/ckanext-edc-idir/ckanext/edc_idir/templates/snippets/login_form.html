@@ -13,17 +13,5 @@ Example:
 
 {% set username_error = true if error_summary %}
 {% set password_error = true if error_summary %}
-{% resource 'idir/login.js' %}
-<form action="login" id="login" method="post" class="form-horizontal">
-  {{ form.errors(errors=error_summary) }}
 
-  {{ form.input('login', label=_("IDIR Username"), id='field-login', value="", error=username_error, classes=["control-medium"]) }}
-
-  {{ form.input('password', label=_("IDIR Password"), id='field-password', type="password", value="", error=password_error, classes=["control-medium"]) }}
-
-  {{ form.checkbox('remember', label=_("Remember me"), id='field-remember', checked=true, value="63072000") }}
-
-  <div class="form-actions">
-    <button class="btn btn-primary" type="submit">{{ _('Login') }}</button>
-  </div>
 </form>
