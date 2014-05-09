@@ -61,7 +61,7 @@
                 <ul class="unstyled">
                   {% block header_account_notlogged %}
                     {% block header_account_notlogged_login %}
-                    <li>{% link_for _('Log in'), controller='user', action='login' %}</li>
+                    <li><a href="{{ h.get_eas_login_url() }}">Log in</a></li>
                     {% endblock %}
                   {% endblock %}
                 </ul>
