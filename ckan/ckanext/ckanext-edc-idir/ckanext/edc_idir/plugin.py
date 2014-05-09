@@ -18,7 +18,7 @@ import ckan.lib.base as base
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 import ckan.lib.helpers as helpers
-from ckan.common import _, c, g, request
+from ckan.common import _, c, g, request, response
 
 render = base.render
 
@@ -92,47 +92,40 @@ class IdirPlugin(plugins.SingletonPlugin):
         if 'login' in params:
              try:                
                
-                url = config.get('edc.eas.idir.login.url', False)
-                print url;
-                username = 'idir\\' + params['login']
-                password = params['password']
-                p = urllib2.HTTPPasswordMgrWithDefaultRealm()
-
-                p.add_password(None, url, username, password)
-
-                handler = urllib2.HTTPBasicAuthHandler(p)
-                opener = urllib2.build_opener(handler)
-                urllib2.install_opener(opener)
-
-
-                response = urllib2.urlopen(url)
-
-
-                data = json.load(response)
-                print data
-                if data['success'] == 'true':
-                    #user = get_user(params['login'])
-                    user = toolkit.get_action('user_show')(data_dict={'id': params['login']})
-                    #c.user = toolkit.get_action('user_show')(data_dict={'id': params['login']})
-                    #toolkit.c.user = user
+               
+                #check for edc cookie
+                
+                edc_cookie = toolkit.request.cookies.get( 'edc_auth' )
+                
+                if edc_cookie:
+                    print edc_cookie
+                
+                    #username in cookie must match login name
+                    universalId,guid = edc_cookie.split('_')
+                
+                    print universalId
                 else:
-                    raise IdirVerificationError(data)
+                    helpers.redirect_to(controller='user', action='login', error='You are not authorized to login')     
+                
+                if universalId == params['login']:
+					user = toolkit.get_action('user_show')(data_dict={'id': params['login']})
+					#get username
 
-                # Store the name of the verified logged-in user in the Beaker
-                # sesssion store.
-                pylons.session['ckanext-idir-user'] = user['name']
-                print user['name']
-                #pylons.session['ckanext-persona-email'] = user['email']
-                pylons.session.save()
-                # Try to get the item that login() placed in the session.
-                user = pylons.session.get('ckanext-idir-user')
-                if user:
-                    # We've found a logged-in user. Set c.user to let CKAN know.
-                    toolkit.c.user = user
-                    helpers.redirect_to(controller='user', action='dashboard')   
-                else:
-					
-					helpers.redirect_to(controller='user', action='login', error='You are not authorized to login') 
+					# Store the name of the verified logged-in user in the Beaker
+					# sesssion store.
+					pylons.session['ckanext-idir-user'] = user['name']
+					print user['name']
+					#pylons.session['ckanext-persona-email'] = user['email']
+					pylons.session.save()
+					# Try to get the item that login() placed in the session.
+					user = pylons.session.get('ckanext-idir-user')
+					if user:
+						# We've found a logged-in user. Set c.user to let CKAN know.
+						toolkit.c.user = user
+						helpers.redirect_to(controller='user', action='dashboard')   
+					else:
+				
+						helpers.redirect_to(controller='user', action='login', error='You are not authorized to login') 
 
              except urllib2.HTTPError as e:
                  print e.code
@@ -175,6 +168,10 @@ class IdirPlugin(plugins.SingletonPlugin):
     def logout(self):
         '''Handle a logout.'''
 
+        toolkit.request.cookies.pop( 'edc_auth', None )
+        response.delete_cookie('edc_auth', path='/', domain=None)
+        response.delete_cookie('edc_auth2', path='/', domain=None)
+        print 'deleted edc_auth cookie'
         # Delete the session item, so that identify() will no longer find it.
         self._delete_session_items()
 
