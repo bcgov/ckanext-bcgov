@@ -53,7 +53,7 @@ body {
 }
 
 #services-header ul li a.forms {
-  background-image: url(/assets/gov/images/icon_services.png);
+  background-image: url(/pub/edc/assets/gov/images/icon_services.png);
   background-repeat: no-repeat;
   padding-left: 27px;
 }
@@ -105,7 +105,7 @@ body {
   width: 204px;
   height: 70px;
   margin: 17px 0;
-  background: url(/assets/gov/images/bc_logo_blue.png) no-repeat;
+  background: url(/pub/edc/assets/gov/images/bc_logo_blue.png) no-repeat;
 }
 
 #header-banner h1 {
@@ -157,7 +157,7 @@ body {
   width: 120px;
   padding: 5px 0;
   text-align: center;
-  background: url(/assets/gov/images/subtheme_nav_spacer.png) no-repeat 0 0;
+  background: url(/pub/edc/assets/gov/images/subtheme_nav_spacer.png) no-repeat 0 0;
   height: 46px;
 }
 
