@@ -1,16 +1,32 @@
 '''plugin.py
 
 '''
+import pylons.config as config
+
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 
 
+def get_eas_login_url():
+    '''Return the value of the eas login url config setting.
+
+    
+
+    '''
+    value = config.get('edc.eas_url')
+    
+    return value
+    
+    
 class EDCThemePlugin(plugins.SingletonPlugin):
     ''' Theme for EDC
 
     '''
     # Declare that this class implements IConfigurer.
     plugins.implements(plugins.IConfigurer)
+    
+    # Declare that this plugin will implement ITemplateHelpers.
+    plugins.implements(plugins.ITemplateHelpers)
 
     def update_config(self, config):
 
@@ -26,3 +42,13 @@ class EDCThemePlugin(plugins.SingletonPlugin):
         toolkit.add_public_directory(config, 'public')
 
     toolkit.add_resource('fanstatic', 'edc_theme')
+
+    def get_helpers(self):
+        '''Register the most_popular_groups() function above as a template
+        helper function.
+
+        '''
+        # Template helper function names should begin with the name of the
+        # extension they belong to, to avoid clashing with functions from
+        # other extensions.
+        return {'get_eas_login_url': get_eas_login_url}
