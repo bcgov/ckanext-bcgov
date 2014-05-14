@@ -44,7 +44,7 @@ class GsaSitemapController(BaseController):
                 
         for pkg in query['results']:
             pkg_url = url_for(controller='package', action="read", id = pkg['name'])            
-            output += "<a href=\""+ config.get('ckan.site_url') + pkg_url + "\">" + pkg['name'] + "</a><br>"
+            output += "<a href=\""+ config.get('ckan.site_url') + "/dataset/" + pkg['name'] + "\">" + pkg['name'] + "</a><br>"
         output += "</body></html>"    
         return output
         
@@ -73,7 +73,7 @@ class GsaSitemapController(BaseController):
             pkg_url = url_for(controller='package', action="read", id = pkg['name'])
             pkg_lastmod = url_for(controller='package', action="read", id = pkg['metadata_modified'])
             output += "<url>"            
-            output += "<loc>" + config.get('ckan.site_url') + pkg_url + "</loc>"
+            output += "<loc>" + config.get('ckan.site_url') +  "/dataset/" + pkg['name'] + "</loc>"
             output += "<lastmod>" + pkg_lastmod[9:-20] + "</lastmod>"
             output += "</url>"  
         output += "</urlset>"    
