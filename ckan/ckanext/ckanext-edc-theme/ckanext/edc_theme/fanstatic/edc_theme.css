@@ -1,3 +1,20 @@
+/* Fonts */
+
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lato Regular'), local('Lato-Regular'), url(http://themes.googleusercontent.com/static/fonts/lato/v7/qIIYRU-oROkIk8vfvxw6QvesZW2xOQ-xsNqO47m55DA.woff) format('woff');
+}
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Lato Bold'), local('Lato-Bold'), url(http://themes.googleusercontent.com/static/fonts/lato/v7/qdgUG4U09HnJwhYI-uK18wLUuEpTyoUstqEm5AMlJo4.woff) format('woff');
+}
+
+/* End Fonts */
+
 body {
   font-size: 13px;
   background-color: #fff;
@@ -53,7 +70,7 @@ body {
 }
 
 #services-header ul li a.forms {
-  background-image: url(/pub/edc/assets/gov/images/icon_services.png);
+  background-image: url(/assets/gov/images/icon_services.png);
   background-repeat: no-repeat;
   padding-left: 27px;
 }
@@ -105,7 +122,7 @@ body {
   width: 204px;
   height: 70px;
   margin: 17px 0;
-  background: url(/pub/edc/assets/gov/images/bc_logo_blue.png) no-repeat;
+  background: url(/assets/gov/images/bc_logo_blue.png) no-repeat;
 }
 
 #header-banner h1 {
@@ -157,7 +174,7 @@ body {
   width: 120px;
   padding: 5px 0;
   text-align: center;
-  background: url(/pub/edc/assets/gov/images/subtheme_nav_spacer.png) no-repeat 0 0;
+  background: url(/assets/gov/images/subtheme_nav_spacer.png) no-repeat 0 0;
   height: 46px;
 }
 
@@ -283,7 +300,29 @@ body {
   color: #151515;
 }
 
+.share-this-record .dropdown-menu {
+  border-top-color: transparent;
+  margin-top: -1px;
+  width: 163px;
+}
+
 /* Content */
+
+#content .dataset-view.wrapper {
+  background: transparent;
+}
+
+#content .dataset-view .primary,
+#content .module-resource {
+  font-family: 'Century Gothic';
+  width: 100%;
+  float: none;
+}
+
+#content .dataset-view .primary h1 {
+  margin: 0;
+  font-size: 1.75em;
+}
 
 .btn.btn-primary {
   background-color: #394559;
@@ -345,10 +384,212 @@ body {
   color: #394559;
 }
 
+.search-form .search-input.search-giant input {
+  border: 2px solid #556072;
+}
+
 .modal {
   overflow: hidden;
   bottom: inherit;
   left: 50%;
+}
+
+#dataset-markers {
+  list-style-type: none;
+  margin: 0 -25px 0 0;
+  padding: 0;
+  float: right;
+}
+
+#dataset-markers .marker {
+  width: 130px;
+  line-height: 22px;
+  margin: 20px 0;
+  background: #888;
+}
+
+#dataset-markers .marker:after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 10px 10px 0;
+  border-color: transparent black transparent transparent;
+  float: right;
+}
+
+#dataset-markers .marker:first-child {
+  margin-top: 0;
+}
+
+#dataset-markers .marker.geospatial {
+  background: #27ae60;
+}
+
+#dataset-markers .marker.geospatial:after {
+  border-right-color: #1e8449;
+}
+
+#dataset-markers .marker.nongeospatial,
+#dataset-markers .marker.education {
+  background: #2980b9;
+}
+
+#dataset-markers .marker.nongeospatial:after,
+#dataset-markers .marker.education:after {
+  border-right-color: #2472a4;
+}
+
+#dataset-markers .marker.application {
+  background: #9b59b6;
+}
+
+#dataset-markers .marker.application:after {
+  border-right-color: #8e44ad;
+}
+
+#dataset-markers .marker.webservice,
+#dataset-markers .marker.natural-resources {
+  background: #e67e22;
+}
+
+#dataset-markers .marker.webservice:after,
+#dataset-markers .marker.natural-resources:after {
+  border-right-color: #bf6515;
+}
+
+#dataset-markers .marker.economy {
+  background: #1abc9c;
+}
+
+#dataset-markers .marker.economy:after {
+  border-right-color: #17a689;
+}
+
+#dataset-markers .marker.finance {
+  background: #f1c40f;
+}
+
+#dataset-markers .marker.finance:after {
+  border-right-color: #dab10d;
+}
+
+#dataset-markers .marker.social-services {
+  background: #b1455a;
+}
+
+#dataset-markers .marker.social-services:after {
+  border-right-color: #8f3748;
+}
+
+#dataset-markers .marker.health-and-safety {
+  background: #e74c3c;
+}
+
+#dataset-markers .marker.health-and-safety:after {
+  border-right-color: #cd3121;
+}
+
+#dataset-markers .marker.justice {
+  background: #2c3e50;
+}
+
+#dataset-markers .marker.justice:after {
+  border-right-color: #233140;
+}
+
+#dataset-markers .marker.multiculturalism {
+  background: #95a5a6;
+}
+
+#dataset-markers .marker.multiculturalism:after {
+  border-right-color: #79898a;
+}
+
+#dataset-markers .marker.service {
+  background: #9b59b6;
+}
+
+#dataset-markers .marker.service:after {
+  border-right-color: #8f4bab;
+}
+
+#dataset-markers .marker.service {
+  background: #7f8c8d;
+}
+
+#dataset-markers .marker.service:after {
+  border-right-color: #667273;
+}
+
+#dataset-markers .marker.dataset-iso {
+  background: #34495e;
+}
+
+#dataset-markers .marker.dataset-iso:after {
+  border-right-color: #22303d;
+}
+
+
+#dataset-markers .marker a {
+  display: block;
+  padding: 5px 8px;
+  color: #fff;
+  font-size: 16px;
+  font-family: 'Lato';
+}
+
+.notes {
+  margin: 10px 0;
+}
+
+.purpose {
+  display: block;
+}
+
+.purpose.off {
+  display: none;
+}
+
+.more-info-links {
+  list-style-type: none;
+  margin: 0 0 10px 0;
+  padding: 0;
+}
+
+.more-info-links li {
+  line-height: 18px;
+}
+
+.additional-information-toggle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #000;
+  background: #eee;
+  display: block;
+  padding: 0 5px;
+  text-decoration: none;
+}
+
+.additional-information-toggle:hover {
+  text-decoration: none;
+}
+
+#additional-information {
+  display: block;
+  padding: 0 20px;
+}
+
+#additional-information.off {
+  display: none;
+}
+
+section.tags {
+  width: 88%;
+}
+
+#purpose .purpose.on {
+  margin-bottom: 10px;
 }
 
 /* Footer */
@@ -582,6 +823,14 @@ label:after {
 
 .navbar.navbar-default {
   border: 0;
+}
+
+.nav-tabs .open .dropdown-toggle, .nav-pills .open .dropdown-toggle, .nav > li.dropdown.open.active > a:hover, .nav > li.dropdown.open.active > a:focus,
+.nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
+  background: #fff;
+  color: inherit;
+  border-color: #ccc;
+  border-bottom-color: #fff;
 }
 
 /* Responsive */

@@ -3,7 +3,8 @@
 {% block dashboard_activity_stream_context %}{% endblock %}
 
 {% block page_primary_action %}
-  {% if h.check_access('package_create') %}
+	{% set user_orgs = h.get_user_orgs(c.userobj.id) or null %}
+	{% if h.check_access('package_create') and user_orgs %}
     {% link_for _('Add Dataset'), controller='ckanext.edc_schema.controllers.package:EDCPackageController', action='typeSelect', class_="btn btn-primary", icon="plus-sign-alt" %}
   {% endif %}
 {% endblock %}
@@ -43,10 +44,14 @@
 
 {% block user_facets %}
   {% for facet in c.facet_titles %}
-  	{% if facet == 'res_format' %}
+{#  	
+	{% if facet == 'res_format' %}
   		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_format_label, name=facet, extras={'id':c.userobj.id}) }}
-  	{% else %}
+  	{% else %} 
+  #}
     	{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, extras={'id':c.userobj.id}) }}
-    {% endif %}
+{#    
+	{% endif %} 
+#}
   {% endfor %}
 {% endblock %}

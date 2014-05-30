@@ -23,7 +23,7 @@
 			{% set role_error = errors.contacts[loop.index0].role %}
 			{% set contact_error = email_error or name_error or org_error or rol_error %}
 		{% endif %}
-
+		
 		<div id="contact_{{ loop.index0 }}" class="contact control-group">
 			<div class="contacts row-fluid">
 				<div class="span6">
@@ -54,12 +54,12 @@
 						</div>
 				   	</div>
 				   	<div class="control-group">
-						{% set is_private = (contact.private and contact.private != _('Private')) %}
+						{% set is_display = (contact.private and contact.private == _('Display')) %}
 						<label class="control-label"></label>
 						<div class="controls">
 							<div class="checkbox-inline">
-								<input id="field-contacts-{{ loop.index0 }}-private" type="checkbox" name="contacts__{{ loop.index0 }}__private" value="Private"
-									   {% if is_private %} checked="checked" {% endif %}>
+								<input id="field-contacts-{{ loop.index0 }}-private" type="checkbox" name="contacts__{{ loop.index0 }}__private" class="private-contact" value="{{ contact.private }}"
+									   {% if  is_display %} checked="checked" {% endif %}/>
 								<label for="field-contacts-{{ loop.index0 }}-private">Contact Displayed</label>
 							</div>
 						</div>
@@ -69,7 +69,7 @@
 					<div class="control-group">
 				 		<label for="field-contacts-{{ loop.index0 }}-organization" class="control-label"><span class="control-required">*</span> Organization</label>
 				 		<div class="controls{{ " error" if org_error }}">
-				 			<select id="field-contacts-{{ loop.index0 }}-organization" name="contacts__{{ loop.index0 }}__organization" data-module="autocomplete" placeholder="Select an organization">s
+				 			<select id="field-contacts-{{ loop.index0 }}-organization" name="contacts__{{ loop.index0 }}__organization" data-module="autocomplete" placeholder="Select an organization" data-group="org">
 							 	<option value="">Select an organization</option>
 							 	{% for organization in organizations_available %}
 							 		{% set selected_org = contact.organization and organization.id == contact.organization %}
@@ -133,7 +133,7 @@
 						<label class="control-label"></label>
 						<div class="controls">
 							<div class="checkbox-inline">
-								<input id="field-contacts-0-private" type="checkbox" name="contacts__0__private" value="Private" checked="checked">
+								<input id="field-contacts-0-private" type="checkbox" name="contacts__0__private" class="private-contact" value="Display" checked="checked"/>
 								<label for="field-contacts-0-private">Contact Displayed</label>
 							</div>
 						</div>
@@ -143,10 +143,10 @@
 					<div class="control-group">
 						<label for="field-contacts-0-organization" class="control-label"><span class="control-required">*</span> Organization</label>
 						<div class="controls">
-						 	<select id="field-contacts-0-organization" name="contacts__0__organization" data-module="autocomplete" class="test-org" data-placeholder="Select an organization">
+						 	<select id="field-contacts-0-organization" name="contacts__0__organization" data-module="autocomplete" class="test-org" data-placeholder="Select an organization" data-group="org">
 						 		<option value="">Select an organization</option>
 						 		{% for organization in organizations_available %}
-									<option value="{{ organization.id }}"> {{ organization.name }}
+									<option value="{{ organization.id }}"> {{ organization.title }}
 									</option>
 						 		{% endfor %}
 						 	</select>
@@ -187,7 +187,7 @@
 		var orgs = [];
 		{% for org in organizations_available %}
 			orgs.push({ id: "{{ org.id }}",
-						name: "{{ org.name }}"});
+						name: "{{ org.title }}"});
 		{% endfor %}
 	</script>
 

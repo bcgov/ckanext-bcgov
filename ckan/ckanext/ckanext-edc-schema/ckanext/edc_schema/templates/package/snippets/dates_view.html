@@ -9,9 +9,14 @@
 
 {# For each date in the list of dates, show the details #}
 {% for date in dates %}
-	{% set date_type = h.edc_tag_name(_("dataset_date_type"), date.type) %}
-	<tr>
-		<td><strong> {{ date_type }} </strong></td><td> {{ date.date }} </td>
-	</tr>
+	{% if date.type != '002' %}
+		{% set date_type = h.edc_tag_name(_("dataset_date_type"), date.type) %}
+		<tr>
+			<td><strong> {{ date_type }} </strong></td><td> {{ date.date }} </td>
+		</tr>
+	{% endif %}
 {% endfor %}
 
+<tr>
+	<td><strong> Modified </strong></td><td> {{ last_modified }} </td>
+</tr>

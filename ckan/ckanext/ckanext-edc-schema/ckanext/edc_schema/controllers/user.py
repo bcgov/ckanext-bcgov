@@ -37,13 +37,11 @@ class EDCUserController(UserController):
 #         data_dict = {'user_obj': c.userobj}
 #        
         user_id = c.userobj.id
-        print 'user_id :' , user_id
         #Get the list of organizations that this user is the admin
-        user_orgs = ['"' + org + '"' for org in get_user_orgs(user_id, 'admin')]
+        user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
         fq = '+owner_org:(' + ' OR '.join(user_orgs) + ')'
         fq += ' +edc_state:("DRAFT" OR "PENDING PUBLISH" OR "REJECTED")'
         self._user_datasets('dashboard_unpublished', c.userobj.id, fq)
-        print fq         
         return render('user/dashboard_unpublished.html')
     
     def dashboard_datasets(self):
@@ -52,9 +50,16 @@ class EDCUserController(UserController):
         return render('user/dashboard_datasets.html')
     
     def read(self, id=None):
-         fq = '+author:("%s")' %(c.userobj.id)
-         self._user_datasets('read',id, fq)
-         return render('user/read.html')
+        user_id = c.userobj.id
+        if c.userobj.sysadmin == True:
+            fq = ''
+        else :
+            fq = 'author:("%s")' %(user_id) 
+            user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
+            if len(user_orgs) > 0:
+                fq += ' OR owner_org:(' + ' OR '.join(user_orgs) + ')'
+        self._user_datasets('read',id, fq)
+        return render('user/read.html')
  
     def _user_datasets(self, action, id=None, filter_query=None):
         from ckan.lib.search import SearchError
@@ -67,7 +72,7 @@ class EDCUserController(UserController):
 
         # unicode format (decoded from utf8)
         q = c.q = request.params.get('q', u'')
-        q += ' author:"%s"' %c.userobj.id
+#        q += ' author:"%s"' %c.userobj.id
         
         context['return_query'] = True
         

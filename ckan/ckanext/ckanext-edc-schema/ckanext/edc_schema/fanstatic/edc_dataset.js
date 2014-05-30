@@ -106,7 +106,7 @@ function add_contact(roles, orgs) {
 								<label class="control-label"></label> \
 								<div class="controls"> \
 									<div class="checkbox-inline"> \
-										<input id="field-contacts-' + numberOfContacts + '-private" type="checkbox" name="contacts__' + numberOfContacts + '__private" value="Private" checked="checked"> \
+										<input id="field-contacts-' + numberOfContacts + '-private" type="checkbox" name="contacts__' + numberOfContacts + '__private" class="private-contact" value="Display" checked="checked"/> \
 										<label for="field-contacts-' + numberOfContacts + '-private">Contact Displayed</label> \
 									</div> \
 								</div> \
@@ -116,8 +116,8 @@ function add_contact(roles, orgs) {
 							<div class="control-group"> \
 								<label for="field-contacts-' + numberOfContacts + '-organization" class="control-label"><span class="control-required">*</span> Organization</label> \
 								<div class="controls"> \
-								 	<select id="field-contacts-' + numberOfContacts + '-organization" name="contacts__' + numberOfContacts + '__organization" data-module="autocomplete"> \
-								 	<option value="" selected="selected">Select an organization</option>';
+								 	<select id="field-contacts-' + numberOfContacts + '-organization" name="contacts__' + numberOfContacts + '__organization" data-module="autocomplete" data-group="org"> \
+								 	<option value="" selected="selected" >Select an organization</option>';
 
 	var selected_org_id = $("#field-org").val()
 	for (var i = 0; i < orgs.length; i++) {
@@ -308,8 +308,9 @@ function select_branch(org_branches) {
 									placeholder : "Select a branch",
 									width : "220px"
 								});
-
-
+	
+	$('[data-group="org"]').val(org_id)
+	$('[data-group="org"]').select2();
 }
 
 
@@ -318,7 +319,6 @@ $("#form-edc_dataset").submit(function( event ) {
 	//Add the select organization id as the owner of the dataset.
 	$("#field-owner_org").val(org_id);
 });
-
 
 
 var previous_state;
@@ -358,6 +358,18 @@ $("#field-edc_state").change(function() {
 
 });
 
+
+$('.private-contact').change(function(){
+
+    if($(this).prop('checked')){
+          $(this).val('Display');
+     }else{
+          $(this).val('Private');
+     }
+    
+    alert($(this).val());
+    
+});
 /*-------------------------------------------------------------------*
  * Initialization on loading dataset creation/edit page.             *
  *-------------------------------------------------------------------*/

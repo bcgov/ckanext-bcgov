@@ -1,7 +1,20 @@
 {% ckan_extends %}
 
+{% block wrapper_class %}{{ super() }} dataset-view{% endblock %}
+
+{% block content_primary_nav %}
+  {{ super() }}
+  <li class="dropdown share-this-record">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-share-alt"></i> Share this Record</a>
+    {% snippet "snippets/social.html" %}
+  </li>
+  <li><a href="#"><i class="icon-rss"></i> RSS</a></li>
+{% endblock %}
+
 {% block content_action %}
   {% if h.check_access('package_update', {'id':pkg.id }) %}
-    {% link_for _('Manage'), controller='package', action='edit', id=pkg.name, class_='btn visible-lg visible-md', icon='wrench' %}
+    {% link_for _(''), controller='package', action='edit', id=pkg.name, class_='btn visible-lg visible-md', icon='wrench' %}
   {% endif %}
 {% endblock %}
+
+{% block secondary_content %}{% endblock %}

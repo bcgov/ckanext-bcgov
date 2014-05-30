@@ -253,3 +253,6 @@ position: relative;
 	display : none;
 }
 
+#image_box {
+	text-align : center;
+}

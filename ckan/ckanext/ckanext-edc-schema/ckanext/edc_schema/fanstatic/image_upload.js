@@ -1,12 +1,3 @@
-$("#uploadImageLink").click(function() {
-	 $("#imageUploadBox").show();
-});
-
-$("#cancleUpload").click(function() {
-	 $("#new_image_filename").val("");
-	 $("#imageUploadBox").hide();
-});
-
 var file;
 
 $("#imageFile").change(function() {
@@ -34,11 +25,55 @@ $("#uploadButton").click(function() {
         					processData: false,
         					contentType: false,
         					success : function (data) {
-        						$("#imageUploadBox").hide();
+        						$("#removeImageBtn").removeAttr('disabled');
         						$("#uploaded_image").val(data)
         						$('#dataset_img').attr('src', data).load(function(){
         						    this.width;  
         						});
         					}
     				});
+});
+
+
+$("#removeImageBtn").click(function() {
+	
+	
+	$("#uploaded_image").val('');
+	$("#new_image_filename").val('');
+	$('#dataset_img').attr('src', '');
+	$("#removeImageBtn").attr('disabled', 'disabled');	
+/*	
+	var data = new FormData();
+	data.append("filename", $("#uploaded_image").val());
+	data.append("id", $("#edc_pkg_id").val());
+
+	var requesst = $.ajax({
+							url: "/dataset/remove_file",
+        					type: 'POST',
+        					data: data,
+        					dataType: 'text',
+        					processData: false,
+        					contentType: false,
+        					success : function (data) {
+        						$("#removeImageBtn").attr('disabled', 'disabled');
+        						$("#uploaded_image").val('');
+        						$("#new_image_filename").val('');
+        						$('#dataset_img').attr('src', '');
+        					}
+    				});
+    				
+*/
+});
+
+
+$(function() {
+	var $dataset_image = $("#dataset_img");
+	var image_src = $dataset_image.attr("src");
+	
+	if (image_src) {
+		$("#removeImageBtn").removeAttr('disabled');
+	}
+	else {
+		$("#removeImageBtn").attr('disabled', 'disabled');	
+	}
 });

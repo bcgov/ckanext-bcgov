@@ -1,6 +1,7 @@
 
 {% import "macros/form.html" as form %}
-{% set organizations = h.edc_orgs() %}
+{# {% set organizations = h.edc_orgs() %} #}
+{% set organizations = h.get_user_orgs(user.id) %}
 
 
 {% set current_org = data.org %}
@@ -11,7 +12,7 @@
 <script type="text/javascript">
 	var org_branches = [];
 	var i = 0;
-	{% for org in h.edc_orgs() %}
+	{% for org in h.get_user_orgs(user.id) %}
 		org_branches.push({ id : "{{ org.id }}",
 							branches : []});
 
@@ -21,6 +22,7 @@
 		i++;
 	{% endfor %}
 </script>
+
 
 <div class="required control-group control-full {{ " error" if org_error }}">
 	<label for="field-org" class="control-label"><span class="control-required">*</span> Organization</label>

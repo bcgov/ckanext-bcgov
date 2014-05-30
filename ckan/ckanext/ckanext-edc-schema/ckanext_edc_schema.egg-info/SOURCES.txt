@@ -3,8 +3,10 @@ ckanext/__init__.py
 ckanext/edc_schema/__init__.py
 ckanext/edc_schema/plugin.py
 ckanext/edc_schema/commands/__init__.py
+ckanext/edc_schema/commands/base.py
+ckanext/edc_schema/commands/create_orgs.py
+ckanext/edc_schema/commands/create_vocabs.py
 ckanext/edc_schema/commands/data_import.py
-ckanext/edc_schema/commands/metadata.py
 ckanext/edc_schema/commands/vocab.py
 ckanext/edc_schema/controllers/__init__.py
 ckanext/edc_schema/controllers/api.py
@@ -19,6 +21,7 @@ ckanext/edc_schema/forms/edc_datasets.py
 ckanext/edc_schema/forms/validators.py
 ckanext/edc_schema/util/__init__.py
 ckanext/edc_schema/util/file_uploader.py
+ckanext/edc_schema/util/helpers.py
 ckanext/edc_schema/util/util.py
 ckanext_edc_schema.egg-info/PKG-INFO
 ckanext_edc_schema.egg-info/SOURCES.txt

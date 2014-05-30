@@ -1,14 +1,69 @@
 {% ckan_extends %}
 
-{% block data_preview %}
-        {{ h.edc_preview(c.resource, c.package) }}
+{% block pre_primary %}
+  {% block resource %}
+    <section class="module module-resource">
+      <div class="module-content">
+        <div class="actions">
+          {% block resource_actions %}
+          <ul>
+            {% block resource_actions_inner %}
+            {% if h.check_access('package_update', {'id':pkg.id }) %}
+              <li>{% link_for _('Manage'), controller='package', action='resource_edit', id=pkg.name, resource_id=res.id, class_='btn', icon='wrench' %}</li>
+            {% endif %}
+            {% if res.url %}
+              <li>
+                <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}">
+                  {% if res.resource_type in ('listing', 'service') %}
+                    <i class="icon-eye-open"></i> {{ _('View') }}
+                  {% elif  res.resource_type == 'api' %}
+                    <i class="icon-key"></i> {{ _('API Endpoint') }}
+                  {% elif not res.can_be_previewed %}
+                    <i class="icon-external-link"></i> {{ _('Go to resource') }}
+                  {% else %}
+                    <i class="icon-download"></i> {{ _('Download') }}
+                  {% endif %}
+                </a>
+              </li>
+            {% endif %}
+            {% if 'datastore' in g.plugins %}
+              <li>{% snippet 'package/snippets/data_api_button.html', resource=res, datastore_root_url=c.datastore_api %}</li>
+            {% endif %}
+            {% endblock %}
+            <li><a href="#" class="btn btn-primary"><i class="icon-info"></i> {{ _('Details') }}</a></li>
+          </ul>
+          {% endblock %}
+        </div>
+        {% block resource_content %}
+          {% block resource_read_title %}<h1 class="page-heading">{{ h.resource_display_name(res) | truncate(50) }}</h1>{% endblock %}
+          {% block resource_read_url %}
+            {% if res.url %}
+              <p class="muted ellipsis">{{ _('URL:') }} <a href="{{ res.url }}" title="{{ res.url }}">{{ res.url }}</a></p>
+            {% endif %}
+          {% endblock %}
+          <div class="prose notes" property="rdfs:label">
+            {% if res.description %}
+              {{ h.render_markdown(res.description) }}
+            {% endif %}
+            {% if not res.description and c.package.notes %}
+              <h3>{{ _('From the dataset abstract') }}</h3>
+              <blockquote>{{ h.markdown_extract(c.package.get('notes')) }}</blockquote>
+              <p>{% trans dataset=c.package.title, url=h.url_for(controller='package', action='read', id=c.package['name']) %}Source: <a href="{{ url }}">{{ dataset }}</a>{% endtrans %}
+            {% endif %}
+          {% endblock %}
+        </div>
+      </div>
+      {% block data_preview %}
+        {{ h.resource_preview(c.resource, c.package) }}
+      {% endblock %}
+    </section>
+  {% endblock %}
 {% endblock %}
-
 
 {% block primary_content %}
   {% block resource_additional_information %}
     {% if res %}
-      <section class="module">
+      <section class="module module-resource">
         <div class="module-content">
           <h2>{{ _('Supplemental Information')}}</h2>
           <p>{{ res.supplemental_info }}</p>
@@ -54,7 +109,7 @@
               {% if res.resource_storage_location %}
                 <tr class="toggle-more">
                   <th scope="row">{{ _('Resource Storage Location') }}</th>
-                  <td>{{ res.resource_storage_location }}</td>
+                  <td>{{ h.edc_tag_name('resource_storage_location', res.resource_storage_location) }}</td>
                 </tr>
               {% endif %}
               </tr>
@@ -64,4 +119,12 @@
       </section>
     {% endif %}
   {% endblock %}
+{% endblock %}
+
+{% block secondary_content %}
+
+  {% block resources_list %}
+    {% snippet "package/snippets/resources.html", pkg=pkg, active=res.id %}
+  {% endblock %}
+
 {% endblock %}

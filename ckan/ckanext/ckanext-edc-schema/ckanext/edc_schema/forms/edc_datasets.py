@@ -81,8 +81,7 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'link_to_imap' : [ignore_missing, url_validator, convert_to_extras ],
                         'data_quality': [ignore_missing, convert_to_extras ],
                         'lineage_statement': [ignore_missing, convert_to_extras ],
-#                        '__after' : [rename('keywords', 'tags'),
-#                                     rename('description', 'notes')]
+                        'spatial' : [ignore_missing, convert_to_extras]
                       })
         schema['resources'].update({
                                     'projection_name' : [not_empty, cnvrt_to_ext],
@@ -123,6 +122,7 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'link_to_imap' : [ convert_from_extras,  ignore_missing ],
                         'data_quality': [ convert_from_extras, ignore_missing ],
                         'lineage_statement': [ convert_from_extras, ignore_missing ],
+                        'spatial' : [convert_from_extras, ignore_missing]
                         })
         schema['resources'].update({
                                     'projection_name' : [cnvrt_from_ext, not_empty ],

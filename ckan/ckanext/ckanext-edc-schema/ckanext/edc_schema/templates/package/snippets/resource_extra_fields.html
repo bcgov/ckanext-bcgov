@@ -68,7 +68,7 @@
       <select id="field-format" name="format" data-module="autocomplete">
         <option value ="" {% if not selected_format %} selected="selected" {% endif %}>Format not specified</option>
             {% for resource_format in resource_format_list  %}
-              {% set selected_format = (current_format and current_format == resource_format.id) %}
+              {% set selected_format = (current_format and current_format == resource_format.name) %}
               <option value="{{ resource_format.id }}"
                 {% if selected_format %} selected="selected" {% endif %}>
                     {{ resource_format.name }}

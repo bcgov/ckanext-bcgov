@@ -9,15 +9,15 @@
 #}
 
 <h2 class="view-group">Contact Information</h2>
-<table class="table dataset_view">
 {# For each contact in the list of contatcs, show the contact information if it is not a private contact #}
 {% for contact in contacts %}
 	{% set is_private = (contact.private and contact.private != _('Private')) %}
 	{% if not is_private %}
-		{% set org = h.edc_org_name(contact.organization) %}
+		{% set org = h.edc_org_title(contact.organization) %}
 		{% set role = h.edc_tag_name(_("contact_roles"), contact.role) %}
+		<table class="table dataset_view">
 			<tr>
-				<td><strong>Name</strong></td><td>{{ contact.name }} </td>
+				<td><strong>Name</strong></td><td>{{ contact.name }} ({{ role }})</td>
 			</tr>
 			<tr>
 				<td><strong>Email</strong></td><td><a href="mailto:{{ contact.email }}" title="Send an email to {{ contact.name }}">{{ contact.email }}<a/></td>
@@ -25,11 +25,8 @@
 			<tr>
 				<td><strong>Organization</strong></td><td>{{ org }}</td>
 			</tr>
-			<tr>
-				<td><strong>Role</strong></td><td>{{ role }}</td>
-			</tr>
+		</table>
 	{% endif %}
 
 {% endfor %}
-</table>
 

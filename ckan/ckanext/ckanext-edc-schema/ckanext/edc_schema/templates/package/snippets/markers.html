@@ -1,0 +1,16 @@
+{% set dataset_title = h.edc_tag_name('dataset_title', type) %}
+{% set iso_topic_title = h.edc_tag_name('iso_topic_category', iso_topic_cat) %}
+{% set org_title = h.edc_org_title(org) %}
+{% set branch_title = h.edc_org_title(branch) %}
+{% set sectors = h.get_suborg_sectors(org_title, branch_title) %}
+<ul id="dataset-markers">
+    <li class="marker dataset-type {{ type }}"><a href="{{ h.url_for(controller='package', action='search', q='type:' + type) }}">{{ dataset_title }}</a></li>
+    {% if sectors %}
+        {% for sector in sectors %}
+            <li class="marker dataset-sector {{ sector|lower|replace(' ', '-')|replace('.', '-') }}"><a href="#">{{ sector }}</a></li>
+        {% endfor %}
+    {% endif %}
+    {% if iso_topic_title %}
+    <li class="marker dataset-iso"><a href="#">{{ iso_topic_title }}</a></li>
+    {% endif %}
+</ul>

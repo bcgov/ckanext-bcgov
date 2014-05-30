@@ -43,7 +43,7 @@ def license_not_empty(key, data, errors, content):
 
     value = data.get(key)
 
-    print value
+#    print value
 
     if(value == '0'):
         errors[key].append(_('License is not specified'))
@@ -126,7 +126,8 @@ def check_resource_status(key, data, errors, context):
 
     #Check if the field is empty when the value of resource_status is historicalArchive
     if (resource_status and resource_status == _('historicalArchive') and (not data[key])):
-        errors[key].append(_('Missing value. This field cannot be empty.'))
+        if (key[0] == _('retention_expiry_date') or key[0] == _('source_data_path')):
+            errors[key].append(_('Missing value. This field cannot be empty.'))
     else:
         ignore_missing(key, data, errors, context)
 

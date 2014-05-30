@@ -27,8 +27,9 @@ from wsgiref.handlers import format_date_time
 
 from ckanext.edc_schema.util.util import (get_user_orgs)
 
+import ckan.lib.render as lib_render
 
-#from paste.deploy.converters import asbool
+from ckanext.edc_schema.util.file_uploader import (FileUploader, DEFAULT_UPLOAD_FILENAME)
 
 
 import pprint
@@ -50,6 +51,8 @@ clean_dict = logic.clean_dict
 tuplize_dict = logic.tuplize_dict
 parse_params = logic.parse_params
 EDC_DATASET_TYPE_VOCAB = u'dataset_type_vocab'
+
+TemplateNotFound = lib_render.TemplateNotFound
 
 
 def from_utc(utcTime,fmt="%Y-%m-%dT%H:%M:%S.%f"):
@@ -81,7 +84,7 @@ def send_email(user, email_dict):
 
 def check_record_state(old_state, new_data):
     
-    print '---------------------------------------- Checking record state changes ----------------------------------'
+#    print '---------------------------------------- Checking record state changes ----------------------------------'
     
     context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
@@ -223,6 +226,7 @@ class EDCPackageController(PackageController):
         
  
     def edc_edit(self, id, data=None, errors=None, error_summary=None):
+        
         c.form_style = 'edit'
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj,
@@ -231,11 +235,12 @@ class EDCPackageController(PackageController):
         
         if not context['save'] :        
             old_data = get_action('package_show')(context, {'id': id})
-            EDCPackageController.old_state = old_data['edc_state']              
+            EDCPackageController.old_state = old_data['edc_state']
+        
         result = super(EDCPackageController, self).edit(id, data, errors, error_summary)
         
         return result
-        
+            
     def _form_save_redirect(self, pkgname, action, package_type=None):
         '''This overrides ckan's _form_save_redirect method of package controller class
         so that it can be called after the data has been recorded and the package has been updated.
@@ -252,19 +257,20 @@ class EDCPackageController(PackageController):
         new_data =  get_action('package_show')(context, {'id': pkgname})
         if new_data:
             check_record_state(EDCPackageController.old_state, new_data)
-            EDCPackageController.old_state = new_data['edc_state']              
-            
-         
+            EDCPackageController.old_state = new_data['edc_state']
+            self._check_file_upload(new_data)              
+                     
         assert action in ('new', 'edit')
         url = request.params.get('return_to') or \
             config.get('package_%s_return_url' % action)
         if url:
             url = url.replace('<NAME>', pkgname)
         else:
-            if package_type is None or package_type == 'dataset':
-                url = h.url_for(controller='package', action='read', id=pkgname)
-            else:
-                url = h.url_for('{0}_read'.format(package_type), id=pkgname)
+            url = h.url_for('dataset_read', id=pkgname)
+#             if package_type is None or package_type == 'dataset':
+#                 url = h.url_for(controller='package', action='read', id=pkgname)
+#             else:
+#                 url = h.url_for('{0}_read'.format(package_type), id=pkgname)
         redirect(url)
 
         
@@ -398,11 +404,11 @@ class EDCPackageController(PackageController):
                 user_id = c.userobj.id                
                 fq += '(edc_state:("PUBLISHED" OR "PENDING ARCHIVE" OR "ARCHIVED"))'
                 #Get the list of orgs that the user is a memeber of
-                user_orgs = ['"' + org + '"' for org in get_user_orgs(user_id)]
+                user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id)]
 #                pprint.pprint(user_orgs)
                 if user_orgs != []:
                     fq += ' OR (' + 'owner_org:(' + ' OR '.join(user_orgs) + '))'
-                print 'fq ------------------> ', fq
+#                print 'fq ------------------> ', fq
 
             data_dict = {
                 'q': q,
@@ -502,9 +508,21 @@ class EDCPackageController(PackageController):
         except NotAuthorized:
             abort(401, _('Unauthorized to read package %s') % id)
         
-        last_modified_time = from_utc(c.pkg_dict['metadata_modified'])
-        timestamp = last_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
+        metadata_modified_time = from_utc(c.pkg_dict['metadata_modified'])
+        revision_timestamp_time = from_utc(c.pkg_dict['revision_timestamp'])
+        
+        print "metadata_modified_time: " + c.pkg_dict['metadata_modified']
+        print "revision_timestamp_time: " + c.pkg_dict['revision_timestamp']
+        
+        if (metadata_modified_time >= revision_timestamp_time):
+            timestamp = metadata_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
+            c.pkg_last_modified_date = metadata_modified_time.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            timestamp = revision_timestamp_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
+            c.pkg_last_modified_date = revision_timestamp_time.strftime('%Y-%m-%d')
             
+        
+#        print metadata_modified_time.strftime('%Y-%m-%d')    
         response.headers['Last-Modified']  = timestamp      
         response.headers['Cache-Control'] = 'public, max-age=31536000'
         response.headers['Pragma'] = 'cache'
@@ -530,7 +548,7 @@ class EDCPackageController(PackageController):
 
         template = self._read_template(package_type)
         template = template[:template.index('.') + 1] + format
-
+        
         try:
             if ('If-Modified-Since' in request.headers and
             request.headers['If-Modified-Since']):
@@ -543,7 +561,7 @@ class EDCPackageController(PackageController):
                     response.status = 304
                 
             return render(template, loader_class=loader)
-        except ckan.lib.render.TemplateNotFound:
+        except TemplateNotFound:
             msg = _("Viewing {package_type} datasets in {format} format is "
                     "not supported (template file {file} not found).".format(
                     package_type=package_type, format=format, file=template))
@@ -552,6 +570,40 @@ class EDCPackageController(PackageController):
         assert False, "We should never get here"
 
     
+    def _check_file_upload(self, pkg_data):
+        
+        import os
+        upload_path = os.path.join(config.get('ckan.site_url'),'uploads', 'edc_files') + '/'
+        
+        upload_url = pkg_data['image_url']
+        
+        uploaded_file = upload_url[len(upload_path):]
+                
+        file_uploader =  FileUploader()
+        
+        if uploaded_file:        
+            name, extension = os.path.splitext(uploaded_file)
+            
+            #Check if this a temp file (A new file has been uploaded)            
+            if name == DEFAULT_UPLOAD_FILENAME :
+                file_uploader.save_uploaded_temp_file(uploaded_file, pkg_data['id'])
+                
+                #update dataset, add the uploaded filename (pkg_id.extension) to the dataset            
+                new_filename = upload_path + pkg_data['id'] + extension
+                pkg_data['image_url'] = new_filename
+            
+                context = {'model': model, 'session': model.Session,
+                            'user': c.user or c.author, 'auth_user_obj': c.userobj}
+            
+                pkg = get_action('package_update')(context, pkg_data)
+            
+                #Remove the temp file.
+                file_uploader.remove_file(uploaded_file)
+        else:
+            #The file has been removed. So remove the actual stored file and any available temp files.
+            file_uploader.remove_files_with_name(pkg_data['id'])
+            file_uploader.remove_files_with_name(DEFAULT_UPLOAD_FILENAME)
+            
     def upload(self):
         from ckanext.edc_schema.util.file_uploader import FileUploader
         
@@ -559,11 +611,13 @@ class EDCPackageController(PackageController):
                
         
         new_file = request.params['file']
-        existing_filename = request.params['exisiting_filename']
-        pkg_id = request.params['id']
+#        existing_filename = request.params['exisiting_filename']
+#        pkg_id = request.params['id']
         
-        if existing_filename:
-            file_uploader.remove_file(existing_filename)
+#        if existing_filename:
+#            file_uploader.remove_file(existing_filename)
         
-        file_url = file_uploader.upload_file(pkg_id, new_file, 600)
+        file_url = file_uploader.upload_temp_file(new_file, 600)
         return file_url
+    
+        

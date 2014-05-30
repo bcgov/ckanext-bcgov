@@ -21,22 +21,26 @@
     {
     	"name" : "resource_format",
     	"tags" : [
-                {"id": "001", "name": "RDF"},
-                {"id": "002", "name": "KML"},
-                {"id": "003", "name": "KMZ"},
-                {"id": "004", "name": "Spreadsheet-XLS"},
-                {"id": "005", "name": "HTML"},
-                {"id": "006", "name": "XML"},
-                {"id": "007", "name": "Spreadsheet-ZIP"},
-                {"id": "008", "name": "FGDB"},
-                {"id": "009", "name": "CDED"},
-                {"id": "010", "name": "SHP"},
-                {"id": "011", "name": "Delimited text-JSON"},
- 				{"id": "012", "name": "Delimited text-CSV"},
-                {"id": "013", "name": "Delimited text-TXT"},
-                {"id": "014", "name": "Geospatial PDF"},
-                {"id": "015", "name": "SDE-Oracle"},
-                {"id": "016", "name": "Unknown"}
+                {"id": "ATOM", "name": "ATOM"},
+                {"id": "CDED", "name": "CDED"},
+ 				{"id": "CSV", "name": "CSV"},
+                {"id": "E00", "name": "E00"},
+                {"id": "FGDB", "name": "FGDB"},
+                {"id": "GEOJSON", "name": "GeoJSON"},
+                {"id": "GEORSS", "name": "GeoRSS"},
+                {"id": "HTML", "name": "HTML"},
+                {"id": "JSON", "name": "JSON"},
+                {"id": "KML", "name": "KML"},
+                {"id": "KMZ", "name": "KMZ"},
+                {"id": "PDF", "name": "PDF"},
+                {"id": "RDF", "name": "RDF"},
+                {"id": "SHP", "name": "SHP"},
+                {"id": "TXT", "name": "TXT"},
+                {"id": "WMS", "name": "WMS"},
+                {"id": "XLS", "name": "XLS"},
+                {"id": "XML", "name": "XML"},
+                {"id": "ZIP", "name": "ZIP"},
+                {"id": "OTHER", "name": "Other"}
     			]
     },
 	{
@@ -218,6 +222,15 @@
                 {"id": "32610", "name": "EPSG_32610 - WGS 84 UTM zone 10N"},
                 {"id": "32611", "name": "EPSG_32611 - WGS 84 UTM zone 11N"},
                 {"id": "32612", "name": "EPSG_32612 - WGS 84 UTM zone 12N"}
+            ]
+},
+{
+    "name": "dataset_title",
+    "tags": [
+                {"id": "geospatial", "name": "Geospatial Dataset"},
+                {"id": "nongeospatial", "name": "Non-Geospatial Dataset"},
+                {"id": "application", "name": "Web Application"},
+                {"id": "webservice", "name": "Webservice"}
             ]
 }
 

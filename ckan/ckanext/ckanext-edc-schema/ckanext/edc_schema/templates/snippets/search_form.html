@@ -8,15 +8,15 @@
           <span class="facet">{{ facets.titles.get(field) }}:</span>
           {% for value in facets.fields[field] %}
             <span class="filtered pill">
-            	{% if field =='res_format' %}
+{#            	{% if field =='res_format' %}
           			{{ h.edc_tag_name('resource_format', value) }}
-              	{% else %}
+              	{% else %}   #}
               		{%- if facets.translated_fields and facets.translated_fields.has_key((field,value)) -%}
                 		{{ facets.translated_fields[(field,value)] }}
               		{%- else -%}
                 		{{ h.list_dict_filter(search_facets_items, 'name', 'display_name', value) }}
               		{%- endif %}
-              	{% endif %}
+{#              	{% endif %}  #}
               <a href="{{ facets.remove_field(field, value) }}" class="remove" title="{{ _('Remove') }}"><i class="icon-remove"></i></a>
             </span>
           {% endfor %}

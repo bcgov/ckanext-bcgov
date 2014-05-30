@@ -1,5 +1,12 @@
 {% ckan_extends %}
 
+{% block content_action %}
+  {% if h.check_access('package_update', {'id':pkg.id }) %}
+    {% link_for _('Manage'), controller='package', action='edit', id=pkg.name, class_='btn', icon='wrench' %}
+  {% endif %}
+{% endblock %}
+
+
 {% block primary_content_inner %}
   {% block package_description %}
     {% if pkg.private %}
@@ -8,6 +15,12 @@
         {{ _('Private') }}
       </span>
     {% endif %}
+
+    {# Displaying Dataset information in colorful markers #}
+    {% block package_markers %}
+      {% snippet 'package/snippets/markers.html', type=pkg.type, iso_topic_cat=pkg.iso_topic_cat, org=pkg.org, branch=pkg.sub_org %}
+    {% endblock %}
+
     <h1>
       {% block page_heading %}
         {{ pkg.title or pkg.name }}
@@ -16,6 +29,12 @@
         {% endif %}
       {% endblock %}
     </h1>
+
+    {# Displaying Organization and Branch names #}
+    {% block package_org %}
+        {% snippet 'package/snippets/org_view.html', org=pkg.org, branch=pkg.sub_org %}
+    {% endblock %}
+
     {% block package_notes %}
       {% if c.pkg_notes_formatted %}
         <div class="notes embedded-content">
@@ -27,14 +46,25 @@
     <span class="insert-comment-thread"></span>
   {% endblock %}
 
+  {% block more_info_links %}
+    {% if pkg.more_info %}
+      {% snippet "package/snippets/more_info_links.html", links=pkg.more_info %}
+    {% endif %}
+  {% endblock %}
+
   {% block pakage_purpose %}
-        {% if pkg.purpose %}
-            <h2>Purpose</h2>
-            {{ pkg.purpose }}
-        {% endif %}
-    {% endblock %}
+      {% if pkg.purpose %}
+      <div id="purpose">
+        <a href="#" class="wb-toggle" data-toggle='{"selector": ".purpose"}'>Purpose <i class="icon-chevron-down"></i></a>
+        <div class="purpose off">
+          {{ pkg.purpose }}
+        </div>
+      </div>
+      {% endif %}
+  {% endblock %}
 
   {% block package_tags %}
+    <div class="clearfix"></div>
     {% snippet "package/snippets/tags.html", tags=pkg.tags %}
   {% endblock %}
 
@@ -50,8 +80,13 @@
     {% snippet "package/snippets/thumbnail.html", pkg=pkg %}
   {% endblock %}
 
+  {# block map_view %}
+  	{% snippet "package/snippets/map_view.html", pkg=pkg %}
+  {% endblock #}
+
   {% block package_additional_info %}
-    <h2>Additional Information</h2>
+    <a href="#" class="wb-toggle additional-information-toggle" data-toggle='{"selector": "#additional-information"}'>Additional Information <i class="icon-chevron-down"></i></a>
+    <div id="additional-information" class="off">
     <h2>Dataset Information</h2>
     <table class="table dataset_view">
     {% block package_type %}
@@ -59,12 +94,12 @@
                 <td><strong>Record type</strong></td><td> {{ pkg.type }} </td>
             </tr>
     {% endblock %}
-
-    {# Displaying Organization and Branch names #}
-    {% block package_org %}
-        {% snippet 'package/snippets/org_view.html', org=pkg.org, branch=pkg.sub_org %}
-    {% endblock %}
-
+	
+	{% block record_state %}
+		<tr>
+			<td><strong>Record state</strong></td><td> {{ pkg.edc_state }} </td>
+		</tr>
+	{% endblock %}
 
     {# Add our custom country_code field to the dataset read page. #}
     {#
@@ -78,7 +113,7 @@
 
     {# Showing dates #}
     {% block package_dates %}
-        {% snippet 'package/snippets/dates_view.html', dates=pkg.dates%}
+        {% snippet 'package/snippets/dates_view.html', dates=pkg.dates, last_modified = c.pkg_last_modified_date %}
     {% endblock %}
 
     {% block package_resource_status %}
@@ -100,25 +135,21 @@
             </tr>
     {% endblock %}
 
-    {% block package_iso_topic %}
-        {% set iso_topic_cat = h.edc_tag_name('iso_topic_category', pkg.iso_topic_cat) %}
-            <tr>
-                <td><strong>ISO Topic Category</strong></td><td> {{ iso_topic_cat }} </td>
-            </tr>
-    {% endblock %}
-
     </table>
 
     {# Displaying contact info #}
     {% block package_contacts %}
         {% snippet 'package/snippets/contacts_view.html', contacts=pkg.contacts %}
     {% endblock %}
+
+  </div>
+
   {% endblock %}
+
 
 {% endblock %}
 
 {% block secondary_content %}
-
   {% block secondary_help_content %}{% endblock %}
 
   {% block package_organization %}
@@ -129,10 +160,6 @@
 
   {% block package_social %}
     {% snippet "snippets/social.html" %}
-  {% endblock %}
-
-  {% block package_info %}
-    {% snippet "package/snippets/info.html", pkg=pkg %}
   {% endblock %}
 
 {% endblock %}

@@ -68,4 +68,4 @@ def create_vocabs(vocab_file=None):
                         create_tag(vocab, vocab_tag)
 
         
-
+create_vocabs()

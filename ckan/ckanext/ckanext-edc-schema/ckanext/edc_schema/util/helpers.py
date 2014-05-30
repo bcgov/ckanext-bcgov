@@ -1,74 +1,78 @@
 import logging
 import ckan.lib.helpers
-import ckan.lib.datapreview as datapreview
-from ckanext.edc_schema.util.util import get_edc_tag_name
-
-from ckan.common import (
-    _,
-)
 
 snippet = ckan.lib.helpers.snippet
 url_for = ckan.lib.helpers.url_for
 log = logging.getLogger(__name__)
+import ckan.plugins.toolkit as toolkit
 
-def resource_preview(resource, package):
-    '''
-    Returns a rendered snippet for a embedded resource preview.
 
-    Depending on the type, different previews are loaded.
-    This could be an img tag where the image is loaded directly or an iframe
-    that embeds a web page, recline or a pdf preview.
-    '''
+def get_suborg_sectors(org, suborg):
+    from ckanext.edc_schema.commands.base import default_org_file
+    import os
+    import json
+    import sys
+    
+    sectors = []
+    
+    org_file = default_org_file
+              
+    if not os.path.exists(org_file):
+        print 'File {0} does not exists'.format(org_file)
+        sys.exit(1)
+                                 
+    #Read the organizations json file
+    with open(org_file) as json_file:
+        orgs = json.loads(json_file.read())
+    
+    branches = []                  
+    #Create each organization and all of its branches if it is not in the list of available organizations
+    for org_item in orgs:
+        
+        if org_item['title'] == org:
+            branches = org_item['branches']
+            break
+    
+    if branches != [] :                                             
+        for branch in branches:
+            if branch['title'] == suborg and 'sectors' in branch :
+                sectors = branch["sectors"]
+                break
+    return sectors
 
-    if not resource['url']:
-        return snippet("dataviewer/snippets/no_preview.html",
-                       resource_type=format_lower,
-                       reason=_(u'The resource url is not specified.'))
+
+def get_user_dataset_num(userobj):
+    from ckan.lib.base import model
+    from ckan.lib.search import SearchError
+    from ckanext.edc_schema.util.util import (get_user_orgs)
     
+    user_id = userobj.id
     
-    res_format = get_edc_tag_name('resource_format', resource['format']).lower()
-    
-    if res_format == 'spreadsheet-xls':
-        format_lower = 'xls'
-    elif res_format == 'spreadsheet-zip':
-        format_lower = 'zip'
-    elif res_format == 'delimited text-json':
-        format_lower = 'json'
-    elif res_format == 'delimited text-csv':
-        format_lower = 'csv'
-    elif res_format == 'delimited text-txt':
-        format_lower = 'txt'
-    elif res_format == 'geospatial pdf':
-        format_lower = 'pdf'
+    #If this is the sysadmin user then return don't filter any dataset
+    if userobj.sysadmin == True:
+        fq = ''
     else :
-        format_lower = res_format
-         
+        #Include only datsset created by this user or those from the orgs that the user has the admin role.
+        fq = 'author:("%s")' %(user_id) 
+        user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
+        if len(user_orgs) > 0:
+            fq += ' OR owner_org:(' + ' OR '.join(user_orgs) + ')'
+    try:
+        # package search
+        context = {'model': model, 'session': model.Session,
+                       'user': user_id}
+        data_dict = {
+                'q':'',
+                'fq':fq,
+                'facet':'false',
+                'rows':0,
+                'start':0,
+        }
+        query = toolkit.get_action('package_search')(context,data_dict)
+        count = query['count']
+    except SearchError, se:
+        log.error('Search error: %s', se)
+        count = 0
+
+    return count
     
-    directly = False
-    data_dict = {'resource': resource, 'package': package}
-
-    if datapreview.get_preview_plugin(data_dict, return_first=True):
-        url = url_for(controller='package', action='resource_datapreview',
-                      resource_id=resource['id'], id=package['id'], qualified=True)
-    elif format_lower in datapreview.direct():
-        directly = True
-        url = resource['url']
-    elif format_lower in datapreview.loadable():
-        url = resource['url']
-    else:
-        reason = None
-        if format_lower:
-            log.info(
-                _(u'No preview handler for resource of type {0}'.format(
-                    format_lower))
-            )
-        else:
-            reason = _(u'The resource format is not specified.')
-        return snippet("dataviewer/snippets/no_preview.html",
-                       reason=reason,
-                       resource_type=format_lower)
-
-    return snippet("dataviewer/snippets/data_preview.html",
-                   embed=directly,
-                   resource_url=url,
-                   raw_resource_url=resource.get('url'))

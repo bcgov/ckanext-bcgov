@@ -44,11 +44,12 @@ def get_edc_tag_id(vocab_id, tag_name):
        Each EDC tag is a combination of three digits as tag id and tag name which are separated  by '__'
     '''
 
-    data_string = urllib.quote(json.dumps({'vocabulary_id': vocab_id}))
     
-    request = urllib2.Request(site_url +'/api/3/action/tag_list')
-    request.add_header('Authorization', api_key)
+    data_string = urllib.quote(json.dumps({'vocabulary_id': vocab_id}))
+        
     try:
+        request = urllib2.Request(site_url +'/api/3/action/tag_list')    
+        request.add_header('Authorization', api_key)
         response = urllib2.urlopen(request, data_string)
         assert response.code == 200
 
@@ -145,14 +146,15 @@ def get_user_orgs(user_id, role=None):
     org_model = context['model']
     
     #Get the list of all first level organizations.             
-    all_orgs = [org.id for org in org_model.Group.get_top_level_groups(type="organization")]
+#    all_orgs = [org.id for org in org_model.Group.get_top_level_groups(type="organization")]
+    all_orgs = org_model.Group.get_top_level_groups(type="organization")
     
 #    pprint.pprint(all_orgs)
 
     for org in all_orgs:
         members = []
         try:
-            member_dict = {'id': org, 'object_type': 'user', 'capacity': role}
+            member_dict = {'id': org.id, 'object_type': 'user', 'capacity': role}
             #Get the list of id's of all admins of the organization
             members = [member[0] for member in toolkit.get_action('member_list')(data_dict=member_dict)]
         except toolkit.ObjectNotFound:
@@ -165,7 +167,23 @@ def get_user_orgs(user_id, role=None):
         
 #    pprint.pprint(orgs)
     return orgs
+
+
+def check_user_member_of_org(user_id, org_id):
+#    print user_id, org_id
+    orgs = get_user_orgs(user_id)
     
+#    pprint.pprint(orgs)
+    
+    member_orgs = [org.id for org in orgs if org.id == org_id]
+    
+    if member_orgs :
+        return True
+     
+    return False
+ 
+ 
+        
 
 def edc_state_activity_create(user_name, edc_record, old_state):
         

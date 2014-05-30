@@ -13,6 +13,7 @@ from ckan.lib.uploader import (
                                get_max_image_size
                                )
 
+DEFAULT_UPLOAD_FILENAME = 'edc_temp'
 
 class FileUploader(object):
     
@@ -78,8 +79,62 @@ class FileUploader(object):
             return image_url
         else:
             return None
+        
+    def save_uploaded_temp_file(self, temp_filename, pkg_id):
+        temp_filepath = os.path.join(self.storage_path, temp_filename)
+        name, extension = os.path.splitext(temp_filename)
+        
+        actual_filepath = os.path.join(self.storage_path, pkg_id + extension)
+        
+        os.rename(temp_filepath, actual_filepath)
 
-    
+
+    def upload_temp_file(self, field_storage, max_size=2):
+        '''
+            upload the given file temporarily and wait until the package update to get the package id as the actual file name
+        '''
+        
+        
+        import imghdr
+        
+        if isinstance(field_storage, cgi.FieldStorage):
+            source_filename = field_storage.filename
+            source_file = field_storage.file
+            
+        image_type = None
+        temp_filepath = ''
+        
+        #Check if the file is a valid file type        
+        if field_storage.filename:
+            image_type = imghdr.what(source_file)
+            name, extension = os.path.splitext(source_filename)
+            temp_filepath = os.path.join(self.storage_path, DEFAULT_UPLOAD_FILENAME + extension)
+        
+        #Upload the file    
+        if image_type :
+            output_file = open(temp_filepath, 'wb')
+            source_file.seek(0)
+            current_size = 0
+            while True:
+                current_size = current_size + 1
+                # MB chuncks
+                data = source_file.read(2 ** 20)
+                if not data:
+                    break
+                output_file.write(data)
+                if current_size > max_size:
+                    os.remove(temp_filepath)
+                    raise logic.ValidationError(
+                        {'upload_file': ['File upload too large']}
+                    )
+            output_file.close()
+            #Return the uploaded file url
+            image_url = os.path.join(config.get('ckan.site_url'),'uploads', 'edc_files', DEFAULT_UPLOAD_FILENAME + extension)
+            return image_url
+        else:
+            return None
+        
+        
     def remove_file(self, filename):
         '''
         Removes the file with the given filename from the upload directory if it exists.
@@ -89,11 +144,26 @@ class FileUploader(object):
         #Get the physical path of the file 
         filepath = os.path.join(self.storage_path, filename)
         
-        try:
-            os.remove(filepath)
+        if os.path.isfile(filepath):
+            try:
+                os.remove(filepath)
             
-            #File is successfully removed
-            return True
-        except OSError, e:
-            #File does not exist or file remove failure 
-            return False
+                #File is successfully removed
+                return True
+            except OSError, e:
+                #File does not exist or file remove failure 
+                pass
+        return False
+    
+    
+    def remove_files_with_name(self, filename):
+        import glob
+        
+        #Get the list of all possible temp files
+        filepath = os.path.join(self.storage_path, filename + '.*')
+        temp_files_exist = glob.glob(filepath)
+        
+        #Remove all existing temp files        
+        for file in temp_files_exist:
+            self.remove_file(file)
+            

@@ -9,14 +9,7 @@
 
 #}
 
+{% set org_title = h.edc_org_title(org) %}
 {% set org_name = h.edc_org_name(org) %}
-{% set branch_name = h.edc_org_name(branch) %}
-	<tr>
-		<td><strong>Organization</strong></td><td>{{ org_name }} </td>
-	</tr>
-	{% if branch_name %}
-		<tr>
-			<td><strong>Branch</strong></td><td>{{ branch_name }} </td>
-		</tr>
-	{% endif %}
-
+{% set branch_title = h.edc_org_title(branch) %}
+Published by the <a href="/organization/{{ org_name }}">{{ org_title }}</a>{% if branch_title %} - <a href="#">{{ branch_title }}</a> {% endif %}

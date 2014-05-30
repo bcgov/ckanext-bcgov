@@ -1,0 +1,20 @@
+{#
+
+	Generates a preview of dataset map based on datset layername, latitude, logitude and zoom level
+  Example:
+  	{snippet 'package/snippets/map_view.html', pkg=pkg %}
+
+#}
+
+<div class="module-content ckanext-datapreview">
+{% set image_url = pkg.preview_image_url %}
+  {% if image_url %}
+    {# images can be embedded directly #}
+    <img src="{{ image_url }}"></img>
+  {% else %}
+  	{% set map_service_url = pkg.preview_map_service_url %}
+  	{% if map_service_url %}
+  		{% set wmsservice_url = map_service_url + "?&amp;wmslayers=" + pkg.layer_name + "&amp;ll=" + pkg.preview_latitude + "," + pkg.preview_latitude + "&amp;z=" + pkg.preview_zoom_level %}
+  	{% endif %}
+  {% endif %}
+</div>
