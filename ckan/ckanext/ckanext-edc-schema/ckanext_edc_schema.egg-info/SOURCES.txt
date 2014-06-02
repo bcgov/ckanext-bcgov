@@ -7,7 +7,9 @@ ckanext/edc_schema/commands/base.py
 ckanext/edc_schema/commands/create_orgs.py
 ckanext/edc_schema/commands/create_vocabs.py
 ckanext/edc_schema/commands/data_import.py
-ckanext/edc_schema/commands/vocab.py
+ckanext/edc_schema/commands/delete_all_data.py
+ckanext/edc_schema/commands/edc_commands.py
+ckanext/edc_schema/commands/purge_records.py
 ckanext/edc_schema/controllers/__init__.py
 ckanext/edc_schema/controllers/api.py
 ckanext/edc_schema/controllers/organization.py

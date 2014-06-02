@@ -19,7 +19,7 @@ import ckan.plugins as plugins
 log = logging.getLogger()
 
 
-class EdcVocabCommand(CkanCommand):
+class EdcCommand(CkanCommand):
     '''
     This class contains commnds for creating special vocabularies and tags
     required for EDC-Dataset manipulation
@@ -36,7 +36,7 @@ class EdcVocabCommand(CkanCommand):
         Parse command line arguments and call appropriate method.
         '''
         if not self.args or self.args[0] in ['--help', '-h', 'help']:
-            print EdcVocabCommand.__doc__
+            print EdcCommand.__doc__
             return
         
         cmd = self.args[0]
@@ -60,6 +60,10 @@ class EdcVocabCommand(CkanCommand):
             self.create_orgs()
         elif cmd == 'delete-all-orgs' :
             self.delete_orgs()
+        elif cmd == 'purge-records' :
+            self.purge_records()
+        elif cmd == 'purge-revisions':
+            self.purge_revisions()
         else:
             log.error('Command "%s" not defined' % (cmd,))
                    
@@ -210,4 +214,83 @@ class EdcVocabCommand(CkanCommand):
         
         
 
+    def purge_records(self):
+        
+        #Get the list of all deleted records
+        deleted_packages = model.Session.query(model.Package).filter_by(state=model.State.DELETED)
+        
+        msgs = []
+        
+        revs_to_purge = []
+        count = 0
+        for pkg in deleted_packages:
+            count += 1
+            #pprint.pprint(pkg)
+            revisions = [x[0] for x in pkg.all_related_revisions]
+                        # ensure no accidental purging of other(non-deleted)
+                        # packages initially just avoided purging revisions
+                        # where non-deleted packages were affected
+                        # however this lead to confusing outcomes e.g.
+                        # we succesfully deleted revision in which package
+                        # was deleted (so package now active again) but no
+                        # other revisions
+            problem = False
+            for r in revisions:
+                affected_pkgs = set(r.packages).difference(set(deleted_packages))
+                if affected_pkgs:
+                    msg = _('Cannot purge package %s as '
+                            'associated revision %s includes '
+                            'non-deleted packages %s')
+                    msg = msg % (pkg.id, r.id, [pkg.id for r in affected_pkgs])
+                    msgs.append(msg)
+                    problem = True
+                    break
+            if not problem:
+                revs_to_purge += [r.id for r in revisions]
+            print '.'
+        model.Session.remove()
+        
+        revs_to_purge = list(set(revs_to_purge))
+        for id in revs_to_purge:
+            revision = model.Session.query(model.Revision).get(id)
+            try:
+                        # TODO deleting the head revision corrupts the edit
+                        # page Ensure that whatever 'head' pointer is used
+                        # gets moved down to the next revision
+                model.repo.purge_revision(revision, leave_record=False)
+            except Exception, inst:
+                msg = _('Problem purging revision %s: %s') % (id, inst) 
+                msgs.append(msg)
+        
+        print '------------------------------- Purge complete -------------------------------'       
+
+        print 'Total number of records : ' + str(count)
+        print 'Purge errors : '
+        for msg in msgs:
+            print msg
+            
+    
+    def purge_revisions(self):
+        deleted_revisions = model.Session.query(model.Revision).filter_by(state=model.State.DELETED)
+        
+        msgs = []
+        revs_to_purge = [rev.id for rev in deleted_revisions]
+        revs_to_purge = list(set(revs_to_purge))
+        for id in revs_to_purge:
+            print id
+            revision = model.Session.query(model.Revision).get(id)
+            try:
+                        # TODO deleting the head revision corrupts the edit
+                        # page Ensure that whatever 'head' pointer is used
+                        # gets moved down to the next revision
+                model.repo.purge_revision(revision, leave_record=False)
+            except Exception, inst:
+                msg = _('Problem purging revision %s: %s') % (id, inst) 
+                msgs.append(msg)
+        print '------------------------------- Purge complete -------------------------------'       
+
+        print 'Purge errors : '
+        for msg in msgs:
+            print msg
+        
             
