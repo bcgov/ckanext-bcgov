@@ -1,5 +1,17 @@
 {% ckan_extends %}
 
+  {% block search_input %}
+    <div class="search-input control-group {{ search_class }}">
+      <input type="text" class="search" name="q" value="{{ query }}" autocomplete="on" placeholder="{{ placeholder }}">
+      {% block search_input_button %}
+      <button type="submit" value="search">
+        <i class="icon-search"></i>
+        <span>{{ _('Submit') }}</span>
+      </button>
+      {% endblock %}
+    </div>
+  {% endblock %}
+
   {% block search_facets %}
     {% if facets %}
       <p class="filter-list">

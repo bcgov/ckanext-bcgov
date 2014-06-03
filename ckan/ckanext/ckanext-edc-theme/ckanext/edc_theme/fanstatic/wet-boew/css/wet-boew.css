@@ -5269,7 +5269,11 @@ input[type="button"].btn-block {
 .pagination {
   display: inline-block;
   padding-left: 0;
-  margin: 23px 0;
+  /* 
+  Changed by called to centered pagination
+  margin: 23px 0;  */
+  width : 100%;
+  margin: auto;  
   border-radius: 4px;
 }
 
