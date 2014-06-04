@@ -13,6 +13,8 @@ import os
 import sys
 import json
 import pprint
+import ckan.lib.base as base
+_ = base._
 
 import ckan.plugins as plugins
 
