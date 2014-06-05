@@ -1,3 +1,4 @@
+import pprint
 import ckan.model as model
 from ckan.common import  c
 from ckan.logic import get_action, NotFound
@@ -100,6 +101,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IRoutes, inherit=True)
 
     plugins.implements(plugins.ITemplateHelpers, inherit=False)
+    
+    plugins.implements(plugins.IPackageController, inherit=True)
 
     def get_helpers(self):
         return {
@@ -229,4 +232,11 @@ class SchemaPlugin(plugins.SingletonPlugin):
     def after_map(self, map):
         return map;
 
-
+    #Check the datasaet upload image
+    def after_update(self, context, pkg_dict):
+  #      pprint.pprint(pkg_dict)
+        from ckanext.edc_schema.controllers.package import EDCPackageController
+        
+        controller = EDCPackageController()
+        controller._check_file_upload(pkg_dict)
+        

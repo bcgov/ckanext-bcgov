@@ -258,7 +258,7 @@ class EDCPackageController(PackageController):
         if new_data:
             check_record_state(EDCPackageController.old_state, new_data)
             EDCPackageController.old_state = new_data['edc_state']
-            self._check_file_upload(new_data)              
+#            self._check_file_upload(new_data)              
                      
         assert action in ('new', 'edit')
         url = request.params.get('return_to') or \
@@ -572,33 +572,47 @@ class EDCPackageController(PackageController):
     
     def _check_file_upload(self, pkg_data):
         
+        if not 'image_url' in pkg_data :
+            return
+        
         import os
         upload_path = os.path.join(config.get('ckan.site_url'),'uploads', 'edc_files') + '/'
         
         upload_url = pkg_data['image_url']
         
         uploaded_file = upload_url[len(upload_path):]
+        
+#         print 'image url -------------> ', upload_url
                 
         file_uploader =  FileUploader()
         
         if uploaded_file:        
             name, extension = os.path.splitext(uploaded_file)
+#             print 'Filename ---------------> ', name 
             
             #Check if this a temp file (A new file has been uploaded)            
             if name == DEFAULT_UPLOAD_FILENAME :
                 file_uploader.save_uploaded_temp_file(uploaded_file, pkg_data['id'])
                 
+                #Remove the temp file.
+                file_uploader.remove_file(uploaded_file)
+                
                 #update dataset, add the uploaded filename (pkg_id.extension) to the dataset            
                 new_filename = upload_path + pkg_data['id'] + extension
-                pkg_data['image_url'] = new_filename
             
                 context = {'model': model, 'session': model.Session,
                             'user': c.user or c.author, 'auth_user_obj': c.userobj}
             
-                pkg = get_action('package_update')(context, pkg_data)
+                pkg_dict = get_action('package_show')(context, {'id' : pkg_data['id']})
+                
+                pkg_dict['image_url'] = new_filename
+                pkg = get_action('package_update')(context, pkg_dict)
+                
+#                 print 'Updated package :'
+#                 pprint.pprint(pkg)
+#             else:
+#                 print name
             
-                #Remove the temp file.
-                file_uploader.remove_file(uploaded_file)
         else:
             #The file has been removed. So remove the actual stored file and any available temp files.
             file_uploader.remove_files_with_name(pkg_data['id'])
