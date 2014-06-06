@@ -90,6 +90,10 @@ EDC SCHEMA EXTENSION INSTALLATION
 	Add the plugins for edc-schema, edc-idir and edc-theme:
 	
 		ckan.plugins = edc_dataset edc_app edc_geo edc_ngeo edc_webservice edc_idir edc_theme
+		
+	Ensure the edc.eas_url is set to the location of the EAS app for the correct environment:
+	
+	    edc.eas_url=http://delivery.apps.gov.bc.ca/int/eas/login.jsp	
 	
 	Define the path to the licences json file it must be in a location where it can be read by ckan:
 	
