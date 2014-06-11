@@ -1,6 +1,8 @@
 '''A CKAN plugin that enables logging into CKAN using BC IDIR Credentials.
 
 '''
+
+import pprint
 import httplib
 import json
 import uuid
@@ -89,13 +91,18 @@ class IdirPlugin(plugins.SingletonPlugin):
         # Get the params that were posted to /user/login.
         params = toolkit.request.params
         
+        print '******************************  Request params  ******************************'
+        pprint.pprint(params)
+        
         if 'login' in params:
-             try:                
-               
-               
+            try:
+                #url = config.get('edc.eas.idir.login.url', False)  # Commented By Khalegh Mamakani the value of url never been used.
                 #check for edc cookie
                 
                 edc_cookie = toolkit.request.cookies.get( 'edc_auth' )
+                
+                print '*********** edc_auth cookie : ************'
+                print edc_cookie
                 
                 if edc_cookie:
                     print edc_cookie
@@ -103,37 +110,40 @@ class IdirPlugin(plugins.SingletonPlugin):
                     #username in cookie must match login name
                     universalId,guid = edc_cookie.split('_')
                 
-                    print universalId
+                    print '******************************  universalId,guid  ******************************'
+                    print universalId, guid
                 else:
                     helpers.redirect_to(controller='user', action='login', error='You are not authorized to login')     
                 
                 if universalId == params['login']:
-					user = toolkit.get_action('user_show')(data_dict={'id': params['login']})
-					#get username
-
-					# Store the name of the verified logged-in user in the Beaker
-					# sesssion store.
-					pylons.session['ckanext-idir-user'] = user['name']
-					print user['name']
-					#pylons.session['ckanext-persona-email'] = user['email']
-					pylons.session.save()
-					# Try to get the item that login() placed in the session.
-					user = pylons.session.get('ckanext-idir-user')
-					if user:
-						# We've found a logged-in user. Set c.user to let CKAN know.
-						toolkit.c.user = user
-						helpers.redirect_to(controller='user', action='dashboard')   
-					else:
-				
-						helpers.redirect_to(controller='user', action='login', error='You are not authorized to login') 
-
-             except urllib2.HTTPError as e:
-                 print e.code
-                 print str(e)
-                 if e.code == 302:
-                     pass
-                 else:
-                     helpers.redirect_to(controller='user', action='login', error='You are not authorized to login')					
+                    user = toolkit.get_action('user_show')(data_dict={'id': params['login']})
+                    #get username
+                    print '******************************  User info  ******************************'
+                    pprint.pprint(user)
+                    # Store the name of the verified logged-in user in the Beaker
+                    # sesssion store.
+                    pylons.session['ckanext-idir-user'] = user['name']
+                    print user['name']
+                    #pylons.session['ckanext-persona-email'] = user['email']
+                    pylons.session.save()
+                    # Try to get the item that login() placed in the session.
+                    user = pylons.session.get('ckanext-idir-user')
+                    
+                    print '******************************  ckanext-idir-user  ******************************'
+                    pprint.pprint(user)
+                    if user:
+                        # We've found a logged-in user. Set c.user to let CKAN know.
+                        toolkit.c.user = user
+                        helpers.redirect_to(controller='user', action='dashboard')   
+                    else:
+                        helpers.redirect_to(controller='user', action='login', error='You are not authorized to login') 
+            except urllib2.HTTPError as e:
+                print 'Http Error ------------------------------>', e.code
+                print str(e)
+                if e.code == 302:
+                    pass
+                else:
+                    helpers.redirect_to(controller='user', action='login', error='You are not authorized to login')					
 
              #except Exception as e: 
                   #print str(e)
