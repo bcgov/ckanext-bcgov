@@ -1,9 +1,11 @@
-User-agent: *
-Disallow: /dataset/rate/
-Disallow: /revision/
-Disallow: /dataset/*/history
-Disallow: /api/
+User-agent: BCGovSearch  # directed to BC government search robots 
+Allow: /datasets/
+Disallow: /organization
+Disallow: /api
+Disallow: /tag
+Disallow: /user
+Disallow: /activity
+Disallow: /group
 
-User-Agent: *
-Crawl-Delay: 10
-
+User-agent: * # directed to all robots other than BCGovSearch
+Disallow: /
