@@ -5,6 +5,7 @@
 from ckan import model
 from ckan.lib.cli import CkanCommand
 from ckan.logic import get_action, NotFound
+from ckan.common import  c
 
 from ckanext.edc_schema.forms import dataset_form
 
@@ -120,7 +121,7 @@ class EdcCommand(CkanCommand):
                         
     def delete_all_vocabs(self):
         
-        context = {'model': model, 'session':model.Session, 'user': self.user_name}
+        context = {'model': model, 'session':model.Session, 'user':self.user_name}
         #Get all available vocabularies
         all_vocabs = get_action('vocabulary_list')(context)
         
@@ -144,12 +145,12 @@ class EdcCommand(CkanCommand):
         top_level_orgs = org_model.Group.get_top_level_groups(type="organization")
         
         for orgg in top_level_orgs :
-            org = get_action('organization_show')(context, {'id': orgg.id})
+            org = get_action('organization_show')(context, {'id': orgg.id, 'include_datasets' : False})
             print "Organization ------------> ", org['name']
             group = org_model.Group.get(orgg.id)
             branches = group.get_children_groups(type="organization")
             for branch in branches:
-                branch_org = get_action('organization_show')(context, {'id': branch.id})
+                branch_org = get_action('organization_show')(context, {'id': branch.id,'include_datasets' : False})
                 print "\t Branch ------------> ", branch_org['name']
 #                get_action('memeber_delete')(context, {'id' : branch_org['id'], 'object': org['id'], 'object_type' : 'group'})
                 get_action('organization_purge')(context, {'id' : branch_org['id']})

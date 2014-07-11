@@ -8,15 +8,21 @@
 #}
 
 {# For each date in the list of dates, show the details #}
+{% set date = pkg.dates %}
 {% for date in dates %}
-	{% if date.type != '002' %}
+	{% if date.type != '002' and date.type != '003' %}
 		{% set date_type = h.edc_tag_name(_("dataset_date_type"), date.type) %}
 		<tr>
-			<td><strong> {{ date_type }} </strong></td><td> {{ date.date }} </td>
+			<td><strong> Record {{ date_type }} </strong></td><td> {{ date.date }} </td>
 		</tr>
 	{% endif %}
 {% endfor %}
 
+{% if pkg.publish_date %}
+	<tr>
+		<td><strong> Date Published </strong></td><td> {{ pkg.publish_date[:10] }} </td>
+	</tr>
+{% endif %}
 <tr>
-	<td><strong> Modified </strong></td><td> {{ last_modified }} </td>
+	<td><strong> Last Modified </strong></td><td> {{ last_modified }} </td>
 </tr>

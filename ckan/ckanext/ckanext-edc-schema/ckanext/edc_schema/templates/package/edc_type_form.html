@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block basic_fields %}
-	{% snippet 'package/snippets/dataset_type_fields.html', datasetTypes=c.dataset_types %}  
+	{% snippet 'package/snippets/dataset_type_fields.html', datasetTypes=c.dataset_types %}
 {% endblock %}
 
 {% block metadata_fields %}
@@ -12,7 +12,7 @@
 
 {% block form_actions %}
     <div class="form-actions">
-    	{% block disclaimer %}
+    	{# block disclaimer %}
         	<p class="action-info small">
           		{%- trans -%}
           			Important: By submitting content, you
@@ -20,7 +20,7 @@
           			License.
           		{%- endtrans -%}
         	</p>
-      	{% endblock %}
+      	{% endblock #}
 		<button class="btn btn-primary" type="submit" name="save">
 				{% block save_button_text %}
 					{{ _('Create Dataset') }}

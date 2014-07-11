@@ -1,0 +1,27 @@
+{% if res.projection_name %}
+    <tr>
+        <th>Spatial Reference System</th>
+        <td><a href="http://epsg.io/{{ res.projection_name }}">{{ h.edc_tag_name('projection_name', res.projection_name) }} - {{ res.projection_name }} </a></td>
+    </tr>
+{% endif %}
+
+{% if res.object_name %}
+    <tr>
+        <th>Object Name</th>
+        <td>{{ res.object_name }}</td>
+    </tr>
+{% endif %}
+
+{% if res.data_collection_start_date %}
+    <tr>
+        <th>Data Collection Start Date</th>
+        <td>{{ h.render_datetime(res.data_collection_start_date) }}</td>
+    </tr>
+{% endif %}
+
+{% if res.data_collection_end_date %}
+    <tr>
+        <th>Data Collection End Date</th>
+        <td>{{ h.render_datetime(res.data_collection_end_date) }}</td>
+    </tr>
+{% endif %}

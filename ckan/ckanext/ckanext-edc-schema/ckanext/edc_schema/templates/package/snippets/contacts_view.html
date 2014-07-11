@@ -11,8 +11,8 @@
 <h2 class="view-group">Contact Information</h2>
 {# For each contact in the list of contatcs, show the contact information if it is not a private contact #}
 {% for contact in contacts %}
-	{% set is_private = (contact.private and contact.private != _('Private')) %}
-	{% if not is_private %}
+	{% set is_visible = (contact.private and contact.private != _('Private')) %}
+	{% if is_visible %}
 		{% set org = h.edc_org_title(contact.organization) %}
 		{% set role = h.edc_tag_name(_("contact_roles"), contact.role) %}
 		<table class="table dataset_view">

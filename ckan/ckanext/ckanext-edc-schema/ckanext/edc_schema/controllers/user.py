@@ -50,8 +50,8 @@ class EDCUserController(UserController):
         return render('user/dashboard_datasets.html')
     
     def read(self, id=None):
-        user_id = c.userobj.id
-        if c.userobj.sysadmin == True:
+        user_id = id
+        if c.userobj and c.userobj.sysadmin == True:
             fq = ''
         else :
             fq = 'author:("%s")' %(user_id) 

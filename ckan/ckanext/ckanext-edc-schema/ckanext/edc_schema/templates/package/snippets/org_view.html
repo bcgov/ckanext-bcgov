@@ -12,4 +12,4 @@
 {% set org_title = h.edc_org_title(org) %}
 {% set org_name = h.edc_org_name(org) %}
 {% set branch_title = h.edc_org_title(branch) %}
-Published by the <a href="/organization/{{ org_name }}">{{ org_title }}</a>{% if branch_title %} - <a href="#">{{ branch_title }}</a> {% endif %}
+Published by the <a href="/organization/{{ org_name }}">{{ org_title }}</a>{% if branch_title %} - <a href="{{ h.url_for(controller='package', action='search', q='sub_org:' + branch) }}">{{ branch_title }}</a> {% endif %}

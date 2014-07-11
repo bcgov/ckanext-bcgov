@@ -9,10 +9,10 @@ import pprint
 import logging
 
 
-site_url = 'http://delivery.apps.gov.bc.ca/pub/edc'
+site_url = 'http://cat.data.gov.bc.ca'
 api_key = '400816c7-5be1-4d06-b878-1e6a3abad2b9'
 #site_url = 'http://edc.highwaythreesolutions.com/'
-#api_key = '1c4203c7-f54b-4424-9024-a66d700f3418'
+#api_key = '2c21206b-d03c-4269-b884-66e725d85868'
 #site_url = 'http://localhost:5000'
 #api_key = 'cfb2cac5-4528-4c64-a2ac-271fddffb20b'
 
@@ -55,7 +55,7 @@ def create_vocab(vocab_name, tags):
         vocab = response_dict['result']
         print '{0} is added to the vocabularies'.format(vocab['name'])
     except Exception, e:
-        print "Error---------------> ", str(e)
+        print "Exception in creating vocabulary ", str(e)
         return None
 
     if not vocab:
@@ -97,19 +97,18 @@ def create_org(org_dict):
 
             org = response_dict['result']
         except Exception, e:
-            print "Error---------------> ", str(e)
-            pprint.pprint(response_dict)
+            print "Exception in creating organiztion ", str(e)
             pass
     return org
 
 
 def edc_package_create(edc_record):
-    import ckan.logic as logic
 
-#    package_info = None
 
     data_string = urllib.quote(json.dumps(edc_record))
 
+    pkg_dict = None
+    errors = None
     try:
         request = urllib2.Request(site_url + '/api/3/action/package_create')
         request.add_header('Authorization', api_key)
@@ -119,12 +118,29 @@ def edc_package_create(edc_record):
         # Use the json module to load CKAN's response into a dictionary.
         response_dict = json.loads(response.read())
 #        pprint.pprint(response_dict)
-#        assert response_dict['success'] is True
-
-        #package_create returns the created package as its result.
-#        package_info = response_dict['result']
+        if response_dict['success'] == True :
+            pkg_dict = response_dict['result']
+        else:
+            errors = response_dict['error']
     except Exception, e:
         pass
-    return response_dict
+    return (pkg_dict, errors)
+
+
+def edc_keywords():
+    tag_list = []
+    try:
+        request = urllib2.Request(site_url + '/api/3/action/tag_list')
+        response = urllib2.urlopen(request)
+        assert response.code == 200
+
+        response_dict = json.loads(response.read())
+        assert response_dict['success'] is True
+
+        #package_create returns the created package as its result.
+        tag_list = response_dict['result']
+    except Exception:
+        pass
+    return tag_list
 
 

@@ -1,46 +1,8 @@
+var tags = [];
 
 function select_bc_ocio() {
 	fill_bc_ocio(bc_ocio_val);
 }
-
-function fill_bc_ocio() {
-	var security_class = $("#field-security_class").val();
-	var bc_ocio = $("#field-bc_ocio");
-
-	var options = "";
-
-	switch (security_class) {
-	case '001' :
-		options += 	'<option></option>' +
-					'<option value="HIGH-CABINET"> HIGH-CABINET </option>' +
-					'<option value="HIGH-CONFIDENTIAL"> HIGH-CONFIDENTIAL </option>' +
-					'<option value="HIGH-SENSITIVITY"> HIGH-SENSITIVITY </option>';
-		break;
-	case '002' :
-		options += 	'<option></option>' +
-					'<option value="MEDIUM-SENSITIVITY"> MEDIUM-SENSITIVITY </option>' +
-		   			'<option value="MEDIUM-PERSONAL"> MEDIUM-PERSONAL </option>';
-		break;
-	case '003' :
-		options += 	'<option></option>' +
-					'<option value="LOW-SENSITIVITY"> LOW-SENSITIVITY </option>' +
-					'<option value="LOW-PUBLIC"> LOW-PUBLIC </option>';
-		break;
-	default :
-		options = '<option></option>';
-	}
-
-	bc_ocio.find('option').remove().end().append(options);
-	if (just_loaded && bc_ocio_val != '') {
-		just_loaded = false;
-		$('#field-bc_ocio option[value="' + bc_ocio_val + '"]').prop('selected', true);
-	}
-	bc_ocio.select2({
-						placeholder : "Select BC OCIO security",
-						width : "220px"
-					});
-}
-
 
 /*-------------------------------------------------------------------*
  * This function is called when the resource status is changed on    *
@@ -124,7 +86,7 @@ function add_contact(roles, orgs) {
 		if (orgs[i].id == selected_org_id) {
 			html += '							 	<option value="' + orgs[i].id + '" selected="selected">' + orgs[i].name + '</option>';
 		}
-		else {			
+		else {
 			html += '							 	<option value="' + orgs[i].id + '">' + orgs[i].name + '</option>';
 		}
 	}
@@ -308,7 +270,7 @@ function select_branch(org_branches) {
 									placeholder : "Select a branch",
 									width : "220px"
 								});
-	
+
 	$('[data-group="org"]').val(org_id)
 	$('[data-group="org"]').select2();
 }
@@ -366,19 +328,75 @@ $('.private-contact').change(function(){
      }else{
           $(this).val('Private');
      }
-    
-    alert($(this).val());
-    
+
 });
+
+$('#field-tags').select2({
+	width: '758px',
+	placeholder: "eg. economy, mental health, government",
+	tags: true,
+	tokenSeparators: [','],
+	minimumInputLength: 1,
+	createSearchChoice: function(term) {
+		return {
+			id: $.trim(term),
+			text: $.trim(term)
+		};
+	},
+	data : tags,
+
+	initSelection: function(element, callback) {
+
+        var data = [];
+
+        function splitVal(string, separator) {
+            var val, i, l;
+            if (string === null || string.length < 1) return [];
+            val = string.split(separator);
+            for (i = 0, l = val.length; i < l; i = i + 1) val[i] = $.trim(val[i]);
+            return val;
+        }
+
+        $(splitVal(element.val(), ",")).each(function () {
+            data.push({
+            	id: this,
+            	text: this
+            	});
+        });
+
+        callback(data);
+	}
+});
+
+/*-------------------------------------------------------------------*
+ * This function preloads the list of available keywords.            *
+ *-------------------------------------------------------------------*/
+function load_keywords() {
+	$.get('/api/3/action/tag_list', function( data ) {
+		tags_data = data.result;
+		for (i = 0; i < tags_data.length; i++) tags.push({id: tags_data[i], text: tags_data[i]});
+	});
+}
+
+/*-------------------------------------------------------------------*
+ * Updates dataset URL when the title is changed.                    *
+ *-------------------------------------------------------------------*/
+$("#field-title").on('keyup change', function(){
+	var titleText = $(this).val().trim();
+	urlText = titleText.replace(/\W+/g, "-").toLowerCase();
+	if (urlText.length > 100) {
+		urlText = urlText.substring(0, 100);
+	}
+	$("#field-name").val(urlText);
+});
+
 /*-------------------------------------------------------------------*
  * Initialization on loading dataset creation/edit page.             *
  *-------------------------------------------------------------------*/
 $(function() {
 	just_loaded = true;
-	console.log("Test");
 	check_resource_stat();
 	hideDeletedRecords();
-	fill_bc_ocio();
 	$( ".datefield" ).datepicker({ dateFormat: "yy-mm-dd", showOtherMonths: true, selectOtherMonths: true });
 	$("#field-retention_expiry_date").datepicker({ dateFormat: "yy-mm-dd", showOtherMonths: true, selectOtherMonths: true });
 
@@ -390,9 +408,12 @@ $(function() {
 
 		var $datasetForm = $('#form-edc_dataset');
 		if($datasetForm.hasClass('archived')) {
-			$datasetForm.find('input:not(input[type="submit"]), select, textarea').each(function() {
+			$datasetForm.find('input, select, textarea, button, a.btn').each(function() {
 				$(this).attr('disabled', 'disabled');
 			});
 		}
+
+		load_keywords();
+
 	});
 });

@@ -13,6 +13,19 @@
   src: local('Lato Bold'), local('Lato-Bold'), url(http://themes.googleusercontent.com/static/fonts/lato/v7/qdgUG4U09HnJwhYI-uK18wLUuEpTyoUstqEm5AMlJo4.woff) format('woff');
 }
 
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/cJZKeOuBrn4kERxqtaUH3bO3LdcAZYWl9Si6vvxL-qU.woff) format('woff');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(http://themes.googleusercontent.com/static/fonts/opensans/v8/k3k702ZOKiLJc3WVjuplzKRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
+}
+
 /* End Fonts */
 
 body {
@@ -27,6 +40,33 @@ body {
 
 .js-hide {
   display: none;
+}
+
+.tag-list {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.tag {
+  display: inline-block;
+  margin-bottom: 4px;
+  padding: 1px 10px;
+  border: 1px solid rgba(41, 41, 41, 0.4);
+  -webkit-border-radius: 100px;
+  -moz-border-radius: 100px;
+  border-radius: 100px;
+}
+
+a.tag:hover{
+  text-decoration:none;
+  color:#fff;
+  background-color:#394559;
+  box-shadow: none;
+}
+
+.resource-list {
+  margin-left: 0;
+  margin-right: 0;
 }
 
 /* Header */
@@ -125,7 +165,7 @@ body {
   background: url(/assets/gov/images/bc_logo_blue.png) no-repeat;
 }
 
-#header-banner h1 {
+#header-banner h2 {
   font-family: 'Century Gothic', 'Verdana', sans-serif;
   display: block;
   float: left;
@@ -134,6 +174,7 @@ body {
   font-size: 30px;
   font-weight: normal;
   color: #fff;
+  border-bottom: none;
 }
 
 #header-banner #wb-srch {
@@ -271,7 +312,6 @@ body {
   font-family: 'Verdana', 'Arial', sans-serif;
   font-size: 11px;
   clear: both;
-  overflow: hidden;
 }
 
 .sub-navigation ul {
@@ -300,6 +340,29 @@ body {
   color: #151515;
 }
 
+.sub-navigation .dropdown-menu {
+  background: #e0e4ec;
+  border: 0;
+  border-radius: 0;
+  font-size: 1.0em;
+}
+
+.sub-navigation .dropdown-menu li {
+  display: block;
+  border-left: none;
+  padding: 0;
+}
+
+.sub-navigation .dropdown-menu li a {
+  padding: 5px 10px;
+}
+
+.sub-navigation .dropdown-menu li a:hover {
+  background: #6e7fa1;
+  color: #fff;
+  text-decoration: none;
+}
+
 .share-this-record .dropdown-menu {
   border-top-color: transparent;
   margin-top: -1px;
@@ -320,8 +383,14 @@ body {
 }
 
 #content .dataset-view .primary h1 {
-  margin: 0;
-  font-size: 1.75em;
+  margin: 0 0 10px 0;
+  font-size: 2.5em;
+}
+
+.dataset-view h3 {
+  background: #394559;
+  color: #fff;
+  padding: 5px;
 }
 
 .btn.btn-primary {
@@ -357,16 +426,10 @@ body {
 }
 
 #publisher-tree {
-  padding-left: 20px;
   font-size: 16px;
 }
 #publisher-tree ul li {
-  margin-top: 10px;
   line-height: 22px;
-}
-
-#publisher-tree ul li:first-child {
-  margin-top: 0;
 }
 
 #publisher-tree ul ul,
@@ -377,6 +440,11 @@ body {
 
 .search-form h2 {
   margin-top: 0;
+  font-size: 1.4em;
+}
+
+.search-form .control-order-by label {
+  float: left;
 }
 
 .search-form .search-input button:hover i,
@@ -396,7 +464,7 @@ body {
 
 #dataset-markers {
   list-style-type: none;
-  margin: 0 -25px 0 0;
+  margin: 0 -25px 0 25px;
   padding: 0;
   float: right;
 }
@@ -413,7 +481,7 @@ body {
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 0 10px 10px 0;
+  border-width: 0 130px 8px 0;
   border-color: transparent black transparent transparent;
   float: right;
 }
@@ -530,13 +598,21 @@ body {
   border-right-color: #22303d;
 }
 
-
 #dataset-markers .marker a {
   display: block;
   padding: 5px 8px;
   color: #fff;
-  font-size: 16px;
-  font-family: 'Lato';
+  font-size: 18px;
+  font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica';
+  font-weight: bold;
+}
+
+#dataset-resources {
+  margin-bottom: 50px;
+}
+
+.module-content:first-child {
+  margin-top: 0;
 }
 
 .notes {
@@ -577,11 +653,16 @@ body {
 
 #additional-information {
   display: block;
-  padding: 0 20px;
+  padding: 20px;
+  background: #f6f6f6;
 }
 
 #additional-information.off {
   display: none;
+}
+
+#additional-information h2:first-child {
+  margin-top: 0;
 }
 
 section.tags {
@@ -590,6 +671,35 @@ section.tags {
 
 #purpose .purpose.on {
   margin-bottom: 10px;
+}
+
+#request-data {
+  background: #e0e4ec;
+  padding: 10px;
+  overflow: hidden;
+  font-size: 1.1em;
+  line-height: 37px;
+}
+
+#request-data .btn {
+  float: right;
+  margin: 6px 0;
+}
+
+#request-data p {
+  margin: 0;
+}
+
+.search-form.search-main {
+  border-bottom: 0;
+  padding-bottom: 0;
+  margin-top: 10px;
+  padding: 0 15px;
+}
+
+.module-content.disqus-comments {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 /* Footer */
@@ -604,12 +714,12 @@ section.tags {
   padding: 13px 20px;
   float: left;
   width: 240px;
-  height: 230px;
   line-height: 1;
+  text-align: center;
 }
 
 #footer-navigation .footer-links h3 {
-  margin: 0 0 20px 0;
+  margin: 0;
 }
 
 #footer-navigation .footer-links h3 a {
@@ -643,7 +753,7 @@ section.tags {
   width: 920px;
   padding: 0;
   clear: both;
-  margin: 0 auto;
+  margin: 0 auto 20px auto;
   background: #fff;
   border-radius: 7px;
   overflow: hidden;
@@ -656,7 +766,7 @@ section.tags {
 }
 
 #footer-navigation #media-links ul {
-  float: left;
+  float: right;
   line-height: 70px;
   margin-left: 20px;
 }
@@ -697,6 +807,13 @@ section.tags {
 
 #footer-navigation #admin-links ul li a {
   color: #fff;
+}
+
+#version {
+  float: right;
+  padding-right: 25px;
+  font-size: 0.8em;
+  margin-top: -15px;
 }
 
 /* CKAN overrides */
@@ -750,10 +867,6 @@ a:hover {
 
 a {
   text-decoration: none;
-}
-
-#header-banner h1 {
-  border-bottom: none;
 }
 
 #wb-core {
@@ -848,11 +961,11 @@ label:after {
     margin: 10px;
   }
 
-  #header-banner h1 {
+  #header-banner h2 {
     width: auto;
     margin: 0;
     font-size: 18px;
-    line-height: 46px;
+    line-height: 52px;
   }
 
   #wb-srch {
@@ -916,6 +1029,14 @@ label:after {
   }
 
   /* Footer */
+  #footer-navigation #media-links #media-links-img {
+    width: 135px;
+    margin: 10px 0;
+  }
+
+  #footer-navigation #media-links #media-links-img img {
+    width: 100%;
+  }
 
   #footer-navigation #media-links {
     width: auto;
@@ -925,11 +1046,9 @@ label:after {
 
   #footer-navigation #media-links ul {
     width: auto;
-    float: none;
     line-height: 20px;
-    margin: 0 0 10px 0;
+    margin: 20px 0;
     list-style-type: none;
-    clear: both;
   }
 
   #footer-navigation #media-links ul li {
@@ -985,5 +1104,9 @@ label:after {
   #footer-navigation #media-links #media-links-img {
     width: 100px;
     margin: 5px 0;
+  }
+
+  #footer-navigation #media-links ul {
+    margin: 10px 0;
   }
 }

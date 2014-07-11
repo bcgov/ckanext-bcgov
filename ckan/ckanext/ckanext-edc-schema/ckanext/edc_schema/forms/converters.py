@@ -48,16 +48,17 @@ def convert_from_extras(key, data, errors, context):
     deleteIndex = []
     for data_key, data_value in new_data.iteritems():
         #If this is a deleted record then add it to the deleted list to be removed from data later.  
-        if ('delete' in data_key
-            and data_value == '1'):
+        if ('delete' in data_key and data_value == '1'):
             deleteIndex.append(data_key[1])
     deleted = []        
     for data_key, data_value in new_data.iteritems():
             if (len(data_key) > 1 
                 and data_key[1] in deleteIndex):
                 deleted.append(data_key)
-    for item in deleted :
-        del new_data[item]
+                
+    if not errors:            
+        for item in deleted :
+            del new_data[item]
 
     #Add data extracted from extras to the data dictionary
     for data_key, data_value in new_data.iteritems():

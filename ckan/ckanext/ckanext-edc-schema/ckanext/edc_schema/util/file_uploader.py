@@ -89,13 +89,24 @@ class FileUploader(object):
         os.rename(temp_filepath, actual_filepath)
 
 
-    def upload_temp_file(self, field_storage, max_size=2):
+    def __get_size(self, src_file):
+        src_file.seek(0)
+        current_size = 0
+        while True:
+            data = src_file.read(2 ** 20)
+            if not data:
+                break
+            current_size += len(data)
+        return current_size
+            
+    def upload_temp_file(self, pkg_id, field_storage, max_size=2):
         '''
             upload the given file temporarily and wait until the package update to get the package id as the actual file name
         '''
         
         
         import imghdr
+        
         
         if isinstance(field_storage, cgi.FieldStorage):
             source_filename = field_storage.filename
@@ -108,29 +119,41 @@ class FileUploader(object):
         if field_storage.filename:
             image_type = imghdr.what(source_file)
             name, extension = os.path.splitext(source_filename)
-            temp_filepath = os.path.join(self.storage_path, DEFAULT_UPLOAD_FILENAME + extension)
-        
+            temp_filepath = os.path.join(self.storage_path, DEFAULT_UPLOAD_FILENAME + pkg_id + extension)
+                    
+        upload_dict = {}
         #Upload the file    
         if image_type :
+            file_size = self.__get_size(source_file)
+            if file_size > max_size * 1024 * 1024:
+                upload_dict = {'files': [
+                                             {'name' : source_filename,
+                                             'size' : file_size,
+                                             'error' : 'The image size is too big'}
+                                             ]
+                                }
+                return upload_dict
             output_file = open(temp_filepath, 'wb')
             source_file.seek(0)
-            current_size = 0
             while True:
-                current_size = current_size + 1
-                # MB chuncks
                 data = source_file.read(2 ** 20)
                 if not data:
                     break
                 output_file.write(data)
-                if current_size > max_size:
-                    os.remove(temp_filepath)
-                    raise logic.ValidationError(
-                        {'upload_file': ['File upload too large']}
-                    )
             output_file.close()
             #Return the uploaded file url
-            image_url = os.path.join(config.get('ckan.site_url'),'uploads', 'edc_files', DEFAULT_UPLOAD_FILENAME + extension)
-            return image_url
+            image_url = os.path.join(config.get('ckan.site_url'),'uploads', 'edc_files', DEFAULT_UPLOAD_FILENAME + pkg_id + extension)
+            upload_dict = {'files': [
+                                             {'name' : source_filename,
+                                              'size' : file_size,
+                                              'url' : image_url,
+                                              'thumbnailUrl' : image_url,
+                                              'deleteUrl' : image_url,
+                                              'deleteType' : 'DELETE'
+                                             }
+                                    ]
+                           }
+            return upload_dict
         else:
             return None
         
@@ -159,7 +182,7 @@ class FileUploader(object):
     def remove_files_with_name(self, filename):
         import glob
         
-        #Get the list of all possible temp files
+        #Get the list of all possible files
         filepath = os.path.join(self.storage_path, filename + '.*')
         temp_files_exist = glob.glob(filepath)
         

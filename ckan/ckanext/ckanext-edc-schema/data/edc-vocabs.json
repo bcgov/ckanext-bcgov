@@ -2,10 +2,10 @@
 	{
 		"name": "dataset_type_vocab",
 		"tags": [
-					{"id": "001", "name": "Application"},
-					{"id": "002", "name": "Non-Geospatial Dataset"},
-					{"id": "003", "name": "Geospatial Dataset"},
-					{"id": "004", "name": "Web Service"}
+					{"id": "001", "name": "Dataset"},
+					{"id": "002", "name": "Geographic Dataset"},
+					{"id": "003", "name": "Application"},
+					{"id": "004", "name": "Web Service - API"}
 				]
 	},
     {
@@ -59,9 +59,13 @@
 	{
 		"name" : "security_class",
 		"tags" : [
-					{"id": "001", "name": "Restricted to Government"},
-					{"id": "002", "name": "Confidential"},
-					{"id": "003", "name": "Restricted to Named User"}
+					{"id": "001", "name": "HIGH-CABINET"},
+					{"id": "002", "name": "HIGH-CONFEDENTIAL"},
+					{"id": "003", "name": "HIGH-SENSITIVITY"},
+					{"id": "004", "name": "MEDIUM-SENSITIVITY"},
+					{"id": "005", "name": "MEDIUM-PERSONAL"},
+					{"id": "006", "name": "LOW-SENSITIVITY"},
+					{"id": "007", "name": "LOW-PUBLIC"}
 				  ]
 	},
  {
@@ -223,15 +227,5 @@
                 {"id": "32611", "name": "EPSG_32611 - WGS 84 UTM zone 11N"},
                 {"id": "32612", "name": "EPSG_32612 - WGS 84 UTM zone 12N"}
             ]
-},
-{
-    "name": "dataset_title",
-    "tags": [
-                {"id": "geospatial", "name": "Geospatial Dataset"},
-                {"id": "nongeospatial", "name": "Non-Geospatial Dataset"},
-                {"id": "application", "name": "Web Application"},
-                {"id": "webservice", "name": "Webservice"}
-            ]
 }
-
 ]

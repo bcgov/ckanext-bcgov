@@ -9,9 +9,10 @@ import sys
 
 #Get the list of all data
 
-
+print "Deleting records ..."
 try:
-    request = urllib2.Request(site_url + '/api/3/action/package_list')
+    request = urllib2.Request(site_url + '/api/3/action/package_list?limit=100000')
+    request.add_header('Authorization', api_key)
     response = urllib2.urlopen(request)
     assert response.code == 200
 
@@ -25,7 +26,6 @@ except Exception, e:
     pass
 
 for pkg in data_list :
-    
     data_string = urllib.quote(json.dumps({'id': pkg}))
     try:
         request = urllib2.Request(site_url + '/api/3/action/package_delete')

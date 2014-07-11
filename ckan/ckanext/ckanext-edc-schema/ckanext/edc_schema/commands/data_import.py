@@ -35,11 +35,24 @@ def save_record_dict(record_dict, dict_file):
         json.dump(record_dict, json_file)
 
 def get_record_name(record_dict, title):
+    '''
+    Returns a unique record name based on the given record title
+    '''
+    
+    #Replace all characters other that 0-9, a-z, A-Z with space  
     name = re.sub('[^0-9a-zA-Z]+',' ', title)
     name = ' '.join(name.split())
-    name = name.lower().replace(' ', '-')[:100]
+    
+    #Remove extra white spaces and replace spaces with '-'
+    name = name.lower().strip().replace(' ', '-')
+    
+    #Truncate the title, it cannot hav emore that 100 characters 
+    if len(name) > 100 :
+        name = name[:100] 
     
     count = 0
+    
+    #Check if a record with this exists
     if name in record_dict :
         count = record_dict[name]
     count += 1
@@ -47,8 +60,9 @@ def get_record_name(record_dict, title):
     if count == 1:
         return name
     else:
+        #If there are more than one record with the same name add '_' + 3-digit record count to the name
         index = min(len(name), 96)
-        return name[:index] + "-%03d" % count
+        return name[:index] + ("-%03d" % (count,))
     
 
 def get_connection(data_source):
@@ -60,6 +74,7 @@ def get_connection(data_source):
 #         user_name = 'proxy_metastar'
 #         password = 'h0tsh0t'
         connection_str = "proxy_metastar/h0tsh0t@slkux1.env.gov.bc.ca/idwprod1.bcgov"
+        con = cx_Oracle.connect(connection_str)
     elif data_source.lower() == 'discovery' :
          user_name = 'metastar'
          host = 'slkux12.env.gov.bc.ca'
@@ -79,7 +94,6 @@ def get_connection(data_source):
 #    con = cx_Oracle.connect(connection_str)
     
     return con
-
 
 def import_odc_records(con, record_dict):
     
@@ -127,6 +141,7 @@ def import_odc_records(con, record_dict):
                 "AND DBC_CS.CREATOR_SECTOR_ID=DBC_SO.CREATOR_SECTOR_ID " + \
                 "AND DBC_DC_MIN.RESOURCE_SET_ID(+)=DBC_RS.RESOURCE_SET_ID " + \
                 "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "
+#                "AND DBC_RT.RESOURCE_TYPE_NAME='Geospatial Dataset'"
     
     
     cur = con.cursor()
@@ -136,16 +151,8 @@ def import_odc_records(con, record_dict):
     total_number_of_records = len(data)
     
     
-    resource_query = "select * from APP_DATABC.DBC_RESOURCE_ACCESS_ODC_VW "
-    resource_cur = con.cursor()
-    resource_cur.execute(resource_query)        
-    resource_data = resource_cur.fetchall()
-
-    
     index = 0
     records_created = 0
-    
-#    record_dict = load_record_dict("odsi_dict.json") or {}
     
     previous_count = 0;
     for name in record_dict.keys():
@@ -154,20 +161,26 @@ def import_odc_records(con, record_dict):
     print previous_count
     
     #Create ODSI error file
-    error_file = open('ODSI_errors.txt', 'w') 
+    error_file = open('ODSI_errors.txt', 'a') 
     
+#    for result in data:
     for result in data:
         try:        
             if index < previous_count :
                 index += 1
                 continue
         
+            edc_record = {}
+            edc_record['edc_state'] = result[21]
+            
             # If this is record exists in discovery ignore it
             # The record exists in discovery if either DISCOVERY_UID or FEATURE_CLASS_NAME is not null.
-            if (not result[2]) or result[9] or result[22] :
+            #Also ignore DRAFT records
+            if (not result[2]) or result[9] or result[22] or edc_record['edc_state'] == 'DRAFT':
+#            if (not result[2]) :
+                index += 1
                 continue
         
-            edc_record = {}
         
             title = result[2]
         
@@ -176,7 +189,6 @@ def import_odc_records(con, record_dict):
         
         # Set the state of record
         
-            edc_record['edc_state'] = result[21]
         
             license_id = str(result[10])
         
@@ -185,7 +197,7 @@ def import_odc_records(con, record_dict):
             elif license_id == '2' :
                 edc_record['license_id'] = '21'
             elif  license_id == '3' or license_id == '4' :
-                edc_record['license_id'] = '23'
+                edc_record['license_id'] = '22'
             elif  license_id == '5':
                 edc_record['license_id'] = '24'
             else :
@@ -196,9 +208,10 @@ def import_odc_records(con, record_dict):
             #edc_record['license_id'] = str(result[10])
         
             # Setting the record type
-            record_types = {'001' : 'application', '002': 'nongeospatial', '003': 'geospatial', '004': 'webservice'}
-            record_type_id = get_edc_tag_id('dataset_type_vocab', result[8])
-            edc_record['type'] = record_types[record_type_id]
+            type_dict = {'Application' : 'Application', 'Geospatial Dataset' : 'Geographic', 'Non-Geospatial Dataset' : 'Dataset', 'Web Service' : 'WebService'}
+#            record_types = {'001' : 'Dataset', '002': 'Geographic Dataset', '003': 'Application', '004': 'Webservice / API'}
+#            record_type_id = get_edc_tag_id('dataset_type_vocab', result[8])
+            edc_record['type'] = type_dict[result[8]]
         
             edc_record['author'] = user_id        
             org = get_organization_id(result[1])
@@ -210,62 +223,29 @@ def import_odc_records(con, record_dict):
             if result[4]:
                 # Extract the keywords(tags) names and add the list of tags to the record.
                 keywords = result[4].split(',')
-                edc_record['tags'] = [{'name' : keyword} for keyword in keywords]
+                edc_record['tags'] = [{'name' : keyword.strip()} for keyword in keywords]
         
                 # Adding dataset dates
             dates = []
             if result[18] :
                 dates.append({'type': '001', 'date': result[18], 'delete': '0'})
             if result[16] :
-                dates.append({'type': '002', 'date': result[17], 'delete': '0'})
+                dates.append({'type': '002', 'date': result[16], 'delete': '0'})
             if result[17] :
-                dates.append({'type': '003', 'date': result[16], 'delete': '0'})
+                dates.append({'type': '003', 'date': result[17], 'delete': '0'})
         
             edc_record['dates'] = dates
         
             # Adding dataset contacts
             contacts = []        
-            contacts.append({'name': result[19], 'email': result[20], 'delete': '0', 'organization': org, 'role' : '002'})
+            contacts.append({'name': result[19], 'email': result[20], 'delete': '0', 'organization': org, 'role' : '002', 'private' : 'Display'})
         
             edc_record['contacts'] = contacts
         
             # Set record's resource status to completed
             edc_record['resource_status'] = '001'
         
-            # Set record's resource update cycle 
-            update_cycle = ''
-            if result[7] :
-                update_cyle_str = result[7].lower()
-            else:
-                update_cyle_str = 'unknown'
-            if 'day' in update_cyle_str or 'daily' in update_cyle_str:
-                update_cycle = 'daily'
-            elif 'week' in update_cyle_str:
-                update_cycle = 'weekly'
-            elif 'month' in update_cyle_str:
-                update_cycle = 'montly'
-            elif 'quarterly' in update_cyle_str:
-                update_cycle = 'quarterly'
-            elif 'biannually' in update_cyle_str or 'semi-annually' in update_cyle_str or 'biannual' in update_cyle_str:
-                update_cycle = 'biannually'
-            elif 'annual' in update_cyle_str or 'year' in update_cyle_str:
-                update_cycle = 'annually'
-            elif 'needed' in update_cyle_str or 'as required' in update_cyle_str or 'as necessary' in update_cyle_str :
-                update_cycle = 'asNeeded'
-            elif 'occasional' in update_cyle_str or 'irregular' in update_cyle_str:
-                update_cycle = 'irregular'
-            elif 'notplanned' in update_cyle_str :
-                update_cycle = 'notPlanned'
-            elif 'periodic' in update_cyle_str or 'continual' in update_cyle_str:
-                update_cycle = 'continual'
-            else:
-                update_cycle = 'unknown'
-            edc_record['resource_update_cycle'] = get_edc_tag_id('resource_update_cycle', update_cycle)
-        
-        
-            # Set record's security classification to "Restricted to Named User"
-            edc_record['security_class'] = '003'
-            edc_record['bc_ocio'] = 'LOW-PUBLIC'
+            edc_record['security_class'] = '006'
         
             # Set record view audience and download audience to public
             edc_record['view_audience'] = '001'
@@ -282,19 +262,35 @@ def import_odc_records(con, record_dict):
             edc_record['more_info'] = [{'link': result[5], 'delete': '0'}]
         
             # Set geospatial record specific properties
-            if edc_record['type'] == 'geospatial':
+            if edc_record['type'] == 'Geographic':
                 edc_record['layer_name'] = result[11]
                 edc_record['preview_latitude'] = result[12]
-                edc_record['preview_longtude'] = result[13]
-                edc_record['zoom_level'] = result[14]
+                edc_record['preview_longitude'] = result[13]
+                edc_record['preview_zoom_level'] = result[14]
                 edc_record['preview_map_service_url'] = result[15]
 
+
+            #Extract resource object name
+            if (edc_record['type'] == 'Geographic') :
+                object_name = result[9]
+                if object_name and (object_name.startswith('WHSE_') or object_name.startswith('REG_')) :
+                    edc_record['object_name'] = object_name
+        
+   
                 
             record_id = result[0]
-        
-            resource_records = [resource for resource in resource_data if resource[0] == record_id]
+            
+            resource_query = "SELECT * FROM APP_DATABC.DBC_RESOURCE_ACCESS_ODC_VW WHERE RESOURCE_SET_ID = '" + str(record_id) + "'"
+            resource_cur = con.cursor()
+            resource_cur.execute(resource_query)        
+            resource_data = resource_cur.fetchall()
+            
+#            print 'Resource data : '
+#            pprint.pprint(resource_data)
+            
+#            resource_records = [resource for resource in resource_data if resource[0] == record_id]
             resources = []
-            for resource in resource_records:
+            for resource in resource_data:
             
                 resource_rec = {}
                 # Setting resource url to RESOURCE_ACCESS_URL from ODC 
@@ -305,67 +301,103 @@ def import_odc_records(con, record_dict):
                     resource_rec['name'] = resource[2]
             
                 # Setting resource format field value
-                format = ""
+                res_format = ""
             
-            mimeType = (resource[1] or 'Unknown').lower()
-            if mimeType == 'application/zip' :
-                format = 'ZIP'
-            elif mimeType == 'application/json':
-                format = "JSON"
-            elif mimeType == 'application/xls' :
-                format = 'XLS'
-            elif mimeType == 'application/xml' or mimeType == 'application/rdf+xml':
-                format = 'XML'
-            elif mimeType == 'text/csv' :
-                format = 'CSV'
-            elif mimeType == 'text/plain' :
-                format = 'TXT'
-            elif mimeType == 'application/vnd.google-earth.kmz' or mimeType == 'application/vnd.google-earth.kml+xml' :
-                format = 'KMZ'
-            else:
-                format = 'Other'
+                mimeType = (resource[1] or 'Unknown').lower()
+                if mimeType == 'application/zip' :
+                    res_format = 'ZIP'
+                elif mimeType == 'application/json':
+                    res_format = "JSON"
+                elif mimeType == 'application/xls' :
+                    res_format = 'XLS'
+                elif mimeType == 'application/xml' or mimeType == 'application/rdf+xml':
+                    res_format = 'XML'
+                elif mimeType == 'text/csv' :
+                    res_format = 'CSV'
+                elif mimeType == 'text/plain' :
+                    res_format = 'TXT'
+                elif mimeType == 'application/vnd.google-earth.kmz' or mimeType == 'application/vnd.google-earth.kml+xml' :
+                    res_format = 'KMZ'
+                else:
+                    res_format = 'Other'
             
-                format_id = get_edc_tag_id('resource_format', format) 
+                format_id = get_edc_tag_id('resource_format', res_format) 
                 if (edc_record['type'] != 'application'):    
                     resource_rec['format'] = format_id
             
                 # Setting Geospatial and Non-geospatial specific resource fields
-                if edc_record['type'] == 'geospatial' or edc_record['type'] == 'nongeospatial':
+                if edc_record['type'] == 'Geographic' or edc_record['type'] == 'Dataset':
                     #resource_rec['storage_format_description'] = resource[1] or 'Not given'
                     # resource_type = resource[2] or 'Unknown'
                     resource_type = 'Data'
                     resource_rec['edc_resource_type'] = get_edc_tag_id('resource_type', resource_type.strip())
-                    access_method = resource[5] or 'Unknown'
+                    access_method = resource[5] or 'Direct Access'
                     resource_rec['resource_storage_access_method'] = get_edc_tag_id('resource_storage_access_method', access_method.strip())
                     resource_rec['resource_storage_location'] = '002'
                 
-                    if edc_record['type'] == 'geospatial':
+                    if edc_record['type'] == 'Geographic':
                         resource_rec['projection_name'] = ' '
             
-                    # Add the current resource record to the list of dataset resources     
+                # Set record's resource update cycle 
+                update_cycle = ''
+                if result[7] :
+                    update_cyle_str = result[7].lower()
+                else:
+                    update_cyle_str = 'monthly'
+                    
+                if 'day' in update_cyle_str or 'daily' in update_cyle_str:
+                    update_cycle = 'daily'
+                elif 'week' in update_cyle_str:
+                    update_cycle = 'weekly'
+                elif 'month' in update_cyle_str:
+                    update_cycle = 'montly'
+                elif 'quarterly' in update_cyle_str:
+                    update_cycle = 'quarterly'
+                elif 'biannually' in update_cyle_str or 'semi-annually' in update_cyle_str or 'biannual' in update_cyle_str:
+                    update_cycle = 'biannually'
+                elif 'annual' in update_cyle_str or 'year' in update_cyle_str:
+                    update_cycle = 'annually'
+                elif 'needed' in update_cyle_str or 'as required' in update_cyle_str or 'as necessary' in update_cyle_str :
+                    update_cycle = 'asNeeded'
+                elif 'occasional' in update_cyle_str or 'irregular' in update_cyle_str:
+                    update_cycle = 'irregular'
+                elif 'notplanned' in update_cyle_str :
+                    update_cycle = 'notPlanned'
+                elif 'periodic' in update_cyle_str or 'continual' in update_cyle_str:
+                    update_cycle = 'continual'
+                else:
+                    update_cycle = 'monthly'
+                    
+                resource_rec['resource_update_cycle'] = get_edc_tag_id('resource_update_cycle', update_cycle)
+        
+        
+                # Add the current resource record to the list of dataset resources     
                 resources.append(resource_rec)
         
             # Add the list of dataset resources to the dataset
             edc_record['resources'] = resources    
         
+#            pprint.pprint(edc_record)
+            
+            (record_info, errors) = edc_package_create(edc_record)
         
-            record_info = edc_package_create(edc_record)
-        
-            if  record_info['success'] == True:
+            if  record_info :
                 records_created += 1
             else :
-                pprint.pprint(record_info['error'])
+                pprint.pprint(errors)
                 
-                error_file.write('Error in importing record with UID : ' + str(result[14]) + '\n')
+                error_file.write('Error in importing record with UID : ' + str(result[0]) + '\n')
                 error_file.write('Record info :\n')
                 json.dump(edc_record, error_file)
                 error_file.write('\nError details :')
-                json.dump(record_info['error'], error_file)
-                error_file.write('\n\n-----------------------------------------------------------------------------------------------\n\n')
+                json.dump(errors, error_file)
+                error_file.write('\n\n------------------------------------------------------------------------------------------------------------------------------------\n\n')
             index = index + 1
         
-        except:
-            error_file.write('Exception in importing record with UID ' + str(result[14])) + '\n'
+        except Exception, e:
+            print str(e)
+            error_file.write('Exception in importing record with UID ' + str(result[0])) + '\n'
+            pass
     
     con.close()
     
@@ -444,7 +476,21 @@ def get_organization(org_str):
     
     return (org_title, sub_org_title)
 
+
+def load_common_records() :
+    
+    with open('common_records.txt', 'r') as common_records_file :
+        common_records = [line.rstrip('\n') for line in common_records_file]
+        
+    return common_records
+
 def import_discovery_records(con, record_dict):
+    
+    #Required for email validation
+    from lepl.apps.rfc3696 import Email
+    is_valid_email = Email()
+    
+    common_uids = load_common_records()
     
     user_id = get_user_id(user_name)
     
@@ -482,6 +528,7 @@ def import_discovery_records(con, record_dict):
                 "to_char(to_date(dat.xml_data.extract('//E9260/text()').getStringVal(),'YYYY-MM-DD'), 'YYYY-MM-DD') DATE_MODIFIED, " \
                 "substr(dat.xml_data.extract('//E11282/text()').getStringVal(),1,3) License_data, " \
                 "dat.xml_data.extract('//E9350/text()').getStringVal() Resource_Storage_Description, " \
+                "dat.xml_data.extract('//E10050/text()').getStringVal() object_name, " \
                 "SUBSTR(dat.xml_data.extract('//E9682/text()').getStringVal(),1,450) UNIQUE_METADATA_URL, " \
                 "usr.description OWNER_DESC, " \
                 "usr.email OWNER_EMAIL, " \
@@ -509,38 +556,50 @@ def import_discovery_records(con, record_dict):
     
     
     #Create error file
-    error_file = open('Discovery_errors.txt', 'w') 
+    error_file = open('Discovery_errors.txt', 'a') 
     
     for result in data:
         try :
             if index < previous_count :
                 index += 1
                 continue
-        
-            edc_record = {}
-        
-            # Record title is required
-            if not result[0]:
+            
+            #Ignore records available in ODSI
+            if str(result[14]) in common_uids :
+                index += 1
                 continue
         
-            title = result[0]
+            edc_record = {}
+
+            state_convert_dict = {'Draft': 'DRAFT', 'Approve': 'PENDING PUBLISH', 'Published': 'PUBLISHED', 'ZPublished': 'ARCHIVED'}
+            edc_record['edc_state'] = state_convert_dict[result[3]]
+
+            # Ignore records with null title, DRAFT records or Theme records (Records with Theme in title).
+            if not result[0] or edc_record['edc_state'] == 'DRAFT' or '(Theme)' in result[0]:
+                index += 1
+                continue
+        
+            title = result[0].strip()
+            
+            #Remove (DEPRECATED) from the record title
+            if title.startswith('(DEPRECATED) ') :
+                title = title.replace('(DEPRECATED) ', '').strip()
+                edc_record['notes'] = 'DEPRECATED - The resource(s) that this record refers is obsolete and may be scheduled for retirement. Please see the Replacement Record reference in the Data Currency / Update section.'
+            else :
+                edc_record['notes'] = result[1] or ' '
+                
             edc_record['name'] = get_record_name(record_dict, title);
             edc_record['title'] = title
         
-            edc_record['notes'] = result[1] or ' '
-            # Set the state of record
-        
-            state_convert_dict = {'Draft': 'DRAFT', 'Approve': 'PENDING PUBLISH', 'Published': 'PUBLISHED', 'ZPublished': 'ARCHIVED'}
-            edc_record['edc_state'] = state_convert_dict[result[3]]
         
             edc_record['purpose'] = result[4]
         
             if result[32] and result[32].lower == 'yes':
                 edc_record['license_id'] = "2"
             else:
-                edc_record['license_id'] = "23"
+                edc_record['license_id'] = "22"
         
-            edc_record['type'] = 'geospatial'
+            edc_record['type'] = 'Geographic'
         
             edc_record['author'] = user_id
                 
@@ -569,6 +628,9 @@ def import_discovery_records(con, record_dict):
             if result[9]:
                 contact_orgs = result[9].split(',')
         
+            #Validate emails
+            contact_emails = [contact_email if is_valid_email(contact_email) else 'databc@gov.bc.ca' for contact_email in contact_emails]
+            
             # Adding dataset contacts
             contacts = []
         
@@ -576,7 +638,7 @@ def import_discovery_records(con, record_dict):
         
             for i in range(contact_len): 
 #                (contact_org, contact_sub_org) = get_organization(contact_orgs[i])       
-                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record['org'], 'role' : '002'})
+                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record['org'], 'role' : '002', 'private' : 'Display'})
         
             edc_record['contacts'] = contacts
         
@@ -611,10 +673,6 @@ def import_discovery_records(con, record_dict):
             edc_record['retention_expiry_date'] = result[21]
             edc_record['source_data_path'] = result[22]
         
-            # Set record's resource update cycle
-            update_cycle = result[10] or 'unknown'
-            edc_record['resource_update_cycle'] = get_edc_tag_id('resource_update_cycle', update_cycle)
-        
             # Adding dataset dates
             dates = []
             if result[30] :
@@ -624,25 +682,15 @@ def import_discovery_records(con, record_dict):
         
             edc_record['dates'] = dates
 
-            security_class = result[28]
+            #security_class = result[28]
+            security_class = 'HIGH-CONFEDENTIAL'
         
-            if security_class == 'secret' or security_class == 'topSecret' or 'restricted':
-                edc_record['security_class'] = '001'
-                if security_class == 'topSecret' :
-                    edc_record['bc_ocio'] = 'HIGH-CABINET'
-                elif security_class == 'secret':
-                    edc_record['bc_ocio'] = 'HIGH-CONFEDENTIAL'
-                else :
-                    edc_record['bc_ocio'] = 'HIGH-SENSITIVITY'                
-            elif security_class == 'confidential':
-                edc_record['security_class'] = '002'
-                edc_record['bc_ocio'] = 'MEDIUM-SENSITIVITY'
-            elif security_class == 'unclassified' :
-                edc_record['security_class'] = '003'
-                edc_record['bc_ocio'] = 'LOW-SENSITIVITY'
+            security_dict = {'topSecret': '001', 'secret': '002', 'restricted' : '003', 'confidential': '004', 'unclassified' : '006'}
+            
+            if security_class in security_dict :
+                edc_record['security_class'] = security_dict[security_class]
             else :
-                edc_record['security_class'] = '003'
-                edc_record['bc_ocio'] = 'LOW-PUBLIC'
+                edc_record['security_class'] = '007'
         
             iso_topic_cat = (result[29] or 'unknown').split(',')[0]    
             edc_record['iso_topic_category'] = get_edc_tag_id('iso_topic_category', iso_topic_cat)
@@ -666,13 +714,19 @@ def import_discovery_records(con, record_dict):
             resource_type = result[23] or 'Data'
             resource_rec['edc_resource_type'] = get_edc_tag_id('resource_type', resource_type.strip())
         
+
+            # Set record's resource update cycle
+            update_cycle = result[10] or 'unknown'
+            resource_rec['resource_update_cycle'] = get_edc_tag_id('resource_update_cycle', update_cycle)
+        
+            
             access_method = 'Service'
             resource_rec['resource_storage_access_method'] = get_edc_tag_id('resource_storage_access_method', access_method.strip())
             resource_rec['resource_storage_location'] = '001'  # Get the tag ID for resource storage location
             
             resource_rec['data_collection_start_date'] = result[16]
             resource_rec['data_collection_end_date'] = result[17]
-        
+            
             # Add the current resource record to the list of dataset resources     
             resources.append(resource_rec)
         
@@ -681,6 +735,14 @@ def import_discovery_records(con, record_dict):
             #media_cur.close()
         
 #            pprint.pprint(edc_record) 
+
+            #Extract resource object name
+            object_name = result[34]
+            
+            if object_name and (object_name.startswith('WHSE_') or object_name.startswith('REG_')) :
+                edc_record['object_name'] = object_name
+        
+   
 
             # Adding dataset features        
             features = []
@@ -719,22 +781,23 @@ def import_discovery_records(con, record_dict):
             edc_record['more_info'] = more_info
         
 #            pprint.pprint(edc_record)
-            record_info = edc_package_create(edc_record)
+            (record_info, errors) = edc_package_create(edc_record)
             
-            if  record_info['success'] == True:
+            if  record_info :
                 records_created += 1
             else :
-                pprint.pprint(record_info['error'])
+                pprint.pprint(errors)
                 
                 error_file.write('Error in importing record with UID : ' + str(result[14]) + '\n')
                 error_file.write('Record info :\n')
                 json.dump(edc_record, error_file)
                 error_file.write('\nError details :')
-                json.dump(record_info['error'], error_file)
-                error_file.write('\n\n-----------------------------------------------------------------------------------------------\n\n')
+                json.dump(errors, error_file)
+                error_file.write('\n\n------------------------------------------------------------------------------------------------------------------------------------\n\n')
             index = index + 1
         except:
             error_file.write('Exception in importing record with UID ' + str(result[14])) + '\n'
+            pass
     
     print "Total number of records : ", index
     print "Records created : ", records_created

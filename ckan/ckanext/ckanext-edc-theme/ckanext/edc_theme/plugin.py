@@ -10,21 +10,29 @@ import ckan.plugins.toolkit as toolkit
 def get_eas_login_url():
     '''Return the value of the eas login url config setting.
 
-    
+
 
     '''
     value = config.get('edc.eas_url')
-    
+
     return value
-    
-    
+
+
+def get_fqdn():
+    ''' Return the value of the edc_fdqn config setting '''
+
+    value = config.get('edc.edc_fqdn')
+
+    return value
+
+
 class EDCThemePlugin(plugins.SingletonPlugin):
     ''' Theme for EDC
 
     '''
     # Declare that this class implements IConfigurer.
     plugins.implements(plugins.IConfigurer)
-    
+
     # Declare that this plugin will implement ITemplateHelpers.
     plugins.implements(plugins.ITemplateHelpers)
 
@@ -51,4 +59,4 @@ class EDCThemePlugin(plugins.SingletonPlugin):
         # Template helper function names should begin with the name of the
         # extension they belong to, to avoid clashing with functions from
         # other extensions.
-        return {'get_eas_login_url': get_eas_login_url}
+        return {'get_eas_login_url': get_eas_login_url, 'get_fqdn': get_fqdn}

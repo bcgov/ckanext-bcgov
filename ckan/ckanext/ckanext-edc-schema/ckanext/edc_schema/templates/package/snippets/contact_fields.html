@@ -101,7 +101,11 @@
 				<input id="field-contacts-{{ loop.index0 }}-delete"
 				   			type="hidden"
 				   			name="contacts__{{ loop.index0 }}__delete"
-				   			value="{{ contact['delete'] }}">
+				   			{% if errors %}
+				   				value="0">
+				   			{% else %}
+				   				value="{{ contact['delete'] }}">
+				   			{% endif %}
 		</div>
 	</div>
 	{% endfor %}

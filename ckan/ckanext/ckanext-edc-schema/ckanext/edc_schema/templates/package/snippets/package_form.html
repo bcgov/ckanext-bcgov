@@ -67,8 +67,9 @@ then itself be extended to add/remove blocks of functionality. #}
 
 {% block basic_fields %}
 {% resource 'edc_resource/edc_schema.css' %}
-{% resource 'edc_resource/jquery-ui.js' %}
 {% resource 'edc_resource/jquery-ui.css' %}
+{% resource 'edc_resource/jquery-ui.js' %}
+
 {% block package_header %}
 	{% set state_options = h.edc_state_values(c.userobj.id, data) %}
 	<div class="control-group form-horizontal">
@@ -84,11 +85,12 @@ then itself be extended to add/remove blocks of functionality. #}
       		{% endfor %}
         </select>
 		</div>
+		
 	</div>
 {% endblock %}
 
 
-{% snippet 'package/snippets/package_basic_fields.html', record_type=record_type, data=data, errors=errors, licenses=c.licenses, groups_available=c.groups_available, user=user, userobj=userobj %}
+{% snippet 'package/snippets/package_basic_fields.html', record_type=c.record_type, data=data, errors=errors, licenses=c.licenses, groups_available=c.groups_available, user=user, userobj=userobj %}
 
 {% endblock %}
 
@@ -98,7 +100,7 @@ then itself be extended to add/remove blocks of functionality. #}
 
   {% block form_actions %}
     <div class="form-actions">
-      {% block disclaimer %}
+      {# block disclaimer %}
         <p class="action-info small">
           {%- trans -%}
           Important: By submitting content, you
@@ -106,7 +108,7 @@ then itself be extended to add/remove blocks of functionality. #}
           License.
           {%- endtrans -%}
         </p>
-      {% endblock %}
+      {% endblock #}
       {% block delete_button %}
         {% if h.check_access('package_delete', {'id': data.id}) and not data.state == 'deleted' %}
           {% set locale = h.dump_json({'content': _('Are you sure you want to delete this dataset?')}) %}
@@ -117,12 +119,12 @@ then itself be extended to add/remove blocks of functionality. #}
       {{ form.required_message() }}
     </div>
   {% endblock %}
-  
+
   <div id="state_confirm_dialog" class="modal-dialog">
 	<p align="justify">
 		If you are publishing this dataset as BC Open Data, clicking "Confirm" indicates you have completed the Open Data Checklist and the Open Data Approval has been signed.
 		Please see Open Information and Open Data Policy V1.0 for the checklist and approval form.
-	</p>  
+	</p>
 		<br/>
 		<a href="http://www.cio.gov.bc.ca/local/cio/kis/pdfs/open_data.pdf">http://www.cio.gov.bc.ca/local/cio/kis/pdfs/open_data.pdf</a>
   </div>

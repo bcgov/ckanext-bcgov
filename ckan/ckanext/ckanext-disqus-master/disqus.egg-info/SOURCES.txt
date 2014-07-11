@@ -1,0 +1,12 @@
+README.rst
+setup.py
+ckanext/__init__.py
+ckanext/disqus/__init__.py
+ckanext/disqus/plugin.py
+disqus.egg-info/PKG-INFO
+disqus.egg-info/SOURCES.txt
+disqus.egg-info/dependency_links.txt
+disqus.egg-info/entry_points.txt
+disqus.egg-info/namespace_packages.txt
+disqus.egg-info/not-zip-safe
+disqus.egg-info/top_level.txt

@@ -6,17 +6,15 @@
 {% set record_type = h.dataset_type(pkg_name) %}
 
 {% resource 'edc_resource/edc_schema.css' %}
-
-<form class="dataset-form dataset-resource-form form-horizontal" method="post" action="{{ action }}" data-module="basic-form resource-form">
+{% set archived = state == 'ARCHIVED' %} 
+<form class="dataset-form dataset-resource-form form-horizontal {% if archived %} archived {% endif %}" method="post" action="{{ action }}" data-module="basic-form resource-form">
   {% block stages %}
     {# An empty stages variable will not show the stages #}
     {% if stage %}
       {{ h.snippet('package/snippets/stages.html', stages=stage, pkg_name=pkg_name) }}
     {% endif %}
   {% endblock %}
-
-  {{ form.errors(error_summary) }}
-
+  
   <input name="id" value="{{ data.id }}" type="hidden"/>
 
   <div class="control-group dataset-form-resource-types">
@@ -45,13 +43,11 @@
     </div>
     {% endblock %}
 
-	{% if not record_type == 'application' %}
-    	{% block basic_fields_name %}
+    {% block basic_fields_name %}
     		{{ form.input('name', id='field-name', label=_('Name'), placeholder=_('eg. January 2011 Gold Prices'), value=data.name, error=errors.name, classes=['control-full']) }}
-    	{% endblock %}
-	{% endif %}
+    {% endblock %}
 
-	{% if record_type == 'geospatial' or record_type=='nongeospatial'  %}
+	{% if record_type == 'Geographic' or record_type=='Dataset'  %}
     	{% block basic_fields_description %}
    	 		{{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('Some useful notes about the data'), value=data.description, error=errors.description) }}
     	{% endblock %}
@@ -60,6 +56,30 @@
     {% block basic_fields_url %}
       {{ form.input('url', id='field-url', label="<span class='control-required'>*</span> "|safe + _('Resource URL'), placeholder=_('eg. http://example.com/gold-prices-jan-2011.json'), value=data.url, error=errors.url, classes=['control-full', 'control-large']) }}
     {% endblock %}
+    
+    {% block resource_update_cycle %}
+        {% set update_cycle_error = errors.resource_update_cycle %}
+        <div class="required control-group control-full{{ " error" if update_cycle_error }}">
+            <label class="control-label" for="field-update_cycle"><span class="control-required">*</span> {{ _("Update Cycle") }}</label>
+            <div class="controls">
+            	{% set update_cycle_list = h.edc_tags(_('resource_update_cycle')) %}
+            	{% set current_update_cycle = data.resource_update_cycle %}
+            	<select id="field-update_cycle" name="resource_update_cycle" data-module="autocomplete" onchange="javascript:check_resource_stat();" class="required">
+                	<option value = '' {% if not selected_update_cycle %} selected="selected" {% endif %}>Select an update cycle</option>
+                   	{% for update_cycle in update_cycle_list %}
+                    	{% set selected_update_cycle = (current_update_cycle and current_update_cycle == update_cycle.id) %}
+                        <option value="{{ update_cycle.id }}"
+                        	{% if selected_update_cycle %} selected="selected" {% endif %}>
+                            {{ update_cycle.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                {% if update_cycle_error and update_cycle_error is iterable %}
+                    <span class="error-block">{{ update_cycle_error|join(', ') }}</span>
+                {% endif %}
+            </div>
+        </div>
+    {% endblock %}
 
     {% block extra_fields %}
 
@@ -67,7 +87,7 @@
 
     {% endblock %}
 
-	{% if not record_type == 'webservice' %}
+	{% if not record_type == 'WebService' %}
 		{% block suppelement_info %}
 			{{ form.markdown('supplemental_info', id='field-supplemental_info', label=_('Supplemental information'), placeholder=_('Other descriptive information about the dataset'), value=data.supplemental_info, error=errors.supplemental_info) }}
 		{% endblock %}
@@ -88,6 +108,12 @@
 
       {{ form.input('mimetype_inner', id='field-mimetype-inner', label=_('MIME Type'), placeholder=_('eg. application/json'), value=data.mimetype_inner, error=errors.mimetype_inner, classes=[]) }}
     {% endif %}
+  {% endblock %}
+  
+  {# list of previously added resources #}
+  {% block resource_list %}
+  	{% set pkg_data =  h.get_edc_package(pkg_name) %}
+  	{% snippet "package/snippets/pkg_resources_list.html", pkg=pkg_data, resources=pkg_data.resources %}
   {% endblock %}
 
   <div class="form-actions">

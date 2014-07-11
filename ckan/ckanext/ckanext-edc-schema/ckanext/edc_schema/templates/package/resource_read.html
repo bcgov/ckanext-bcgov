@@ -1,5 +1,20 @@
 {% ckan_extends %}
 
+{% block content %}
+{% block search_input %}
+    <form class="search-form search-main">
+    <div class="search-input control-group search-giant">
+      <input type="text" class="search" name="q" autocomplete="off" placeholder="Search datasets...">
+      <button type="submit" value="search">
+        <i class="icon-search"></i>
+        <span>{{ _('Submit') }}</span>
+      </button>
+    </div>
+  </form>
+  {% endblock %}
+  {{ super() }}
+{% endblock %}
+
 {% block pre_primary %}
   {% block resource %}
     <section class="module module-resource">
@@ -68,13 +83,7 @@
           <h2>{{ _('Supplemental Information')}}</h2>
           <p>{{ res.supplemental_info }}</p>
           <h2>{{ _('Additional Information') }}</h2>
-          <table class="table table-striped table-bordered table-condensed" data-module="table-toggle-more">
-            <thead>
-              <tr>
-                <th scope="col">{{ _('Field') }}</th>
-                <th scope="col">{{ _('Value') }}</th>
-              </tr>
-            </thead>
+          <table class="table">
             <tbody>
               <tr>
                 <th scope="row">{{ _('Last updated') }}</th>
@@ -86,7 +95,7 @@
               </tr>
               <tr>
                 <th scope="row">{{ _('Format') }}</th>
-                <td>{{ h.edc_tag_name(_("resource_format"), res.format) }}</td>
+                <td>{{ h.edc_tag_name(_("resource_format"), res.format) }} </td>
               </tr>
               <tr>
                 <th scope="row">{{ _('License') }}</th>
@@ -98,6 +107,13 @@
                   <td>{{ h.edc_tag_name("resource_type", res.edc_resource_type) }}</td>
                 </tr>
               {% endif %}
+
+              {% if res.resource_update_cycle %}
+            	<tr  class="toggle-more">
+                  <th scope="row">{{ _('Resource Update Cycle') }}</th>
+                	<td> {{ h.edc_tag_name('resource_update_cycle', res.resource_update_cycle) }} </td>
+            	</tr>
+    		  {% endif %}
 
               {% if res.resource_storage_access_method %}
                 <tr class="toggle-more">
@@ -113,6 +129,9 @@
                 </tr>
               {% endif %}
               </tr>
+              {% if pkg.type == 'Geographic' %}
+                {% snippet 'package/snippets/resource_geospatial_fields.html', res=res %}
+              {% endif %}
             </tbody>
           </table>
         </div>
@@ -125,6 +144,10 @@
 
   {% block resources_list %}
     {% snippet "package/snippets/resources.html", pkg=pkg, active=res.id %}
+  {% endblock %}
+
+  {% block resource_license %}
+    {% snippet "package/snippets/social.html" %}
   {% endblock %}
 
 {% endblock %}

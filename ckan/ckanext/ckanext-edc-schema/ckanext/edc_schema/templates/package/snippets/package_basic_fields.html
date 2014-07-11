@@ -2,25 +2,48 @@
 
 {% set rec_stat = data.get('resource_status', []) %}
 
-
 {% block package_basic_fields_title %}
+	{% resource 'edc_resource/edc_dataset.js' %}
+	<div class="form-horizontal">
+  	{{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
+	</div>
+{% endblock %}
+
+{% block package_basic_fields_url %}
+  	{% set prefix = h.url_for(controller='package', action='read', id='') %}
+  	{% set domain = h.url_for(controller='package', action='read', id='', qualified=true) %}
+  	{% set domain = domain|replace("http://", "")|replace("https://", "") %}
+  	{% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': domain, 'data-module-placeholder': '<dataset>'} %}
+  	<div class="form-horizontal">
+  	{{ form.prepend('name', id='field-name', label=_('URL'), prepend=prefix, placeholder=_('eg. my-dataset'), value=data.name, error=errors.name, attrs=attrs, classes=['control-full'], is_required=true) }}
+  	</div>
+{% endblock %}
+
+
+{% block package_basic_fields_description %}
+
     <div class="control-list form-horizontal">
-    	{{ super() }}
     	<div class="control-group">
         	<label class="control-label">{{ _("Record Type") }}</label>
         	<div class="controls control-info">
-        		{{ record_type }}
+        		{{ h.record_type_label(record_type) }}
         	</div>
     	</div>
 
         <div class='required'>
             {{ form.markdown('notes', id='field-notes', label=_('Description'), placeholder=_('eg. Some
             useful notes about the data'), value=data.notes, error=errors.notes) }}
-            {% if record_type != 'application' and record_type != 'webservice' %}
+            {% if record_type != 'Application' and record_type != 'WebService' %}
             {{ form.markdown('purpose', label=_('Purpose'), placeholder=_('Summary of the intentions for which the dataset was developed.'), value=data.purpose, error=errors.purpose, classes=['purpose']) }}
             {% endif %}
-            {% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/2/util/tag/autocomplete?incomplete=?'} %}
-            {{ form.input('tag_string', id='field-tags', label=_('Keywords'), placeholder=_('eg. economy, mental health, government'), value=data.tag_string, error=errors.tags, classes=['control-full'], attrs=tag_attrs) }}
+            {# set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/3/util/tag/autocomplete?incomplete=?'} #}
+            {% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': 'http://localhost:5000/api/3/action/tag_list', 'data-module-source': 'http://localhost:5000/api/3/action/tag_list'} %}
+            {# form.input('tag_string', id='field-tags', label=_('Keywords'), placeholder=_('eg. economy, mental health, government'), value=data.tag_string, error=errors.tags, classes=['control-full'], attrs=tag_attrs) #}
+         
+    	{% block edc_package_keywords %}
+    		{% snippet 'package/snippets/edc_keywords.html', data=data, user=userobj, errors=errors %}
+    	{% endblock %}
+
         </div>
     	{% block edc_package_org %}
     		{% snippet 'package/snippets/edc_orgs.html', data=data, user=userobj, errors=errors %}
@@ -38,42 +61,13 @@
     	<input type="hidden" id="field-author" name="author" value = "{{ author }}" />
     {% endblock %}
 
-{% endblock %}
-
-{% block package_basic_fields_description %}
-
-	{% resource 'edc_resource/edc_dataset.js' %}
-
-<h2 class="module-sub-heading">Data Currency/Update</h3>
+<h3 class="module-sub-heading">Data Currency/Update</h3>
 <div class="control-list">
 	{% block package_dates_fields %}
     {% block resource_status_fields %}
         {% snippet 'package/snippets/resource_status_fields.html', data=data, errors=errors %}
     {% endblock %}
 
-    {% block package_resource_maintenance %}
-        {% set update_cycle_error = errors.resource_update_cycle %}
-        <div class="required control-group control-medium{{ " error" if update_cycle_error }}">
-            <label class="control-label" for="field-update_cycle"><span class="control-required">*</span> {{ _("Update Cycle") }}</label>
-            <div class="controls">
-            	{% set update_cycle_list = h.edc_tags(_('resource_update_cycle')) %}
-            	{% set current_update_cycle = data.resource_update_cycle %}
-            	<select id="field-update_cycle" name="resource_update_cycle" data-module="autocomplete" onchange="javascript:check_resource_stat();" class="required">
-                	<option value = '' {% if not selected_update_cycle %} selected="selected" {% endif %}>Select an update cycle</option>
-                   	{% for update_cycle in update_cycle_list %}
-                    	{% set selected_update_cycle = (current_update_cycle and current_update_cycle == update_cycle.id) %}
-                        <option value="{{ update_cycle.id }}"
-                        	{% if selected_update_cycle %} selected="selected" {% endif %}>
-                            {{ update_cycle.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-                {% if update_cycle_error and update_cycle_error is iterable %}
-                    <span class="error-block">{{ update_cycle_error|join(', ') }}</span>
-                {% endif %}
-            </div>
-        </div>
-    {% endblock %}
 		{% snippet 'package/snippets/date_fields.html', dates=data.dates, errors=errors %}
 	{% endblock %}
 </div>
@@ -85,20 +79,11 @@
         <div class="row-fluid">
             <div class="span6">
         		<div class="required control-group control-medium{{ " error" if security_class_error }}">
-            		<label class="control-label" for="field-security_class"><span class="control-required">*</span> {{ _("Information Security Classification Framework") }}</label>
+            		<label class="control-label" for="field-security_class"><span class="control-required">*</span> {{ _("Security Classification") }}</label>
             		<div class="controls">
-            			{# The bc_ocio_val variable is used when the page is loaded to set the selected option of bc_ocio dropdown list #}
-        				<script type="text/javascript">
-        					{% if data.bc_ocio %}
-        						bc_ocio_val = "{{ data.bc_ocio }}";
-        					{% else %}
-        						bc_ocio_val = "";
-        					{% endif %}
-        				</script>
-
             			{% set security_class_list = h.edc_tags(_("security_class")) %}
             			{% set current_security_class = data.security_class %}
-                		<select id="field-security_class" name="security_class" data-module="autocomplete" onchange="javascript:select_bc_ocio();" class="required">
+                		<select id="field-security_class" name="security_class" data-module="autocomplete" class="required">
                 			<option value ='' {% if not selected_class %} selected="selected" {% endif %}>Select a security classification</option>
               				{% for tag in security_class_list  %}
               				{% set selected_class = (current_security_class and current_security_class == tag.id) %}
@@ -111,19 +96,6 @@
                         {% if security_class_error and security_class_error is iterable %}
                             <span class="error-block">{{ security_class_error|join(', ') }}</span>
                         {% endif %}
-            		</div>
-            	</div>
-            </div>
-            <div class="span6">
-        		<div class="required control-group control-medium{{ " error" if bc_ocio_error }}">
-            		<label class="control-label" for="field-bc_ocio"><span class="control-required">*</span> {{ _("BC OCIO Security classification") }}</label>
-            		<div class="controls">
-                		<select id="field-bc_ocio" name="bc_ocio" data-module="autocomplete" data-placeholder="Select BC OCIO security" class="required">
-                			<option value='' selected="selected"> Select BC OCIO security</option>
-                		</select>
-              			{% if bc_ocio_error and bc_ocio_error is iterable %}
-              				<span class="error-block">{{ bc_ocio_error|join(', ') }}</span>
-              			{% endif %}
             		</div>
             	</div>
             </div>
@@ -245,8 +217,8 @@
 	{% block package_topic %}
 		{% set topic_error = errors.iso_topic_cat %}
 		<h3 class="module-sub-heading"> Topic </h3>
-		<div class="required control-list control-group control-medium form-horizontal{{ " error" if topic_error }}">
-            <div class="control-group">
+		<div class="required control-list control-group control-medium form-horizontal">
+            <div class="control-group {{ " error" if topic_error }}">
                 <label class="control-label" for="field-iso_topic_cat"><span class="control-required">*</span> {{ _("ISO Topic Category") }}</label>
     			{% set topic_cat_list = h.edc_tags(_("iso_topic_category")) %}
     			{% set current_cat = data.iso_topic_cat %}
@@ -306,11 +278,18 @@
 	{% endblock %}
 
 	{% block data_quality_info %}
-		{% block data_completeness %}
-		{% endblock %}
+	{% if record_type == _('Geographic') %}
+		<div id="object_name_container" class="control-full">
+    		{{ form.input('object_name',
+    						label=_("Object Name"),
+    						id='field-object_name',
+    						placeholder=_(''),
+    						value=data.object_name,
+    						error=errors.object_name,
+    						classes=['control-full']) }}
 
-		{% block data_lineage_info %}
-		{% endblock %}
+		</div>
+	{% endif %}
 	{% endblock %}
 
 {% endblock %}

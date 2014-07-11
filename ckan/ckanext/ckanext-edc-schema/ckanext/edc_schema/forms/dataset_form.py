@@ -9,8 +9,12 @@ import ckan.plugins.toolkit as toolkit
 
 from ckan.lib.navl.validators import (ignore_missing,
                                       not_empty,
+                                      if_empty_same_as,
                                       )
-from ckan.logic.validators import (url_validator,)
+from ckan.logic.validators import (url_validator,
+                                   name_validator,
+                                   package_name_validator, 
+                                   tag_string_convert)
 
 from ckan.lib.field_types import DateType, DateConvertError
 from ckan.lib.navl.dictization_functions import Invalid
@@ -19,7 +23,15 @@ from converters import (convert_to_extras,
                         convert_from_extras,
                         convert_dates_form)
 
-from validators import (check_empty, valid_email, check_resource_status, valid_date, license_not_empty, validate_link)
+from validators import (check_empty, 
+                        valid_email, 
+                        check_resource_status, 
+                        valid_date, 
+                        license_not_empty, 
+                        validate_link, 
+                        get_org_sector,
+                        check_branch,
+                        duplicate_pkg)
 
 import ckan.logic.converters as converters
 
@@ -78,7 +90,7 @@ def feature_type_schema():
 
 def more_info_schema():
     schema = {
-              'link': [validate_link, convert_to_extras],
+              'link': [ignore_missing, url_validator, convert_to_extras],
               'delete' : [ignore_missing, convert_to_extras]
               }
     return schema
@@ -140,12 +152,13 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     def _modify_package_schema(self, schema):
         schema.update({
                         'org' : [not_empty, convert_to_extras],
-                        'sub_org' : [ignore_missing, convert_to_extras],
+                        'sub_org' : [check_branch, convert_to_extras],
+                        'sector': [get_org_sector, ignore_missing, convert_to_extras],
                         'security_class': [ not_empty, convert_to_extras ],
-                        'bc_ocio' : [not_empty, convert_to_extras],
+#                        'bc_ocio' : [not_empty, convert_to_extras],
 #                        'purpose': [ ignore_missing, convert_to_extras ],
                         'resource_status': [ not_empty, convert_to_extras ],
-                        'resource_update_cycle' : [ not_empty, convert_to_extras ],
+#                        'resource_update_cycle' : [ not_empty, convert_to_extras ],
                         'replacement_record': [ check_resource_status, url_validator, convert_to_extras ],
                         'contacts' : contacts_db_schema(),
                         'dates' : dates_to_db_schema(),
@@ -167,10 +180,13 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 #                        'url' : [url_validator, not_empty],
                         'license_id' : [license_not_empty],
                         'more_info' : more_info_schema(),
-                        'image_url' : [ignore_missing, convert_to_extras]
+                        'image_url' : [ignore_missing, convert_to_extras],
+                        'image_delete' : [ignore_missing, convert_to_extras],
+                        'publish_date' : [ignore_missing, convert_to_extras]
                       })
         schema['resources'].update( {
                                      'supplemental_info' : [ignore_missing, cnvrt_to_ext],
+                                     'resource_update_cycle' : [ not_empty, cnvrt_to_ext ],
                                      })
         return schema
 
@@ -182,6 +198,10 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     def update_package_schema(self):
         schema = super(EDC_DatasetForm, self).update_package_schema()
         schema = self._modify_package_schema(schema)
+        schema.update({
+                       'name': [not_empty, unicode, name_validator, package_name_validator, duplicate_pkg],
+                       'title': [if_empty_same_as("name"), unicode, duplicate_pkg]
+                       })
         return schema
 
     def show_package_schema(self):
@@ -191,11 +211,12 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         schema.update({
                         'org' : [convert_from_extras, not_empty],
                         'sub_org' : [convert_from_extras, ignore_missing],
+                        'sector' : [convert_from_extras, ignore_missing],
                         'security_class': [ convert_from_extras, not_empty ],
-                        'bc_ocio' : [convert_from_extras, not_empty],
+#                        'bc_ocio' : [convert_from_extras, not_empty],
 #                        'purpose': [ convert_from_extras, ignore_missing ],
                         'resource_status': [ convert_from_extras, not_empty],
-                        'resource_update_cycle' : [ convert_from_extras, not_empty],
+#                        'resource_update_cycle' : [ convert_from_extras, not_empty],
 #                        'replacement_record': [ convert_from_extras, check_resource_status ],
                         'replacement_record': [ convert_from_extras, check_resource_status ],
                         'contacts' : [convert_from_extras, ignore_missing],
@@ -221,10 +242,13 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 #                        'url' : [url_validator, not_empty],
                         'license_id' : [license_not_empty],
                         'image_url' : [convert_from_extras, ignore_missing],
-                        'more_info' : [convert_from_extras, ignore_missing]
+                        'image_delete' : [convert_from_extras, ignore_missing],
+                        'more_info' : [convert_from_extras, ignore_missing],
+                        'publish_date' : [convert_from_extras, ignore_missing]
                        })
         schema['resources'].update( {
                                      'supplemental_info' : [ cnvrt_from_ext, ignore_missing ],
+                                     'resource_update_cycle' : [ cnvrt_from_ext, not_empty],
                                      })
 
         return schema

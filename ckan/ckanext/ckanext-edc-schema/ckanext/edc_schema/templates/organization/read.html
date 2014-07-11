@@ -1,5 +1,15 @@
 {% ckan_extends%}
 
+{% block page_primary_action %}
+  {% set org_id = c.group_dict.id %}
+  {% set user_orgs = h.get_user_orgs(c.userobj.id) or null %}
+  {% if h.check_access('package_create', {'owner_org': c.group_dict.id}) and (org_id in user_orgs or c.userobj.sysadmin == True) %}
+    {% link_for _('Add Dataset'), controller='ckanext.edc_schema.controllers.package:EDCPackageController', action='typeSelect', group=org_id, class_='btn btn-primary', icon='plus-sign-alt' %}
+  {% endif %}
+{% endblock %}
+
+
+
 {% block organization_facets %}
   {% for facet in c.facet_titles %}
   	{% if facet == 'resource_download_format' %}

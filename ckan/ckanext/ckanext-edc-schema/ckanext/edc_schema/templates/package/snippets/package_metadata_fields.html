@@ -4,7 +4,7 @@
 
 {% resource 'edc_resource/edc_schema.css' %}
 
-{% if record_type=='geospatial' %}
+{% if record_type=='Geographic' %}
 <h3 class="module-sub-heading">Preview Information</h3>
 <div class="control-list">
 	{{ form.input('layer_name',
@@ -69,7 +69,7 @@
 
 {% block data_quality_info %}
 
-	{% if record_type=='geospatial' or record_type == 'nongeospatial' %}
+	{% if record_type=='Geographic' or record_type == 'Dataset' %}
 	<h2 class="module-heading">Data Quality information</h2>
 		<h3 class="module-sub-heading">Completeness</h3>
 		<div class="control-list">

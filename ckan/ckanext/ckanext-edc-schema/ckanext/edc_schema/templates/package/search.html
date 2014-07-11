@@ -1,24 +1,58 @@
 {% ckan_extends %}
 
+
 {% block page_primary_action %}
 	{% set user_orgs = h.get_user_orgs(c.userobj.id) or null %}
-	{% if h.check_access('package_create') and user_orgs %}
+	{% if h.check_access('package_create') and (user_orgs or c.userobj.sysadmin == True) %}
 		<div class="page_primary_action">
 			{% link_for _('Add Dataset'), controller='ckanext.edc_schema.controllers.package:EDCPackageController', action='typeSelect', class_='btn btn-primary', icon='plus-sign-alt' %}
 		</div>
 	{% endif %}
 {% endblock %}
 
+{% block package_search_results_api %}
+  {{ super() }}
+  <div id="request-data">
+    <a href="http://www.data.gov.bc.ca/dbc/catalogue/data_requests/request_data.page" target="_blank" class="btn btn-xs btn-primary">Request Data</a>
+    <p>Didn't find what you were looking for?  Request new data.</p>
+  </div>
+{% endblock %}
+
+{% block form %}
+	{% set facets = {
+        'fields': c.fields_grouped,
+        'search': c.search_facets,
+        'titles': c.facet_titles,
+        'translated_fields': c.translated_fields,
+        'remove_field': c.remove_field }
+	%}
+	{% set sorting = [
+		(_('Published Date'), 'publish_date desc, metadata_modified desc'),
+    	(_('Relevance'), 'score desc, metadata_modified desc'),
+        (_('Name Ascending'), 'title_string asc'),
+        (_('Name Descending'), 'title_string desc'),
+        (_('Last Modified'), 'metadata_modified desc'),
+        (_('Popular'), 'views_total desc') if g.tracking_enabled else (false, false) ]
+	%}
+	{% snippet 'snippets/search_form.html', type='dataset', query=c.q, sorting=sorting, sorting_selected=c.sort_by_selected, count=c.page.item_count, facets=facets, show_empty=request.params, error=c.query_error %}
+{% endblock %}
+
 {% block secondary_content %}
-{# snippet "spatial/snippets/spatial_query.html" , default_extent="[[47.55, -139.9], [59.8, -119.6]]" #}
+  {# snippet "spatial/snippets/spatial_query.html" , default_extent="[[47.55, -139.9], [59.8, -119.6]]" #}
 
   {% for facet in c.facet_titles %}
-	{#
-  	{% if facet == 'res_format' %}
-  		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_format_label, name=facet) }}
+  	{% if facet == 'type' %}
+  		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_type_label, name=facet) }}
   	{% else %}
-  	#}
     	{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet) }}
-    {# {% endif %} #}
+    {% endif %}
   {% endfor %}
+
+  {% block rss_feeds %}
+    {% snippet "package/snippets/rss_feeds.html" %}
+  {% endblock %}
+
+  {% block request_data %}
+    {% snippet "package/snippets/request_data.html" %}
+  {% endblock %}
 {% endblock %}

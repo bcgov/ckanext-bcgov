@@ -8,7 +8,9 @@ from ckan.lib.helpers import url_for
 from pylons import config, response
 from pylons.decorators.cache import beaker_cache
 import ckan.model as model
+import ckan.lib.helpers as h
 import pprint 
+import time
 from ckan.logic import get_action, NotFound
 
 SITEMAP_NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -72,9 +74,13 @@ class GsaSitemapController(BaseController):
         for pkg in query['results']:
             pkg_url = url_for(controller='package', action="read", id = pkg['name'])
             pkg_lastmod = url_for(controller='package', action="read", id = pkg['metadata_modified'])
+            short_date = pkg_lastmod[9:-7] 
+            escaped_date = short_date.replace("%3A",":")
+            utc_date = escaped_date + '-07:00'
             output += "<url>"            
             output += "<loc>" + config.get('ckan.site_url') +  "/dataset/" + pkg['name'] + "</loc>"
-            output += "<lastmod>" + pkg_lastmod[9:-20] + "</lastmod>"
+            #output += "<lastmod>" + pkg_lastmod[9:-20] + "</lastmod>"
+            output += "<lastmod>" + utc_date + "</lastmod>"
             output += "</url>"  
         output += "</urlset>"    
         response.content_type = "text/xml"

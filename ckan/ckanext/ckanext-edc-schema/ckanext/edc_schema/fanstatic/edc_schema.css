@@ -256,3 +256,17 @@ position: relative;
 #image_box {
 	text-align : center;
 }
+
+#field-name {
+	width :691px;
+}
+
+.pkg-resources {
+	margin-left: -25px;
+	margin-right: -25px;
+	margin-bottom: 0;
+	padding-bottom: 0;	
+	background: none;
+	margin-top: 50px;
+	padding-left : 30px;	
+	border-top: 1px solid #e5e5e5;}

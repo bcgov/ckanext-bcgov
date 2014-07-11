@@ -19,14 +19,14 @@ class EDC_ApplicationForm(edc_form.EDC_DatasetForm):
     #Setting dataset type associated to edc Application dataset type
     def package_types(self):
         
-        return ['application']
+        return ['Application']
     
     #Adding custom variable to Pylons c object, so that they can be accessed in package templates.
     def setup_template_variables(self, context, data_dict=None):
         from ckan.lib.base import c
         super(EDC_ApplicationForm, self).setup_template_variables(context, data_dict)
          
-        c.record_type = 'application'
+        c.record_type = 'Application'
     
     def _update_application_schema(self, schema):
         schema['resources'].update({
@@ -57,7 +57,7 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
     #Setting dataset type associated to edc Application dataset type
     def package_types(self):
         
-        return ['geospatial']
+        return ['Geographic']
 
 
     #Adding custom variable to Pylons c object, so that they can be accessed in package templates.
@@ -65,8 +65,8 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
         from ckan.lib.base import c
         super(EDC_GeoSpatialForm, self).setup_template_variables(context, data_dict)
          
-        c.record_type = 'geospatial'
-
+        c.record_type = 'Geographic'
+        
     #Customize schema for EDC Application Dataset
     def _update_geospatial_schema(self, schema):
         
@@ -81,11 +81,13 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'link_to_imap' : [ignore_missing, url_validator, convert_to_extras ],
                         'data_quality': [ignore_missing, convert_to_extras ],
                         'lineage_statement': [ignore_missing, convert_to_extras ],
-                        'spatial' : [ignore_missing, convert_to_extras]
+                        'spatial' : [ignore_missing, convert_to_extras],
+                        'object_name' : [ ignore_missing, convert_to_extras ],
+                        'imap_layer_key' : [ignore_missing, convert_to_extras],
+                        'imap_display_name' : [ignore_missing, convert_to_extras]
                       })
         schema['resources'].update({
                                     'projection_name' : [not_empty, cnvrt_to_ext],
-                                    'object_name' : [ ignore_missing, cnvrt_to_ext ],
                                     'format' : [not_empty, unicode],
 #                                    'storage_format_description' : [ not_empty, cnvrt_to_ext ],
                                     'edc_resource_type': [ not_empty, cnvrt_to_ext ],
@@ -122,11 +124,13 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'link_to_imap' : [ convert_from_extras,  ignore_missing ],
                         'data_quality': [ convert_from_extras, ignore_missing ],
                         'lineage_statement': [ convert_from_extras, ignore_missing ],
-                        'spatial' : [convert_from_extras, ignore_missing]
+                        'spatial' : [convert_from_extras, ignore_missing],
+                        'projection_name' : [convert_from_extras, not_empty ],
+                        'object_name' : [ convert_from_extras, ignore_missing],
+                        'imap_layer_key' : [convert_from_extras, ignore_missing],
+                        'imap_display_name' : [convert_from_extras, ignore_missing]
                         })
         schema['resources'].update({
-                                    'projection_name' : [cnvrt_from_ext, not_empty ],
-                                    'object_name' : [ cnvrt_from_ext, ignore_missing],
                                     'format' : [not_empty, unicode],
 #                                    'storage_format_description' : [cnvrt_from_ext, not_empty],
                                     'edc_resource_type': [ cnvrt_from_ext, not_empty ],
@@ -146,14 +150,14 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
     #Setting dataset type associated to edc Application dataset type
     def package_types(self):
         
-        return ['nongeospatial']
+        return ['Dataset']
 
     #Adding custom variable to Pylons c object, so that they can be accessed in package templates.
     def setup_template_variables(self, context, data_dict=None):
         from ckan.lib.base import c
         super(EDC_NonGeoSpatialForm, self).setup_template_variables(context, data_dict)
          
-        c.record_type = 'nongeospatial'
+        c.record_type = 'Dataset'
 
     #Customize schema for EDC Application Dataset
     def _update_nongeospatial_schema(self, schema):
@@ -222,14 +226,14 @@ class EDC_WebServiceForm(edc_form.EDC_DatasetForm):
     #Setting dataset type associated to edc Application dataset type
     def package_types(self):
         
-        return ['webservice']
+        return ['WebService']
     
     #Adding custom variable to Pylons c object, so that they can be accessed in package templates.
     def setup_template_variables(self, context, data_dict=None):
         from ckan.lib.base import c
         super(EDC_WebServiceForm, self).setup_template_variables(context, data_dict)
          
-        c.record_type = 'webservice'
+        c.record_type = 'WebService'
         
 #     def _update_webservice_schema(self, schema):
 #         return schema

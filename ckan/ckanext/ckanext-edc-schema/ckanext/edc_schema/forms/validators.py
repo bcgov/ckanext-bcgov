@@ -35,7 +35,7 @@ def check_empty(key, data, errors, context):
     if (delete_value == '0'):
         value = data.get(key)
         if not value or value is missing:
-#            errKey = key[0] + '__' + str(key[1]) + '__' + key[2];
+#           errKey = key[0] + '__' + str(key[1]) + '__' + key[2];
             errors[key].append(_('Missing value'))
             raise StopOnError
 
@@ -49,7 +49,11 @@ def license_not_empty(key, data, errors, content):
         errors[key].append(_('License is not specified'))
 
 def valid_email(key, data, errors, context):
-
+    
+    from lepl.apps.rfc3696 import Email
+    
+    is_valid_email = Email()
+    
     #Get the number of the key components
     key_length = len(key)
 
@@ -61,10 +65,14 @@ def valid_email(key, data, errors, context):
         if delete_value == '1':
             return
 
-    email = data.get(key)
-    if len(email) > 7 :
-        if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
-            return
+    contact_email = data.get(key)
+    
+    if (is_valid_email(contact_email)) :
+        return
+        
+#     if len(email) > 7 :
+#         if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
+#             return
 
     errors[key].append(_('Invalid email address'))
 
@@ -93,12 +101,23 @@ def validate_link(key, data, errors, context):
     
 def valid_date(key, data, errors, context):
     import datetime
-#    print '------------------', key , '----------------------'
+    
     date_value = data[key]
     if not date_value :
         return
     try:
         datetime.datetime.strptime(date_value, '%Y-%m-%d')
+        
+        #Check if this the published date
+        if len(key) == 3 and key[0] == 'dates' :
+            type_key = (key[0], key[1], 'type')
+        
+            date_type = data[type_key]
+                    
+            if date_type and date_type == '003':
+                data['publish_date'] = date_value + 'T23:59:59Z'
+#         if 'publish_date' in data:
+#             print data['publish_date']
     except ValueError:
         errors[key].append('Invalid date format/value')
     pass
@@ -131,3 +150,67 @@ def check_resource_status(key, data, errors, context):
     else:
         ignore_missing(key, data, errors, context)
 
+
+def get_org_sector(key, data, errors, context):
+    '''
+    This validator gets the value of sector based on the given values for org and suborg fields.
+    '''
+    from ckanext.edc_schema.plugin import get_organization_title
+    from ckanext.edc_schema.util.helpers import get_suborg_sectors
+    
+    
+    if key[0] != 'sector' :
+        return
+    
+    org_key = ('org',)
+    sub_org_key = ('sub_org',)
+    if org_key in data and sub_org_key in data :
+        org_title = get_organization_title(data[org_key])
+        sub_org_title = get_organization_title(data[sub_org_key])
+        
+        sector = get_suborg_sectors(org_title, sub_org_title)
+        if sector != [] :
+            data[key] = sector[0]
+
+
+def check_branch(key, data, errors, context):
+    
+    ignore_missing(key, data, errors, context)
+    return
+ 
+    from ckanext.edc_schema.util.util import get_organization_branches
+    
+    org_key = ('org',)
+    
+    org_id = None
+    if org_key in data:
+        org_id = data[org_key]
+    
+    #Check if the organization has any branches
+    branches = get_organization_branches(org_id)
+    
+    if len(branches) > 0 :
+        value = data.get(key)
+        if not value or value is missing:
+            errors[key].append(_('Missing value'))
+            raise StopOnError
+
+
+
+def duplicate_pkg(key, data, errors, context):
+    '''
+    Forces the user to change the name and title of a duplicated record.
+    '''
+    name_key = ('name',)
+    title_key = ('title',)
+    
+    pkg_name = data[name_key]
+    pkg_title = data[title_key]
+    
+    #Check if the duplicate title has not been changed
+    if key[0] == 'title' and pkg_title.startswith('#Duplicate#') :
+        errors[title_key].append(_('The duplicated title must be changed.'))
+    
+    #Check if the duplicated name has not been changed.
+    if key[0] == 'name' and pkg_name.startswith('__duplicate__') :
+        errors[name_key].append(_('A new name must be given for the duplicated record.'))

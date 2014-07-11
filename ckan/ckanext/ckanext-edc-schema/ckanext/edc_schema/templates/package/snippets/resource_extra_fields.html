@@ -1,7 +1,7 @@
 
 {% import 'macros/form.html' as form %}
 
-{% if record_type == 'geospatial' or record_type == 'nongeospatial' %}
+{% if record_type == 'Geographic' or record_type == 'Dataset' %}
 
 	{#
       {{ form.markdown('storage_format_description',
@@ -57,7 +57,7 @@
       </div>
     </div>
 
-    {% if record_type == 'geospatial' or record_type == 'nongeospatial' %}
+    {% if record_type == 'Geographic' or record_type == 'Dataset' %}
     {% block basic_fields_format %}
       {% set format_error = errors.format %}
       <div class="control-group control-full{{ " error" if format_error }}">
@@ -129,18 +129,6 @@
 			</div>
 		</div>
 
-		<div id="object_name_container" class="control-full">
-    		{{ form.input('object_name',
-    						label=_("Object Name"),
-    						id='field-object_name',
-    						placeholder=_(''),
-    						value=data.object_name,
-    						error=errors.object_name,
-    						classes=['control-full']) }}
-
-		</div>
-
-
 	{#
       {{ form.markdown('resource_storage_location_info',
       					id='field-resource_storage_location_info',
@@ -172,7 +160,7 @@
 
 	</div>
 
-	{% if record_type == 'geospatial' %}
+	{% if record_type == 'Geographic' %}
 	<h3 class="module-sub-heading">Projection</h3>
 	<div class="control-list form-horizontal">
     	{% set error = errors.projection_name %}

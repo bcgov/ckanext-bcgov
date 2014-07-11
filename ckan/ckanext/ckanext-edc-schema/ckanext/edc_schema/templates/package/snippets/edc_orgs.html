@@ -3,8 +3,7 @@
 {# {% set organizations = h.edc_orgs() %} #}
 {% set organizations = h.get_user_orgs(user.id) %}
 
-
-{% set current_org = data.org %}
+{% set current_org = data.org or data.group_id %}
 {% set org_error = errors.org %}
 {% set sub_org_error = errors.sub_org %}
 

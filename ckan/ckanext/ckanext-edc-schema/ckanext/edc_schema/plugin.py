@@ -1,6 +1,6 @@
 import pprint
 import ckan.model as model
-from ckan.common import  c
+from ckan.common import  c, _
 from ckan.logic import get_action, NotFound
 import ckan.lib.base as base
 
@@ -8,15 +8,22 @@ import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from routes.mapper import SubMapper
 
+
 from ckanext.edc_schema.util.util import (get_edc_tags,
                                           get_edc_tag_name,
-                                          edc_format_label,
+                                          edc_type_label,
                                           get_state_values,
                                           get_username,
                                           get_user_orgs,
-                                          check_user_member_of_org)
+                                          check_user_member_of_org,
+                                          get_organization_branches
+                                          )
 
-from ckanext.edc_schema.util.helpers import (get_suborg_sectors, get_user_dataset_num)
+from ckanext.edc_schema.util.helpers import (get_suborg_sectors,
+                                             get_user_dataset_num,
+                                             get_package_data,
+                                             is_license_open,
+                                             get_record_type_label)
 
 abort = base.abort
 
@@ -83,26 +90,20 @@ def get_organization_title(org_id):
             return org['title']
     return None
 
-def get_organization_branches(org_id):
-    context = {'model': model, 'session': model.Session,
-               'user': c.user or c.author, 'auth_user_obj': c.userobj}
-    org_model = context['model']
-
-    #Get the list of all children of the organization with the given id
-    group = org_model.Group.get(org_id)
-    branches = group.get_children_groups(type = 'organization')
-
-    return branches
-
-
 class SchemaPlugin(plugins.SingletonPlugin):
+
+#    plugins.implements(plugins.IAuthFunctions)
+
     plugins.implements(plugins.IConfigurer)
 
     plugins.implements(plugins.IRoutes, inherit=True)
 
     plugins.implements(plugins.ITemplateHelpers, inherit=False)
-    
+
     plugins.implements(plugins.IPackageController, inherit=True)
+
+    plugins.implements(plugins.IFacets, inherit=True)
+
 
     def get_helpers(self):
         return {
@@ -113,14 +114,17 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "edc_org_branches" : get_organization_branches,
                 "edc_org_title" : get_organization_title,
                 "edc_org_name" : get_organization_name,
-                "edc_format_label" : edc_format_label,
+                "edc_type_label" : edc_type_label,
                 "edc_state_values" : get_state_values,
                 "edc_username": get_username,
                 "get_sector" : get_suborg_sectors,
                 "get_user_orgs" : get_user_orgs,
                 "check_user_member_of_org" : check_user_member_of_org,
                 "get_suborg_sectors" : get_suborg_sectors,
-                "get_user_dataset_num" : get_user_dataset_num
+                "get_user_dataset_num" : get_user_dataset_num,
+                "get_edc_package" : get_package_data,
+                "is_license_open" : is_license_open,
+                "record_type_label" : get_record_type_label
                 }
 
 
@@ -144,16 +148,16 @@ class SchemaPlugin(plugins.SingletonPlugin):
 #        map.connect('home', '/', controller=package_controller, action='search')
         map.connect('/dataset/upload_file', controller=package_controller, action='upload')
         map.connect('/dataset/remove_file', controller=package_controller, action='remove_uploaded')
-        
+#        map.connect('/dataset/duplicate/{id}', controller=package_controller, action='duplicate')
+
         with SubMapper(map, controller=package_controller) as m:
             m.connect('add dataset', '/dataset/new', action='new')
             m.connect('dataset_edit', '/dataset/edit/{id}', action='edc_edit',ckan_icon='edit')
-            m.connect('search', '/dataset', action='search',
-                  highlight_actions='index search')
-            m.connect('dataset_read', '/dataset/{id}', action='read',
-                  ckan_icon='sitemap')
-#map.connect('/dataset/new', controller='ckanext.edc_schema.controllers.package:EDCPackageController', action='new')
-#        map.connect('/dataset/new_resource/{id}', controller='ckanext.edc_schema.controllers.package:EDCPackageController', action='new_resource')
+            m.connect('search', '/dataset', action='search', highlight_actions='index search')
+            m.connect('dataset_read', '/dataset/{id}', action='read', ckan_icon='sitemap')
+            m.connect('duplicate', '/dataset/duplicate/{id}', action='duplicate')
+            m.connect('/dataset/{id}/resource/{resource_id}', action='resource_read')
+            m.connect('/dataset/{id}/resource_delete/{resource_id}', action='resource_delete')
 
         with SubMapper(map, controller=user_controller) as m:
             m.connect('user_dashboard_unpublished', '/dashboard/unpublished',
@@ -216,17 +220,24 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('organization_bulk_process',
                   '/organization/bulk_process/{id}',
                   action='bulk_process', ckan_icon='sitemap')
-            
+
         map.connect('sitemap','/sitemap.html', controller=site_map_controller, action='view')
         map.connect('sitemap','/sitemap.xml', controller=site_map_controller, action='read')
 
-    # /api/util ver 1, 2 or none
-        with SubMapper(map, controller=api_controller, path_prefix='/api{ver:/1|/2|}',
+    # /api/util ver 1, 2, 3 or none
+        with SubMapper(map, controller=api_controller, path_prefix='/api{ver:/1|/2|/3|}',
                    ver='/1') as m:
 
             m.connect('/i18n/{lang}', action='i18n_js_translations')
             m.connect('/')
 
+        GET_POST = dict(method=['GET', 'POST'])
+        
+        # /api ver 3 or none
+        #with SubMapper(map, controller=api_controller, path_prefix='/api{ver:/3|}', ver='/3') as m:
+        #    m.connect('/action/{logic_function}', action='action', conditions=GET_POST)
+
+        
         return map
 
     def after_map(self, map):
@@ -234,9 +245,156 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     #Check the datasaet upload image
     def after_update(self, context, pkg_dict):
-  #      pprint.pprint(pkg_dict)
         from ckanext.edc_schema.controllers.package import EDCPackageController
-        
+
         controller = EDCPackageController()
-        controller._check_file_upload(pkg_dict)
+        controller._check_file_upload(context, pkg_dict)
+
+
+    def after_show(self, context, pkg_dict) :
+        '''
+        Checks if a new image has been uploaded or the image has been updated or removed
+        and applies the proper changes to image_url field.
+        The image_url should not contain the temp file name, either it is empty or it should
+        have the same name as the dataset id.
+        '''
+
+        #Chaneck if the user can see the record
+
+        #Ignore changes if dataset doesn't have any image
+        if not 'image_url' in pkg_dict or not 'image_delete' in pkg_dict :
+            return
+
+
+        from pylons import config
+        import os
+        from ckanext.edc_schema.util.file_uploader import DEFAULT_UPLOAD_FILENAME
+
+        image_is_deleted = pkg_dict['image_delete']
+
+        if image_is_deleted == '0' :
+            #Get the upload directory path
+            upload_path = os.path.join(config.get('ckan.site_url'),'uploads', 'edc_files') + '/'
+
+            #Take the current image url
+            upload_url = pkg_dict['image_url']
+
+            #Get the image file name
+            uploaded_file = upload_url[len(upload_path):]
+
+            name, extension = os.path.splitext(uploaded_file)
+
+            #Check if this a temp file (A new file has been uploaded)
+            if name.startswith(DEFAULT_UPLOAD_FILENAME) :
+                #change the image file name to the dataset id
+                new_filename = upload_path + pkg_dict['id'] + extension
+                pkg_dict['image_url'] = new_filename
+        else:
+            pkg_dict['image_url'] = ''
+
+    def after_delete(self, context, pkg_dict):
+        '''
+        Checks if there are any images named as dataste id in uploaded image directory
+        and removes them. This way we wont get a list orphan images wasting file store space.
+        '''
+        import os
+
+        from ckanext.edc_schema.util.file_uploader import (FileUploader, DEFAULT_UPLOAD_FILENAME)
+
+        pkg_image_name = pkg_dict['id']
+        temp_image_name = DEFAULT_UPLOAD_FILENAME + pkg_image_name
+
+        #Get the upload directory path
+        file_uploader =  FileUploader()
+        upload_path = file_uploader.storage_path
+
+        image_files_to_be_deleted = []
+
+        #Get a list of all files in upload directory that has the same name as dataset id
+        for filename in os.listdir(upload_path) :
+            name, extension = os.path.splitext(filename)
+            if name == pkg_image_name or name == temp_image_name :
+                image_files_to_be_deleted.append(filename)
+
+        #Delete all files in the list
+        for filename in image_files_to_be_deleted:
+            filepath = os.path.join(upload_path, filename)
+            try :
+                os.remove(filepath)
+            except OSError :
+                pass
+
+    def before_index(self, pkg_dict):
+        '''
+        Makes the sort by name case insensitive.
+        Note that the search index must be rebuild for the first time to take changes into account.
+        '''
+        title = pkg_dict['title']
+        if title:
+            #Assign title to title_string with all characters switched to lower case.
+            pkg_dict['title_string'] = title.lower()
+
+        return pkg_dict
+
+
+    def before_search(self, search_params):
+
+        #Change the query filter depending on the user
+
+        if 'fq' in search_params:
+            fq = search_params['fq']
+        else:
+            fq = ''
         
+        try :
+            user_name = c.user or 'visitor'
+
+            #  There are no restrictions for sysadmin
+            if c.userobj and c.userobj.sysadmin == True:
+                fq += ''
+            elif user_name == 'visitor':
+                #Public user can only view public and published records
+                fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE" OR "ARCHIVED") +metadata_visibility:("002")'
+            else:
+                #IDIR users can also see private records of their organizations
+                user_id = c.userobj.id
+                fq += '(edc_state:("PUBLISHED" OR "PENDING ARCHIVE" OR "ARCHIVED"))'
+                #Get the list of orgs that the user is a memeber of
+                user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id)]
+                if user_orgs != []:
+                    fq += ' OR (' + 'owner_org:(' + ' OR '.join(user_orgs) + '))'
+
+            search_params['fq'] = fq
+        except Exception:
+            if 'fq' in search_params:
+                fq = search_params['fq']
+            else:
+                fq = ''
+            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE" OR "ARCHIVED") +metadata_visibility:("002")'
+        return search_params
+
+    def dataset_facets(self, facet_dict, package_type):
+
+        #Add dataset types and organization sectors to the facet list
+        facet_dict['sector'] = _('Sectors')
+        facet_dict['type'] = _('Dataset types')
+
+        #Remove groups from the facet list
+        if 'groups' in facet_dict :
+            del facet_dict['groups']
+
+        if 'tags' in facet_dict :
+            del facet_dict['tags']
+
+        return facet_dict
+
+
+#     def get_auth_functions(self):
+# 
+#         import ckanext.edc_schema.util.auth as edc_auth
+# 
+#         auth_dict = {
+#                       'user_show' : edc_auth.user_show,
+#                       'user_list' : edc_auth.user_list
+#                       }
+#         return auth_dict

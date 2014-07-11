@@ -1,9 +1,44 @@
 {% ckan_extends %}
 
+{% block wrapper_class %}{{ super() }} dataset-view{% endblock %}
+
+
+{% block content_primary_nav %}
+  {{ super() }}
+  <li class="dropdown share-this-record">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-share-alt"></i> Share this Record</a>
+    {% snippet "snippets/social.html" %}
+  </li>
+  <li><a href="#"><i class="icon-rss"></i> RSS</a></li>
+{% endblock %}
+
+
 {% block content_action %}
-  {% if h.check_access('package_update', {'id':pkg.id }) %}
-    {% link_for _('Manage'), controller='package', action='edit', id=pkg.name, class_='btn', icon='wrench' %}
-  {% endif %}
+	{% set record_visibility = pkg.metadata_visibility %}
+
+  	{% if h.check_access('package_update', {'id':pkg.id }) %}
+    	{% if record_visibility == '002' %}
+    		{% link_for _(''), controller='ckanext.edc_schema.controllers.package:EDCPackageController',
+    									action='duplicate', id=pkg.name, class_='btn hidden-sm hidden-xs', icon='copy' %}
+    	{% endif %}
+    	{% link_for _(''), controller='package', action='edit', id=pkg.name, class_='btn hidden-sm hidden-xs', icon='wrench' %}
+  	{% endif %}
+{% endblock %}
+
+{% block content %}
+  {% block search_input %}
+    <form class="search-form search-main">
+    <div class="search-input control-group search-giant">
+      <input type="text" class="search" name="q" autocomplete="off" placeholder="Search datasets...">
+      <button type="submit" value="search">
+        <i class="icon-search"></i>
+        <span>{{ _('Submit') }}</span>
+      </button>
+    </div>
+  </form>
+  {% endblock %}
+  {{ super() }}
+  {% resource 'edc_resource/edc_dataset_view.js' %}
 {% endblock %}
 
 
@@ -17,6 +52,7 @@
     {% endif %}
 
     {# Displaying Dataset information in colorful markers #}
+
     {% block package_markers %}
       {% snippet 'package/snippets/markers.html', type=pkg.type, iso_topic_cat=pkg.iso_topic_cat, org=pkg.org, branch=pkg.sub_org %}
     {% endblock %}
@@ -33,6 +69,12 @@
     {# Displaying Organization and Branch names #}
     {% block package_org %}
         {% snippet 'package/snippets/org_view.html', org=pkg.org, branch=pkg.sub_org %}
+    {% endblock %}
+
+    {% block package_license %}
+      <br/>
+      Licensed by
+      {% snippet "snippets/license.html", pkg_dict=pkg %}
     {% endblock %}
 
     {% block package_notes %}
@@ -52,24 +94,8 @@
     {% endif %}
   {% endblock %}
 
-  {% block pakage_purpose %}
-      {% if pkg.purpose %}
-      <div id="purpose">
-        <a href="#" class="wb-toggle" data-toggle='{"selector": ".purpose"}'>Purpose <i class="icon-chevron-down"></i></a>
-        <div class="purpose off">
-          {{ pkg.purpose }}
-        </div>
-      </div>
-      {% endif %}
-  {% endblock %}
-
   {% block package_tags %}
-    <div class="clearfix"></div>
     {% snippet "package/snippets/tags.html", tags=pkg.tags %}
-  {% endblock %}
-
-  {% block package_license %}
-    {% snippet "snippets/license.html", pkg_dict=pkg %}
   {% endblock %}
 
   {% block package_resources %}
@@ -80,21 +106,38 @@
     {% snippet "package/snippets/thumbnail.html", pkg=pkg %}
   {% endblock %}
 
-  {# block map_view %}
+  {% block map_view %}
   	{% snippet "package/snippets/map_view.html", pkg=pkg %}
-  {% endblock #}
+  {% endblock %}
 
   {% block package_additional_info %}
-    <a href="#" class="wb-toggle additional-information-toggle" data-toggle='{"selector": "#additional-information"}'>Additional Information <i class="icon-chevron-down"></i></a>
-    <div id="additional-information" class="off">
-    <h2>Dataset Information</h2>
+    <h3>Additional Information</h3>
+    <div id="additional-information">
+      {% block pakage_purpose %}
+        {% if pkg.purpose %}
+        <h2>Purpose</h2>
+        <div id="purpose">
+          {{ pkg.purpose }}
+        </div>
+        {% endif %}
+      {% endblock %}
+
+      {# Displaying contact info #}
+      {% block package_contacts %}
+        {% snippet 'package/snippets/contacts_view.html', contacts=pkg.contacts %}
+      {% endblock %}
+
+      {% block security_classification %}
+        {% snippet 'package/snippets/security_classification.html', security_class=pkg.security_class, bc_ocio=pkg.bc_ocio, view_audience=pkg.view_audience, download_audience=pkg.download_audience, metadata_visibility=pkg.metadata_visibility, privacy_impact_assessment=pkg.privacy_impact_assessment %}
+      {% endblock %}
+    <h2>Metadata Information</h2>
     <table class="table dataset_view">
     {% block package_type %}
             <tr>
                 <td><strong>Record type</strong></td><td> {{ pkg.type }} </td>
             </tr>
     {% endblock %}
-	
+
 	{% block record_state %}
 		<tr>
 			<td><strong>Record state</strong></td><td> {{ pkg.edc_state }} </td>
@@ -113,7 +156,7 @@
 
     {# Showing dates #}
     {% block package_dates %}
-        {% snippet 'package/snippets/dates_view.html', dates=pkg.dates, last_modified = c.pkg_last_modified_date %}
+        {% snippet 'package/snippets/dates_view.html', pkg=pkg, last_modified = c.pkg_last_modified_date %}
     {% endblock %}
 
     {% block package_resource_status %}
@@ -123,43 +166,18 @@
             </tr>
         {% if pkg.replacement_record %}
             <tr>
-                <td><strong>Replacement Record</strong></td><td> {{ pkg.replacement_record }} </td>
+                <td><strong>Replacement Record</strong></td><td><a href="{{ pkg.replacement_record }}">{{ pkg.replacement_record }}</a></td>
             </tr>
         {% endif %}
     {% endblock %}
 
-    {% block package_update_cycle %}
-        {% set update_cycle = h.edc_tag_name('resource_update_cycle', pkg.resource_update_cycle) %}
-            <tr>
-                <td><strong>Update Cycle</strong></td><td> {{ update_cycle }} </td>
-            </tr>
-    {% endblock %}
-
     </table>
-
-    {# Displaying contact info #}
-    {% block package_contacts %}
-        {% snippet 'package/snippets/contacts_view.html', contacts=pkg.contacts %}
-    {% endblock %}
 
   </div>
 
   {% endblock %}
 
-
 {% endblock %}
 
-{% block secondary_content %}
-  {% block secondary_help_content %}{% endblock %}
 
-  {% block package_organization %}
-    {% if pkg.organization %}
-      {% snippet "snippets/organization.html", organization=pkg.organization, has_context_title=true %}
-    {% endif %}
-  {% endblock %}
-
-  {% block package_social %}
-    {% snippet "snippets/social.html" %}
-  {% endblock %}
-
-{% endblock %}
+{% block secondary_content %}{% endblock %}
