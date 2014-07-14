@@ -15,8 +15,8 @@ from ckanext.edc_schema.util.util import (get_organization_id,
                                           get_edc_tag_id, 
                                           get_user_id)
 
-user_name = 'khalegh'
-#user_name = 'admin'
+#user_name = 'khalegh'
+user_name = 'admin'
 
 
 def load_record_dict(dict_file):
@@ -140,7 +140,8 @@ def import_odc_records(con, record_dict):
                 "AND DBC_RT.RESOURCE_TYPE_ID=DBC_RS.RESOURCE_TYPE_ID " + \
                 "AND DBC_CS.CREATOR_SECTOR_ID=DBC_SO.CREATOR_SECTOR_ID " + \
                 "AND DBC_DC_MIN.RESOURCE_SET_ID(+)=DBC_RS.RESOURCE_SET_ID " + \
-                "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "
+                "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID" 
+                
 #                "AND DBC_RT.RESOURCE_TYPE_NAME='Geospatial Dataset'"
     
     
@@ -176,7 +177,7 @@ def import_odc_records(con, record_dict):
             # If this is record exists in discovery ignore it
             # The record exists in discovery if either DISCOVERY_UID or FEATURE_CLASS_NAME is not null.
             #Also ignore DRAFT records
-            if (not result[2]) or result[9] or result[22] or edc_record['edc_state'] == 'DRAFT':
+            if (not result[2]) or (result[9] and (not result[22])) or edc_record['edc_state'] == 'DRAFT':
 #            if (not result[2]) :
                 index += 1
                 continue
@@ -333,7 +334,18 @@ def import_odc_records(con, record_dict):
                     resource_rec['edc_resource_type'] = get_edc_tag_id('resource_type', resource_type.strip())
                     access_method = resource[5] or 'Direct Access'
                     resource_rec['resource_storage_access_method'] = get_edc_tag_id('resource_storage_access_method', access_method.strip())
-                    resource_rec['resource_storage_location'] = '002'
+                    
+                    #Check the resourec url and set teh resource storage location based on that :
+                    res_url = resource[3]
+                    if res_url :
+                        if res_url.startswith('http://pub.data.gov.bc.ca/datasets') :
+                            resource_rec['resource_storage_location'] = '003'
+                        elif res_url.startswith('https://apps.gov.bc.ca/pub/dwds') :
+                            resource_rec['resource_storage_location'] = '001'
+                        else :
+                            resource_rec['resource_storage_location'] = '004'
+                            
+#                    resource_rec['resource_storage_location'] = '002'
                 
                     if edc_record['type'] == 'Geographic':
                         resource_rec['projection_name'] = ' '
@@ -350,10 +362,10 @@ def import_odc_records(con, record_dict):
                 elif 'week' in update_cyle_str:
                     update_cycle = 'weekly'
                 elif 'month' in update_cyle_str:
-                    update_cycle = 'montly'
+                    update_cycle = 'monthly'
                 elif 'quarterly' in update_cyle_str:
                     update_cycle = 'quarterly'
-                elif 'biannually' in update_cyle_str or 'semi-annually' in update_cyle_str or 'biannual' in update_cyle_str:
+                elif 'semi-annually' in update_cyle_str or 'biannual' in update_cyle_str:
                     update_cycle = 'biannually'
                 elif 'annual' in update_cyle_str or 'year' in update_cyle_str:
                     update_cycle = 'annually'
@@ -487,8 +499,7 @@ def load_common_records() :
 def import_discovery_records(con, record_dict):
     
     #Required for email validation
-    from lepl.apps.rfc3696 import Email
-    is_valid_email = Email()
+    from validate_email import validate_email
     
     common_uids = load_common_records()
     
@@ -530,6 +541,10 @@ def import_discovery_records(con, record_dict):
                 "dat.xml_data.extract('//E9350/text()').getStringVal() Resource_Storage_Description, " \
                 "dat.xml_data.extract('//E10050/text()').getStringVal() object_name, " \
                 "SUBSTR(dat.xml_data.extract('//E9682/text()').getStringVal(),1,450) UNIQUE_METADATA_URL, " \
+                "data.xml_data.extract('//E9438/text()').getStringVal() Extent_North, " \
+                "data.xml_data.extract('//E9436/text()').getStringVal() Extent_South, " \
+                "data.xml_data.extract('//E9434/text()').getStringVal() Extent_East, " \
+                "data.xml_data.extract('//E9432/text()').getStringVal() Extent_West, " \
                 "usr.description OWNER_DESC, " \
                 "usr.email OWNER_EMAIL, " \
                 "dat.sv_5 RECORD_TYPE " \
@@ -629,7 +644,7 @@ def import_discovery_records(con, record_dict):
                 contact_orgs = result[9].split(',')
         
             #Validate emails
-            contact_emails = [contact_email if is_valid_email(contact_email) else 'databc@gov.bc.ca' for contact_email in contact_emails]
+            contact_emails = [contact_email if validate_email(contact_email) else 'databc@gov.bc.ca' for contact_email in contact_emails]
             
             # Adding dataset contacts
             contacts = []
@@ -694,8 +709,18 @@ def import_discovery_records(con, record_dict):
         
             iso_topic_cat = (result[29] or 'unknown').split(',')[0]    
             edc_record['iso_topic_category'] = get_edc_tag_id('iso_topic_category', iso_topic_cat)
-
-        
+            
+            
+            #Get dataset map extent coordinates
+            north = result[36]
+            south = result[37]
+            east = result[38]
+            west = result[39]
+            
+            spatial_extent = {"type" : "Polygon",
+                              "Coordinates": [[[north, west], [north, east], [south, east], [south, west]]]
+                              }
+            edc_record[]       
         
             resources = []
             
@@ -719,6 +744,10 @@ def import_discovery_records(con, record_dict):
             update_cycle = result[10] or 'unknown'
             resource_rec['resource_update_cycle'] = get_edc_tag_id('resource_update_cycle', update_cycle)
         
+            storage_location = result[24] or ''
+            
+            if storage_location.startswith('LRDW') :
+                storage_location = "BCGW Data Store"
             
             access_method = 'Service'
             resource_rec['resource_storage_access_method'] = get_edc_tag_id('resource_storage_access_method', access_method.strip())

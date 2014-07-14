@@ -50,10 +50,8 @@ def license_not_empty(key, data, errors, content):
 
 def valid_email(key, data, errors, context):
     
-    from lepl.apps.rfc3696 import Email
-    
-    is_valid_email = Email()
-    
+    from validate_email import validate_email
+        
     #Get the number of the key components
     key_length = len(key)
 
@@ -67,7 +65,7 @@ def valid_email(key, data, errors, context):
 
     contact_email = data.get(key)
     
-    if (is_valid_email(contact_email)) :
+    if (validate_email(contact_email)) :
         return
         
 #     if len(email) > 7 :
