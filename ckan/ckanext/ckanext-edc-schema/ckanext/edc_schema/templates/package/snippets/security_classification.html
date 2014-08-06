@@ -1,31 +1,29 @@
-{% set security_class = h.edc_tag_name('security_class', security_class) %}
-{% set bc_ocio = bc_ocio %}
-{% set view_audience = h.edc_tag_name('viewable', view_audience) %}
-{% set download_audience = h.edc_tag_name('downloadable', download_audience) %}
-{% set metadata_visibility = h.edc_tag_name('metadata_visibility', metadata_visibility) %}
-{% set privacy_impact_assessment = privacy_impact_assessment %}
-
-{% if privacy_impact_assessment == "Y" %}
-    {% set privacy_impact_assessment = 'Yes' %}
-{% else %}
-    {% set privacy_impact_assessment = 'No' %}
-{% endif %}
 
 <h2 class="view-group">Access & Security</h2>
 <table class="table dataset_view">
+	{% if security_class %}
     <tr>
         <td><strong>Security Classification</strong></td><td>{{ security_class }}</td>
     </tr>
+    {% endif %}
+	{% if view_audience %}
     <tr>
         <td><strong>Who can view this dataset?</strong></td><td>{{ view_audience }}</td>
     </tr>
+    {% endif %}
+	{% if download_audience %}
     <tr>
         <td><strong>Who can download this dataset?</strong></td><td>{{ download_audience }}</td>
     </tr>
+    {% endif %}
+	{% if metadata_visibility %}
     <tr>
         <td><strong>Who can view this record?</strong></td><td>{{ metadata_visibility }}</td>
     </tr>
+    {% endif %}
+	{% if privacy_impact_assessment %}
     <tr>
         <td><strong>Has a PIA been completed?</strong></td><td>{{ privacy_impact_assessment }}</td>
     </tr>
+    {% endif %}
 </table>

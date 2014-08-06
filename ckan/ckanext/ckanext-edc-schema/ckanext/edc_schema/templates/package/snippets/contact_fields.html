@@ -87,8 +87,8 @@
 						   	<select id="field-contacts-{{ loop.index0 }}-role" name="contacts__{{ loop.index0 }}__role" data-module="autocomplete" placeholder="Select a contact role">
 							   	<option value="">Select a contact role</option>
 							   	{% for role in h.edc_tags(_("contact_roles")) %}
-							   		{% set selected_role = contact.role and contact.role == role.id %}
-							   		<option value="{{ role.id }}" {% if selected_role %} selected="selected" {% endif %} >{{ role.name }}</option>
+							   		{% set selected_role = contact.role and contact.role == role %}
+							   		<option value="{{ role }}" {% if selected_role %} selected="selected" {% endif %} >{{ role }}</option>
 							   	{% endfor %}
 						   	</select>
 						   	{% if role_error and role_error is iterable %}
@@ -97,7 +97,7 @@
 					   	</div>
 				 	</div>
 				</div>
-				<div class="item-link"> <a href="javascript:remove_contact({{ loop.index0 }})" class="btn btn-primary btn-xs">Delete </a> </div>
+				<div class="item-link"> <a onclick ="remove_contact({{ loop.index0 }}); return false;" class="btn btn-primary btn-xs">Delete </a> </div>
 				<input id="field-contacts-{{ loop.index0 }}-delete"
 				   			type="hidden"
 				   			name="contacts__{{ loop.index0 }}__delete"
@@ -128,7 +128,7 @@
 						<label for="field-contacts-0-email" class="control-label"><span class="control-required">*</span> Email</label>
 						<div class="controls">
 						<input id="field-contacts-0-email"
-					   	   		type="text"
+					   	   		type="email"
 					   	   		name="contacts__0__email"
 					   	   		placeholder="Contact email"/>
 					   	</div>
@@ -162,13 +162,13 @@
 						   	<select id="field-contacts-0-role" name="contacts__0__role" data-module="autocomplete" data-placeholder="Select a contact role">
 							   	<option value="">Select a contact role</option>
 							   	{% for role in h.edc_tags(_("contact_roles")) %}
-							   		<option value="{{ role.id }}" >{{ role.name }}</option>
+							   		<option value="{{ role }}" >{{ role }}</option>
 							   	{% endfor %}
 						   	</select>
 						</div>
 					</div>
 				</div>
-			<div class="item-link"><a href="javascript:remove_contact(0)" class="btn btn-primary btn-xs">Delete </a></div>
+			<div class="item-link"><a onclick="remove_contact(0); return flase;" class="btn btn-primary btn-xs">Delete </a></div>
 			<input id="field-contacts-0-delete"
 				   			type="hidden"
 				   			name="contacts__0__delete"
@@ -183,8 +183,8 @@
 		//Create the list of contact roles.
 		var contact_roles = [];
 		{% for role in h.edc_tags(_("contact_roles"))  %}
-			contact_roles.push({ id : "{{ role.id }}",
-								 name: "{{ role.name}}"});
+			contact_roles.push({ id : "{{ role }}",
+								 name: "{{ role}}"});
 		{% endfor %}
 
 		//Create the list of organizations.
@@ -193,10 +193,10 @@
 			orgs.push({ id: "{{ org.id }}",
 						name: "{{ org.title }}"});
 		{% endfor %}
-	</script>
+  </script>
 
 	<div id="addContact" align="center">
-		<a class="btn btn-primary" href="javascript:add_contact(contact_roles, orgs);">
+		<a class="btn btn-primary"  onclick="add_contact(contact_roles, orgs); return false;">
 			<i class="icon-plus-sign-alt"></i>
 			Add another contact
 		</a>

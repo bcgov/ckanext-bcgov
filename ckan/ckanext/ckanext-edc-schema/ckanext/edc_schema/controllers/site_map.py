@@ -34,7 +34,7 @@ class GsaSitemapController(BaseController):
         user_name = c.user or 'visitor'
         fq = ''    
         if user_name == 'visitor':
-            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE" OR "ARCHIVED") +metadata_visibility:("002")'
+            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
 
         data_dict = {
                 'fq': fq.strip(),
@@ -61,7 +61,7 @@ class GsaSitemapController(BaseController):
         user_name = c.user or 'visitor'
         fq = ''    
         if user_name == 'visitor':
-            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE" OR "ARCHIVED") +metadata_visibility:("002")'
+            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
 
         data_dict = {
                 'fq': fq.strip(),

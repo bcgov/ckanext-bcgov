@@ -62,10 +62,9 @@ def create_vocabs(vocab_file=None):
             if vocab: 
                 available_tags = [tag['display_name'] for tag in vocab['tags']]
                 #Add each tag that is not in the list of available tags
-                for vocab_tag in vocab_tags:
-                    tag = vocab_tag['id'] + '__' + vocab_tag['name']
+                for tag in vocab_tags:
                     if not tag in available_tags:
-                        create_tag(vocab, vocab_tag)
+                        create_tag(vocab, tag)
 
         
 create_vocabs()

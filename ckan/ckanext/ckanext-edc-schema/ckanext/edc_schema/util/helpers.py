@@ -12,6 +12,22 @@ url_for = ckan.lib.helpers.url_for
 log = logging.getLogger(__name__)
 
 
+def get_suborgs(org_id):
+    '''
+    Returns the list of suborganizations of the given organization
+    '''
+    context = {'model': model, 'session':model.Session, 'user':c.user}
+
+    org_model = context['model'] 
+                
+    group = org_model.Group.get(org_id)
+    branches = group.get_children_groups(type="organization")
+    
+    suborgs = [branch.id for branch in branches]
+    
+    return suborgs
+        
+
 def get_suborg_sectors(org, suborg):
     from ckanext.edc_schema.commands.base import default_org_file
     import os
@@ -82,7 +98,7 @@ def get_user_dataset_num(userobj):
     return count
 
 
-def record_is_viewable(pkg_dict, userobj=None, user='visitor'):
+def record_is_viewable(pkg_dict, userobj):
     '''
     Checks if the user can view the given record
     '''
@@ -95,18 +111,18 @@ def record_is_viewable(pkg_dict, userobj=None, user='visitor'):
     
     #Anonymous user (visitor) can only view published public records
     published_state = ['PUBLISHED', 'PENDING ARCHIVE', 'ARCHIVED']
-    if user == 'visitor' :
-        if pkg_dict['metadata_visibility'] == '002' and pkg_dict['edc_state'] in published_state:
+    if not userobj  :
+        if pkg_dict['metadata_visibility'] == 'Public' and pkg_dict['edc_state'] in published_state:
             return True
         else :
             return False
         
     #Users can only view unpublished records of their own organization:
-    if userobj :
-        if pkg_dict['edc_state'] in published_state or pkg_dict['owner_org'] in get_user_orgs(user) :
-            return True
-        else :
-            return False
+    user_orgs = [org.id for org in get_user_orgs(userobj.id) ]
+    if pkg_dict['edc_state'] in published_state or pkg_dict['owner_org'] in user_orgs :
+        return True
+    else :
+        return False
     
 def get_package_data(pkg_id):
     '''

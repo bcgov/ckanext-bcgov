@@ -76,7 +76,7 @@ class EDCApiController(ApiController):
         if c.userobj and c.userobj.sysadmin == True:
             fq += ''
         elif user_name == 'visitor':
-            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE" OR "ARCHIVED") +metadata_visibility:("002")'
+            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
         else:
             user_id = c.userobj.id                
             fq += '(edc_state:("PUBLISHED" OR "PENDING ARCHIVE" OR "ARCHIVED"))'
@@ -282,7 +282,7 @@ class EDCApiController(ApiController):
             from ckanext.edc_schema.util.helpers import record_is_viewable
             
             username = c.user or 'visitor'
-            if not record_is_viewable(pkg, c.userobj, username) :
+            if not record_is_viewable(pkg, c.userobj) :
                 return_dict['success'] = False
                 return_dict['error'] = {'__type': 'Authorization Error', 'message': _('Access denied')}
                 return self._finish(403, return_dict, content_type='json')
@@ -306,7 +306,10 @@ class EDCApiController(ApiController):
         
         return self._finish_ok(return_dict)
         
+
     def action(self, logic_function, ver=None):
+        import ckanext.edc_schema.logic.action as edc_action
+        
         import pprint
         #ToDo :
         #Create a list of logic_functions that need to be restricted to anonymous users
@@ -317,7 +320,7 @@ class EDCApiController(ApiController):
                                 'package_autocomplete',
                                 'current_package_list_with_resources'
                                 ]
-        
+
         #Need to apply the restriction rules to each one of the restricted functions.
         #Check if the logic function is known
         try:

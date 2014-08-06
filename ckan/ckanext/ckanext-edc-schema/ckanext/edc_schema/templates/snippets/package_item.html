@@ -73,7 +73,7 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
               {% block resources_inner %}
                 {% for resource in h.dict_list_reduce(package.resources, 'format') %}
                 <li>
-                  <a href="{{ h.url_for(controller='package', action='read', id=package.name) }}" class="label" data-format="{{ resource.lower() }}">{{ resource }}</a>
+                  <a href="{{ h.url_for(controller='package', action='read', id=package.name) }}" class="label" data-format="{{ resource.lower() }}">{{ resource.lower() }}</a>
                 </li>
                 {% endfor %}
               {% endblock %}

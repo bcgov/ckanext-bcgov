@@ -22,10 +22,10 @@
 				<select id="field-edc_resource_type" name="edc_resource_type" data-module="autocomplete" data-placeholder="Select a resource type">
 					<option value="" {% if not selected_type %} selected="selected" {% endif %}>Resource type is unknown</option>
       				{% for resource_type in resource_type_list %}
-      					{% set selected_type = (current_type and current_type == resource_type.id) %}
-      					<option value="{{ resource_type.id }}"
+      					{% set selected_type = (current_type and current_type == resource_type) %}
+      					<option value="{{ resource_type }}"
       						{% if selected_type %} selected="selected" {% endif %}>
-      							{{ resource_type.name }}
+      							{{ resource_type }}
       					</option>
       				{% endfor %}
 				</select>
@@ -44,10 +44,10 @@
       <select id="field-resource_storage_location" name="resource_storage_location" data-module="autocomplete" onchange="javascript:check_storage_location();">
         <option value="" {% if not selected_storage_location %} selected="selected" {% endif %}>Select a storage location</option>
             {% for storage_location in storage_location_list %}
-              {% set selected_storage_location = (current_storage_location and current_storage_location == storage_location.id) %}
-              <option value="{{ storage_location.id }}"
+              {% set selected_storage_location = (current_storage_location and current_storage_location == storage_location) %}
+              <option value="{{ storage_location }}"
                 {% if selected_storage_location %} selected="selected" {% endif %}>
-                {{ storage_location.name }}
+                {{ storage_location }}
               </option>
             {% endfor %}
       </select>
@@ -57,8 +57,8 @@
       </div>
     </div>
 
-    {% if record_type == 'Geographic' or record_type == 'Dataset' %}
     {% block basic_fields_format %}
+    {% if record_type == 'Geographic' or record_type == 'Dataset' %}
       {% set format_error = errors.format %}
       <div class="control-group control-full{{ " error" if format_error }}">
         <label class="control-label" for="field-format"><span class="control-required">*</span> {{ _("Resource Storage Format") }}</label>
@@ -68,10 +68,10 @@
       <select id="field-format" name="format" data-module="autocomplete">
         <option value ="" {% if not selected_format %} selected="selected" {% endif %}>Format not specified</option>
             {% for resource_format in resource_format_list  %}
-              {% set selected_format = (current_format and current_format == resource_format.name) %}
-              <option value="{{ resource_format.id }}"
+              {% set selected_format = (current_format and current_format == resource_format) %}
+              <option value="{{ resource_format }}"
                 {% if selected_format %} selected="selected" {% endif %}>
-                    {{ resource_format.name }}
+                    {{ resource_format }}
               </option>
             {% endfor %}
       </select>
@@ -80,9 +80,8 @@
       {% endif %}
       </div>
     </div>
-    {% endblock %}
-
     {% endif %}
+    {% endblock %}
 
 {#		{% set download_format_error = errors.resource_download_format %}
     	<div class="required control-group control-full{{ " error" if download_format_error}}">
@@ -93,10 +92,10 @@
 			<select id="field-resource_download_format" name="resource_download_format" data-module="autocomplete">
 				<option value="" {% if not selected_download_format %} selected="selected" {% endif %}>Format is not specified</option>
       			{% for download_format in download_format_list %}
-      				{% set selected_download_format = (current_download_format and current_download_format == download_format.id) %}
-      				<option value="{{ download_format.id }}"
+      				{% set selected_download_format = (current_download_format and current_download_format == download_format) %}
+      				<option value="{{ download_format }}"
       					{% if selected_download_format %} selected="selected" {% endif %}>
-      							{{ download_format.name }}
+      							{{ download_format }}
       				</option>
       			{% endfor %}
 			</select>
@@ -116,10 +115,10 @@
 			<select id="field-resource_storage_access_method" name="resource_storage_access_method" data-module="autocomplete">
 				<option value="" {% if not selected_method %} selected="selected" {% endif %}>Unknown access method</option>
       			{% for access_method in access_method_list %}
-      				{% set selected_method = (current_access_method and current_access_method == access_method.id) %}
-      				<option value="{{ access_method.id }}"
+      				{% set selected_method = (current_access_method and current_access_method == access_method) %}
+      				<option value="{{ access_method }}"
       					{% if selected_method %} selected="selected" {% endif %}>
-      							{{ access_method.name }}
+      							{{ access_method }}
       				</option>
       			{% endfor %}
 			</select>
@@ -165,17 +164,17 @@
 	<div class="control-list form-horizontal">
     	{% set error = errors.projection_name %}
         <div class="required control-group control-medium{{ " error" if error }}">
-    		<label class="control-label" for="field-projection_name">Projection Name</label>
+    		<label class="control-label" for="field-projection_name"><span class="control-required">*</span> Projection Name</label>
     		<div class="controls">
     			{% set projection_names_list = h.edc_tags(_('projection_name')) %}
     			{% set current_projection = data.projection_name %}
             	<select id="field-projection_name" name="projection_name" data-module="autocomplete" class="required">
             		<option value ='' {% if not selected_projection %} selected="selected" {% endif %}>Select projection name</option>
                 	{% for projection in projection_names_list  %}
-                		{% set selected_projection = (current_projection and current_projection == projection.id) %}
-                    	<option value="{{ projection.id }}"
+                		{% set selected_projection = (current_projection and current_projection == projection) %}
+                    	<option value="{{ projection }}"
                     		{% if selected_projection %} selected="selected" {% endif %}>
-                        	{{ projection.name }}
+                        	{{ projection }}
                     	</option>
                 	{% endfor %}
            		</select>

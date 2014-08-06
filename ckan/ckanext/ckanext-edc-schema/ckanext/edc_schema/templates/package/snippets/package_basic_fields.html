@@ -1,7 +1,5 @@
 {% ckan_extends %}
 
-{% set rec_stat = data.get('resource_status', []) %}
-
 {% block package_basic_fields_title %}
 	{% resource 'edc_resource/edc_dataset.js' %}
 	<div class="form-horizontal">
@@ -31,15 +29,14 @@
     	</div>
 
         <div class='required'>
-            {{ form.markdown('notes', id='field-notes', label=_('Description'), placeholder=_('eg. Some
-            useful notes about the data'), value=data.notes, error=errors.notes) }}
+            {{ form.markdown('notes', id='field-notes', label=_('Description'), placeholder=_('eg. Some useful notes about the data'), value=data.notes, error=errors.notes) }}
             {% if record_type != 'Application' and record_type != 'WebService' %}
             {{ form.markdown('purpose', label=_('Purpose'), placeholder=_('Summary of the intentions for which the dataset was developed.'), value=data.purpose, error=errors.purpose, classes=['purpose']) }}
             {% endif %}
             {# set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/3/util/tag/autocomplete?incomplete=?'} #}
             {% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': 'http://localhost:5000/api/3/action/tag_list', 'data-module-source': 'http://localhost:5000/api/3/action/tag_list'} %}
             {# form.input('tag_string', id='field-tags', label=_('Keywords'), placeholder=_('eg. economy, mental health, government'), value=data.tag_string, error=errors.tags, classes=['control-full'], attrs=tag_attrs) #}
-         
+
     	{% block edc_package_keywords %}
     		{% snippet 'package/snippets/edc_keywords.html', data=data, user=userobj, errors=errors %}
     	{% endblock %}
@@ -82,14 +79,12 @@
             		<label class="control-label" for="field-security_class"><span class="control-required">*</span> {{ _("Security Classification") }}</label>
             		<div class="controls">
             			{% set security_class_list = h.edc_tags(_("security_class")) %}
-            			{% set current_security_class = data.security_class %}
                 		<select id="field-security_class" name="security_class" data-module="autocomplete" class="required">
                 			<option value ='' {% if not selected_class %} selected="selected" {% endif %}>Select a security classification</option>
               				{% for tag in security_class_list  %}
-              				{% set selected_class = (current_security_class and current_security_class == tag.id) %}
-              					<option value="{{ tag.id }}"
-              						{% if selected_class %} selected="selected" {% endif %}>
-              						{{ tag.name }}
+              					<option value="{{ tag }}"
+              						{% if tag == data.get('security_class', None) %} selected="selected" {% endif %}>
+              						{{ tag }}
               					</option>
               				{% endfor %}
                 		</select>
@@ -108,15 +103,14 @@
                 <div  class="required control-group control-medium{{ " error" if view_error }}">
                     <label class="control-label" for="field-view_audience"><span class="control-required">*</span> Who can view this data?</label>
                     {% set view_audience_list = h.edc_tags(_("viewable")) %}
-                    {% set current_audience = data.view_audience %}
                     <div class="controls">
                         <select id="field-view_audience" name="view_audience" data-module="autocomplete" class="required">
                             <option value = '' {% if not selected_audience %} selected="selected" {% endif %}>Select a view audience</option>
                             {% for tag in view_audience_list %}
-                                {% set selected_audience = (current_audience and current_audience == tag.id) %}
-                                <option value="{{ tag.id }}"
-                                    {% if selected_audience %} selected="selected" {% endif %}>
-                                    {{ tag.name }}
+                                {% set selected_audience = (tag in data.get('view_audience', [])) %}
+                                <option value="{{ tag }}"
+                                    {% if tag == data.get('view_audience', None) %} selected="selected" {% endif %}>
+                                    {{ tag }}
                                 </option>
                             {% endfor %}
                         </select>
@@ -130,15 +124,14 @@
                 <div class="required control-group control-medium{{ " error" if download_error }}">
                     <label class="control-label" for="field-download_audience"><span class="control-required">*</span> Who can download this data?</label>
                     {% set download_audience_list = h.edc_tags(_("downloadable")) %}
-                    {% set current_audience = data.download_audience %}
                     <div class="controls">
                         <select id="field-download_audience" name="download_audience" data-module="autocomplete" class="required">
                             <option value ='' {% if not selected_audience %} selected="selected" {% endif %}>Select a download audience</option>
                             {% for tag in download_audience_list  %}
-                                {% set selected_audience = (current_audience and current_audience == tag.id) %}
-                                <option value="{{ tag.id }}"
+                                {% set selected_audience = (tag == data.get('download_audience', None)) %}
+                                <option value="{{ tag }}"
                                     {% if selected_audience %} selected="selected" {% endif %}>
-                                    {{ tag.name }}
+                                    {{ tag }}
                                 </option>
                             {% endfor %}
                         </select>
@@ -157,14 +150,13 @@
                 <label class="control-label" for="field-metadata_visibility"><span class="control-required">*</span> {{ _("Who can view this record?") }}</label>
                 <div class="controls">
                 {% set metadata_visibility_list = h.edc_tags(_("metadata_visibility"))  %}
-                {% set current_visibility = data.metadata_visibility %}
                 <select id="field-metadata_visibility" name="metadata_visibility" data-module="autocomplete">
                     <option value ='' {% if not selected_visibility %} selected="selected" {% endif %}>Select metadata visibility</option>
                     {% for tag in metadata_visibility_list  %}
-                        {% set selected_visibility = (current_visibility and current_visibility == tag.id) %}
-                        <option value="{{ tag.id }}"
+                        {% set selected_visibility = (tag == data.get('metadata_visibility', None)) %}
+                        <option value="{{ tag }}"
                             {% if selected_visibility %} selected="selected" {% endif %}>
-                            {{ tag.name }}
+                            {{ tag }}
                         </option>
                     {% endfor %}
                 </select>
@@ -190,19 +182,20 @@
 
         {% block package_privacy %}
             {% set pa_error = errors.privacy_impact_assessment %}
+            {% set pa = data.get('privacy_impact_assessment', 'No') %}
             <div class="required control-group{{ " error" if pa_error }}">
                 <label class="control-label"><span class="control-required">*</span> Has a privacy impact assessment been completed on this data?</label>
                 <div clss="controls">
                     <div class="radio-inline">
                         <label>
-                            <input type="radio" name="privacy_impact_assessment" value="Y"
-                                {% if data['privacy_impact_assessment'] == 'Y' %} checked="checked" {% endif %} >Yes
+                            <input type="radio" name="privacy_impact_assessment" value="Yes"
+                                {% if pa == 'Yes' %} checked="checked" {% endif %} >Yes
                         </label>
                     </div>
                     <div class="radio-inline">
                         <label>
-                            <input type="radio" name="privacy_impact_assessment" value="N"
-                                {% if data['privacy_impact_assessment'] == 'N' %} checked="checked" {% endif %}>No
+                            <input type="radio" name="privacy_impact_assessment" value="No"
+                                {% if pa == 'No' %} checked="checked" {% endif %}>No
                         </label>
                     </div>
                 </div>
@@ -221,15 +214,14 @@
             <div class="control-group {{ " error" if topic_error }}">
                 <label class="control-label" for="field-iso_topic_cat"><span class="control-required">*</span> {{ _("ISO Topic Category") }}</label>
     			{% set topic_cat_list = h.edc_tags(_("iso_topic_category")) %}
-    			{% set current_cat = data.iso_topic_cat %}
     			<div class="controls">
         			<select id="field-iso_topic_cat" name="iso_topic_cat" data-module="autocomplete" class="required">
         				<option value ='' {% if not selected_cat %} selected="selected" {% endif %}>Select a category</option>
       					{% for tag in topic_cat_list  %}
-      						{% set selected_cat = (current_cat and current_cat == tag.id) %}
-      						<option value="{{ tag.id }}"
+      						{% set selected_cat = (tag == data.get('iso_topic_cat', None)) %}
+      						<option value="{{ tag }}"
       							{% if selected_cat %} selected="selected" {% endif %}>
-      							{{ tag.name }}
+      							{{ tag }}
       						</option>
       					{% endfor %}
         			</select>
@@ -250,10 +242,10 @@
                         <select id="field-metadata_hierarchy_level" name="metadata_hierarchy_level" data-module="autocomplete" class="required">
                             <option value ='' {% if not selected_level %} selected="selected" {% endif %}>Select a hierarchy level</option>
                                 {% for tag in hierarchy_level_list  %}
-                                    {% set selected_level = (current_level and current_level == tag.id) %}
-                                    <option value="{{ tag.id }}"
+                                    {% set selected_level = (tag == data.get('metadata_hierarchy_level',None)) %}
+                                    <option value="{{ tag }}"
                                         {% if selected_level %} selected="selected" {% endif %}>
-                                        {{ tag.name }}
+                                        {{ tag }}
                                     </option>
                                 {% endfor %}
                         </select>

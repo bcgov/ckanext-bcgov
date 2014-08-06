@@ -21,77 +21,24 @@ def edc_type_label(item):
     rec_type = item['display_name']
     return get_record_type_label(rec_type)
 
-def get_edc_tag_name(vocab_id, tag_id):
-    '''Returns the name of a tag for a given vocabulary and tag id.
-       Each EDC tag is a combination of three digits as tag id and tag name which are separated  by '__'
-    '''
-
-    if not tag_id :
-        return None
-
-    try:
-        #First get the list of all tags for the given vocabulary.
-        tags = toolkit.get_action('tag_list')(
-                data_dict={'vocabulary_id': vocab_id})
-        #For each tag extract the 3-digit tag id and compare it with the given tag id.
-        for tag in tags :
-            index = tag.find('__')
-            if (tag[:index].lower() == tag_id.lower()) :
-                return tag[index+2:]
-        #No tags exist with the given tag id.
-        return None
-    except toolkit.ObjectNotFound:
-        #No vocabulary exist with the given vocabulary id.
-        return None
-
-def get_edc_tag_id(vocab_id, tag_name):
-    '''Returns the id of a tag with the given name and vocabulary id.
-       Each EDC tag is a combination of three digits as tag id and tag name which are separated  by '__'
-    '''
-
-
-    data_string = urllib.quote(json.dumps({'vocabulary_id': vocab_id}))
-
-    try:
-        request = urllib2.Request(site_url +'/api/3/action/tag_list')
-        request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
-        assert response.code == 200
-
-        # Use the json module to load CKAN's response into a dictionary.
-        response_dict = json.loads(response.read())
-        assert response_dict['success'] is True
-
-        # package_create returns the created package as its result.
-        tags = response_dict['result']
-    except:
-        tags = []
-
-    for tag in tags :
-        index = tag.find('__')
-        if (tag[index+2:] == tag_name) :
-            return tag[:index]
-    return None
 
 def get_edc_tags(vocab_id):
+    tags = []
     try:
         tags = toolkit.get_action('tag_list')(
                 data_dict={'vocabulary_id': vocab_id})
-        tag_list = []
-        for tag in tags:
-            index = tag.find('__')
-            tag_list.append({'id' : tag[:index], 'name': tag[index+2:]})
-        return tag_list
     except toolkit.ObjectNotFound:
-        return None
+        return []
+    
+    return tags
 
 #Return the name of an organization with the given id
 def get_organization_id(org_title):
 
     data_string = urllib.quote(json.dumps({'all_fields': True}))
-    request = urllib2.Request(site_url + '/api/3/action/organization_list')
-    request.add_header('Authorization', api_key)
     try:
+        request = urllib2.Request(site_url + '/api/3/action/organization_list')
+        request.add_header('Authorization', api_key)
         response = urllib2.urlopen(request, data_string)
         assert response.code == 200
 
@@ -105,7 +52,7 @@ def get_organization_id(org_title):
         orgs = []
 
     for org in orgs:
-        if org_title.startswith(org['title']):
+        if org_title and org_title.startswith(org['title']) :
             return org['id']
     return None
 
@@ -145,6 +92,7 @@ def get_user_orgs(user_id, role=None):
     '''
     Returns the list of orgs that the given user belongs to and has the given role('admin', 'member', 'editor', ...)
     '''
+    
     orgs = []
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}

@@ -5,8 +5,6 @@ import pprint
 import ckan.lib.navl.dictization_functions as df
 from ckan.common import _
 
-from ckanext.edc_schema.util.util import (get_edc_tags, get_edc_tag_name)
-
 missing = df.missing
 StopOnError = df.StopOnError
 Invalid = df.Invalid
@@ -68,10 +66,6 @@ def valid_email(key, data, errors, context):
     if (validate_email(contact_email)) :
         return
         
-#     if len(email) > 7 :
-#         if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
-#             return
-
     errors[key].append(_('Invalid email address'))
 
 
@@ -106,16 +100,6 @@ def valid_date(key, data, errors, context):
     try:
         datetime.datetime.strptime(date_value, '%Y-%m-%d')
         
-        #Check if this the published date
-        if len(key) == 3 and key[0] == 'dates' :
-            type_key = (key[0], key[1], 'type')
-        
-            date_type = data[type_key]
-                    
-            if date_type and date_type == '003':
-                data['publish_date'] = date_value + 'T23:59:59Z'
-#         if 'publish_date' in data:
-#             print data['publish_date']
     except ValueError:
         errors[key].append('Invalid date format/value')
     pass
@@ -130,8 +114,8 @@ def check_resource_status(key, data, errors, context):
     #Get the current value of resource status
 #    pprint.pprint(data)
     resource_status_key = (_('resource_status'),)
-    resource_status_id = data[resource_status_key]
-    resource_status = get_edc_tag_name('resource_status', resource_status_id)
+    if resource_status_key in data :
+        resource_status = data[resource_status_key]
 
     #Check if the field is empty when the value of resource_status is  obsolete and when the key is replacement_record).
     if (key[0] == _('replacement_record')):

@@ -10,19 +10,18 @@
 {# For each date in the list of dates, show the details #}
 {% set date = pkg.dates %}
 {% for date in dates %}
-	{% if date.type != '002' and date.type != '003' %}
-		{% set date_type = h.edc_tag_name(_("dataset_date_type"), date.type) %}
+	{% if date.type != 'Modified' and date.type != 'Published' %}
 		<tr>
-			<td><strong> Record {{ date_type }} </strong></td><td> {{ date.date }} </td>
+			<td><strong> Record {{ date.type }} </strong></td><td> {{ date.date }} </td>
 		</tr>
 	{% endif %}
 {% endfor %}
 
 {% if pkg.publish_date %}
 	<tr>
-		<td><strong> Date Published </strong></td><td> {{ pkg.publish_date[:10] }} </td>
+		<td><strong> Record Published </strong></td><td> {{ pkg.publish_date }} </td>
 	</tr>
 {% endif %}
 <tr>
-	<td><strong> Last Modified </strong></td><td> {{ last_modified }} </td>
+	<td><strong> Record Last Modified </strong></td><td> {{ last_modified }} </td>
 </tr>

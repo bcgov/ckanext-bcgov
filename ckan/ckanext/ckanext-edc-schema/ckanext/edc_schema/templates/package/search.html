@@ -2,6 +2,7 @@
 
 
 {% block page_primary_action %}
+  {% resource 'edc_resource/search.js' %}
 	{% set user_orgs = h.get_user_orgs(c.userobj.id) or null %}
 	{% if h.check_access('package_create') and (user_orgs or c.userobj.sysadmin == True) %}
 		<div class="page_primary_action">
@@ -27,13 +28,16 @@
         'remove_field': c.remove_field }
 	%}
 	{% set sorting = [
-		(_('Published Date'), 'publish_date desc, metadata_modified desc'),
     	(_('Relevance'), 'score desc, metadata_modified desc'),
+    	(_('Popular'), 'views_total desc') if g.tracking_enabled else (false, false), 
         (_('Name Ascending'), 'title_string asc'),
         (_('Name Descending'), 'title_string desc'),
-        (_('Last Modified'), 'metadata_modified desc'),
-        (_('Popular'), 'views_total desc') if g.tracking_enabled else (false, false) ]
+		(_('Published Date'), 'publish_date desc, metadata_modified desc'),
+        (_('Last Modified'), 'metadata_modified desc')
+        ]
 	%}
+  {% resource 'edc_resource/typeahead.bundle.js' %}
+  {% resource 'edc_resource/search.js' %}
 	{% snippet 'snippets/search_form.html', type='dataset', query=c.q, sorting=sorting, sorting_selected=c.sort_by_selected, count=c.page.item_count, facets=facets, show_empty=request.params, error=c.query_error %}
 {% endblock %}
 

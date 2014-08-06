@@ -6,17 +6,45 @@
 
 #}
 
+{% set has_extent = pkg.south_bound_latitude and pkg.north_bound_latitude and pkg.west_bound_longitude and pkg.east_bound_longitude %}
+
 <div class="module-content ckanext-datapreview">
-{% set image_url = pkg.preview_image_url %}
-  {% if image_url %}
-    {# images can be embedded directly #}
-    <img src="{{ image_url }}"></img>
-  {% else %}
-  	{% set map_service_url = pkg.preview_map_service_url %}
-    	{% if map_service_url %}
-  		{% set wmsservice_url = map_service_url + "&wmslayers=" + pkg.layer_name + "&ll=" + pkg.preview_latitude + "," + pkg.preview_longitude + "&z=" + pkg.preview_zoom_level %}
-  		{% set resource_url = "http://apps.gov.bc.ca/pub/dmf-viewer/?siteid=7535188336326689232&maponly&wmsservices=" + wmsservice_url %}
-  			<iframe src="{{resource_url}}" frameborder="0" width="100%" data-module="data-viewer" style="hieght : 600px;"></iframe>
-   	{% endif %}
-  {% endif %}
+  <div class="row">
+    {% if has_extent or pkg.link_to_imap %}
+    <div class="col-md-9">
+    {% else %}
+    <div class="col-md-12">
+    {% endif %}
+    {% set image_url = pkg.preview_image_url %}
+      {% if image_url %}
+        {# images can be embedded directly #}
+        <img src="{{ image_url }}"></img>
+      {% else %}
+      	{% set map_service_url = pkg.preview_map_service_url %}
+        	{% if map_service_url %}
+      		{% set wmsservice_url = map_service_url + "&wmslayers=" + pkg.layer_name + "&ll=" + pkg.preview_latitude + "," + pkg.preview_longitude + "&z=" + pkg.preview_zoom_level %}
+      		{% set resource_url = "http://apps.gov.bc.ca/pub/dmf-viewer/?siteid=7535188336326689232&maponly&wmsservices=" + wmsservice_url %}
+      			<iframe src="{{resource_url}}" frameborder="0" width="100%" data-module="data-viewer" height="500px"></iframe>
+       	{% endif %}
+      {% endif %}
+    </div>
+    {% if has_extent or pkg.link_to_imap %}
+    <div class="col-md-3">
+      <div class="extent">
+        <h4>Dataset Extent</h4>
+        <table class="table extent-table">
+          <tr>
+            <td>Latitude: </td> <td>{{ pkg.south_bound_latitude }}&deg; to {{ pkg.north_bound_latitude }}&deg;</td>
+          </tr>
+          <tr>
+            <td>Longitude: </td><td>{{ pkg.west_bound_longitude }}&deg; to {{ pkg.east_bound_longitude }}&deg;</td>
+          </tr>
+        </table>
+      </div>
+      <div class="imap">
+        <a href="{{ pkg.link_to_imap }}" target="_blank" class="btn btn-primary"><i class="icon-map-marker"></i> View in iMap</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
 </div>

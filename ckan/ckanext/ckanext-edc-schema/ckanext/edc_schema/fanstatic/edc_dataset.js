@@ -14,7 +14,7 @@ function select_bc_ocio() {
  *-------------------------------------------------------------------*/
 function check_resource_stat() {
 
-	if ($("#field-resource_status").val() == "003") {
+	if ($("#field-resource_status").val() == "obsolete") {
 		$("#replacement_record_container").show();
 	}
 	else {
@@ -23,7 +23,7 @@ function check_resource_stat() {
 
 	}
 
-	if ($("#field-resource_status").val() == "002") {
+	if ($("#field-resource_status").val() == "historicalArchive") {
 		$("#retension_expiry_date_container").show();
 		$("#source_data_path_container").show();
 	}
@@ -108,7 +108,7 @@ function add_contact(roles, orgs) {
 						</div> \
 					</div> \
 				</div> \
-			<div class="item-link"><a href="javascript:remove_contact(' + numberOfContacts + ')" class="btn btn-primary btn-xs">Delete </a></div> \
+			<div class="item-link"><a onclick="remove_contact(' + numberOfContacts + '); return false;" class="btn btn-primary btn-xs">Delete </a></div> \
 			<input id="field-contacts-' + numberOfContacts + '-delete" \
 				   			type="hidden" \
 				   			name="contacts__' + numberOfContacts + '__delete" \
@@ -162,7 +162,7 @@ function add_date(date_types) {
 						</div> \
 					</div> \
 					<div class="span2"> \
-						<div class="item-link"> <a href="javascript:remove_date(' + numberOfDates + ')" class="btn btn-primary btn-xs">Delete </a> </div> \
+						<div class="item-link"> <a onclick="remove_date(' + numberOfDates + '); return false;" class="btn btn-primary btn-xs">Delete </a> </div> \
 							<input id="field-dates-' + numberOfDates + '-delete" \
 							   			type="hidden" \
 							   			name="dates__' + numberOfDates + '__delete" \
@@ -201,7 +201,7 @@ function add_more_info() {
 							</div> \
 						</div> \
 						<div class="span2"> \
-							<div class="item-link"> <a href="javascript:remove_info_link(' + numberOfInfoLinks + ')" class="btn btn-primary btn-xs">Delete </a> </div> \
+							<div class="item-link"> <a onclick="remove_info_link(' + numberOfInfoLinks + '); return false;" class="btn btn-primary btn-xs">Delete </a> </div> \
 						</div> \
 						<input id="field-more_info-' + numberOfInfoLinks + '-delete" \
 							type="hidden" \
@@ -277,9 +277,11 @@ function select_branch(org_branches) {
 
 
 $("#form-edc_dataset").submit(function( event ) {
+	var suborg_id = $("#field-sub_org").val();
 	var org_id = $('#field-org').val();
+	owner_org = (suborg_id) ? suborg_id : org_id;
 	//Add the select organization id as the owner of the dataset.
-	$("#field-owner_org").val(org_id);
+	$("#field-owner_org").val(owner_org);
 });
 
 
@@ -295,7 +297,7 @@ $("#field-edc_state").change(function() {
 			width:600,
 			modal:true,
 			buttons:{
-				"Confrim & Save":function(){
+				"Confirm & Save":function(){
 					$("#field-edc_state").val("PENDING PUBLISH");
 					previous_state = "PENDING PUBLISH";
 					$("#save1").hide();
@@ -390,6 +392,7 @@ $("#field-title").on('keyup change', function(){
 	$("#field-name").val(urlText);
 });
 
+
 /*-------------------------------------------------------------------*
  * Initialization on loading dataset creation/edit page.             *
  *-------------------------------------------------------------------*/
@@ -401,9 +404,6 @@ $(function() {
 	$("#field-retention_expiry_date").datepicker({ dateFormat: "yy-mm-dd", showOtherMonths: true, selectOtherMonths: true });
 
 	$(document).ready(function() {
-		$('.purpose label').on('click', function() {
-			$('.purpose').toggleClass('active');
-		});
 		previous_state = $("#field-edc_state").val();
 
 		var $datasetForm = $('#form-edc_dataset');
@@ -416,4 +416,5 @@ $(function() {
 		load_keywords();
 
 	});
+
 });

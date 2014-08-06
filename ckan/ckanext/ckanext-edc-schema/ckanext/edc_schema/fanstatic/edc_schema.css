@@ -79,14 +79,6 @@ input .required {
 	color : #22A7FF;
 }
 
-.purpose .controls {
-	display: none;
-}
-
-.purpose.active .controls {
-	display: block;
-}
-
 h1, h2, h3, h4, h5, h6 {
 	margin : 0;
 }
@@ -265,8 +257,22 @@ position: relative;
 	margin-left: -25px;
 	margin-right: -25px;
 	margin-bottom: 0;
-	padding-bottom: 0;	
+	padding-bottom: 0;
 	background: none;
 	margin-top: 50px;
-	padding-left : 30px;	
+	padding-left : 30px;
 	border-top: 1px solid #e5e5e5;}
+
+.extent h4 {
+	margin-top: 0;
+}
+
+.auth-error {
+    color : #E2062C;
+    font-size : 24px;
+    width : 100%;
+}
+
+.auth-content {
+    font-size : 18px;
+}

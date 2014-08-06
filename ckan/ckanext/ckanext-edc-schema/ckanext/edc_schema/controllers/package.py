@@ -1,12 +1,12 @@
 #Author: Kahlegh Mamakani Highwaythree Solutions Inc.
 #Created on Jan 28 2014
-#Last update Jan 28 2014
+
 import logging
 
 import datetime
 
 from ckan.controllers.package import PackageController
-from ckan.common import  OrderedDict, _, request, c, g, response
+from ckan.common import  _, request, c, response
 import ckan.lib.base as base
 import ckan.model as model
 import ckan.logic as logic
@@ -18,14 +18,7 @@ import ckan.lib.helpers as h
 from urllib import urlencode
 from paste.deploy.converters import asbool
 
-import ckan.plugins as p
-import ckan.lib.maintain as maintain
-from genshi.template import MarkupTemplate
-import ckan.lib.package_saver as package_saver
-
 from wsgiref.handlers import format_date_time
-
-from ckanext.edc_schema.util.util import (get_user_orgs)
 
 import ckan.lib.render as lib_render
 
@@ -33,7 +26,7 @@ import ckan.lib.render as lib_render
 import pprint
 from pylons import config
 
-from ckanext.edc_schema.util.util import (get_edc_tag_name, edc_state_activity_create)
+#from ckanext.edc_schema.util.util import edc_state_activity_create
 
 log = logging.getLogger(__name__)
 
@@ -81,12 +74,11 @@ def send_email(user, email_dict):
 
 
 def check_record_state(old_state, new_data):
-    from datetime import datetime
     
 #    print '---------------------------------------- Checking record state changes ----------------------------------'
     
     context = {'model': model, 'session': model.Session,
-                   'user': c.user or c.author, 'auth_user_obj': c.userobj}
+               'user': c.user or c.author, 'auth_user_obj': c.userobj}
     
     new_state = new_data['edc_state']
    
@@ -104,8 +96,9 @@ def check_record_state(old_state, new_data):
     
     #Get dataset author 
     dataset_author = c.userobj
-    if new_data['author'] != c.userobj.id:
-        dataset_author = get_action(context, {'id': new_data['author']})
+#     if new_data['author'] != c.userobj.id:
+#         dataset_author = get_action('user_show')(context, {'id': new_data['author']})
+#         pprint.pprint(dataset_author)
     
     #Get the list of admins
     
@@ -120,7 +113,7 @@ def check_record_state(old_state, new_data):
     
     send_email(dataset_author, email_dict)
     
-    #Send an email based on the activity
+    #Todo : Determine what to do based on the package new state
     if new_state == 'PENDING PUBLISH' :        
         pass
     elif new_state == 'REJECTED':
@@ -136,27 +129,10 @@ def check_record_state(old_state, new_data):
     
     #Add publish date to data if the state changed to published.
     if new_state == 'PUBLISHED':
-        new_data['publish_date'] = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ') 
+        new_data['publish_date'] = str(datetime.date.today()) 
         #update the record
         pkg = get_action('package_update')(context, new_data)
-
-# def _encode_params(params):
-#     return [(k, v.encode('utf-8') if isinstance(v, basestring) else str(v))
-#             for k, v in params]
-# 
-# 
-# def url_with_params(url, params):
-#     params = _encode_params(params)
-#     return url + u'?' + urlencode(params)
-# 
-# 
-# def search_url(params, package_type=None):
-#     if not package_type or package_type == 'dataset':
-#         url = h.url_for(controller='package', action='search')
-#     else:
-#         url = h.url_for('{0}_search'.format(package_type))
-#     return url_with_params(url, params)
-
+        
 
 class EDCPackageController(PackageController):
     
@@ -171,7 +147,7 @@ class EDCPackageController(PackageController):
         try:
             dataset_types = get_action('tag_list')(context, 
                                                      {'vocabulary_id': EDC_DATASET_TYPE_VOCAB})
-            c.dataset_types = [{'id' : tag[:3], 'name': tag[5:]} for tag in dataset_types]
+            c.dataset_types = [tag for tag in dataset_types]
             for key, value in data_dict.iteritems() :
                 if key == 'state' :
                     c.old_state = data_dict['state']
@@ -193,7 +169,7 @@ class EDCPackageController(PackageController):
         if request.method == 'POST':
             #Check if the request is comming from an organization. If so, set the owner org as the given organization.
             #Get the name of dataset type from the edc tags list using the dataset type id.
-            dataset_type = get_edc_tag_name(EDC_DATASET_TYPE_VOCAB, request.params.get('dataset-type'))
+            dataset_type = request.params.get('dataset-type')
             self._redirect_to_dataset_form(dataset_type, org_id)
             
            
@@ -285,194 +261,6 @@ class EDCPackageController(PackageController):
         redirect(url)
 
         
-#     def search(self):
-#         from ckan.lib.search import SearchError
-# 
-#         package_type = self._guess_package_type()
-# 
-#         try:
-#             context = {'model': model, 'user': c.user or c.author,
-#                        'auth_user_obj': c.userobj}
-#             check_access('site_read', context)
-#         except NotAuthorized:
-#             abort(401, _('Not authorized to see this page'))
-# 
-#         # unicode format (decoded from utf8)
-#         q = c.q = request.params.get('q', u'')
-#         c.query_error = False
-#         try:
-#             page = int(request.params.get('page', 1))
-#         except ValueError, e:
-#             abort(400, ('"page" parameter must be an integer'))
-#         limit = g.datasets_per_page
-# 
-#         # most search operations should reset the page counter:
-#         params_nopage = [(k, v) for k, v in request.params.items()
-#                          if k != 'page']
-# 
-#         def drill_down_url(alternative_url=None, **by):
-#             return h.add_url_param(alternative_url=alternative_url,
-#                                    controller='package', action='search',
-#                                    new_params=by)
-# 
-#         c.drill_down_url = drill_down_url
-# 
-#         def remove_field(key, value=None, replace=None):
-#             return h.remove_url_param(key, value=value, replace=replace,
-#                                   controller='package', action='search')
-# 
-#         c.remove_field = remove_field
-# 
-#         sort_by = request.params.get('sort', None)
-#         
-#         print 'Sort by value -----------------------------------------------> ', sort_by
-#         params_nosort = [(k, v) for k, v in params_nopage if k != 'sort']
-# 
-#         def _sort_by(fields):
-#             """
-#             Sort by the given list of fields.
-# 
-#             Each entry in the list is a 2-tuple: (fieldname, sort_order)
-# 
-#             eg - [('metadata_modified', 'desc'), ('name', 'asc')]
-# 
-#             If fields is empty, then the default ordering is used.
-#             """
-#             params = params_nosort[:]
-# 
-#             if fields:
-#                 sort_string = ', '.join('%s %s' % f for f in fields)
-#                 params.append(('sort', sort_string))
-#             return search_url(params, package_type)
-# 
-#         c.sort_by = _sort_by
-#         if sort_by is None:
-#             c.sort_by_fields = []
-#         else:
-#             c.sort_by_fields = [field.split()[0]
-#                                 for field in sort_by.split(',')]
-#         
-#         print 'Sort by fields: ----------> ', c.sort_by_fields
-#         def pager_url(q=None, page=None):
-#             params = list(params_nopage)
-#             params.append(('page', page))
-#             return search_url(params, package_type)
-# 
-#         c.search_url_params = urlencode(_encode_params(params_nopage))
-# 
-#         try:
-#             c.fields = []
-#             # c.fields_grouped will contain a dict of params containing
-#             # a list of values eg {'tags':['tag1', 'tag2']}
-#             c.fields_grouped = {}
-#             search_extras = {}
-#             fq = ''
-#             for (param, value) in request.params.items():
-#                 if param not in ['q', 'page', 'sort'] \
-#                         and len(value) and not param.startswith('_'):
-#                     if not param.startswith('ext_'):
-#                         c.fields.append((param, value))
-#                         fq += ' %s:"%s"' % (param, value)
-#                         if param not in c.fields_grouped:
-#                             c.fields_grouped[param] = [value]
-#                         else:
-#                             c.fields_grouped[param].append(value)
-#                     else:
-#                         search_extras[param] = value
-# 
-#             context = {'model': model, 'session': model.Session,
-#                        'user': c.user or c.author, 'for_view': True,
-#                        'auth_user_obj': c.userobj}
-# 
-#             if package_type and package_type != 'dataset':
-#                 # Only show datasets of this particular type
-#                 fq += ' +dataset_type:{type}'.format(type=package_type)
-#             else:
-#                 # Unless changed via config options, don't show non standard
-#                 # dataset types on the default search page
-#                 if not asbool(config.get('ckan.search.show_all_types', 'False')):
-#                     fq += ' +dataset_type:dataset'
-# 
-#             facets = OrderedDict()
-# 
-#             default_facet_titles = {
-#                     'organization': _('Organizations'),
-#                     'sector': _('Sectors'),
-#                     'tags': _('Tags'),
-#                     'res_format': _('Formats'),
-#                     'license_id': _('Licenses'),
-#                     }
-#             
-#             for facet in default_facet_titles:
-#                 facets[facet] = default_facet_titles[facet]
-# 
-#             c.facet_titles = facets
-#             
-#             user_name = c.user or 'visitor'
-#             
-#             if c.userobj and c.userobj.sysadmin == True:
-#                 fq = ''
-#             elif user_name == 'visitor':
-#                 fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE" OR "ARCHIVED") +metadata_visibility:("002")'
-#             else:
-#                 user_id = c.userobj.id                
-#                 fq += '(edc_state:("PUBLISHED" OR "PENDING ARCHIVE" OR "ARCHIVED"))'
-#                 #Get the list of orgs that the user is a memeber of
-#                 user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id)]
-# #                pprint.pprint(user_orgs)
-#                 if user_orgs != []:
-#                     fq += ' OR (' + 'owner_org:(' + ' OR '.join(user_orgs) + '))'
-# #                print 'fq ------------------> ', fq
-# 
-#             data_dict = {
-#                 'q': q,
-#                 'fq': fq.strip(),
-#                 'facet.field': facets.keys(),
-#                 'rows': limit,
-#                 'start': (page - 1) * limit,
-#                 'sort': sort_by,
-#                 'extras': search_extras
-#             }
-# 
-#             query = get_action('package_search')(context, data_dict)
-#             c.sort_by_selected = query['sort']
-# 
-#             c.page = h.Page(
-#                 collection=query['results'],
-#                 page=page,
-#                 url=pager_url,
-#                 item_count=query['count'],
-#                 items_per_page=limit
-#             )
-#             c.facets = query['facets']
-#             c.search_facets = query['search_facets']
-#             c.page.items = query['results']
-#         except SearchError, se:
-#             log.error('Dataset search error: %r', se.args)
-#             c.query_error = True
-#             c.facets = {}
-#             c.search_facets = {}
-#             c.page = h.Page(collection=[])
-#         c.search_facets_limits = {}
-#         for facet in c.search_facets.keys():
-#             try:
-#                 limit = int(request.params.get('_%s_limit' % facet,
-#                                                g.facets_default_number))
-#             except ValueError:
-#                 abort(400, _('Parameter "{parameter_name}" is not '
-#                              'an integer').format(
-#                                  parameter_name='_%s_limit' % facet
-#                              ))
-#             c.search_facets_limits[facet] = limit
-# 
-#         maintain.deprecate_context_item(
-#           'facets',
-#           'Use `c.search_facets` instead.')
-# 
-#         self._setup_template_variables(context, {},
-#                                        package_type=package_type)
-# 
-#         return render(self._search_template(package_type))
 
     def read(self, id, format='html'):
         '''
@@ -485,9 +273,15 @@ class EDCPackageController(PackageController):
         from ckanext.edc_schema.util.helpers import record_is_viewable
         
         username = c.user or 'visitor'
-        if not record_is_viewable(c.pkg_dict, c.userobj, username) :
+        if not record_is_viewable(c.pkg_dict, c.userobj) :
+            #h.redirect_to(controller='ckanext.edc_schema.controllers.package:EDCPackageController', action='auth_error')
             abort(401, _('Unauthorized to read package %s') % id)
             
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user or c.author, 'for_view': True,
+                   'auth_user_obj': c.userobj}
+        package_type = self._get_package_type(id.split('@')[0])
+        
         metadata_modified_time = from_utc(c.pkg_dict['metadata_modified'])
         revision_timestamp_time = from_utc(c.pkg_dict['revision_timestamp'])
         
@@ -496,12 +290,10 @@ class EDCPackageController(PackageController):
         
         if (metadata_modified_time >= revision_timestamp_time):
             timestamp = metadata_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
-            c.pkg_last_modified_date = metadata_modified_time.strftime('%Y-%m-%d %H:%M:%S')
         else:
             timestamp = revision_timestamp_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
-            c.pkg_last_modified_date = revision_timestamp_time.strftime('%Y-%m-%d')
-            
         
+
 #        print metadata_modified_time.strftime('%Y-%m-%d')    
         response.headers['Last-Modified']  = timestamp      
         response.headers['Cache-Control'] = 'public, max-age=31536000'
@@ -529,7 +321,7 @@ class EDCPackageController(PackageController):
         from ckanext.edc_schema.util.helpers import record_is_viewable
         
         username = c.user or 'visitor'
-        if not record_is_viewable(c.pkg_dict, c.userobj, username) :
+        if not record_is_viewable(c.pkg_dict, c.userobj) :
             abort(401, _('Unauthorized to read package %s') % id)
         
         return result
@@ -689,25 +481,7 @@ class EDCPackageController(PackageController):
         
         redirect(h.url_for(controller='package', action='edit', id=pkg_dict['id']))
         
-#     def keyword_list(self):
-#         '''
-#         Returns the list of available tags in json {id : , text: } format
-#         for keywords autocomplete search 
-#         '''
-#         from ckanext.edc_schema.commands.base import edc_keywords
-# #                 
-# #         context = {'model': model, 'session': model.Session,
-# #                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
-#         
-#         # get the list of tags
-# #        data = get_action('tag_list')(context)
-#         
-#         result = edc_keywords()
-#         
-#         keywords = []
-#         for tag in result:
-#             keywords.append({'id': tag.strip(), 'text': tag.strip()})
-#         
-#         return keywords
-#     
+        
+    def auth_error(self):
+        return render('package/auth_error.html')
         

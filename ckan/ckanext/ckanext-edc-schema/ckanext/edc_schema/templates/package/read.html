@@ -17,7 +17,7 @@
 	{% set record_visibility = pkg.metadata_visibility %}
 
   	{% if h.check_access('package_update', {'id':pkg.id }) %}
-    	{% if record_visibility == '002' %}
+    	{% if record_visibility == 'Public' %}
     		{% link_for _(''), controller='ckanext.edc_schema.controllers.package:EDCPackageController',
     									action='duplicate', id=pkg.name, class_='btn hidden-sm hidden-xs', icon='copy' %}
     	{% endif %}
@@ -27,7 +27,10 @@
 
 {% block content %}
   {% block search_input %}
-    <form class="search-form search-main">
+    {% resource 'edc_resource/typeahead.bundle.js' %}
+    {% resource 'edc_resource/search.js' %}
+    {% resource 'edc_resource/edc_dataset_view.js' %}
+    <form action="{{ h.url_for(controller='package', action='search') }}" class="search-form search-main">
     <div class="search-input control-group search-giant">
       <input type="text" class="search" name="q" autocomplete="off" placeholder="Search datasets...">
       <button type="submit" value="search">
@@ -38,7 +41,6 @@
   </form>
   {% endblock %}
   {{ super() }}
-  {% resource 'edc_resource/edc_dataset_view.js' %}
 {% endblock %}
 
 
@@ -73,7 +75,7 @@
 
     {% block package_license %}
       <br/>
-      Licensed by
+      Licensed under
       {% snippet "snippets/license.html", pkg_dict=pkg %}
     {% endblock %}
 
@@ -97,6 +99,13 @@
   {% block package_tags %}
     {% snippet "package/snippets/tags.html", tags=pkg.tags %}
   {% endblock %}
+
+  {% set dataset_extent = c.pkg_dict['spatial'] or '' %}
+  {% if dataset_extent %}
+    {# snippet "spatial/snippets/dataset_map.html", extent=dataset_extent #}
+    {% snippet "package/snippets/dataset_extent.html", pkg=pkg %}
+  {% endif %}
+
 
   {% block package_resources %}
     {% snippet "package/snippets/resources_list.html", pkg=pkg, resources=pkg.resources %}
@@ -148,27 +157,61 @@
     {#
         {% if pkg.get('security_class') %}
         <section id="dataset-security_code" class="resources module-content">
-            {% set security_class = h.edc_tag_name('scurity_class', pkg.security_class[0]) %}
-            <p><strong>Security class</strong>: {{ security_class }}</p>
+            <p><strong>Security class</strong>: {{ pkg.security_class }}</p>
         </section>
         {% endif %}
     #}
 
     {# Showing dates #}
     {% block package_dates %}
-        {% snippet 'package/snippets/dates_view.html', pkg=pkg, last_modified = c.pkg_last_modified_date %}
+        {% snippet 'package/snippets/dates_view.html', pkg=pkg, last_modified = pkg.last_modified_date %}
     {% endblock %}
 
+
     {% block package_resource_status %}
-        {% set resource_status = h.edc_tag_name('resource_status', pkg.resource_status) %}
+    	{% if pkg.resource_status %}
             <tr>
-                <td><strong>Resource Status</strong></td><td> {{ resource_status }} </td>
+                <td><strong>Resource Status</strong></td><td> {{ pkg.resource_status }} </td>
             </tr>
+        {% endif %}
         {% if pkg.replacement_record %}
             <tr>
                 <td><strong>Replacement Record</strong></td><td><a href="{{ pkg.replacement_record }}">{{ pkg.replacement_record }}</a></td>
             </tr>
         {% endif %}
+    {% endblock %}
+    
+    {% block package_extra_info %}
+		{% if c.userobj.sysadmin == True or c.userobj.id == pkg.author %}
+			{% if pkg.metadata_language %}
+				<tr>
+					<td><strong>Metadata Language</strong></td><td>{{ pkg.metadata_language }}</td>
+				</tr>
+			{% endif %}
+			{% if pkg.metadata_character_set %}
+				<tr>
+					<td><strong>Metadata Character Set</strong></td><td>{{ pkg.metadata_character_set }}</td>
+				</tr>
+			{% endif %}
+			{% if pkg.metadata_standard_name %}
+				<tr>
+					<td><strong>Metadata Standard Name</strong></td><td>{{ pkg.metadata_standard_name }}</td>
+				</tr>
+			{% endif %}
+			{% if pkg.metadata_standard_version %}
+				<tr>
+					<td><strong>Metadata Standard Version</strong></td><td>{{ pkg.metadata_standard_version }}</td>
+				</tr>
+			{% endif %}
+		{% endif %}
+
+		{% if pkg.object_name and pkg.resources and pkg.resources[0].resource_storage_location == 'BCGW Data Store' %}
+			<tr>
+				<td><strong>Database Object Name</strong></td>
+				<td>{{ pkg.object_name }}</td>
+			</tr>
+		{% endif %}
+
     {% endblock %}
 
     </table>

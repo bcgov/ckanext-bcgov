@@ -20,8 +20,8 @@
 								<select id="field-dates-{{ loop.index0 }}-type" name="dates__{{ loop.index0 }}__type" data-module="autocomplete" data-placeholder="Select a date type">
 								<option value="">Select a date type</option>
 		      						{% for date_type in h.edc_tags(_("dataset_date_type"))  %}
-		      							{% set selected_type = (current_date_type and current_date_type == date_type.id) %}
-		      							<option value="{{ date_type.id }}" {% if selected_type %} selected="selected" {% endif %}>{{ date_type.name }}</option>
+		      							{% set selected_type = (current_date_type and current_date_type == date_type) %}
+		      							<option value="{{ date_type }}" {% if selected_type %} selected="selected" {% endif %}>{{ date_type }}</option>
 		      						{% endfor %}
 								</select>
 								{% if date_type_error and date_type_error is iterable %}
@@ -47,7 +47,7 @@
 						</div>
 					</div>
 					<div class="span2">
-						<div class="item-link"> <a href="javascript:remove_date({{ loop.index0 }})" class="btn btn-primary btn-xs">Delete </a> </div>
+						<div class="item-link"> <a onclick="remove_date({{ loop.index0 }}); return false;" class="btn btn-primary btn-xs">Delete </a> </div>
 						<input id="field-dates-{{ loop.index0 }}-delete"
 					   			type="hidden"
 					   			name="dates__{{ loop.index0 }}__delete"
@@ -67,7 +67,7 @@
 								<select id="field-dates-0-type" name="dates__0__type" data-module="autocomplete" data-placeholder="Select a date type">
 									<option value="">Select a date type</option>
 			      					{% for date_type in h.edc_tags(_("dataset_date_type"))  %}
-			      						<option value="{{ date_type.id }}">{{ date_type.name }}</option>
+			      						<option value="{{ date_type }}">{{ date_type }}</option>
 			      					{% endfor %}
 								</select>
 							</div>
@@ -87,7 +87,7 @@
 						</div>
 					</div>
 					<div class="span2">
-						<div class="item-link"><a href="javascript:remove_date(0)" class="btn btn-primary btn-xs">Delete</a></div>
+						<div class="item-link"><a onclick="remove_date(0); return false;" class="btn btn-primary btn-xs">Delete</a></div>
 							<input id="field-dates-0-delete"
 							   			type="hidden"
 							   			name="dates__0__delete"
@@ -102,12 +102,12 @@
 	<script type="text/javascript">
 		var date_types = []
 		{% for date_type in h.edc_tags(_("dataset_date_type")) %}
-			date_types.push({id: "{{ date_type.id }}",
-							 name: "{{ date_type.name }}"});
+			date_types.push({id: "{{ date_type }}",
+							 name: "{{ date_type }}"});
 		{% endfor %}
 	</script>
 	<div id="addDate" align="center">
-		<a class="btn btn-primary" href="javascript:add_date(date_types);">
+		<a class="btn btn-primary" onclick="add_date(date_types); return false;">
 			<i class="icon-plus-sign-alt"></i>
 			Add another date
 		</a>

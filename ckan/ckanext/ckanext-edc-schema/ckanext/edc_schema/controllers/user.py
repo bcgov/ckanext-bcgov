@@ -190,4 +190,30 @@ class EDCUserController(UserController):
             c.page = h.Page(collection=[])
 
         self._setup_template_variables(context, user_dict)
+        
+
+    def dashboard_organizations(self):
+        context = {'model': model, 'session': model.Session,
+                   'for_view': True, 'user': c.user or c.author,
+                   'auth_user_obj': c.userobj}
+        
+        data_dict = {'user_obj': c.userobj}
+        self._setup_template_variables(context, data_dict)
+        
+        #Search_result list contains all orgs matched with search criteria including orgs and suborgs.
+        search_dict = {'all_fields': True}
+        search_result = get_action('organization_list')(context, search_dict)
+        
+        user_orgs = get_user_orgs(c.userobj.id) 
+        
+        org_pkg_count_dict = {}
+        for org in search_result :
+            org_pkg_count_dict[org['id']] = org['packages']
+                    
+        c.org_pkg_count = org_pkg_count_dict
+        c.top_orgs_items = user_orgs
+        
+               
+        return render('user/dashboard_organizations.html')
+    
                 

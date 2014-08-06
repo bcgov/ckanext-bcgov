@@ -44,14 +44,6 @@
 
 {% block user_facets %}
   {% for facet in c.facet_titles %}
-{#  	
-	{% if facet == 'res_format' %}
-  		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_format_label, name=facet, extras={'id':c.userobj.id}) }}
-  	{% else %} 
-  #}
     	{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, extras={'id':c.userobj.id}) }}
-{#    
-	{% endif %} 
-#}
   {% endfor %}
 {% endblock %}

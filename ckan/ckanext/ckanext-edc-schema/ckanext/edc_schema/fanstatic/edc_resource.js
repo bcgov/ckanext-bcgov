@@ -1,5 +1,5 @@
 function check_storage_location() {
-	if ($("#field-resource_storage_location").val() == "001") {
+	if ($("#field-resource_storage_location").val() == "BCGW Data Store") {
 		$("#object_name_container").show();
 	}
 	else {

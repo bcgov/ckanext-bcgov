@@ -14,10 +14,9 @@
 	{% set is_visible = (contact.private and contact.private != _('Private')) %}
 	{% if is_visible %}
 		{% set org = h.edc_org_title(contact.organization) %}
-		{% set role = h.edc_tag_name(_("contact_roles"), contact.role) %}
 		<table class="table dataset_view">
 			<tr>
-				<td><strong>Name</strong></td><td>{{ contact.name }} ({{ role }})</td>
+				<td><strong>Name</strong></td><td>{{ contact.name }} ({{ contact.role }})</td>
 			</tr>
 			<tr>
 				<td><strong>Email</strong></td><td><a href="mailto:{{ contact.email }}" title="Send an email to {{ contact.name }}">{{ contact.email }}<a/></td>

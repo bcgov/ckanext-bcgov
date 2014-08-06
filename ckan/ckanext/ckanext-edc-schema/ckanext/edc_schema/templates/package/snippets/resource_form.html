@@ -7,7 +7,7 @@
 
 {% resource 'edc_resource/edc_schema.css' %}
 {% set archived = state == 'ARCHIVED' %} 
-<form class="dataset-form dataset-resource-form form-horizontal {% if archived %} archived {% endif %}" method="post" action="{{ action }}" data-module="basic-form resource-form">
+<form class="dataset-form dataset-resource-form form-horizontal {% if archived %} archived {% endif %}" method="post" action="{{ action }}" data-module="basic-form resource-form" enctype="multipart/form-data">
   {% block stages %}
     {# An empty stages variable will not show the stages #}
     {% if stage %}
@@ -17,6 +17,17 @@
   
   <input name="id" value="{{ data.id }}" type="hidden"/>
 
+    {% block basic_fields_url %}
+      {% set is_upload = (data.url_type == 'upload') %}
+      {{ form.image_upload(data, errors, field_url='url', field_upload='upload', field_clear='clear_upload',
+         is_upload_enabled=h.uploads_enabled(), is_url=data.url and not is_upload, is_upload=is_upload,
+         upload_label=_('File'), url_label=_('URL')) }}
+    {% endblock %}
+    
+    {% block basic_fields_name %}
+    		{{ form.input('name', id='field-name', label=_('Name'), placeholder=_('eg. January 2011 Gold Prices'), value=data.name, error=errors.name, classes=['control-full']) }}
+    {% endblock %}
+
   <div class="control-group dataset-form-resource-types">
     {% block basic_fields %}
 
@@ -25,14 +36,9 @@
 		{% resource 'edc_resource/jquery-ui.css' %}
 		{% resource 'edc_resource/edc_resource.js' %}
 
+{#
     {% block basic_fields_data %}
       <div class="controls"{% if allow_upload %} data-module="resource-upload-field"{% endif %}>
-        {#
-        This block uses a slightly odd pattern. Unlike the rest of the radio
-        buttons which are wrapped _inside_ the labels here we place the label
-        after the input. This enables us to style the label based on the state
-        of the radio using css. eg. input[type=radio]+label {}
-        #}
         <i class="ckan-icon ckan-icon-link-file"></i>
         <input id="field-resource-type-file" type="radio" name="resource_type" checked="checked" value="file" />
         <label class="radio inline" for="field-resource-type-file">{{ _('Link to a file') }}</label>
@@ -42,10 +48,7 @@
       </div>
     </div>
     {% endblock %}
-
-    {% block basic_fields_name %}
-    		{{ form.input('name', id='field-name', label=_('Name'), placeholder=_('eg. January 2011 Gold Prices'), value=data.name, error=errors.name, classes=['control-full']) }}
-    {% endblock %}
+ #}
 
 	{% if record_type == 'Geographic' or record_type=='Dataset'  %}
     	{% block basic_fields_description %}
@@ -53,10 +56,6 @@
     	{% endblock %}
     {% endif %}
 
-    {% block basic_fields_url %}
-      {{ form.input('url', id='field-url', label="<span class='control-required'>*</span> "|safe + _('Resource URL'), placeholder=_('eg. http://example.com/gold-prices-jan-2011.json'), value=data.url, error=errors.url, classes=['control-full', 'control-large']) }}
-    {% endblock %}
-    
     {% block resource_update_cycle %}
         {% set update_cycle_error = errors.resource_update_cycle %}
         <div class="required control-group control-full{{ " error" if update_cycle_error }}">
@@ -67,10 +66,10 @@
             	<select id="field-update_cycle" name="resource_update_cycle" data-module="autocomplete" onchange="javascript:check_resource_stat();" class="required">
                 	<option value = '' {% if not selected_update_cycle %} selected="selected" {% endif %}>Select an update cycle</option>
                    	{% for update_cycle in update_cycle_list %}
-                    	{% set selected_update_cycle = (current_update_cycle and current_update_cycle == update_cycle.id) %}
-                        <option value="{{ update_cycle.id }}"
+                    	{% set selected_update_cycle = (current_update_cycle and current_update_cycle == update_cycle) %}
+                        <option value="{{ update_cycle }}"
                         	{% if selected_update_cycle %} selected="selected" {% endif %}>
-                            {{ update_cycle.name }}
+                            {{ update_cycle }}
                         </option>
                     {% endfor %}
                 </select>
@@ -96,18 +95,6 @@
   {% endblock %}
 
   {% block metadata_fields %}
-    {% if include_metadata %}
-      {# TODO: Where do these come from, they don't exist in /package/new_package_form.html #}
-      {# {{ form.select('resource_type', id='field-type', label=_('Resource Type'), options=[{'value': 'empty', 'text': _('Select a type���')}], selected="empty", error=errors.type) }} #}
-
-      {{ form.input('last_modified', id='field-last-modified', label=_('Last Modified'), placeholder=_('eg. 2012-06-05'), value=data.last_modified, error=errors.last_modified, classes=[]) }}
-
-      {{ form.input('size', id='field-size', label=_('File Size'), placeholder=_('eg. 1024'), value=data.size, error=errors.size, classes=[]) }}
-
-      {{ form.input('mimetype', id='field-mimetype', label=_('MIME Type'), placeholder=_('eg. application/json'), value=data.mimetype, error=errors.mimetype, classes=[]) }}
-
-      {{ form.input('mimetype_inner', id='field-mimetype-inner', label=_('MIME Type'), placeholder=_('eg. application/json'), value=data.mimetype_inner, error=errors.mimetype_inner, classes=[]) }}
-    {% endif %}
   {% endblock %}
   
   {# list of previously added resources #}

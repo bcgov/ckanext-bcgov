@@ -2,7 +2,9 @@
 
 {% block content %}
 {% block search_input %}
-    <form class="search-form search-main">
+    {% resource 'edc_resource/typeahead.bundle.js' %}
+    {% resource 'edc_resource/search.js' %}
+    <form action="{{ h.url_for(controller='package', action='search') }}" class="search-form search-main">
     <div class="search-input control-group search-giant">
       <input type="text" class="search" name="q" autocomplete="off" placeholder="Search datasets...">
       <button type="submit" value="search">
@@ -94,43 +96,18 @@
                 <td>{{ h.render_datetime(res.created) or _('unknown') }}</td>
               </tr>
               <tr>
-                <th scope="row">{{ _('Format') }}</th>
-                <td>{{ h.edc_tag_name(_("resource_format"), res.format) }} </td>
-              </tr>
-              <tr>
                 <th scope="row">{{ _('License') }}</th>
                 <td>{% snippet "snippets/license.html", pkg_dict=pkg, text_only=True %}</td>
               </tr>
-              {% if res.edc_resource_type %}
-                <tr class="toggle-more">
-                  <th scope="row">{{ _('Resource Type') }}</th>
-                  <td>{{ h.edc_tag_name("resource_type", res.edc_resource_type) }}</td>
-                </tr>
-              {% endif %}
 
               {% if res.resource_update_cycle %}
             	<tr  class="toggle-more">
                   <th scope="row">{{ _('Resource Update Cycle') }}</th>
-                	<td> {{ h.edc_tag_name('resource_update_cycle', res.resource_update_cycle) }} </td>
+                	<td> {{ res.resource_update_cycle }} </td>
             	</tr>
     		  {% endif %}
-
-              {% if res.resource_storage_access_method %}
-                <tr class="toggle-more">
-                  <th scope="row">{{ _('Resource Storage Access Method') }}</th>
-                  <td>{{ h.edc_tag_name("resource_storage_access_method", res.resource_storage_access_method) }}</td>
-                </tr>
-              {% endif %}
-
-              {% if res.resource_storage_location %}
-                <tr class="toggle-more">
-                  <th scope="row">{{ _('Resource Storage Location') }}</th>
-                  <td>{{ h.edc_tag_name('resource_storage_location', res.resource_storage_location) }}</td>
-                </tr>
-              {% endif %}
-              </tr>
-              {% if pkg.type == 'Geographic' %}
-                {% snippet 'package/snippets/resource_geospatial_fields.html', res=res %}
+			  {% if pkg.type == 'Geographic' or pkg.type == 'Dataset' %}
+                {% snippet 'package/snippets/resource_geospatial_fields.html', record_type = pkg.type, res=res, object_name = pkg.object_name %}
               {% endif %}
             </tbody>
           </table>

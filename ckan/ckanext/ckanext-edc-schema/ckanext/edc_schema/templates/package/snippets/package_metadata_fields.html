@@ -3,6 +3,7 @@
 {% block package_metadata_fields %}
 
 {% resource 'edc_resource/edc_schema.css' %}
+{% resource 'edc_resource/edc-image-upload.js' %}
 
 {% if record_type=='Geographic' %}
 <h3 class="module-sub-heading">Preview Information</h3>
@@ -96,7 +97,8 @@
 {% endblock %}
 
 {% block image_uploader %}
-    {% snippet 'package/snippets/file_upload.html', record_type = record_type, data=data, errors=errors %}
+    {# snippet 'package/snippets/file_upload.html', record_type = record_type, data=data, errors=errors #}
+    {% snippet 'package/snippets/image_upload.html', record_type = record_type, data=data, errors=errors %}
 {% endblock %}
 
 

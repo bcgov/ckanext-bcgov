@@ -4,7 +4,7 @@ import urllib2
 import urllib
 import os
 import sys
-
+import json
 
 
 
@@ -15,6 +15,211 @@ def get_connection():
     return con
 
 
+def get_discovery_record(con, record_uid):
+    
+    '''
+    Fetches the discovery record from database
+    '''
+    edc_query = "SELECT dat.sv_2 Title, " \
+                "dat.xml_data.extract('//E9286/text()').getStringVal() Description, " \
+                "SUBSTR(dat.xml_data.extract('//E9254/text()').getStringVal(),1,300) Data_Custodian_organization, " \
+                "st.state_name, " \
+                "dat.xml_data.extract('//E9288/text()').getStringVal() Purpose, " \
+                "metastar.getKeywords(dat.record_uid) Keywords, " \
+                "SUBSTR(dat.xml_data.extract('//E9292/text()').getStringVal(),1,105) Resource_Status, " \
+                "metastar.getContactNames(dat.record_uid) Contact_Name, " \
+                "metastar.getContactEmails(dat.record_uid) Contact_Email, " \
+                "metastar.getContactOrganization(dat.record_uid) Contact_Organization, " \
+                "dat.xml_data.extract('//E9342/text()').getStringVal() MAINT_FREQ_CODE, " \
+                "SUBSTR(dat.xml_data.extract('//E11266/text()').getStringVal(),1,4) DataViewPubl, " \
+                "SUBSTR(dat.xml_data.extract('//E11404/text()').getStringVal(),1,4) DataDistPubl, " \
+                "SUBSTR(dat.xml_data.extract('//E11436/text()').getStringVal(),1,6) PIAComplete, " \
+                "to_number(dat.RECORD_UID) RECORD_UID, " \
+                "dat.xml_data.extract('//E9742/text()').getStringVal() Projection_Name, " \
+                "to_char(to_date(dat.xml_data.extract('//E10000/text()').getStringVal(),'YYYY-MM-DD'), 'YYYY-MM-DD') Beginning_Date, " \
+                "to_char(to_date(dat.xml_data.extract('//E10002/text()').getStringVal(),'YYYY-MM-DD'), 'YYYY-MM-DD') End_Date, " \
+                "dat.xml_data.extract('//E9514/text()').getStringVal() Lineage_Statement, " \
+                "SUBSTR(dat.xml_data.extract('//E10330/text()').getStringVal(),1,3) IS_PUBLIC, " \
+                "dat.xml_data.extract('//E10338/text()').getStringVal() Archive_Retention_Schedule, " \
+                "to_char(to_date(dat.xml_data.extract('//E10340/text()').getStringVal(),'YYYY-MM-DD'), 'YYYY-MM-DD') Retention_Expiry_Date, " \
+                "dat.xml_data.extract('//E10348/text()').getStringVal() Source_Data_Path, " \
+                "SUBSTR(dat.xml_data.extract('//E9866/text()').getStringVal(),1,105) Resource_Type, " \
+                "SUBSTR(dat.xml_data.extract('//E10284/text()').getStringVal(),1,750) Resource_Storage_Location, " \
+                "metastar.getFeatureClassNames(dat.record_uid) Feature_Class_Names, " \
+                "metastar.getFeatureClassDescriptions(dat.record_uid) Feature_Class_Descriptions, " \
+                "metastar.getOnlineReferences(dat.record_uid) Online_References, " \
+                "SUBSTR(dat.xml_data.extract('//E9388/text()').getStringVal(),1,300) Classification_Category, " \
+                "metastar.getIsoCategory(dat.record_uid) ISO_Topic_Category, " \
+                "to_char(dat.record_createdate, 'YYYY-MM-DD')  CREATEDATE, " \
+                "to_char(to_date(dat.xml_data.extract('//E9260/text()').getStringVal(),'YYYY-MM-DD'), 'YYYY-MM-DD') DATE_MODIFIED, " \
+                "SUBSTR(dat.xml_data.extract('//E11282/text()').getStringVal(),1,3) License_data, " \
+                "dat.xml_data.extract('//E9350/text()').getStringVal() Resource_Storage_Description, " \
+                "dat.xml_data.extract('//E10050/text()').getStringVal() object_name, " \
+                "SUBSTR(dat.xml_data.extract('//E9682/text()').getStringVal(),1,450) UNIQUE_METADATA_URL, " \
+                "to_number(dat.xml_data.extract('//E9438/text()').getStringVal()) Extent_North, " \
+                "to_number(dat.xml_data.extract('//E9436/text()').getStringVal()) Extent_South, " \
+                "to_number(dat.xml_data.extract('//E9434/text()').getStringVal()) Extent_East, " \
+                "to_number(dat.xml_data.extract('//E9432/text()').getStringVal()) Extent_West, " \
+                "dat.xml_data.extract('//E10424/text()').getStringVal() product_type, " \
+                "dat.xml_data.extract('//E9856/text()').getStringVal() product_id, " \
+                "dat.xml_data.extract('//E9244/text()').getStringVal() record_language, " \
+                "dat.xml_data.extract('//E9246/text()').getStringVal() record_characterSet, " \
+                "dat.xml_data.extract('//E9262/text()').getStringVal() standard_name, " \
+                "dat.xml_data.extract('//E9264/text()').getStringVal() standard_ersion, " \
+                "usr.description OWNER_DESC, " \
+                "usr.email OWNER_EMAIL, " \
+                "dat.sv_5 RECORD_TYPE " \
+                "FROM metastar.bat_records_104 dat, " \
+                "metastar.bat_users usr, " \
+                "metastar.bat_states st " \
+                "WHERE dat.state_uid IN (164,166,168,172) " \
+                "AND usr.user_uid = dat.user_uid " \
+                "AND st.state_uid = dat.state_uid " \
+                "AND dat.RECORD_UID = " + record_uid 
+#                /* state is Draft, Approve, Published or ZPublished */
+
+    cur = con.cursor()
+
+    cur.execute(edc_query)
+    
+    return cur.fetchone()
+
+def add_discovery_data():
+    import pprint
+    
+    
+    #Get discovery connection
+    
+    user_name = 'metastar'
+    host = 'slkux12.env.gov.bc.ca'
+    port = 1521
+    SID = 'BCGWDLV'
+    password = 'blueb1rd'
+    dsn_tns = cx_Oracle.makedsn(host, port, SID)
+    con = cx_Oracle.connect(user_name, password, dsn_tns)
+    
+                                          
+    discovery_data = {}
+
+    '''    
+        For each common record with metastar uid 
+        Get the record data from discovery
+    ''' 
+    with open('common_records_uids.txt', 'r') as common_records_file :
+        common_records_uids = [line.rstrip('\n') for line in common_records_file]
+
+    for record_uid in common_records_uids :
+        record_data = get_discovery_record(con, record_uid)
+        if not record_data :
+            continue
+        
+        #---------------------------------------------------- Access Constraints ------------------------------------------------           
+        metadata_visibility = 'IDIR'
+        if record_data[19] and record_data[19].lower().startswith('tru'):       
+            metadata_visibility = 'Public'
+        
+        view_audience = 'Government'
+        download_audience = 'Government'
+        privacy_impact_assessment = 'No'
+        
+        if (record_data[11] and record_data[11].lower() == 'yes'):
+            view_audience = 'Public'
+        if (record_data[12] and record_data[12].lower() == 'yes'):
+            download_audience = 'Public' 
+        
+        if (record_data[13] and record_data[13] == 'TRUE'):
+            privacy_impact_assessment = 'Yes'
+        
+        #---------------------------------------------------- Iso topic Category ------------------------------------------------           
+        iso_topic_cat = (record_data[29] or 'unknown').split(',')[0]    
+        lineage_statement =  record_data[18]
+        source_data_path = record_data[22]
+        
+        archive_retention_schedule = record_data[20]
+        retention_expiry_date = record_data[21]
+
+        #---------------------------------------------------- Security Classification ------------------------------------------------           
+        security_class = record_data[28]
+        
+        security_dict = {'topSecret': 'MEDIUM-SENSITIVITY', 'secret': 'MEDIUM-SENSITIVITY', 'restricted' : 'MEDIUM-SENSITIVITY', 'confidential': 'MEDIUM-SENSITIVITY', 'unclassified' : 'LOW-PUBLIC'}
+            
+        if security_class in security_dict :
+            security_class = security_dict[security_class]
+        else :
+            security_class = 'LOW-PUBLIC'
+                
+        resource_status = record_data[6] or 'completed'
+        #------------------------------------------------------ Dataset Extent --------------------------------------------------           
+        #Get dataset map extent coordinates
+        if (record_data[36] and record_data[37] and record_data[38] and record_data[39]) :
+            north = record_data[36]
+            south = record_data[37]
+            east = record_data[38]
+            west = record_data[39]
+            
+            spatial_extent = {"type":"Polygon",
+                              "coordinates":[[[west, south], [west, north], [east, north], [east, south],[west, south]]]
+                             }
+            spatial = json.dumps(spatial_extent)
+                
+            west_bound_longitude = west
+            east_bound_longitude = east
+            south_bound_latitude = south
+            north_bound_latitude = north
+            
+        resource_type = record_data[23] or 'Data'
+        edc_resource_type = resource_type.strip()
+        
+
+        # Set record's resource update cycle
+        resource_update_cycle = record_data[10] or 'unknown'
+              
+        data_collection_start_date = record_data[16]
+        data_collection_end_date = record_data[17]
+        
+        purpose = record_data[4]
+
+        #------------------------------------------------------------------<< Metadata Information >>-----------------------------------------------------------------
+        metadata_language = record_data[42] or 'English'
+        metadata_character_set = record_data[43] or 'utf8'
+        metadata_standard_name = record_data[44]    or 'North American Profile of ISO 19115-1:2014 - Geographic information - Metadata (NAP-Metadata)' #Add default value here if there is any
+        metadata_standard_version = record_data[45]  or 'n/a' #Add default value here if there is any
+            
+        data_dict = {
+                     'purpose' : purpose,
+                     'resource_status' : resource_status,
+                     'metadata_visibility' : metadata_visibility,
+                     'view_audience' : view_audience,
+                     'download_audience' : download_audience,
+                     'privacy_impact_assessment' : privacy_impact_assessment,
+                     'iso_topic_cat' : iso_topic_cat,
+                     'lineage_statement': lineage_statement,
+                     'source_data_path' : source_data_path,
+                     'archive_retention_schedule': archive_retention_schedule,
+                     'retention_expiry_date' : retention_expiry_date,
+                     'spatial': spatial,
+                     'west_bound_longitude': west_bound_longitude,
+                     'east_bound_longitude': east_bound_longitude,
+                     'south_bound_latitude': south_bound_latitude,
+                     'north_bound_latitude': north_bound_latitude,
+                     'edc_resource_type': edc_resource_type,
+                     'resource_update_cycle': resource_update_cycle,
+                     'data_collection_start_date' : data_collection_start_date,
+                     'data_collection_end_date' : data_collection_end_date,
+                     'security_class' : security_class,
+                     'metadata_language' : metadata_language,
+                     'metadata_character_set' : metadata_character_set,
+                     'metadata_standard_name' : metadata_standard_name,
+                     'metadata_standard_version' : metadata_standard_version
+                     }
+        discovery_data[str(record_uid)] = data_dict
+    
+    con.close()
+    
+    #Write the data dictionary to a file
+    with open('discovery_ODSI.json', 'w') as data_file:
+        data_file.write(json.dumps(discovery_data))
+    
 def get_common_records():
     
     con = get_connection()
@@ -71,20 +276,30 @@ def get_common_records():
 
 
     #Create ODSI error file
-    common_records_file = open('common_records.txt', 'w') 
+    common_records_title_file = open('common_records_titles.txt', 'w')
+    common_records_uid_file = open('common_records_uids.txt', 'w') 
 
-    common_records = []
+    common_records_title = []
+    common_records_uid = []
     
     for result in data:
         
         # If this is record exists in discovery add it to the list            
-        if result[22]:
-            common_records.append(result[22])
-            print result[22]
+        if result[9] or result[22]:
+            common_records_title.append(result[2])
+            print result[2]
+            if result[22]:
+                common_records_uid.append(result[22])
         
-    for record_uid in common_records :
-        common_records_file.write('%s\n' % record_uid)
+    for record_title in common_records_title :
+        common_records_title_file.write('%s\n' % record_title)
+
+    for record_uid in common_records_uid :
+        common_records_uid_file.write('%s\n' % record_uid)
     
-    common_records_file.close()
+    
+    common_records_title_file.close()
+    common_records_uid_file.close()
     
 get_common_records()
+add_discovery_data()

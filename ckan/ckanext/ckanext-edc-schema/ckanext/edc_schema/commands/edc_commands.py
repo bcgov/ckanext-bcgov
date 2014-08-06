@@ -112,8 +112,7 @@ class EdcCommand(CkanCommand):
                 available_tags = get_action('tag_list')(context, {'vocabulary_id' : vocab['id']})
                 
                 #Add each tag that is not in the list of available tags
-                for vocab_tag in vocab_tags:
-                    tag = vocab_tag['id'] + '__' + vocab_tag['name']
+                for tag in vocab_tags:
                     if not tag in available_tags:
                         new_tag = {'name': tag,
                                'vocabulary_id': vocab['id']}

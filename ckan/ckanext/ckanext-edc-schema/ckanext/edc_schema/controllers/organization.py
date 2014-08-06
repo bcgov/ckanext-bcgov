@@ -12,6 +12,8 @@ import ckan.lib.maintain as maintain
 
 import pprint
 
+from ckanext.edc_schema.util.helpers import get_suborgs
+
 render = base.render
 abort = base.abort
 
@@ -56,7 +58,11 @@ class EDCOrganizationController(OrganizationController):
         #Get the list of all groups of type "organization" that have no parents.             
         top_level_orgs = org_model.Group.get_top_level_groups(type="organization")
         top_results = [org for org in top_level_orgs if org.id in [found_org['id'] for found_org in search_result] ]
-        
+        org_pkg_count_dict = {}
+        for org in search_result :
+            org_pkg_count_dict[org['id']] = org['packages']
+            
+        c.org_pkg_count = org_pkg_count_dict
         #The results list is used by ckan when the hierarchy extension in not added
         results = [org for org in search_result if org['id'] in [top_org.id for top_org in top_level_orgs]]
         
@@ -82,9 +88,17 @@ class EDCOrganizationController(OrganizationController):
                    'schema': self._db_to_form_schema(group_type=group_type),
                    'for_view': True, 'extras_as_string': True}
 
+        #Get the subgorgs of this org
+        org_id = c.group_dict.get('id')
+        
         q = c.q = request.params.get('q', '')
-        q += ' owner_org:"%s"' % c.group_dict.get('id')
-
+        
+        suborgs = ['"' + org + '"' for org in get_suborgs(org_id)]
+        if suborgs != []:
+            q += ' owner_org:("' + org_id + '" OR ' + ' OR '.join(suborgs) + ')'
+        else :
+            q += ' owner_org:"%s"' % org_id
+        
         c.description_formatted = h.render_markdown(c.group_dict.get('description'))
 
         context['return_query'] = True

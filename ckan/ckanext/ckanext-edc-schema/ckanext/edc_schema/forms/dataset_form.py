@@ -150,6 +150,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
     #Customize schema for EDC Application Dataset
     def _modify_package_schema(self, schema):
+        cnvrt_to_tags = toolkit.get_converter('convert_to_tags')
         schema.update({
                         'org' : [not_empty, convert_to_extras],
                         'sub_org' : [check_branch, convert_to_extras],
@@ -181,8 +182,13 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                         'license_id' : [license_not_empty],
                         'more_info' : more_info_schema(),
                         'image_url' : [ignore_missing, convert_to_extras],
+                        'image_display_url' : [ignore_missing, convert_to_extras],
                         'image_delete' : [ignore_missing, convert_to_extras],
-                        'publish_date' : [ignore_missing, convert_to_extras]
+                        'publish_date' : [ignore_missing, convert_to_extras],
+                        'metadata_language' : [ignore_missing, convert_to_extras],
+                        'metadata_character_set' : [ignore_missing, convert_to_extras],
+                        'metadata_standard_name' : [ignore_missing, convert_to_extras],
+                        'metadata_standard_version' : [ignore_missing, convert_to_extras]
                       })
         schema['resources'].update( {
                                      'supplemental_info' : [ignore_missing, cnvrt_to_ext],
@@ -206,14 +212,14 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
     def show_package_schema(self):
         schema = super(EDC_DatasetForm, self).show_package_schema()
-
+        
+        cnvrt_from_tags = toolkit.get_converter('convert_from_tags')
         schema['tags']['__extras'].append(toolkit.get_converter('free_tags_only'))
         schema.update({
                         'org' : [convert_from_extras, not_empty],
                         'sub_org' : [convert_from_extras, ignore_missing],
                         'sector' : [convert_from_extras, ignore_missing],
                         'security_class': [ convert_from_extras, not_empty ],
-#                        'bc_ocio' : [convert_from_extras, not_empty],
 #                        'purpose': [ convert_from_extras, ignore_missing ],
                         'resource_status': [ convert_from_extras, not_empty],
 #                        'resource_update_cycle' : [ convert_from_extras, not_empty],
@@ -230,8 +236,6 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                         'object_relationships' : [ convert_from_extras, ignore_missing ],
   #                      'object_name' : [ convert_from_extras, ignore_missing],
 #                        'archive_retention_schedule' : [convert_from_extras, check_resource_status],
-#                        'retention_expiry_date' : [convert_from_extras, check_resource_status],
-#                        'source_data_path' : [convert_from_extras, check_resource_status],
                         'retention_expiry_date' : [convert_from_extras],
                         'source_data_path' : [convert_from_extras],
                         'layer_name' : [convert_from_extras, ignore_missing],
@@ -242,9 +246,15 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 #                        'url' : [url_validator, not_empty],
                         'license_id' : [license_not_empty],
                         'image_url' : [convert_from_extras, ignore_missing],
+                        'image_display_url' : [convert_from_extras, ignore_missing],
                         'image_delete' : [convert_from_extras, ignore_missing],
                         'more_info' : [convert_from_extras, ignore_missing],
-                        'publish_date' : [convert_from_extras, ignore_missing]
+                        'publish_date' : [convert_from_extras, ignore_missing],
+                        'metadata_language' : [convert_from_extras, ignore_missing],
+                        'metadata_character_set' : [convert_from_extras, ignore_missing],
+                        'metadata_standard_name' : [convert_from_extras, ignore_missing],
+                        'metadata_standard_version' : [convert_from_extras, ignore_missing]
+                        
                        })
         schema['resources'].update( {
                                      'supplemental_info' : [ cnvrt_from_ext, ignore_missing ],

@@ -7,10 +7,10 @@ import ckan.lib.base as base
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from routes.mapper import SubMapper
+from collections import OrderedDict
 
 
 from ckanext.edc_schema.util.util import (get_edc_tags,
-                                          get_edc_tag_name,
                                           edc_type_label,
                                           get_state_values,
                                           get_username,
@@ -23,7 +23,8 @@ from ckanext.edc_schema.util.helpers import (get_suborg_sectors,
                                              get_user_dataset_num,
                                              get_package_data,
                                              is_license_open,
-                                             get_record_type_label)
+                                             get_record_type_label,
+                                             get_suborgs)
 
 abort = base.abort
 
@@ -104,12 +105,13 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     plugins.implements(plugins.IFacets, inherit=True)
 
+    plugins.implements(plugins.IActions, inherit=True)
+
 
     def get_helpers(self):
         return {
                 "dataset_type" : get_dataset_type,
                 "edc_tags" : get_edc_tags,
-                "edc_tag_name" : get_edc_tag_name,
                 "edc_orgs" : get_organizations,
                 "edc_org_branches" : get_organization_branches,
                 "edc_org_title" : get_organization_title,
@@ -124,7 +126,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "get_user_dataset_num" : get_user_dataset_num,
                 "get_edc_package" : get_package_data,
                 "is_license_open" : is_license_open,
-                "record_type_label" : get_record_type_label
+                "record_type_label" : get_record_type_label,
+                "get_suborgs": get_suborgs
                 }
 
 
@@ -158,6 +161,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('duplicate', '/dataset/duplicate/{id}', action='duplicate')
             m.connect('/dataset/{id}/resource/{resource_id}', action='resource_read')
             m.connect('/dataset/{id}/resource_delete/{resource_id}', action='resource_delete')
+            m.connect('/authorization-error', action='auth_error')
 
         with SubMapper(map, controller=user_controller) as m:
             m.connect('user_dashboard_unpublished', '/dashboard/unpublished',
@@ -232,23 +236,23 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('/')
 
         GET_POST = dict(method=['GET', 'POST'])
-        
+
         # /api ver 3 or none
         #with SubMapper(map, controller=api_controller, path_prefix='/api{ver:/3|}', ver='/3') as m:
         #    m.connect('/action/{logic_function}', action='action', conditions=GET_POST)
 
-        
+
         return map
 
     def after_map(self, map):
         return map;
 
-    #Check the datasaet upload image
-    def after_update(self, context, pkg_dict):
-        from ckanext.edc_schema.controllers.package import EDCPackageController
-
-        controller = EDCPackageController()
-        controller._check_file_upload(context, pkg_dict)
+#     #Check the datasaet upload image
+#     def after_update(self, context, pkg_dict):
+#         from ckanext.edc_schema.controllers.package import EDCPackageController
+#
+#         controller = EDCPackageController()
+#         controller._check_file_upload(context, pkg_dict)
 
 
     def after_show(self, context, pkg_dict) :
@@ -259,70 +263,80 @@ class SchemaPlugin(plugins.SingletonPlugin):
         have the same name as the dataset id.
         '''
 
-        #Chaneck if the user can see the record
+        from ckanext.edc_schema.controllers.package import from_utc
 
-        #Ignore changes if dataset doesn't have any image
-        if not 'image_url' in pkg_dict or not 'image_delete' in pkg_dict :
-            return
+        #Set the last modified date of the record.
+        metadata_modified_time = from_utc(pkg_dict['metadata_modified'])
+        revision_timestamp_time = from_utc(pkg_dict['revision_timestamp'])
 
-
-        from pylons import config
-        import os
-        from ckanext.edc_schema.util.file_uploader import DEFAULT_UPLOAD_FILENAME
-
-        image_is_deleted = pkg_dict['image_delete']
-
-        if image_is_deleted == '0' :
-            #Get the upload directory path
-            upload_path = os.path.join(config.get('ckan.site_url'),'uploads', 'edc_files') + '/'
-
-            #Take the current image url
-            upload_url = pkg_dict['image_url']
-
-            #Get the image file name
-            uploaded_file = upload_url[len(upload_path):]
-
-            name, extension = os.path.splitext(uploaded_file)
-
-            #Check if this a temp file (A new file has been uploaded)
-            if name.startswith(DEFAULT_UPLOAD_FILENAME) :
-                #change the image file name to the dataset id
-                new_filename = upload_path + pkg_dict['id'] + extension
-                pkg_dict['image_url'] = new_filename
+        if (metadata_modified_time >= revision_timestamp_time):
+            pkg_dict['last_modified_date'] = metadata_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
         else:
-            pkg_dict['image_url'] = ''
+            pkg_dict['last_modified_date'] = revision_timestamp_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
-    def after_delete(self, context, pkg_dict):
-        '''
-        Checks if there are any images named as dataste id in uploaded image directory
-        and removes them. This way we wont get a list orphan images wasting file store space.
-        '''
-        import os
+#         #Ignore changes if dataset doesn't have any image
+#         if not 'image_url' in pkg_dict or not 'image_delete' in pkg_dict :
+#             return
+#
+#
+#         from pylons import config
+#         import os
+#         from ckanext.edc_schema.util.file_uploader import DEFAULT_UPLOAD_FILENAME
+#
+#         image_is_deleted = pkg_dict['image_delete']
+#
+#         if image_is_deleted == '0' :
+#             #Get the upload directory path
+#             upload_path = os.path.join(config.get('ckan.site_url'),'uploads', 'edc_files') + '/'
+#
+#             #Take the current image url
+#             upload_url = pkg_dict['image_url']
+#
+#             #Get the image file name
+#             uploaded_file = upload_url[len(upload_path):]
+#
+#             name, extension = os.path.splitext(uploaded_file)
+#
+#             #Check if this a temp file (A new file has been uploaded)
+#             if name.startswith(DEFAULT_UPLOAD_FILENAME) :
+#                 #change the image file name to the dataset id
+#                 new_filename = upload_path + pkg_dict['id'] + extension
+#                 pkg_dict['image_url'] = new_filename
+#         else:
+#             pkg_dict['image_url'] = ''
+#
 
-        from ckanext.edc_schema.util.file_uploader import (FileUploader, DEFAULT_UPLOAD_FILENAME)
-
-        pkg_image_name = pkg_dict['id']
-        temp_image_name = DEFAULT_UPLOAD_FILENAME + pkg_image_name
-
-        #Get the upload directory path
-        file_uploader =  FileUploader()
-        upload_path = file_uploader.storage_path
-
-        image_files_to_be_deleted = []
-
-        #Get a list of all files in upload directory that has the same name as dataset id
-        for filename in os.listdir(upload_path) :
-            name, extension = os.path.splitext(filename)
-            if name == pkg_image_name or name == temp_image_name :
-                image_files_to_be_deleted.append(filename)
-
-        #Delete all files in the list
-        for filename in image_files_to_be_deleted:
-            filepath = os.path.join(upload_path, filename)
-            try :
-                os.remove(filepath)
-            except OSError :
-                pass
+#     def after_delete(self, context, pkg_dict):
+#         '''
+#         Checks if there are any images named as dataste id in uploaded image directory
+#         and removes them. This way we wont get a list orphan images wasting file store space.
+#         '''
+#         import os
+#
+#         from ckanext.edc_schema.util.file_uploader import (FileUploader, DEFAULT_UPLOAD_FILENAME)
+#
+#         pkg_image_name = pkg_dict['id']
+#         temp_image_name = DEFAULT_UPLOAD_FILENAME + pkg_image_name
+#
+#         #Get the upload directory path
+#         file_uploader =  FileUploader()
+#         upload_path = file_uploader.storage_path
+#
+#         image_files_to_be_deleted = []
+#
+#         #Get a list of all files in upload directory that has the same name as dataset id
+#         for filename in os.listdir(upload_path) :
+#             name, extension = os.path.splitext(filename)
+#             if name == pkg_image_name or name == temp_image_name :
+#                 image_files_to_be_deleted.append(filename)
+#
+#         #Delete all files in the list
+#         for filename in image_files_to_be_deleted:
+#             filepath = os.path.join(upload_path, filename)
+#             try :
+#                 os.remove(filepath)
+#             except OSError :
+#                 pass
 
     def before_index(self, pkg_dict):
         '''
@@ -345,7 +359,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             fq = search_params['fq']
         else:
             fq = ''
-        
+
         try :
             user_name = c.user or 'visitor'
 
@@ -354,7 +368,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 fq += ''
             elif user_name == 'visitor':
                 #Public user can only view public and published records
-                fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE" OR "ARCHIVED") +metadata_visibility:("002")'
+                fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
             else:
                 #IDIR users can also see private records of their organizations
                 user_id = c.userobj.id
@@ -370,14 +384,10 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 fq = search_params['fq']
             else:
                 fq = ''
-            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE" OR "ARCHIVED") +metadata_visibility:("002")'
+            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
         return search_params
 
     def dataset_facets(self, facet_dict, package_type):
-
-        #Add dataset types and organization sectors to the facet list
-        facet_dict['sector'] = _('Sectors')
-        facet_dict['type'] = _('Dataset types')
 
         #Remove groups from the facet list
         if 'groups' in facet_dict :
@@ -386,13 +396,35 @@ class SchemaPlugin(plugins.SingletonPlugin):
         if 'tags' in facet_dict :
             del facet_dict['tags']
 
+        if 'organization' in facet_dict:
+            del facet_dict['organization']
+
+        if 'license_id' in facet_dict:
+            del facet_dict['license_id']
+
+        if 'res_format' in facet_dict:
+            del facet_dict['res_format']
+
+        #Add dataset types and organization sectors to the facet list
+        facet_dict['sector'] = _('Sectors')
+        facet_dict['license_id'] = _('License')
+        facet_dict['type'] = _('Dataset types')
+        facet_dict['res_format'] = _('Format')
+        facet_dict['organization'] = _('Organizations')
+
         return facet_dict
 
 
+    def get_actions(self):
+        import ckanext.edc_schema.logic.action as edc_action
+        return {'edc_package_update' : edc_action.edc_package_update,
+                'package_update' : edc_action.package_update,
+                'post_comment' : edc_action.post_disqus_comment }
+
 #     def get_auth_functions(self):
-# 
+#
 #         import ckanext.edc_schema.util.auth as edc_auth
-# 
+#
 #         auth_dict = {
 #                       'user_show' : edc_auth.user_show,
 #                       'user_list' : edc_auth.user_list
