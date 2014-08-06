@@ -95,6 +95,37 @@
       ga('set', 'anonymizeIp', true);
       ga('send', 'pageview');
     </script>
+    
+<script type="text/javascript">
+	var IDLE_TIMEOUT = 14400; //seconds =  4 hours
+	var _idleSecondsCounter = 0;
+	document.onclick = function() {
+		_idleSecondsCounter = 0;
+	};
+	document.onmousemove = function() {
+		_idleSecondsCounter = 0;
+	};
+	document.onkeypress = function() {
+		_idleSecondsCounter = 0;
+	};
+	window.setInterval(CheckIdleTime, 1000);
+
+	function CheckIdleTime() {
+		_idleSecondsCounter++;
+		var oPanel = document.getElementById("SecondsUntilExpire");
+		if (oPanel)
+			oPanel.innerHTML = (IDLE_TIMEOUT - _idleSecondsCounter) + "";
+		if (_idleSecondsCounter >= IDLE_TIMEOUT) {
+			//alert("Time expired!");
+			document.cookie = 'ckan=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+			document.location.href = "/user/_logout";
+		}
+	}
+	
+	window.onunload = function () {
+        document.location.href = "/user/_logout";
+    }
+</script>   
   </head>
 
   {# Allows custom attributes to be added to the <body> tag #}
