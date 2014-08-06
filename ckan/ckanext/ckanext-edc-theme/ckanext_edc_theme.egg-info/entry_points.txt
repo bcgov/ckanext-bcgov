@@ -1,4 +1,0 @@
-
-        [ckan.plugins]
-        edc_theme=ckanext.edc_theme.plugin:EDCThemePlugin
-    
