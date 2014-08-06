@@ -1,4 +1,0 @@
-
-    [ckan.plugins]
-	disqus = ckanext.disqus.plugin:Disqus
-	
