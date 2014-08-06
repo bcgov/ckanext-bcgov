@@ -181,25 +181,38 @@ class IdirPlugin(plugins.SingletonPlugin):
         toolkit.request.cookies.pop( 'edc_auth', None )
         response.delete_cookie('edc_auth', path='/', domain=None)
         response.delete_cookie('edc_auth2', path='/', domain=None)
+        #delete ckan and webade developer cookies
+        response.delete_cookie('ckan', path='/', domain=None)
+        response.delete_cookie('WEBADEUSERGUID', path='/', domain=None)
         print 'deleted edc_auth cookie'
         # Delete the session item, so that identify() will no longer find it.
         self._delete_session_items()
 
     def abort(self, status_code, detail, headers, comment):
         '''Handle an abort.'''
+        import ckan.lib.helpers as h
 
         # Delete the session item, so that identify() will no longer find it.
         self._delete_session_items()
+        
+        '''
+        Need to customize and return tuple (status_code, detail, headers, comment)
+        '''
+        #Customize error page
+        #return render('package/auth_error.html')
+        if status_code == 401 :
+            h.redirect_to(controller='ckanext.edc_schema.controllers.package:EDCPackageController', action='auth_error')
+        else :
+            return (status_code, detail, headers, comment)
 
-    def no_registering(context, data_dict):
-        return {'success': False, 'msg': toolkit._('''You cannot register for this
-            site.''')}
+def no_registering(context, data_dict):
+    return {'success': False, 'msg': toolkit._('''You cannot register for this site.''')}
 
-    class NoSelfRegistration(plugins.SingletonPlugin):
-        plugins.implements(plugins.IAuthFunctions, inherit=True)
+class NoSelfRegistration(plugins.SingletonPlugin):
+    plugins.implements(plugins.IAuthFunctions, inherit=True)
 
-        def get_auth_functions(self):
-            return {
+    def get_auth_functions(self):
+        return {
                 'user_create': no_registering
             }
 
