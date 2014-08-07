@@ -9,14 +9,14 @@ import pprint
 import logging
 
 
-#site_url = 'http://cat.data.gov.bc.ca'
-#api_key = '400816c7-5be1-4d06-b878-1e6a3abad2b9'
+site_url = 'http://cat.data.gov.bc.ca'
+api_key = '82e0ebd4-ae23-47c0-b687-3601689152ff'
 #site_url = 'http://edc.highwaythreesolutions.com/'
 #api_key = '071ee045-e798-4778-aea5-963974ad3d49'
-#site_url = 'http://localhost:5000'
+#site_url = 'http://localhost:5000/pub/edc'
 #api_key = 'ecc41117-7a38-470a-86ce-adbfac08a5a2'
-site_url = 'http://edc-delivery.highwaythreesolutions.com/'
-api_key = 'f062420f-14d2-4cb0-9eb5-471c1a685f32'
+#site_url = 'http://edc-delivery.highwaythreesolutions.com/'
+#api_key = 'f062420f-14d2-4cb0-9eb5-471c1a685f32'
 
 env_name = 'local'
 
