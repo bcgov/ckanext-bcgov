@@ -1,0 +1,175 @@
+#disqus_thread {
+    font-family: ;
+}
+
+#disqus_thread .empty {
+    text-align: center;
+    padding: 20px 0;
+}
+
+#disqus_thread .loader {
+    padding: 20px 0;
+    text-align: center;
+}
+
+#disqus_thread .post {
+    margin: 20px 0;
+}
+
+#disqus_thread .post .post-content {
+    overflow: hidden;
+}
+
+#disqus_thread .post .post-avatar,
+#disqus_add_comment .user-avatar {
+    float: left;
+    margin-right: 10px;
+}
+
+#disqus_thread .post .post-avatar img,
+#disqus_add_comment .user-avatar img {
+    width: 48px;
+    height: 48px;
+    border-radius: 5px;
+}
+
+#disqus_thread .post .post-content.permalink .post-avatar {
+    border-left: 2px solid #dcca00;
+    padding-left: 5px;
+}
+
+#disqus_thread .post .post-author {
+    font-weight: 700;
+}
+
+#disqus_thread .post .post-header .bullet {
+    font-size: 6px;
+    padding-bottom: 5px;
+}
+
+#disqus_thread .post .post-time {
+    color: #999;
+    font-size: 0.8em;
+}
+
+#disqus_thread .post .post-time a {
+    text-decoration: none;
+    color: #999;
+}
+
+#disqus_thread .post .post-body {
+    margin-left: 58px;
+}
+
+#disqus_thread .post .post-replies {
+    margin-left: 58px;
+}
+
+#disqus_thread .post .post-menu {
+    margin-left: 58px;
+    font-size: 0.9em;
+    opacity: 0.8;
+    transition: 0.2s;
+}
+
+#disqus_thread .post .post-menu:hover {
+    opacity: 1.0;
+}
+
+#disqus_thread .post .post-menu a {
+    color: #394559;
+}
+
+#disqus_thread .post .post-menu a.active {
+    font-weight: 700;
+}
+
+#disqus_thread .post .post-menu a:hover {
+    text-decoration: none;
+}
+
+#disqus_thread .post .post-menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+#disqus_thread .post .post-menu ul li {
+    float: left;
+    padding: 0 5px;
+}
+
+#disqus_thread .post .post-menu ul li:first-child {
+    padding-left: 0;
+}
+
+#disqus_add_comment #comment_box,
+.post-reply-form {
+    margin-left: 58px;
+}
+
+.post-reply-form {
+    margin-top: 10px;
+}
+
+#disqus_add_comment #comment_box textarea,
+.post-reply-form textarea {
+    width: 100%;
+}
+
+#disqus_add_comment #comment_box textarea,
+#disqus_add_comment #comment_box input[type="text"],
+#disqus_add_comment #comment_box input[type="email"],
+.post-reply-form textarea,
+.post-reply-form input[type="text"],
+.post-reply-form input[type="email"] {
+    border: 2px solid #ccc;
+    margin-bottom: 0;
+}
+
+#disqus_add_comment #comment_box .error {
+    border: 2px solid #dd0000!important;
+}
+
+#disqus_add_comment #comment_box .author_information,
+.post-reply-form .author_information {
+    margin-top: 5px;
+    display: none;
+}
+
+#disqus_num_comments {
+    font-size: 1.2em;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+#disqus_messages > div {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#comment-terms-modal .modal-dialog {
+    margin: 0;
+    width: auto;
+}
+
+.errors {
+    color: #c6898b;
+    padding: 3px;
+}
+
+#disqus-brand {
+    margin: 10px 0;
+    overflow: hidden;
+    opacity: 0.6;
+    text-align: right;
+}
+
+#disqus-brand:hover {
+    opacity: 1.0;
+}
+
+#disqus-brand img {
+    width: 32px;
+}

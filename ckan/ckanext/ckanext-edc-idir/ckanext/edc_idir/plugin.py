@@ -108,10 +108,10 @@ class IdirPlugin(plugins.SingletonPlugin):
                     print edc_cookie
                 
                     #username in cookie must match login name
-                    universalId,guid = edc_cookie.split('_')
+                    universalId,guid,role = edc_cookie.split('_')
                 
                     print '******************************  universalId,guid  ******************************'
-                    print universalId, guid
+                    print universalId, guid, role
                 else:
                     helpers.redirect_to(controller='user', action='login', error='You are not authorized to login')     
                 
@@ -131,6 +131,11 @@ class IdirPlugin(plugins.SingletonPlugin):
                     
                     print '******************************  ckanext-idir-user  ******************************'
                     pprint.pprint(user)
+
+                    # here, we could get all the Orgs. in the app. (top level?) and add the user as an Admin
+                    if role == 'ADMIN':
+                        print role
+                    
                     if user:
                         # We've found a logged-in user. Set c.user to let CKAN know.
                         toolkit.c.user = user

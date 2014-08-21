@@ -1,0 +1,121 @@
+<div class="module-content disqus-comments">
+  <h3>Comments</h3>
+  <div id="disqus_messages" style="display: none;"></div>
+  <div id="disqus_num_comments"></div>
+  <div id="disqus_add_comment" style="display: none;">
+    <div class="user-avatar"><img src="http://a.disquscdn.com/uploads/users/9087/2489/avatar92.jpg?1389868656"></div>
+    <div id="comment_box">
+        <form id="add_comment_form">
+            <textarea name="message" class="message" placeholder="Add a comment"></textarea>
+            <div class="author_information">
+              <input type="text" class="author_name" name="author_name" placeholder="Name" />
+              <input type="email" class="author_email" name="author_email" placeholder="Email" />
+              <input type="submit" class="btn btn-primary btn-xs pull-right" value="Post comment" />
+              <div class="errors" style="display: none;"></div>
+            </div>
+        </form>
+    </div>
+  </div>
+  <div id="disqus_thread">
+    <div class="loader"><img src="/loader.gif" /></div>
+    <div style="display: none;">
+    <div class="empty">No comments have been posted yet.</div>
+    <div class="post">
+      <div class="post-content">
+        <div class="post-avatar"><img src="http://a.disquscdn.com/uploads/users/9087/2489/avatar92.jpg?1389868656"></div>
+        <div class="post-header">
+            <span class="post-author"></span> <span class="bullet">&bull;</span> <span class="post-time"></span>
+        </div>
+        <div class="post-body">
+            <p></p>
+        </div>
+      </div>
+      <div class="post-menu">
+        <ul>
+          <li><a href="#" class="post-menu-reply">Reply</a></li>
+          <li style="display: none;"><a href="#" class="post-menu-collapse">Collapse</a></li>
+        </ul>
+      </div>
+      <div class="form-errors">
+      </div>
+      <div class="post-reply-form">
+      </div>
+      <div class="post-replies">
+      </div>
+    </div>
+    </div>
+  </div>
+  <div id="disqus-brand">
+    <a href="http://disqus.com"><img src="https://a.disquscdn.com/dotcom/d-e357401/img/brand/disqus-social-icon-dark-transparent.png"></a>
+  </div>
+  <script type="text/javascript">
+    var disqus_identifier = '{{ identifier }}';
+  </script>
+  {% resource 'edcdisqus/edcdisqus.css' %}
+  {% resource 'edcdisqus/jquery.timeago.js' %}
+  {% resource 'edcdisqus/disqus.js' %}
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="comment-terms-modal" tabindex="-1" role="dialog" aria-labelledby="comment-terms-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="comment-terms-modal-label">Terms of Use</h4>
+      </div>
+      <div class="modal-body">
+          <p>These Terms of Use constitute an agreement between you and the Province of British Columbia, represented by the Minister of Labour, Citizens' Services and Open Government (the "Province") with respect to your use of the Dataset Review (as defined below). By accepting these Terms of Use, you are deemed to have read and agreed to the terms and conditions set out below.</p>
+          The DataBC Dataset Review (the "Review") is a public forum that welcomes candid dialogue and diverse views about The Provinces' data presented by the DataBC program.</p>
+          <p>To contribute to the Review, you must be either of the age of majority or have obtained legal parental or guardian consent, in which case your legal parent or guardian will be responsible for your use of the Review.</p>
+          <p><strong>Submission and Review of Content</strong>: Questions, comments, ideas and other contributions to the Review (collectively, the "Content") will be screened before they are published and we hope the Review will be self-governing. We are confident that contributors will not submit Content that offends any law or includes information about other people.</p>
+          <p>The Province reserves the right to edit or delete Content for any reason to ensure that all Content is reasonable and appropriate. In particular, defamatory, indecent, obscene, illegal, immoral and sexually explicit Content will be removed. We will also remove: (a) Content that potentially or actually infringes any third party's copyright, trademark, right of privacy, publicity or any other intellectual property or other right; and (b) Content containing information about other identifiable individuals, including their names, email addresses, images of them or comments about them. If you are concerned about inappropriate content please e-mail data@gov.bc.ca, citing the date and author of the Content in question.</p>
+          <p><strong>Ownership and License</strong>: You retain ownership of all Content you submit to the Review ("Your Content"). You represent and warrant that: (a) Your Content is your original work, or has been provided to you or obtained by you from the rightful owner with all necessary permissions; and (b) Your Content does not infringe on the copyrights, trademarks, rights of privacy, publicity or other intellectual property or other rights of any person or entity.</p>
+          <p>By submitting Your Content to the Review, and in consideration of the opportunity to participate in the Review and other valuable consideration (the receipt and sufficiency of which you hereby acknowledge), you grant to the Province a non-exclusive, perpetual, royalty-free, worldwide license to use, reproduce, publish, communicate to the public by telecommunication, modify, display and distribute Your Content in any and all formats for any and all purposes associated with the Review. You agree that the Province may engage independent contractors and service providers to assist the Province to exercise the rights you grant to the Province under these Terms of Use.</p>
+          <p>You agree that the Province may reformat, rearrange or otherwise modify Your Content, and you understand that the Province has no obligation to acknowledge you by name or pseudonym as the author of Your Content or to ensure that you remain anonymous.</p>
+          <p>With the exception of Your Content and Content submitted to the Review by other contributors, all intellectual property in the Review, including but not limited to copyright, official marks or trademarks, is owned by the Province. Copying or unauthorized use of any such intellectual property without the express written consent of the Province is prohibited.</p>
+          <p>Use of any material from or links to third party websites must be in accordance with these Terms of Use. The Province does not control such third party websites and is not responsible for their contents. The inclusion of hyperlinks to such third party websites does not imply any endorsement of the material on such websites or any association with these third parties.</p>
+          <p><strong>Freedom of Information</strong>: Since most government information, including the contents of this Review, may be the subject of a freedom of information request, it is possible that some or all of the information you submit will be disclosed publicly under the Freedom of Information and Protection of Privacy Act ("FOIPPA"). Please consider this when commenting.</p>
+          <p><strong>Collection of Personal Information</strong>: Your name, email address and your opinions are characterized as "personal information" under FOIPPA. In order to hear your thoughts on the Provinces' DataBC program to facilitate discussion with other users, and to collect comments to help us improve the Provinces' DataBC program, we are collecting this personal information from you and we will share it with the Ministry of Labour, Citizens' Services and Open Government, which is responsible the Provinces' DataBC program for government. Your email address may be used to contact you for clarification of your comment(s), to notify you of future opportunities to participate in public consultations, and to keep you updated on the progress of the Provinces' DataBC program.  We also are collecting details of your visit to this website such as your IP address, and date and time of your visit, and your acceptance of the Terms of Use for the purpose of administering this site.
+          The authority to collect personal information comes from Section 26(c) of FOIPPA. If you have any questions about the collection of your personal information, please contact:
+        David Wrate, Director, Citizen Engagement, Business and Workforce Transformation; by mail: PO Box 9110, STN Prov Gov, Victoria, BC, by phone: 250-588-9231 or e-mail:David.Wrate@gov.bc.ca</p>
+          <p><strong>Access and Disclosure</strong>: By accepting the Terms of Use, you consent to the use of your personal information for the purposes outlined above, the public disclosure and access in or outside of Canada of your name, comments and/or opinions and any other Content submitted by you, and the date/time of your submission for the purpose of participating in the conversation on the Provinces' DataBC program. You also consent to the administrators of this Review sharing this personal information with the Ministry of Citizens' Services for the Provinces' DataBC program.</p>
+          <p><strong>Limitation of Liability and Indemnity</strong>: You agree that under no circumstances will the Province or any of its respective servants, employees or agents be liable to any person or entity for any direct, indirect, special, incidental, consequential, or other damages based on: (a) use of any of Your Content under these Terms of Use; (b) any use by you of the Review; or (c) any failure by you to abide by these Terms of Use.</p>
+          <p>You agree to indemnify, defend and hold harmless the Province and all of its respective servants, employees and agents from and against all claims, demands, obligations, losses, liabilities, costs or debt, and expenses (including but not limited to reasonable legal fees) arising from: (a) your use of the Review; (b) your violation of any provision of these Terms of Use; (c) your violation of any third party right, including without limitation any claims or action based on infringement or violation of intellectual property rights, libel or slander or other defamation, rights of privacy or rights of publicity; and (d) any claim that any of Your Content caused damage to a third party.</p>
+          <p><strong>Additional Terms</strong>: These Terms of Use also incorporate the contents of the Copyright, Disclaimer, and Privacy notices at the bottom of the page. Please read them carefully.
+          If any term or provision of these Terms of Use is invalid, illegal or unenforceable, all other terms and provisions of these Terms of Use shall nonetheless remain in full force and effect.
+          These Terms of Use will be governed by and construed in accordance with the laws of British Columbia.</p>
+
+          <h2>Moderation Policy</h2>
+          <p>We welcome your participation in our discussion and look forward to an active exchange of ideas.
+          We want to publish your comments, but we expect conversations to follow the conventions of polite discourse.</p>
+          <p>Therefore, we won't post comments that:</p>
+          <ul>
+          <li>contain abusive, obscene, indecent or offensive language</li>
+          <li>include defamatory, abusive, harassing or hateful remarks or make unproven or unsupported accusations against</li>
+          <li>individuals or organizations</li>
+          <li>constitute spam, promote services or products</li>
+          <li>invade anyone's privacy or impersonates anyone</li>
+          <li>are far off-topic</li>
+          <li>are posted without the necessary rights, licenses and consents (see Terms of Use)</li>
+          <li>encourage conduct that may or would constitute a criminal offence or give rise to civil liability, or that otherwise violates</li>
+          <li>any local, provincial, national or international law or regulation anywhere in the world</li>
+          <li>contain long embedded URLs</li>
+          <li>contain excessive links or contain code</li>
+          <li>identify any publicly-elected representative or candidate regardless of their political</li>affiliation, whether those comments</li>
+          <li>are supportive or critical</li>
+          <li>are contrary to the principles of the Canadian Charter of Rights and Freedoms</li>
+          </ul>
+          <p>We don't edit comments to remove objectionable content, so please ensure that your comment contains none of the above.</p>
+          <p>Reporters are asked to send questions through their normal channels. Questions from reporters will not be posted.</p>
+          <p>Your comments are welcome at any time - the review is available 24 hours a day, 7 days a week. However, given the need to manage provincial resources, moderating and posting of comments will generally occur during regular business hours Monday through Friday. Comments submitted after hours or on weekends will be read and posted as early as possible the next business day.</p>
+          <p>To protect your own privacy and the privacy of others, please do not include phone numbers or e-mail addresses in the body of your comment.</p>
+          <p>If you have questions about this moderation policy or how we apply it, please contact us at data@gov.bc.ca</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default terms-decline" data-dismiss="modal">Decline</button>
+        <button type="button" class="btn btn-primary terms-accept" data-dismiss="modal">Accept</button>
+      </div>
+    </div>
+  </div>
+</div>

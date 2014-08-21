@@ -47,8 +47,8 @@
                 </form>
             {% endblock %}
         </div>
-        <a href="{{ h.url('home') }}" class="logo" title="{{ g.site_title }} Home"></a>
-        <h2>{{ g.site_title }}</h2>
+        <a href="{{ h.get_fqdn() }}" class="logo" title="B.C. Home"></a>
+        <a href="{{ h.get_fqdn() }}"><h2>{{ g.site_title }}</h2></a>
     </div>
 </div>
 

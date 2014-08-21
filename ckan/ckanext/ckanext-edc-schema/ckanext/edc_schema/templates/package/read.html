@@ -56,7 +56,7 @@
     {# Displaying Dataset information in colorful markers #}
 
     {% block package_markers %}
-      {% snippet 'package/snippets/markers.html', type=pkg.type, iso_topic_cat=pkg.iso_topic_cat, org=pkg.org, branch=pkg.sub_org %}
+      {% snippet 'package/snippets/markers.html', type=pkg.type, iso_topic_cat=pkg.get('iso_topic_cat', []), org=pkg.org, branch=pkg.sub_org %}
     {% endblock %}
 
     <h1>
@@ -90,12 +90,6 @@
     <span class="insert-comment-thread"></span>
   {% endblock %}
 
-  {% block more_info_links %}
-    {% if pkg.more_info %}
-      {% snippet "package/snippets/more_info_links.html", links=pkg.more_info %}
-    {% endif %}
-  {% endblock %}
-
   {% block package_tags %}
     {% snippet "package/snippets/tags.html", tags=pkg.tags %}
   {% endblock %}
@@ -122,6 +116,10 @@
   {% block package_additional_info %}
     <h3>Additional Information</h3>
     <div id="additional-information">
+      {% if pkg.object_name and pkg.resources and pkg.resources[0].resource_storage_location == 'BCGW Data Store' %}
+        <h2>Database Object Name</h2>
+        {{ pkg.object_name }}
+      {% endif %}
       {% block pakage_purpose %}
         {% if pkg.purpose %}
         <h2>Purpose</h2>
@@ -131,26 +129,29 @@
         {% endif %}
       {% endblock %}
 
+      {% block more_info_links %}
+        {% if pkg.more_info %}
+          {% snippet "package/snippets/more_info_links.html", links=pkg.more_info %}
+        {% endif %}
+      {% endblock %}
+
       {# Displaying contact info #}
       {% block package_contacts %}
         {% snippet 'package/snippets/contacts_view.html', contacts=pkg.contacts %}
       {% endblock %}
 
       {% block security_classification %}
-        {% snippet 'package/snippets/security_classification.html', security_class=pkg.security_class, bc_ocio=pkg.bc_ocio, view_audience=pkg.view_audience, download_audience=pkg.download_audience, metadata_visibility=pkg.metadata_visibility, privacy_impact_assessment=pkg.privacy_impact_assessment %}
+        {% snippet 'package/snippets/security_classification.html', security_class=pkg.security_class, bc_ocio=pkg.bc_ocio, view_audience=pkg.view_audience, download_audience=pkg.download_audience, metadata_visibility=pkg.metadata_visibility, privacy_impact_assessment=pkg.privacy_impact_assessment, logged_in=c.user %}
       {% endblock %}
     <h2>Metadata Information</h2>
     <table class="table dataset_view">
-    {% block package_type %}
-            <tr>
-                <td><strong>Record type</strong></td><td> {{ pkg.type }} </td>
-            </tr>
-    {% endblock %}
 
 	{% block record_state %}
+  {% if c.user %}
 		<tr>
 			<td><strong>Record state</strong></td><td> {{ pkg.edc_state }} </td>
 		</tr>
+  {% endif %}
 	{% endblock %}
 
     {# Add our custom country_code field to the dataset read page. #}
@@ -180,7 +181,7 @@
             </tr>
         {% endif %}
     {% endblock %}
-    
+
     {% block package_extra_info %}
 		{% if c.userobj.sysadmin == True or c.userobj.id == pkg.author %}
 			{% if pkg.metadata_language %}
@@ -205,19 +206,16 @@
 			{% endif %}
 		{% endif %}
 
-		{% if pkg.object_name and pkg.resources and pkg.resources[0].resource_storage_location == 'BCGW Data Store' %}
-			<tr>
-				<td><strong>Database Object Name</strong></td>
-				<td>{{ pkg.object_name }}</td>
-			</tr>
-		{% endif %}
-
     {% endblock %}
 
     </table>
 
   </div>
 
+  {% endblock %}
+
+  {% block edc_disqus_comments %}
+    {{ h.comments_block() }}
   {% endblock %}
 
 {% endblock %}

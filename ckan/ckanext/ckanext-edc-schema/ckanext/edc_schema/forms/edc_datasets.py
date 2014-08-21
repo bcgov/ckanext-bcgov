@@ -51,6 +51,16 @@ class EDC_ApplicationForm(edc_form.EDC_DatasetForm):
         return schema
 
     
+def details_schema():
+    schema = {
+              'column_name' : [ignore_missing, convert_to_extras],
+              'short_name' : [ignore_missing, convert_to_extras],
+              'data_type' : [ignore_missing, convert_to_extras],
+              'data_precision' : [ignore_missing, convert_to_extras],
+              'comments' : [ignore_missing, convert_to_extras]
+              }
+    return schema
+
 
 
 class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
@@ -90,7 +100,9 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'west_bound_longitude' : [ignore_missing, convert_to_extras],
                         'east_bound_longitude' : [ignore_missing, convert_to_extras],
                         'south_bound_latitude' : [ignore_missing, convert_to_extras],
-                        'north_bound_latitude' : [ignore_missing, convert_to_extras]
+                        'north_bound_latitude' : [ignore_missing, convert_to_extras],
+                        'table_comment' : [ignore_missing, convert_to_extras],
+                        'details' : details_schema()
                       })
         schema['resources'].update({
                                     'projection_name' : [not_empty, cnvrt_to_ext],
@@ -138,7 +150,9 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'west_bound_longitude' : [convert_from_extras, ignore_missing],
                         'east_bound_longitude' : [convert_from_extras, ignore_missing],
                         'south_bound_latitude' : [convert_from_extras, ignore_missing],
-                        'north_bound_latitude' : [convert_from_extras, ignore_missing]
+                        'north_bound_latitude' : [convert_from_extras, ignore_missing],
+                        'table_comment' : [convert_from_extras, ignore_missing],
+                        'details' : [convert_from_extras, ignore_missing]
                         })
         schema['resources'].update({
                                     'format' : [not_empty, unicode],

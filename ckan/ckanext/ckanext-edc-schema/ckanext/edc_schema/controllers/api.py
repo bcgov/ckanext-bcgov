@@ -75,17 +75,15 @@ class EDCApiController(ApiController):
         #Filter private and unpublished records for anonymous users
         if c.userobj and c.userobj.sysadmin == True:
             fq += ''
-        elif user_name == 'visitor':
-            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
-        else:
-            user_id = c.userobj.id                
-            fq += '(edc_state:("PUBLISHED" OR "PENDING ARCHIVE" OR "ARCHIVED"))'
-            #Get the list of organizations that the user is a member of
-            user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id)]
-#           pprint.pprint(user_orgs)
-            if user_orgs != []:
-                fq += ' OR (' + 'owner_org:(' + ' OR '.join(user_orgs) + '))'
-#           print 'fq ------------------> ', fq
+        else :
+            fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
+            if user_name != 'visitor':
+                #IDIR users can also see private records of their organizations
+                user_id = c.userobj.id
+                #Get the list of orgs that the user is a memeber of
+                user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id)]
+                if user_orgs != []:
+                    fq += ' OR (' + 'owner_org:(' + ' OR '.join(user_orgs) + ') )'
         
         return fq
 
@@ -94,7 +92,6 @@ class EDCApiController(ApiController):
         '''
         Searches for packages satisfying a given search criteria.
         '''
-        import pprint
         from ckan.lib.search import SearchError
                         
         help_str = "Searches for packages satisfying a given search criteria.\n" + \
@@ -310,7 +307,6 @@ class EDCApiController(ApiController):
     def action(self, logic_function, ver=None):
         import ckanext.edc_schema.logic.action as edc_action
         
-        import pprint
         #ToDo :
         #Create a list of logic_functions that need to be restricted to anonymous users
         restricted_functions = [

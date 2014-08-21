@@ -28,7 +28,7 @@
         'remove_field': c.remove_field }
 	%}
 	{% set sorting = [
-    	(_('Relevance'), 'score desc, metadata_modified desc'),
+    	(_('Relevance'), 'score desc, publish_date desc'),
     	(_('Popular'), 'views_total desc') if g.tracking_enabled else (false, false), 
         (_('Name Ascending'), 'title_string asc'),
         (_('Name Descending'), 'title_string desc'),

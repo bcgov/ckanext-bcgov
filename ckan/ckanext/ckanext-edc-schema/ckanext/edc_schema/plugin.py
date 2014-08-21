@@ -15,6 +15,8 @@ from ckanext.edc_schema.util.util import (get_edc_tags,
                                           get_state_values,
                                           get_username,
                                           get_user_orgs,
+                                          get_user_orgs_id,
+                                          get_user_toporgs,
                                           check_user_member_of_org,
                                           get_organization_branches
                                           )
@@ -24,7 +26,10 @@ from ckanext.edc_schema.util.helpers import (get_suborg_sectors,
                                              get_package_data,
                                              is_license_open,
                                              get_record_type_label,
-                                             get_suborgs)
+                                             get_suborgs,
+                                             edc_linked_gravatar,
+                                             edc_gravatar, 
+                                             record_is_viewable)
 
 abort = base.abort
 
@@ -121,13 +126,18 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "edc_username": get_username,
                 "get_sector" : get_suborg_sectors,
                 "get_user_orgs" : get_user_orgs,
+                "get_user_orgs_id" : get_user_orgs_id,
+                "get_user_toporgs": get_user_toporgs,
                 "check_user_member_of_org" : check_user_member_of_org,
                 "get_suborg_sectors" : get_suborg_sectors,
                 "get_user_dataset_num" : get_user_dataset_num,
                 "get_edc_package" : get_package_data,
                 "is_license_open" : is_license_open,
                 "record_type_label" : get_record_type_label,
-                "get_suborgs": get_suborgs
+                "get_suborgs": get_suborgs,
+                "edc_linked_gravatar": edc_linked_gravatar,
+                "edc_gravatar": edc_gravatar,
+                "record_is_viewable": record_is_viewable
                 }
 
 
@@ -353,38 +363,61 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     def before_search(self, search_params):
 
+        #Change the default sort order
+        if search_params.get('sort') in (None, 'rank'):
+            search_params['sort'] = 'publish_date desc, metadata_modified desc'
+
+        
         #Change the query filter depending on the user
+ 
 
         if 'fq' in search_params:
             fq = search_params['fq']
         else:
             fq = ''
-
+        
+        #need to append solr param q.op to force an AND query
+        if 'q' in search_params:
+            q = search_params['q']
+            if q !='':
+                q = '{!lucene q.op=AND}' + q
+                search_params['q'] = q
+        else:
+		    q = ''          
+        
         try :
             user_name = c.user or 'visitor'
+            #pprint.pprint(user_name)
 
             #  There are no restrictions for sysadmin
             if c.userobj and c.userobj.sysadmin == True:
-                fq += ''
-            elif user_name == 'visitor':
-                #Public user can only view public and published records
-                fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
+                fq += ' '
             else:
-                #IDIR users can also see private records of their organizations
-                user_id = c.userobj.id
-                fq += '(edc_state:("PUBLISHED" OR "PENDING ARCHIVE" OR "ARCHIVED"))'
-                #Get the list of orgs that the user is a memeber of
-                user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id)]
-                if user_orgs != []:
-                    fq += ' OR (' + 'owner_org:(' + ' OR '.join(user_orgs) + '))'
-
-            search_params['fq'] = fq
+                if user_name != 'visitor':
+                    fq += ' (+(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))' 
+                             
+                    #IDIR users can also see private records of their organizations
+                    user_id = c.userobj.id
+                    #Get the list of orgs that the user is an admin or editor of
+                    user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
+                    user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
+                    if user_orgs != []:
+                        fq += ' OR (' + 'owner_org:(' + ' OR '.join(user_orgs) + ') ))'
+                    else:
+                        fq += ')'
+                #Public user can only view public and published records
+                else:
+                    fq = '+(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'        
+                
         except Exception:
             if 'fq' in search_params:
                 fq = search_params['fq']
             else:
                 fq = ''
             fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
+            
+        search_params['fq'] = fq
+        pprint.pprint(search_params)
         return search_params
 
     def dataset_facets(self, facet_dict, package_type):

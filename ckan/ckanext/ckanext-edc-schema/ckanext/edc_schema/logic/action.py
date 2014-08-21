@@ -243,7 +243,7 @@ def post_disqus_comment(context, comment_dict):
 
     import pycurl
     
-    print comment_dict
+#    print comment_dict
     
     from disqusapi import DisqusAPI
     import cStringIO

@@ -15,7 +15,7 @@ An RSS Feed of the contents of the Province of British Columbia's Data Catalogue
         <description>{{ result.notes }}</description>
         <link>{{ base_url }}{{ h.url_for(controller='package', action='read', id=result.name) }}</link>
         <guid>{{ base_url }}{{ h.url_for(controller='package', action='read', id=result.id) }}</guid>
-        <pubDate>{{ result.publish_date }}</pubDate>
+        <pubDate>{% if result.record_publish_date %}{{ result.record_publish_date }}{% else %}{{ result.publish_date }}{% endif %}</pubDate>
     </item>
 {% endfor %}
 

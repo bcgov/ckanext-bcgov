@@ -9,9 +9,11 @@ from urllib import urlencode
 from ckan.logic import get_action, NotFound
 import ckan.lib.maintain as maintain
 
+import pprint 
+
 from pylons import config
 
-from ckanext.edc_schema.util.util import (get_user_orgs)
+from ckanext.edc_schema.util.util import (get_user_orgs, get_user_toporgs)
 
 render = base.render
 abort = base.abort
@@ -45,17 +47,17 @@ class EDCUserController(UserController):
         return render('user/dashboard_unpublished.html')
     
     def dashboard_datasets(self):
-        fq = '+author:("%s")' %(c.userobj.id)
+        fq = '+author:("%s")' % (c.userobj.id)
         self._user_datasets('dashboard_datasets', c.userobj.id, fq)
         return render('user/dashboard_datasets.html')
     
     def read(self, id=None):
-        user_id = id
+        user_id = c.userobj.id
         if c.userobj and c.userobj.sysadmin == True:
             fq = ''
         else :
-            fq = 'author:("%s")' %(user_id) 
-            user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
+            fq = 'author:("%s")' % (c.userobj.id) 
+            user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id)]
             if len(user_orgs) > 0:
                 fq += ' OR owner_org:(' + ' OR '.join(user_orgs) + ')'
         self._user_datasets('read',id, fq)
@@ -158,9 +160,9 @@ class EDCUserController(UserController):
                 'sort': sort_by,
                 'extras': search_extras
             }
-
+            
             query = get_action('package_search')(context, data_dict)
-
+            
             c.page = h.Page(
                 collection=query['results'],
                 page=page,
@@ -204,7 +206,7 @@ class EDCUserController(UserController):
         search_dict = {'all_fields': True}
         search_result = get_action('organization_list')(context, search_dict)
         
-        user_orgs = get_user_orgs(c.userobj.id) 
+        (user_orgs, usr_suborgs) = get_user_toporgs(c.userobj.id) 
         
         org_pkg_count_dict = {}
         for org in search_result :
@@ -212,6 +214,7 @@ class EDCUserController(UserController):
                     
         c.org_pkg_count = org_pkg_count_dict
         c.top_orgs_items = user_orgs
+        c.suborgs_items = usr_suborgs
         
                
         return render('user/dashboard_organizations.html')

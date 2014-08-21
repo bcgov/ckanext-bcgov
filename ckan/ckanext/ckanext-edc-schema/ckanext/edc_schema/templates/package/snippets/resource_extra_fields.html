@@ -58,7 +58,7 @@
     </div>
 
     {% block basic_fields_format %}
-    {% if record_type == 'Geographic' or record_type == 'Dataset' %}
+    {% if record_type == 'Geographic' or record_type == 'Dataset' or record_type == 'WebService' %}
       {% set format_error = errors.format %}
       <div class="control-group control-full{{ " error" if format_error }}">
         <label class="control-label" for="field-format"><span class="control-required">*</span> {{ _("Resource Storage Format") }}</label>

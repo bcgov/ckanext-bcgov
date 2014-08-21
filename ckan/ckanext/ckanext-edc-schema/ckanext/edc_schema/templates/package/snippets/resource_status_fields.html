@@ -15,7 +15,7 @@
     <div class="controls">
     	{% set resource_status_list = h.edc_tags(_("resource_status")) %}
         <select id="field-resource_status" name="resource_status" data-module="autocomplete"  onchange="check_resource_stat()">
-        	<option value='' {% if not selected_status %} selected="selected" {% endif %} >Select a status</option>
+        	<option value='' {% if not selected_status %} selected="selected" {% endif %} disabled>Select a status</option>
       		{% for tag in resource_status_list  %}
         		{% set selected_status = (tag == data.get('resource_status', None)) %}
       			<option value="{{ tag }}"

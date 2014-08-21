@@ -6,7 +6,7 @@
 {% set record_type = h.dataset_type(pkg_name) %}
 
 {% resource 'edc_resource/edc_schema.css' %}
-{% set archived = state == 'ARCHIVED' %} 
+{% set archived = state == 'ARCHIVED' %}
 <form class="dataset-form dataset-resource-form form-horizontal {% if archived %} archived {% endif %}" method="post" action="{{ action }}" data-module="basic-form resource-form" enctype="multipart/form-data">
   {% block stages %}
     {# An empty stages variable will not show the stages #}
@@ -14,7 +14,7 @@
       {{ h.snippet('package/snippets/stages.html', stages=stage, pkg_name=pkg_name) }}
     {% endif %}
   {% endblock %}
-  
+
   <input name="id" value="{{ data.id }}" type="hidden"/>
 
     {% block basic_fields_url %}
@@ -23,7 +23,7 @@
          is_upload_enabled=h.uploads_enabled(), is_url=data.url and not is_upload, is_upload=is_upload,
          upload_label=_('File'), url_label=_('URL')) }}
     {% endblock %}
-    
+
     {% block basic_fields_name %}
     		{{ form.input('name', id='field-name', label=_('Name'), placeholder=_('eg. January 2011 Gold Prices'), value=data.name, error=errors.name, classes=['control-full']) }}
     {% endblock %}
@@ -56,29 +56,31 @@
     	{% endblock %}
     {% endif %}
 
-    {% block resource_update_cycle %}
-        {% set update_cycle_error = errors.resource_update_cycle %}
-        <div class="required control-group control-full{{ " error" if update_cycle_error }}">
-            <label class="control-label" for="field-update_cycle"><span class="control-required">*</span> {{ _("Update Cycle") }}</label>
-            <div class="controls">
-            	{% set update_cycle_list = h.edc_tags(_('resource_update_cycle')) %}
-            	{% set current_update_cycle = data.resource_update_cycle %}
-            	<select id="field-update_cycle" name="resource_update_cycle" data-module="autocomplete" onchange="javascript:check_resource_stat();" class="required">
-                	<option value = '' {% if not selected_update_cycle %} selected="selected" {% endif %}>Select an update cycle</option>
-                   	{% for update_cycle in update_cycle_list %}
-                    	{% set selected_update_cycle = (current_update_cycle and current_update_cycle == update_cycle) %}
-                        <option value="{{ update_cycle }}"
-                        	{% if selected_update_cycle %} selected="selected" {% endif %}>
-                            {{ update_cycle }}
-                        </option>
-                    {% endfor %}
-                </select>
-                {% if update_cycle_error and update_cycle_error is iterable %}
-                    <span class="error-block">{{ update_cycle_error|join(', ') }}</span>
-                {% endif %}
-            </div>
-        </div>
-    {% endblock %}
+	{% if not record_type == 'WebService' or not record_type == 'Application'%}
+	    {% block resource_update_cycle %}
+	        {% set update_cycle_error = errors.resource_update_cycle %}
+	        <div class="required control-group control-full{{ " error" if update_cycle_error }}">
+	            <label class="control-label" for="field-update_cycle"><span class="control-required">*</span> {{ _("Resource Update Cycle") }}</label>
+	            <div class="controls">
+	            	{% set update_cycle_list = h.edc_tags(_('resource_update_cycle')) %}
+	            	{% set current_update_cycle = data.resource_update_cycle %}
+	            	<select id="field-update_cycle" name="resource_update_cycle" data-module="autocomplete" onchange="javascript:check_resource_stat();" class="required">
+	                	<option value = '' {% if not selected_update_cycle %} selected="selected" {% endif %} disabled>Select an update cycle</option>
+	                   	{% for update_cycle in update_cycle_list %}
+	                    	{% set selected_update_cycle = (current_update_cycle and current_update_cycle == update_cycle) %}
+	                        <option value="{{ update_cycle }}"
+	                        	{% if selected_update_cycle %} selected="selected" {% endif %}>
+	                            {{ update_cycle }}
+	                        </option>
+	                    {% endfor %}
+	                </select>
+	                {% if update_cycle_error and update_cycle_error is iterable %}
+	                    <span class="error-block">{{ update_cycle_error|join(', ') }}</span>
+	                {% endif %}
+	            </div>
+	        </div>
+	    {% endblock %}
+	{% endif %}
 
     {% block extra_fields %}
 
@@ -96,7 +98,7 @@
 
   {% block metadata_fields %}
   {% endblock %}
-  
+
   {# list of previously added resources #}
   {% block resource_list %}
   	{% set pkg_data =  h.get_edc_package(pkg_name) %}

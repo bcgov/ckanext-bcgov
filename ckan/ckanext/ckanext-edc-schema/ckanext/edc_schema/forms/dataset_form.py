@@ -13,7 +13,7 @@ from ckan.lib.navl.validators import (ignore_missing,
                                       )
 from ckan.logic.validators import (url_validator,
                                    name_validator,
-                                   package_name_validator, 
+                                   package_name_validator,
                                    tag_string_convert)
 
 from ckan.lib.field_types import DateType, DateConvertError
@@ -23,12 +23,12 @@ from converters import (convert_to_extras,
                         convert_from_extras,
                         convert_dates_form)
 
-from validators import (check_empty, 
-                        valid_email, 
-                        check_resource_status, 
-                        valid_date, 
-                        license_not_empty, 
-                        validate_link, 
+from validators import (check_empty,
+                        valid_email,
+                        check_resource_status,
+                        valid_date,
+                        license_not_empty,
+                        validate_link,
                         get_org_sector,
                         check_branch,
                         duplicate_pkg)
@@ -66,6 +66,7 @@ def contacts_db_schema():
     schema = {
               'name' : [check_empty, convert_to_extras],
               'organization' : [check_empty, convert_to_extras],
+              'branch' : [check_empty, convert_to_extras],
               'email' : [check_empty, valid_email, convert_to_extras],
               'role' : [check_empty, convert_to_extras],
               'private' : [ignore_missing, convert_to_extras],
@@ -166,7 +167,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                         'view_audience' : [not_empty, convert_to_extras],
                         'download_audience' : [not_empty, convert_to_extras],
                         'privacy_impact_assessment' : [not_empty, convert_to_extras],
-                        'iso_topic_cat' : [not_empty, convert_to_extras],
+                        'iso_topic_cat' : [not_empty, cnvrt_to_tags('iso_topic_category')],
 #                        'metadata_hierarchy_level' : [not_empty, convert_to_extras],
                         'metadata_visibility' : [not_empty, convert_to_extras],
                         'object_relationships' : [ ignore_missing, convert_to_extras ],
@@ -185,6 +186,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                         'image_display_url' : [ignore_missing, convert_to_extras],
                         'image_delete' : [ignore_missing, convert_to_extras],
                         'publish_date' : [ignore_missing, convert_to_extras],
+                        'record_publish_date' : [ignore_missing, convert_to_extras],
                         'metadata_language' : [ignore_missing, convert_to_extras],
                         'metadata_character_set' : [ignore_missing, convert_to_extras],
                         'metadata_standard_name' : [ignore_missing, convert_to_extras],
@@ -212,7 +214,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
     def show_package_schema(self):
         schema = super(EDC_DatasetForm, self).show_package_schema()
-        
+
         cnvrt_from_tags = toolkit.get_converter('convert_from_tags')
         schema['tags']['__extras'].append(toolkit.get_converter('free_tags_only'))
         schema.update({
@@ -230,7 +232,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                         'view_audience' : [convert_from_extras, not_empty],
                         'download_audience' : [convert_from_extras, not_empty],
                         'privacy_impact_assessment' : [convert_from_extras, not_empty],
-                        'iso_topic_cat' : [convert_from_extras, not_empty],
+                        'iso_topic_cat' : [cnvrt_from_tags('iso_topic_category'), not_empty],
 #                        'metadata_hierarchy_level' : [convert_from_extras, not_empty],
                         'metadata_visibility' :  [convert_from_extras, not_empty],
                         'object_relationships' : [ convert_from_extras, ignore_missing ],
@@ -250,11 +252,12 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                         'image_delete' : [convert_from_extras, ignore_missing],
                         'more_info' : [convert_from_extras, ignore_missing],
                         'publish_date' : [convert_from_extras, ignore_missing],
+                        'record_publish_date' : [convert_from_extras, ignore_missing],
                         'metadata_language' : [convert_from_extras, ignore_missing],
                         'metadata_character_set' : [convert_from_extras, ignore_missing],
                         'metadata_standard_name' : [convert_from_extras, ignore_missing],
                         'metadata_standard_version' : [convert_from_extras, ignore_missing]
-                        
+
                        })
         schema['resources'].update( {
                                      'supplemental_info' : [ cnvrt_from_ext, ignore_missing ],

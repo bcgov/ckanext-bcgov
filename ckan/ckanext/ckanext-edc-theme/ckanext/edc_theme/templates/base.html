@@ -85,16 +85,6 @@
       {% resource 'edc_theme/edc_theme.css' %}
       {% resource 'edc_theme/wet-boew' %}
     {% endblock %}
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function()
-      { (i[r].q=i[r].q||[]).push(arguments)}
-      ,i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-      ga('create', 'UA-7579094-2', 'gov.bc.ca');
-      ga('set', 'anonymizeIp', true);
-      ga('send', 'pageview');
-    </script>
     
 <script type="text/javascript">
 	var IDLE_TIMEOUT = 14400; //seconds =  4 hours
@@ -122,10 +112,55 @@
 		}
 	}
 	
-	window.onunload = function () {
-        document.location.href = "/user/_logout";
-    }
+	
 </script>   
+
+	<!-- Copyright (c) 1996-2009 WebTrends Inc. All rights reserved. -->
+	<!-- Version: 8.6.0 -->
+	<!-- Tag Builder Version: 2.1.0 -->
+	<!-- Created: 1/15/2009 23:50:46 -->
+	<script type="text/javascript" src="http://www.data.gov.bc.ca/local/dbc/scripts/webtrends.js"></script>
+	<!-- *********************************************************************************** -->
+	<!-- Warning: The two script blocks below must remain inline. Moving them to an external -->
+	<!-- JavaScript include file can cause serious problems with cross-domain tracking. -->
+	<!-- *********************************************************************************** -->
+	<script type="text/javascript"> 
+		//<![CDATA[
+		  var _tag=new WebTrends();
+		//]]>>
+	</script>
+	<script type="text/javascript"> 
+		//<![CDATA[
+			_tag.dcsCustom=function()
+			{ // Add custom parameters here. //_tag.DCSext.param_name=param_value; }
+			_tag.dcsid = "dcs4rjxwe100008ifyptnnc1t_2r5m";
+			_tag.domain = "sdc.gov.bc.ca";
+			_tag.fpcdom = ".gov.bc.ca";
+			_tag.dcsCollect();
+		//]]>>
+	</script>
+	<noscript>
+	  <div>
+	  <img alt="" width="1" height="1" src="http://sdc.gov.bc.ca/dcs4rjxwe100008ifyptnnc1t_2r5m/njs.gif?dcsuri=/nojavascript&WT.js=No&WT.tv=8.0.2" />
+	  </div>
+	</noscript>
+	<!-- END OF SmartSource Data Collector TAG -->
+
+    <script>
+    // ***************************************************************************
+    // THIS BIT OF JAVASCRIPT MUST BE THE LAST THING IN THE HEAD BLOCK!!
+    // PLEASE DON'T PLACE ANYTHING BELOW IT!!!  - JER
+    // ***************************************************************************
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function()
+      { (i[r].q=i[r].q||[]).push(arguments)}
+      ,i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-7579094-2', 'gov.bc.ca');
+      ga('set', 'anonymizeIp', true);
+      ga('send', 'pageview');
+    </script>
+
   </head>
 
   {# Allows custom attributes to be added to the <body> tag #}
@@ -157,5 +192,6 @@
       {# defined in the config.ini under "ckan.template_footer_end" #}
       {{ g.template_footer_end | safe }}
     {%- endblock %}
+          
   </body>
 </html>

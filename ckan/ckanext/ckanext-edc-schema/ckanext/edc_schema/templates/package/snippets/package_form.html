@@ -12,6 +12,7 @@ then itself be extended to add/remove blocks of functionality. #}
 {% set current_state = data.edc_state or _('Draft') %}
 {% set archived = current_state == "ARCHIVED" %}
 <form id="form-edc_dataset" class="dataset-form {% if archived %} archived {% endif %}" method="post" action="{{ action }}" data-module="basic-form" enctype="multipart/form-data">
+
   {% block stages %}
     {{ h.snippet('package/snippets/stages.html', stages=stage) }}
   {% endblock %}
@@ -71,6 +72,12 @@ then itself be extended to add/remove blocks of functionality. #}
 {% resource 'edc_resource/jquery-ui.js' %}
 
 {% block package_header %}
+  {% block dataset_type %}
+    <div class="package-type">
+        <strong>{{ _("Record Type") }}</strong> <em>{{ h.record_type_label(record_type) }}</em>
+    </div>
+  {% endblock %}
+
 	{% set state_options = h.edc_state_values(c.userobj.id, data) %}
 	<div class="control-group form-horizontal">
 		<label class="control-label" for="field-edc_state">State</label>
@@ -85,7 +92,7 @@ then itself be extended to add/remove blocks of functionality. #}
       		{% endfor %}
         </select>
 		</div>
-		
+
 	</div>
 {% endblock %}
 
@@ -110,13 +117,14 @@ then itself be extended to add/remove blocks of functionality. #}
         </p>
       {% endblock #}
       {% block delete_button %}
-        {% if h.check_access('package_delete', {'id': data.id}) and not data.state == 'deleted' %}
-          {% set locale = h.dump_json({'content': _('Are you sure you want to delete this dataset?')}) %}
-          <a class="btn btn-danger pull-left" href="{% url_for controller='package', action='delete', id=data.id %}" data-module="confirm-action" data-module-i18n="{{ locale }}">{% block delete_button_text %}{{ _('Delete') }}{% endblock %}</a>
+        {% if current_state.startswith('DRAFT') %}
+          {% if h.check_access('package_delete', {'id': data.id}) and not data.state == 'deleted' %}
+            {% set locale = h.dump_json({'content': _('Are you sure you want to delete this dataset?')}) %}
+            <a class="btn btn-danger pull-left" href="{% url_for controller='package', action='delete', id=data.id %}" data-module="confirm-action" data-module-i18n="{{ locale }}">{% block delete_button_text %}{{ _('Delete') }}{% endblock %}</a>
+          {% endif %}
         {% endif %}
       {% endblock %}
       <button class="btn btn-primary" type="submit" name="save">{% block save_button_text %}{{ _('Next: Add Data') }}{% endblock %}</button>
-      {{ form.required_message() }}
     </div>
   {% endblock %}
 

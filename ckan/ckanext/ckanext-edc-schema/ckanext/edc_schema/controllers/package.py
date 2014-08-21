@@ -74,47 +74,47 @@ def send_email(user, email_dict):
 
 
 def check_record_state(old_state, new_data):
-    
+
 #    print '---------------------------------------- Checking record state changes ----------------------------------'
-    
+
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
-    
+
     new_state = new_data['edc_state']
-   
+
     #If dataset's state has not been changed do nothing
     if old_state == new_state:
         return
-    
+
     user_name = context['user']
-        
+
     #Create a state change activity
 #    edc_state_activity_create(user_name, new_data, old_state)
-    
+
     dataset_url = h.url_for(controller='package', action="read", id = new_data['name'])
     dataset_link = '<a href="'+ config.get('ckan.site_url') + dataset_url + '">' + new_data['title'] + '</a>'
-    
-    #Get dataset author 
+
+    #Get dataset author
     dataset_author = c.userobj
 #     if new_data['author'] != c.userobj.id:
 #         dataset_author = get_action('user_show')(context, {'id': new_data['author']})
 #         pprint.pprint(dataset_author)
-    
+
     #Get the list of admins
-    
-    
+
+
     #Prepare email
     subject = 'Dataset state change.'
     body = 'The state of dataset at : ' + dataset_link + ' has been changed to <strong>' + new_state + '</strong>.'
     email_dict = {
                   'subject': subject,
-                  'body': body 
+                  'body': body
                   }
-    
+
     send_email(dataset_author, email_dict)
-    
+
     #Todo : Determine what to do based on the package new state
-    if new_state == 'PENDING PUBLISH' :        
+    if new_state == 'PENDING PUBLISH' :
         pass
     elif new_state == 'REJECTED':
         pass
@@ -126,26 +126,27 @@ def check_record_state(old_state, new_data):
         pass
     else :
         pass
-    
+
     #Add publish date to data if the state changed to published.
     if new_state == 'PUBLISHED':
-        new_data['publish_date'] = str(datetime.date.today()) 
+        new_data['publish_date'] = str(datetime.date.today())
+        new_data['record_publish_date'] = str(datetime.date.today())
         #update the record
         pkg = get_action('package_update')(context, new_data)
-        
+
 
 class EDCPackageController(PackageController):
-    
-    
+
+
     #Adding extra functionality to the Package Controller.
-    
+
     old_state = ''
-    
+
     def _setup_template_variables(self, context, data_dict, package_type=None):
         PackageController._setup_template_variables(self, context, data_dict, package_type)
         #Add the dataset type tags to the template variables.
         try:
-            dataset_types = get_action('tag_list')(context, 
+            dataset_types = get_action('tag_list')(context,
                                                      {'vocabulary_id': EDC_DATASET_TYPE_VOCAB})
             c.dataset_types = [tag for tag in dataset_types]
             for key, value in data_dict.iteritems() :
@@ -153,26 +154,26 @@ class EDCPackageController(PackageController):
                     c.old_state = data_dict['state']
         except NotFound:
             c.dataset_types = []
-        
-    #This action method responds to add dataset action 
+
+    #This action method responds to add dataset action
     def typeSelect(self, data=None, errors=None, error_summary=None):
-                 
+
         #Showing the dataset type selection form.
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author,
                    'save': 'save' in request.params}
-        
-        org_id = request.params.get('group') or request.params.get('groups__0__id')
-            
 
-        #If dataset type is chosen then bring up the appropriate dataset creation form 
+        org_id = request.params.get('group') or request.params.get('groups__0__id')
+
+
+        #If dataset type is chosen then bring up the appropriate dataset creation form
         if request.method == 'POST':
             #Check if the request is comming from an organization. If so, set the owner org as the given organization.
             #Get the name of dataset type from the edc tags list using the dataset type id.
             dataset_type = request.params.get('dataset-type')
             self._redirect_to_dataset_form(dataset_type, org_id)
-            
-           
+
+
         try:
             check_access('package_create', context)
         except NotAuthorized:
@@ -180,24 +181,24 @@ class EDCPackageController(PackageController):
 
         data = data or clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(
             request.params, ignore_keys=CACHE_PARAMETERS))))
-        
+
         errors = errors or {}
         error_summary = error_summary or {}
         # in the phased add dataset we need to know that
         # we have already completed stage 1
         #stage = ['active']
-            
+
         vars = {'data': data, 'errors': errors,
                 'error_summary': error_summary,
                 'action': 'new'}
         self._setup_template_variables(context, {})
-        
+
         #Create the dataset type form that has to be shown on the primary-content part of the main page.
         c.form = render('package/edc_type_form.html', extra_vars = vars)
-        
+
         #Render the main page for dataset type
         return render('package/new_type.html')
- 
+
 
     #Redirects to appropriate dataset creation form based on the given dataset type.
     def _redirect_to_dataset_form(self, dataset_type, org_id = None):
@@ -210,24 +211,24 @@ class EDCPackageController(PackageController):
             redirect(h.url_for(form_urls[dataset_type], group=org_id))
         else:
             redirect(toolkit.url_for(form_urls[dataset_type]))
-        
- 
+
+
     def edc_edit(self, id, data=None, errors=None, error_summary=None):
-        
+
         c.form_style = 'edit'
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj,
                    'save': 'save' in request.params}
         old_data = None
-        
-        if not context['save'] :        
+
+        if not context['save'] :
             old_data = get_action('package_show')(context, {'id': id})
             EDCPackageController.old_state = old_data['edc_state']
-        
+
         result = super(EDCPackageController, self).edit(id, data, errors, error_summary)
-        
+
         return result
-            
+
     def _form_save_redirect(self, pkgname, action, package_type=None):
         '''This overrides ckan's _form_save_redirect method of package controller class
         so that it can be called after the data has been recorded and the package has been updated.
@@ -237,16 +238,16 @@ class EDCPackageController(PackageController):
         @param pkgname - Name of the package just edited
         @param action - What the action of the edit was
         '''
-        
+
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
-        
+
         new_data =  get_action('package_show')(context, {'id': pkgname})
         if new_data:
             check_record_state(EDCPackageController.old_state, new_data)
             EDCPackageController.old_state = new_data['edc_state']
-#            self._check_file_upload(new_data)              
-                     
+#            self._check_file_upload(new_data)
+
         assert action in ('new', 'edit')
         url = request.params.get('return_to') or \
             config.get('package_%s_return_url' % action)
@@ -260,7 +261,7 @@ class EDCPackageController(PackageController):
 #                 url = h.url_for('{0}_read'.format(package_type), id=pkgname)
         redirect(url)
 
-        
+
 
     def read(self, id, format='html'):
         '''
@@ -268,34 +269,34 @@ class EDCPackageController(PackageController):
         Then it checks if the package can be viewed by the user
         '''
         result = super(EDCPackageController, self).read(id, format)
-        
+
         #Check if user can view this record
         from ckanext.edc_schema.util.helpers import record_is_viewable
-        
+
         username = c.user or 'visitor'
         if not record_is_viewable(c.pkg_dict, c.userobj) :
             #h.redirect_to(controller='ckanext.edc_schema.controllers.package:EDCPackageController', action='auth_error')
             abort(401, _('Unauthorized to read package %s') % id)
-            
+
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'for_view': True,
                    'auth_user_obj': c.userobj}
         package_type = self._get_package_type(id.split('@')[0])
-        
+
         metadata_modified_time = from_utc(c.pkg_dict['metadata_modified'])
         revision_timestamp_time = from_utc(c.pkg_dict['revision_timestamp'])
-        
+
 #        print "metadata_modified_time: " + c.pkg_dict['metadata_modified']
 #        print "revision_timestamp_time: " + c.pkg_dict['revision_timestamp']
-        
+
         if (metadata_modified_time >= revision_timestamp_time):
             timestamp = metadata_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
         else:
             timestamp = revision_timestamp_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
-        
 
-#        print metadata_modified_time.strftime('%Y-%m-%d')    
-        response.headers['Last-Modified']  = timestamp      
+
+#        print metadata_modified_time.strftime('%Y-%m-%d')
+        response.headers['Last-Modified']  = timestamp
         response.headers['Cache-Control'] = 'public, max-age=31536000'
         response.headers['Pragma'] = 'cache'
 
@@ -307,29 +308,29 @@ class EDCPackageController(PackageController):
                 response.status = 200
             else:
                 response.status = 304
-                
+
         return result
-            
+
     def resource_read(self, id, resource_id):
         '''
         First calls ckan's default resource read to get the resource and package data.
         Then it checks if the resource can be viewed by the user
         '''
         result = super(EDCPackageController, self).resource_read(id, resource_id)
-        
+
         #Check if user can view this record
         from ckanext.edc_schema.util.helpers import record_is_viewable
-        
+
         username = c.user or 'visitor'
         if not record_is_viewable(c.pkg_dict, c.userobj) :
             abort(401, _('Unauthorized to read package %s') % id)
-        
+
         return result
 
 
     def resource_delete(self, id, resource_id):
-        
-        #Back to the resource edit if user has chosen cancel on delete confirmation 
+
+        #Back to the resource edit if user has chosen cancel on delete confirmation
         if 'cancel' in request.params:
             h.redirect_to(controller='package', action='resource_edit', resource_id=resource_id, id=id)
 
@@ -341,23 +342,23 @@ class EDCPackageController(PackageController):
             check_access('package_delete', context, {'id': id})
         except NotAuthorized:
             abort(401, _('Unauthorized to delete package %s') % '')
-        
+
         #Get the package containing the resource
         try :
             pkg = get_action('package_show')(context, {'id': id})
         except NotFound:
             abort(404, _('Resource dataset not found'))
-        
-        #Deleting the resource    
+
+        #Deleting the resource
         try:
             if request.method == 'POST':
                 get_action('resource_delete')(context, {'id': resource_id})
                 h.flash_notice(_('Resource has been deleted.'))
-                
+
                 #Redirect to a new resource page if we are creating a new dataset
                 if pkg.get('state').startswith('draft') :
                     h.redirect_to(controller='package', action='new_resource', id=id)
-                                                       
+
                 h.redirect_to(controller='package', action='read', id=id)
             c.resource_dict = get_action('resource_show')(context, {'id': resource_id})
             c.pkg_id = id
@@ -368,61 +369,61 @@ class EDCPackageController(PackageController):
         return render('package/confirm_delete_resource.html')
 
 
-    
+
     def _check_file_upload(self, context, pkg_data):
-        
+
         if not 'image_url' in pkg_data :
             return
-        
+
         import os
         from ckanext.edc_schema.util.file_uploader import (FileUploader, DEFAULT_UPLOAD_FILENAME)
-        
+
         image_is_deleted = pkg_data['image_delete']
-        
+
         file_uploader =  FileUploader()
-        
-        if image_is_deleted == '0' :        
+
+        if image_is_deleted == '0' :
             upload_path = os.path.join(config.get('ckan.site_url'),'uploads', 'edc_files') + '/'
-        
+
             upload_url = pkg_data['image_url']
-        
+
             uploaded_file = upload_url[len(upload_path):]
-        
-                
+
+
             name, extension = os.path.splitext(uploaded_file)
-            
-            #Check if this a temp file (A new file has been uploaded)            
+
+            #Check if this a temp file (A new file has been uploaded)
             if name.startswith(DEFAULT_UPLOAD_FILENAME) :
                 file_uploader.save_uploaded_temp_file(uploaded_file, pkg_data['id'])
-                
+
                 #Remove the temp file.
                 file_uploader.remove_file(uploaded_file)
-                
+
         else:
             #The file has been removed. So remove the actual stored file and any available temp files.
             file_uploader.remove_files_with_name(pkg_data['id'])
             file_uploader.remove_files_with_name(DEFAULT_UPLOAD_FILENAME + pkg_data['id'])
 
-            
+
     def upload(self):
         from ckanext.edc_schema.util.file_uploader import FileUploader
         import json
-        
+
         file_uploader =  FileUploader()
-                       
+
         new_file = request.params['imageFile']
 #        existing_filename = request.params['exisiting_filename']
         pkg_id = request.params['pkg_name']
-        
-        
+
+
         result_dict = file_uploader.upload_temp_file(pkg_id, new_file, 600)
-        
+
         return json.dumps(result_dict)
-    
-    
+
+
     def duplicate(self, id):
         '''
-        Creates a duplicate of the record with the given id. 
+        Creates a duplicate of the record with the given id.
         The content of the duplicate record is the same as the original except
         for the title and the name.
         '''
@@ -435,7 +436,7 @@ class EDCPackageController(PackageController):
             check_access('package_create', context)
         except NotAuthorized:
             abort(401, _('Unauthorized to create a package'))
-        
+
         #Get the dataset details
         try:
             context['for_edit'] = True
@@ -444,44 +445,44 @@ class EDCPackageController(PackageController):
             abort(401, _('Unauthorized to read package %s') % '')
         except NotFound:
             abort(404, _('Dataset not found'))
-        
+
         #Change the name and the title of the duplicate record
         record_name = data_dict['name']
         record_title = data_dict['title']
         record_title = '#Duplicate# ' + record_title
-        
+
         name_len = len(record_name)
         if name_len > 87 :
             record_name = record_name[:-13]
-        
+
         record_name = '__duplicate__' + record_name
-        
+
         data_dict['name'] = record_name
         data_dict['title'] = record_title
         data_dict['edc_state'] = 'DRAFT'
-        
+
         #Remove resources if there are any
         del data_dict['resources']
-        
+
         #Prepare record tag_string field
-        tag_str = ','.join([tag['name'] for tag in data_dict['tags']])    
+        tag_str = ','.join([tag['name'] for tag in data_dict['tags']])
         data_dict['tag_string'] = tag_str
         del data_dict['tags']
-        
-        
+
+
         del data_dict['id']
-        
+
         #To do - Image upload issues : Use a single copy for the original and duplicate record
         #        Create a new copy of the original record or remove the image link and let the user upload a new image.
-        
+
         c.is_duplicate = True
         #Create the duplicate record
         pkg_dict = get_action('package_create')(context, data_dict)
-        
-        
+
+
         redirect(h.url_for(controller='package', action='edit', id=pkg_dict['id']))
-        
-        
+
+
     def auth_error(self):
         return render('package/auth_error.html')
-        
+

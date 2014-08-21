@@ -40,7 +40,7 @@ function check_resource_stat() {
  *  Adds another row of contact name and contact email to the list   *
  *  of contacts in dataset creation form.
  *-------------------------------------------------------------------*/
-function add_contact(roles, orgs) {
+function add_contact(roles, orgs, sub_orgs) {
 	var numberOfContacts = $('.contacts').length;
 
 	var html = '<div id="contact_' + numberOfContacts + '" class="contact control-group"> \
@@ -78,7 +78,7 @@ function add_contact(roles, orgs) {
 							<div class="control-group"> \
 								<label for="field-contacts-' + numberOfContacts + '-organization" class="control-label"><span class="control-required">*</span> Organization</label> \
 								<div class="controls"> \
-								 	<select id="field-contacts-' + numberOfContacts + '-organization" name="contacts__' + numberOfContacts + '__organization" data-module="autocomplete" data-group="org"> \
+								 	<select id="field-contacts-' + numberOfContacts + '-organization" name="contacts__' + numberOfContacts + '__organization" data-module="autocomplete" data-group="org" class="contact-org"> \
 								 	<option value="" selected="selected" >Select an organization</option>';
 
 	var selected_org_id = $("#field-org").val()
@@ -93,6 +93,26 @@ function add_contact(roles, orgs) {
 
 	html += '				</select> \
 						</div> \
+					</div> \
+					<div class="control-group"> \
+						<label for="field-contacts-' + numberOfContacts + '-branch" class="control-label"><span class="control-required">*</span> Sub-Organization</label> \
+						<div class="controls"> \
+				 			<select id="field-contacts-' + numberOfContacts + '-branch" name="contacts__' + numberOfContacts + '__branch" data-group="sub-org" data-module="autocomplete" class="contact-sub-org"> \
+				 				<option value="" selected="selected" >Select a sub-organization</option>';
+
+	var selected_sub_org_id = $("#field-sub_org").val();
+	console.log(selected_sub_org_id);
+	for (var i = 0; i < sub_orgs.length; i++) {
+		if (sub_orgs[i].id == selected_sub_org_id) {
+			html += '							 	<option value="' + sub_orgs[i].id + '" selected="selected">' + sub_orgs[i].name + '</option>';
+		}
+		else {
+			html += '							 	<option value="' + sub_orgs[i].id + '">' + sub_orgs[i].name + '</option>';
+		}
+	}
+
+	html += '	 			</select> \
+				 		</div> \
 					</div> \
 					<div class="control-group"> \
 					   	<label for="field-contacts-' + numberOfContacts + '-role" class="control-label"><span class="control-required">*</span> Role</label> \
@@ -119,6 +139,7 @@ function add_contact(roles, orgs) {
 	$("#contacts_list").append(html);
 	$('#field-contacts-' + numberOfContacts + '-organization').select2();
 	$('#field-contacts-' + numberOfContacts + '-role').select2();
+	$('#field-contacts-' + numberOfContacts + '-branch').select2();
 }
 
 function remove_contact(index) {
@@ -267,13 +288,47 @@ function select_branch(org_branches) {
 
 	$("#field-sub_org").find('option').remove().end().append(options);
 	$("#field-sub_org").select2({
-									placeholder : "Select a branch",
+									placeholder : "Select a sub-organization",
 									width : "220px"
 								});
 
 	$('[data-group="org"]').val(org_id)
 	$('[data-group="org"]').select2();
+	$('[data-group="org"]').trigger('change');
 }
+
+$(document).on('change', '.contact-org', function() {
+	var org_id = $(this).val();
+
+	var branches = [];
+	for (var i = 0; i < org_branches.length; i++) {
+		if (org_branches[i].id == org_id) {
+			branches = org_branches[i].branches;
+			break;
+		}
+	}
+
+	var options = "<option></option>";
+	for (var i = 0; i < branches.length; i++) {
+		options += '<option value="' + branches[i].id + '">' + branches[i].title + '</option>';
+	}
+
+	var container = $(this).closest('.control-group.contact');
+	var id = container.attr('id').replace('contact_', '');
+
+	$("#field-contacts-" + id + "-branch").find('option').remove().end().append(options);
+	$("#field-contacts-" + id + "-branch").select2({
+									placeholder : "Select a branch",
+									width : "220px"
+								});
+
+});
+
+$('#field-sub_org').change(function() {
+	var val = $(this).val();
+	$('[data-group="sub-org"]').val(val);
+	$('[data-group="sub-org"]').select2();
+});
 
 
 $("#form-edc_dataset").submit(function( event ) {

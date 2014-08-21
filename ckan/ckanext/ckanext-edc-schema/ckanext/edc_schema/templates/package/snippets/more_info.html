@@ -13,7 +13,7 @@
 {% import "macros/form.html" as form %}
 {% set info_list = info_list or [] %}
 
-<div id="info_panel" class="required control-list form-horizontal">
+<div id="info_panel" class="control-list form-horizontal">
 	<div id="info_list">
 	{% for item in info_list %}
 		{% if errors.more_info %}
@@ -24,7 +24,7 @@
 			<div class="row-fluid">
 				<div class="span10">
 					<div class="control-group">
-						<label for="field-more_info-{{ loop.index0 }}-link" class="control-label"><span class="control-required">*</span> More info</label>
+						<label for="field-more_info-{{ loop.index0 }}-link" class="control-label">More info</label>
 						<div class="controls{{ " error" if link_error }}">
 							<input id="field-more_info-{{ loop.index0 }}-link"
 						   	   		type="text"
@@ -54,13 +54,13 @@
 			<div class="row-fluid">
 				<div class="span10">
 					<div class="control-group">
-						<label for="field-more_info-0-link" class="control-label"><span class="control-required">*</span> More info</label>
+						<label for="field-more_info-0-link" class="control-label">More info</label>
 						<div class="controls">
 							<input id="field-more_info-0-link"
 						   	   		type="text"
 						   	   		name="more_info__0__link"
 						       		value=""
-						       		placeholder="http://www.data.gov.bc.ca/dbc/geographic"/>
+						       		placeholder="http://ministry.gov.bc.ca/moreinfo.html"/>
 					    </div>
 				    </div>
 				</div>

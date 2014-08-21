@@ -3,7 +3,7 @@
     $(document).ready(function() {
         // constructs the suggestion engine
         var engine = new Bloodhound({
-          name: 'animals',
+          name: 'package_search',
           local: [],
           remote: {
             url: '/api/3/action/package_autocomplete?q=%QUERY',
@@ -21,7 +21,6 @@
 
         // kicks off the loading/processing of `local` and `prefetch`
         engine.initialize();
-        console.log(engine);
 
         $('.search').typeahead({
           hint: true,

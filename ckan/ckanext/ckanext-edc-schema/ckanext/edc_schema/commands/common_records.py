@@ -131,7 +131,7 @@ def add_discovery_data():
             privacy_impact_assessment = 'Yes'
         
         #---------------------------------------------------- Iso topic Category ------------------------------------------------           
-        iso_topic_cat = (record_data[29] or 'unknown').split(',')[0]    
+        iso_topic_cat = (record_data[29] or 'unknown').split(',')   
         lineage_statement =  record_data[18]
         source_data_path = record_data[22]
         

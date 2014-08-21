@@ -1,3 +1,4 @@
+import pprint
 import logging
 import ckan.lib.helpers
 
@@ -5,6 +6,7 @@ import ckan.model as model
 import ckan.plugins.toolkit as toolkit
 import ckan.logic as logic
 from ckan.common import  c
+from webhelpers.html import literal
 
 NotFound = logic.NotFound
 snippet = ckan.lib.helpers.snippet
@@ -110,19 +112,16 @@ def record_is_viewable(pkg_dict, userobj):
         return True
     
     #Anonymous user (visitor) can only view published public records
-    published_state = ['PUBLISHED', 'PENDING ARCHIVE', 'ARCHIVED']
-    if not userobj  :
-        if pkg_dict['metadata_visibility'] == 'Public' and pkg_dict['edc_state'] in published_state:
-            return True
-        else :
-            return False
-        
-    #Users can only view unpublished records of their own organization:
-    user_orgs = [org.id for org in get_user_orgs(userobj.id) ]
-    if pkg_dict['edc_state'] in published_state or pkg_dict['owner_org'] in user_orgs :
+    published_state = ['PUBLISHED', 'PENDING ARCHIVE']
+    
+    if pkg_dict['metadata_visibility'] == 'Public' and pkg_dict['edc_state'] in published_state:
         return True
-    else :
-        return False
+    if userobj  :
+        user_orgs = [org.id for org in get_user_orgs(userobj.id) ]
+        if pkg_dict['owner_org'] in user_orgs:
+            return True
+    return False
+
     
 def get_package_data(pkg_id):
     '''
@@ -172,3 +171,28 @@ def get_record_type_label(rec_type):
     if rec_type in type_dict : 
         return type_dict[rec_type]
     return rec_type
+
+
+
+###################################################
+#
+## JER - Aug. 15, 2014.
+#    The two functions below are related to JIRA CITZEDC-296 - Turn off Gravatar
+#    Greg had concerns about email being passed to Gravatar, but it turns out
+#    that a hash of the email is being sent, so he is ok with that for now...
+#    So these two functions are not being used.
+#
+###################################################
+
+def edc_linked_gravatar(email_hash, size=100, default=None):
+    return literal(
+        '<a href="https://gravatar.com/" target="_blank" ' +
+        'title="%s" alt="">' % _('Update your avatar at gravatar.com') +
+        'monsterid</a>' % edc_gravatar(email_hash, size)
+    )
+
+def edc_gravatar(email_hash, size=100, default=None):
+    return literal('''<img src="//gravatar.com/avatar/?s=%d&amp;d=monsterid"
+        class="gravatar" width="%s" height="%s" />'''
+                   % (size, size, size)
+                   )

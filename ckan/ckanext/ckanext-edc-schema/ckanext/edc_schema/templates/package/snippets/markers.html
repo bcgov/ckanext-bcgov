@@ -2,7 +2,12 @@
 {% set org_title = h.edc_org_title(org) %}
 {% set branch_title = h.edc_org_title(branch) %}
 {% set sectors = h.get_suborg_sectors(org_title, branch_title) %}
-{% set iso_topic_title = iso_topic_cat %}
+{% if iso_topic_cat != [] %}
+	{% set iso_topic_title = iso_topic_cat[0] %}
+{% else %}
+	{% set iso_topic_title = None %}
+{% endif %}
+
 <ul id="dataset-markers">
     <li class="marker dataset-type {{ type|lower }}"><a href="{{ h.url_for(controller='package', action='search', type=type) }}">{{ dataset_title }}</a></li>
     {% if sectors %}

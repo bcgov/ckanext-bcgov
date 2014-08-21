@@ -64,7 +64,7 @@
     				classes=['control-medium']) }}
 
 
-	<input id="field-spatial" name="spatial" type="hidden" value='{"type":"Point","coordinates":[-123.35,48.43]}'/> 
+	<input id="field-spatial" name="spatial" type="hidden" value='{"type":"Point","coordinates":[-123.35,48.43]}'/>
 </div>
 {% endif %}
 
@@ -72,7 +72,6 @@
 
 	{% if record_type=='Geographic' or record_type == 'Dataset' %}
 	<h2 class="module-heading">Data Quality information</h2>
-		<h3 class="module-sub-heading">Completeness</h3>
 		<div class="control-list">
       	{{ form.markdown('data_quality',
       					id='field-data_quality',
@@ -86,7 +85,7 @@
       	{{ form.markdown('lineage_statement',
       					id='field-lineage_statement',
       					label=_('Lineage Statement'),
-      					placeholder=_("General explanation of the data producer's knowledge of the dataset lineage."),
+      					placeholder=_("Information about the events or source data used in constructing the data."),
       					value=data.lineage_statement,
       					error=errors.lineage_statement)
       					}}

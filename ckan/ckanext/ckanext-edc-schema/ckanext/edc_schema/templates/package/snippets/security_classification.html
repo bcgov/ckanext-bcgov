@@ -1,10 +1,12 @@
 
 <h2 class="view-group">Access & Security</h2>
 <table class="table dataset_view">
-	{% if security_class %}
+    {% if logged_in %}
+	   {% if security_class %}
     <tr>
         <td><strong>Security Classification</strong></td><td>{{ security_class }}</td>
     </tr>
+        {% endif %}
     {% endif %}
 	{% if view_audience %}
     <tr>
@@ -16,14 +18,18 @@
         <td><strong>Who can download this dataset?</strong></td><td>{{ download_audience }}</td>
     </tr>
     {% endif %}
-	{% if metadata_visibility %}
-    <tr>
-        <td><strong>Who can view this record?</strong></td><td>{{ metadata_visibility }}</td>
-    </tr>
+    {% if logged_in %}
+    	{% if metadata_visibility %}
+        <tr>
+            <td><strong>Who can view this record?</strong></td><td>{{ metadata_visibility }}</td>
+        </tr>
+        {% endif %}
     {% endif %}
-	{% if privacy_impact_assessment %}
+    {% if logged_in %}
+	   {% if privacy_impact_assessment %}
     <tr>
         <td><strong>Has a PIA been completed?</strong></td><td>{{ privacy_impact_assessment }}</td>
     </tr>
+        {% endif %}
     {% endif %}
 </table>

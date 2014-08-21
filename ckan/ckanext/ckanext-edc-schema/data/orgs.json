@@ -204,7 +204,7 @@
 	 	{"branches": [
 	 					{"name": "policy-and-stakeholder-relations", "title": "Policy and Stakeholder Relations", "sectors": ["Economy"]},
 	 					{"name": "regulatory-reform", "title": "Regulatory Reform", "sectors" : ["Economy"]},
-	 					{"name": "emarketing", "title": "eMarketing", "sectors": ["Ecnomy"]},
+	 					{"name": "emarketing", "title": "eMarketing", "sectors": ["Economy"]},
 	 					{"name": "immigrant-integration-and-multiculturalism", "title": "Immigrant Integration and Multiculturalism", "sectors": ["Economy"]},
 	 					{"name": "visitor-services", "title": "Visitor Services", "sectors": ["Economy"]},
 	 					{"name": "labour-market-programs", "title": "Labour Market Programs", "sectors": ["Economy"]},

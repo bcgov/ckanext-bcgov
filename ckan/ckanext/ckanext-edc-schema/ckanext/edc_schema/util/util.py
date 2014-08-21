@@ -87,8 +87,84 @@ def get_username(id):
         #No vocabulary exist with the given vocabulary id.
         return None
 
+def check_user_member_of_org(user_id, org_id):
+#    print user_id, org_id
+    orgs = get_user_orgs(user_id)
+
+#    pprint.pprint(orgs)
+
+    member_orgs = [org.id for org in orgs if org.id == org_id]
+
+    if member_orgs :
+        return True
+
+    return False
+
+
+def get_user_toporgs(user_id, role=None):
+    '''
+    Returns the list of orgs that the given user belongs to and has the given role('admin', 'member', 'editor', ...)
+    '''
+    
+    orgs = []
+    context = {'model': model, 'session': model.Session,
+               'user': c.user or c.author, 'auth_user_obj': c.userobj}
+    org_model = context['model']
+    sub_orgs = []
+
+    #Get the list of all first level organizations.
+#    all_orgs = [org.id for org in org_model.Group.get_top_level_groups(type="organization")]
+    all_orgs = org_model.Group.get_top_level_groups(type="organization")
+
+#    pprint.pprint(all_orgs)
+
+    for org in all_orgs:
+        members = []
+        try:
+            member_dict = {'id': org.id, 'object_type': 'user', 'capacity': role}
+            #Get the list of id's of all admins of the organization
+            members = [member[0] for member in toolkit.get_action('member_list')(data_dict=member_dict)]
+        except toolkit.ObjectNotFound:
+            members = []
+#        pprint.pprint(members)
+
+        #Add the org if user is a member of at least one suborg.
+        group = org_model.Group.get(org.id)
+        suborgs = group.get_children_groups(type = 'organization')
+
+        #If the user id in the list of org's admins then add the org to the final list.
+        if user_id in members:
+            orgs.append(org)
+            for suborg in suborgs :
+                sub_orgs.append(suborg)
+        else :
+            found = False        
+            for suborg in suborgs :
+                members = []
+                try:
+                    member_dict = {'id': suborg.id, 'object_type': 'user', 'capacity': role}
+                    #Get the list of id's of all admins of the organization
+                    members = [member[0] for member in toolkit.get_action('member_list')(data_dict=member_dict)]
+                except toolkit.ObjectNotFound:
+                    members = []
+
+                #If the user id in the list of org's admins then add the org to the final list.
+                if user_id in members:
+                    sub_orgs.append(suborg)
+                    found = True
+            if found :
+                orgs.append(org)
+
+            
+
+    #pprint.pprint(orgs)
+    #pprint.pprint(sub_orgs)
+    return (orgs, sub_orgs)
 
 def get_user_orgs(user_id, role=None):
+    '''
+    Returns the list of orgs and suborgs that the given user belongs to and has the given role('admin', 'member', 'editor', ...)
+    '''
     '''
     Returns the list of orgs that the given user belongs to and has the given role('admin', 'member', 'editor', ...)
     '''
@@ -114,27 +190,34 @@ def get_user_orgs(user_id, role=None):
             members = []
 #        pprint.pprint(members)
 
+        #Add the org if user is a member of at least one suborg.
+        group = org_model.Group.get(org.id)
+        suborgs = group.get_children_groups(type = 'organization')
+
         #If the user id in the list of org's admins then add the org to the final list.
         if user_id in members:
             orgs.append(org)
+            for suborg in suborgs :
+                orgs.append(suborg)
+        else :
+            for suborg in suborgs :
+                members = []
+                try:
+                    member_dict = {'id': suborg.id, 'object_type': 'user', 'capacity': role}
+                    #Get the list of id's of all admins of the organization
+                    members = [member[0] for member in toolkit.get_action('member_list')(data_dict=member_dict)]
+                except toolkit.ObjectNotFound:
+                    members = []
 
-#    pprint.pprint(orgs)
+                #If the user id in the list of org's admins then add the org to the final list.
+                if user_id in members:
+                    orgs.append(suborg)
+    
     return orgs
-
-
-def check_user_member_of_org(user_id, org_id):
-#    print user_id, org_id
-    orgs = get_user_orgs(user_id)
-
-#    pprint.pprint(orgs)
-
-    member_orgs = [org.id for org in orgs if org.id == org_id]
-
-    if member_orgs :
-        return True
-
-    return False
-
+    
+def get_user_orgs_id(user_id, role=None):
+    user_orgs = get_user_orgs(user_id, role)
+    return [org.id for org in user_orgs]
 
 def get_organization_branches(org_id):
     context = {'model': model, 'session': model.Session,
@@ -144,7 +227,8 @@ def get_organization_branches(org_id):
     #Get the list of all children of the organization with the given id
     group = org_model.Group.get(org_id)
     branches = group.get_children_groups(type = 'organization')
-
+    
+    #should only return branches the user is a member of
     return branches
 
 
@@ -230,12 +314,12 @@ def get_state_values(user_id, pkg):
         if user_id in admins :
             states = ['PENDING PUBLISH', 'PUBLISHED', 'PENDING ARCHIVE']
         else :
-            states = ['PUBLISHED']
+            states = ['PUBLISHED', 'PENDING ARCHIVE']
     elif current_state == 'PENDING ARCHIVE' :
         if user_id in admins :
             states = ['PUBLISHED', 'PENDING ARCHIVE', 'ARCHIVED']
         else :
-            states = ['PENDING ARCHIVE']
+            states = ['PUBLISHED', 'PENDING ARCHIVE']
     elif current_state == 'ARCHIVED' :
         if user_id in admins:
             states = ['PENDING ARCHIVE', 'ARCHIVED']

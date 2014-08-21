@@ -118,7 +118,8 @@ input[type="text"] {
 	width: 100%!important;
 }
 
-.contacts .controls input[type="text"] {
+.contacts .controls input[type="text"],
+.contacts .controls input[type="email"] {
 	width: 100%;
 }
 
@@ -275,4 +276,18 @@ position: relative;
 
 .auth-content {
     font-size : 18px;
+}
+
+.package-type {
+	float: right;
+}
+
+.package-type em {
+	font-style: normal;
+	font-weight: 700;
+	color: #22A7FF;
+}
+
+#field-image-upload {
+	width: 100%!important;
 }

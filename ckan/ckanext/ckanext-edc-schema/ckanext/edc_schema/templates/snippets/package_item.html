@@ -18,10 +18,10 @@ Example:
 {% set title = package.title or package.name %}
 {% set notes = h.markdown_extract(package.notes, extract_length=truncate) %}
 
-{# Added only for testing page view tracking 
+{# Added only for testing page view tracking
 {% if package.tracking_summary %}
 <div>
-Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tracking_summary.recent }} 
+Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tracking_summary.recent }}
 </div>
 {% endif %}
 #}
@@ -30,6 +30,10 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
   <li class="{{ item_class or "dataset-item" }}">
     {% block content %}
       <div class="dataset-content">
+        {% set edc_state_class = package.edc_state|lower|replace(" ", "") %}
+        <div class="edc-state {{ edc_state_class }}">
+          {{ package.edc_state }}
+        </div>
         {% block heading %}
           <h3 class="dataset-heading">
             {% block heading_private %}

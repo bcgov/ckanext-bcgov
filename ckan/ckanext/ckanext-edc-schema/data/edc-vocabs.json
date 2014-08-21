@@ -181,6 +181,7 @@
                 "continual",
                 "daily",
                 "weekly",
+                "fortnightly",
                 "monthly",
                 "quarterly",
                 "biannually",
@@ -227,7 +228,8 @@
                 "EPSG_32609 - WGS 84 UTM zone 9N",
                 "EPSG_32610 - WGS 84 UTM zone 10N",
                 "EPSG_32611 - WGS 84 UTM zone 11N",
-                "EPSG_32612 - WGS 84 UTM zone 12N"
+                "EPSG_32612 - WGS 84 UTM zone 12N",
+                "UTM"
             ]
 }
 ]
