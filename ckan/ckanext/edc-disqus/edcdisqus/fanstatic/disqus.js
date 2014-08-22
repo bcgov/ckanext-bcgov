@@ -4,6 +4,7 @@
     var promiseModal = $.Deferred();
     var $termsModal = $('#comment-terms-modal');
     var addCommentContext = '';
+    var baseUrl = site_url;
     var apiList = '/disqus/posts/list';
     var apiPostCreate = '/disqus/posts/create';
     var $threadContainer = $('#disqus_thread');
@@ -65,6 +66,9 @@
                 }, 500);
               }
             }
+        }).fail(function() {
+            $threadContainer.html('');
+            addMessage('There was an error retrieving comments.  Please try again later.', 'danger');
         });
 
         // Present the Terms of Use modal (once) when the user
@@ -251,7 +255,7 @@
 
     function getCommentThread(ident) {
         return $.ajax({
-            url: apiList,
+            url: baseUrl + apiList,
             data: 'thread=' + ident,
             method: 'GET',
             dataType: 'json',
@@ -266,7 +270,7 @@
 
     function createComment(ident, form) {
         return $.ajax({
-            url: apiPostCreate,
+            url: baseUrl + apiPostCreate,
             data: 'ident=' + ident + '&' + form.serialize(),
             method: 'POST',
             dataType: 'json',

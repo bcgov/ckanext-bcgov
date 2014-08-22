@@ -3,7 +3,6 @@ from ckan.controllers.api import ApiController
 import ckan.lib.base as base
 import ckan.model as model
 import ckan.logic as logic
-import ckan.lib.render as lib_render
 import datetime
 import time
 import urllib2
@@ -16,7 +15,6 @@ from ckan.common import _, c, request, response
 from pylons import config
 
 get_action = logic.get_action
-render = base.render
 h = HTMLParser.HTMLParser()
 
 class DisqusController(ApiController):

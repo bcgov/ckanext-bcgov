@@ -17,7 +17,7 @@
     </div>
   </div>
   <div id="disqus_thread">
-    <div class="loader"><img src="/loader.gif" /></div>
+    <div class="loader"><img src="{{ site_url }}/loader.gif" /></div>
     <div style="display: none;">
     <div class="empty">No comments have been posted yet.</div>
     <div class="post">
@@ -50,6 +50,7 @@
   </div>
   <script type="text/javascript">
     var disqus_identifier = '{{ identifier }}';
+    var site_url = '{{ site_url }}';
   </script>
   {% resource 'edcdisqus/edcdisqus.css' %}
   {% resource 'edcdisqus/jquery.timeago.js' %}

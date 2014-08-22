@@ -66,7 +66,8 @@ class EDCDisqusPlugin(plugins.SingletonPlugin):
                 identifier = ''
         except:
             identifier = ''
-        data = {'identifier' : identifier, 'forum': config.get('edcdisqus.forum_name')}
+
+        data = {'identifier' : identifier, 'site_url': config.get('ckan.site_url') }
         return plugins.toolkit.render_snippet('package/comments_block.html', data)
 
     def get_helpers(self):
