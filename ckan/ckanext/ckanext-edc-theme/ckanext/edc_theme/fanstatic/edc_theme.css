@@ -110,9 +110,9 @@ a.tag:hover{
 }
 
 #services-header ul li a.forms {
-  background-image: url(/assets/gov/images/icon_services.png);
   background-repeat: no-repeat;
   padding-left: 27px;
+  margin-top: -3px;
 }
 
 #top-navigation {
@@ -162,7 +162,6 @@ a.tag:hover{
   width: 204px;
   height: 70px;
   margin: 17px 0;
-  background: url(/assets/gov/images/bc_logo_blue.png) no-repeat;
 }
 
 #header-banner h2 {
