@@ -1,0 +1,59 @@
+{% ckan_extends %}
+
+{% block header_wrapper %}
+{% block header_account %}{% endblock %}
+
+<div id="services-header" class="visible-lg visible-md">
+    <div class="wrap">
+        <ul>
+            <li><a href="https://extranet.gov.bc.ca/forms/gov/contact/index.html">Contact Government</a></li>
+            <li><a href="http://www.newsroom.gov.bc.ca">News</a></li>
+            <li><a class="forms" href="http://www2.gov.bc.ca/en/services_finder/finder.page"><img src="{{ g.site_url }}/assets/gov/images/icon_services.png" />&nbsp;Services &amp; Forms</a></li>
+        </ul>
+    </div>
+</div>
+<div id="top-navigation" class="visible-lg visible-md">
+    <div class="wrap">
+        <ul>
+            <li><a href="http://www2.gov.bc.ca/gov/theme.page?id=8CB0A2C5DC3B19401323F1A3F22D5769">Government</a></li>
+            <li><a href="http://www2.gov.bc.ca/gov/theme.page?id=B7D67ECD8DD382E2A9F6E8F8149011E4">Residents</a></li>
+            <li><a href="http://www2.gov.bc.ca/gov/theme.page?id=F5415B90D214B10A6245D30D397A05A1">Education</a></li>
+            <li><a href="http://www2.gov.bc.ca/gov/theme.page?id=1629C69A7117AC65E91C018EA07D7E44">Business</a></li>
+            <li><a href="http://www2.gov.bc.ca/gov/theme.page?id=E0EA3A213DB57A098786BF9F390CA86A">Environment</a></li>
+            <li><a href="http://www2.gov.bc.ca/gov/theme.page?id=D5340F7BFE2793E612F265125067E05C">Health &amp; Safety</a></li>
+            <li><a href="http://www2.gov.bc.ca/gov/theme.page?id=154F929B67DE04862F97AAA8EB273445">Employment</a></li>
+            <li><a href="http://www2.gov.bc.ca/gov/theme.page?id=F9A8A09A65CE26DDE77E10C5CB32A392">About B.C.</a></li>
+        </ul>
+    </div>
+</div>
+<div id="header-banner">
+    <div class="wrap">
+        <ul class="pnl-btn list-inline text-right hidden-md hidden-lg">
+            <li>
+                <a href="#wb-pnl" title="Menu" aria-controls="wb-pnl" class="overlay-lnk btn btn-xs btn-default" role="button">
+                    <span class="glyphicon glyphicon-th-list"><span class="wb-inv">Menu</span></span>
+                </a>
+            </li>
+        </ul>
+        <div id="wb-pnl"></div>
+        <div id="wb-srch">
+            {% block header_site_search %}
+                <form class="section site-search simple-input" action="http://www2.gov.bc.ca/gov/search/results.page" method="get" onsubmit="javascript:this.q.value=this.q.value.toLowerCase();">
+                  <div class="field">
+                    <label for="field-sitewide-search">{{ _('Search') }}</label>
+                    <input id="field-sitewide-search" type="text" name="q" placeholder="{{ _('Search gov.bc.ca') }}" />
+                    <button class="btn-search" type="submit"><i class="icon-search"></i></button>
+                  </div>
+                </form>
+            {% endblock %}
+        </div>
+        <a href="{{ h.get_fqdn() }}" class="logo" title="B.C. Home"><img src="{{ g.site_url }}/assets/gov/images/bc_logo_blue.png"></a>
+        <a href="{{ h.get_fqdn() }}"><h2>{{ g.site_title }}</h2></a>
+    </div>
+</div>
+
+{% snippet 'snippets/main-navigation.html', userobj=c.userobj %}
+
+{# % snippet 'snippets/sub-navigation.html' % #}
+
+{% endblock %}
