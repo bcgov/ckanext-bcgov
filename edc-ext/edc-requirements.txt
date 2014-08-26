@@ -1,2 +1,8 @@
 validate_email==1.2
 pycurl==7.19.5
+edc-disqus==0.9.0
+edc-hierarchy==0.9.0
+edc-idir==0.9.0
+edc-rss==0.9.0
+edc-schema==0.9.0
+edc-theme==0.9.0
