@@ -1,135 +1,147 @@
-***********************************************************************
-*
-*  EDC Readme File
-*
-*  Release:  1.0.0
-*  Date:     May 7th, 2014
-*  Author:   Highway Three Solutions, Victoria, BC
-*  
-*  For any technical issues with this deployment, please contact:
-*  James Gagan
-*  james@highwaythreesolutions.com
-*  250-483-3845
-***********************************************************************
+#########################################################################
+#
+# EDC/CKAN v.0.9.0_0004
+#
+# This document constitutes the delivery instructions for 
+#
+# J.Hannis, HighwayThreeSolutions, Aug. 6, 2014
+#
+#########################################################################
 
-This file describes the steps to install version 1.0.0 of the EDC Application.
+1) List of changes:
 
-These instructions are for the Ministry's database administrator (DBA) and web application database administrator, and assume familiarity with standard Oracle administrative functions.  
-
-
-Overview
---------
-These are the instructions for installing the EDC CKAN application on Red Hat.
-
-
-Requirements
-------------
-Geometadata 3.9.0 delivery must be completed first so the data import scripts will work.
-The EDC ckan app must be installed and configured prior to the deployment of EAS.
-
-
-INSTALLATION INSTRUCTIONS
--------------------------
-
-
-EDC SCHEMA EXTENSION INSTALLATION
-----------------------------------
-
-1) Get the latest source from SVN:
-      
-      https://apps.bcgov/svn/edc/source/trunk/ckan/ckanext/ckanext-edc-schema
-
-2) Activate virtual environment:
-
-	. /usr/lib/ckan/default/bin/activate
-
-3) Cd to /usr/lib/ckan/default/src/ckan
-
-4) Delete and purge existing datasets if they exist
-   
-    
-	Delete datasets individually
-    Then navigate to http://delivery.apps.gov.bc.ca/pub/edc/admin/trash
-    and purge the deleted datasets
-
-5) Rebuild the search index:
-  
-   paster --plugin=ckan search-index rebuild --config=/etc/ckan/default/development.ini
+CITZEDC-14	RSS Feeds
+CITZEDC-48	iMAP links from datasets
+CITZEDC-139	Configure datastore for both sandbox and Ministry env
+CITZEDC-253	Missing elements on the package page (viewing screen)
+CITZEDC-274	Improve response when attempt to access unauthorized content
+CITZEDC-224	Enable dataset search autocomplete
+CITZEDC-260	Confirm button - for changing record state to pending publish - spelling mistake
+CITZEDC-252	iso-category data import
+CITZEDC-247	Display the "Purpose" field in the data entry screen
+CITZEDC-245	Photo upload doesn't work for IE 9
+CITZEDC-270	Organization Browse for Datasets Does Not Work
+CITZEDC-264	API to return Descriptive Values rather than Numeric Codes
+CITZEDC-112	Dataset exploration and visualization
+CITZEDC-244	No options for admin in activity form.
+CITZEDC-248	Spelling mistakes
+CITZEDC-249	License dropdown clean up
+CITZEDC-251	CSS Overwrite issues (esp #dataset-markers .marker a)
+CITZEDC-255	Organization Search
+CITZEDC-267	Order of search module
+CITZEDC-223	Update order by select list on dataset search page
+CITZEDC-222	June 11 Feedback - Application
+CITZEDC-250	Footer CSS
+CITZEDC-235	Restrict API calls
+CITZEDC-133	CITZEDC-18 Import users from ODSI
+CITZEDC-246	Error on record state change in IE 9.
 
 
-6) CD to ckanext-edc-schema extension root
+2) Installation Instructions
+
+1.	Activate virtual env$ . /usr/lib/ckan/default/bin/activate2.	Clean and initialize database$ cd /usr/lib/ckan/default/src/ckan$ paster db clean -c /etc/ckan/default/development.ini$ paster db init -c /etc/ckan/default/development.ini3.	Setup postgis database(Jira ticket 190)•	swith to root user$ su•	Make sure that the following line in  is commented out:DROP TABLE spatial_ref_sys;$ su - postgres•	Uninstall postgis database objects :$ psql -d ckan_default -f /usr/pgsql-9.2/share/contrib/postgis-2.1/uninstall_postgis.sql•	install postgis database :$ psql -d ckan_default -f /usr/pgsql-9.2/share/contrib/postgis-2.1/postgis.sql$ psql -d ckan_default -f /usr/pgsql-9.2/share/contrib/postgis-2.1/spatial_ref_sys.sql•	Alter postgis tables :$ psql$ postgres=# \c ckan_default$ ckan_default=#  ALTER TABLE spatial_ref_sys OWNER TO ckan_default;$ ckan_default=#  ALTER TABLE geometry_columns OWNER TO ckan_default;$ ckan_default=#  \q•	Check if postgis database setup is done properly :$ psql -d ckan_default -c "SELECT postgis_full_version()"	4.	back to virtual environment$ exit$ exit 5.	Create sysadmin account(s)$ paster  sysadmin add <username> -c /etc/ckan/default/development.ini6.	Update config file (if there are any changes)7.	 Fetch source code changes from SVN8.	Install plugins and restart apacheFor each extension cd to extension’s  root folder and run$ Python setup.py>> =============== STEPS 9-13 ARE FOR H3 - Notify them when you finish STEP 8  =============== <<9.	Add api key  and site_url to base.py (required for vocabs, orgs and data import)10.	Create  vocabscd ckanext-edc-schema/ckanext/edc_schema/commands$ python create_vocabs.py11.	Create orgs$ cd ckanext-edc-schema/ckanext/edc_schema/commands$ python create_orgs.pyNote : for the following two steps, you need vpn connection. 12.	 Import users$ cd ckanext-edc-schema/ckanext/edc_schema/commands$ python import_users.py13.	Import data•	Before importing data make sure :•	discovery_ODSI.json file exists, otherwise, run “python common_records.py” first to load the discovery records that are available in ODSI as well.•	“odsi_record_count.txt” and “discovery_record_count.txt” do not exist. These two files simply keep track of the number of records that have been imported.  So, if by some reason the data import stopped, we can resume the script without reimporting the previous records and creating duplicate records. •	The admin_user variable has a proper value in data_import.py $ cd ckanext-edc-schema/ckanext/edc_schema/commands$ python data_import.py>> =============== STEPS 9-13 ARE FOR H3 - H3 to notify Ministry when they have completed them  =============== <<14.	Update ETS with the new api_key (/usr/share/ckan/ets/config.properties)
 
 
-7) python setup.py develop or install with pip
 
-8) CD to ckanext-edc-theme extension root
+3) Special Instructions
 
+a) install/configure datapuser (assumes datastore is currently installed/configured)
+(see work log: http://jira.highwaythreesolutions.com/browse/CITZEDC-139)
 
-9) python setup.py develop or install with pip
+Configure the datapusher to work in a production setting on the H3 sandbox and delivery servers.
+I have attached instructions to this ticket for future use. Modified the instructions in these 2 docs:
+http://datapusher.readthedocs.org/en/latest/
+http://www.khadilkar.net/content/installing-ckan-datapusher-centos-64
 
-10) CD to ckanext-edc-idir extension root
+I ran into some permission issues in delivery.
 
+To get datapusher running in delivery (http://162.242.167.138:8800/):
 
-11) python setup.py develop or install with pip
+This is modified from these docs: 
+http://datapusher.readthedocs.org/en/latest/
+http://www.khadilkar.net/content/installing-ckan-datapusher-centos-64
 
+create and activate a virtual environment:
+sudo /usr/local/bin/virtualenv-2.7 /usr/lib/ckan/datapusher
 
-12) Edit development.ini config file
+. /usr/lib/ckan/datapusher/bin/activate
 
-	Define file upload storage path :
-		
-		ckan.storage_path = /var/lib/ckan/default (may be different on delivery server)
-		
-	Define the delivery site url :
-	
-	    ckan.site_url = http://delivery.apps.gov.bc.ca/pub/edc
-	
-	Add the following config to enable our datasets:
-	
-	    ckan.search.show_all_types = true
+Make directory for datapusher files and download:
 
-	Add the plugins for edc-schema, edc-idir and edc-theme:
-	
-		ckan.plugins = edc_dataset edc_app edc_geo edc_ngeo edc_webservice edc_idir edc_theme
-		
-	Ensure the edc.eas_url is set to the location of the EAS app for the correct environment:
-	
-	    edc.eas_url=http://delivery.apps.gov.bc.ca/int/eas/login.jsp	
-	
-	Define the path to the licences json file it must be in a location where it can be read by ckan:
-	
-		licenses_group_url = file:// link/for/ckan_licences.json json file
-		copy the ckan_licences.json file from the config svn to the defined location 
-	
+sudo mkdir /usr/lib/ckan/datapusher/src
+cd /usr/lib/ckan/datapusher/src
 
-	Change smtp email settings for bc gov mail server.
-	
-	smtp.server = apps.smtp.gov.bc.ca
-    smtp.starttls = False
-    smtp.user = data@gov.bc.ca
-    smtp.password = <password if required>
-    smtp.mail_from = data@gov.bc.ca
+sudo git clone -b stable https://github.com/ckan/datapusher.git
 
-13) Follow the instructions in http://docs.ckan.org/en/latest/maintaining/filestore.html?highlight=upload to enable file upload.
-   We need this to allow image uploads.
+Install:
 
-14) Run the app:
-	paster serve /etc/ckan/default/development.ini
+cd /usr/lib/ckan/datapusher/src/datapusher
 
-15) Get the sysadmin api-key
-    We need api_key to run scripts for adding vocabulary tags, organizations and for importing data from ODSI and DISCOVERY
-    
+/usr/lib/ckan/datapusher/bin/pip-2.7 install -r requirements.txt
 
-16) Add api-key and site_url to base.py file
+/usr/lib/ckan/datapusher/bin/python2.7 setup.py develop
 
-    cd ckanext-edc-schema/ckanext/edc_schema/commands
-	site_url = the value of ckan.site_url
-	api_key = the api-key for sysadmin
+sudo cp deployment/datapusher /etc/httpd/conf.d/datapusher.conf
 
 
-17) Run the Add vocabulary tags script:
-	python create_vocabs.py
-	
-18) Run the Add organizations script:
-	python create_orgs.py
+Edit /etc/httpd/conf.d/datapusher.conf:
 
-19) When this is done and working, we'll run the data import scripts.
+<VirtualHost 0.0.0.0:8800>
+ServerName ckan
+this is our app
+WSGIScriptAlias / /etc/ckan/datapusher.wsgi
+pass authorization info on (needed for rest api)
+WSGIPassAuthorization On
+Deploy as a daemon (avoids conflicts between CKAN instances)
+WSGIDaemonProcess datapusher display-name=demo processes=1 threads=15
+WSGIProcessGroup datapusher
+ErrorLog /var/log/httpd/datapusher.error.log
+CustomLog /var/log/httpd/datapusher.custom.log combined
+</VirtualHost>
+
+
+edit /etc/httpd/conf/httpd.conf:
+
+Listen 8800
+WSGISocketPrefix /var/run/wsgi
+
+
+Copy files:
+sudo cp deployment/datapusher.wsgi /etc/ckan/
+sudo cp deployment/datapusher_settings.py /etc/ckan/
+
+Edit config:
+nano /etc/ckan/default/development.ini:
+ckan.datapusher.url = http://0.0.0.0:8800/
+ckan.site_url = http://your.ckan.instance.com
+ckan.plugins = <other plugins> datapusher
+
+not sure, why but had to change permission on these files in delivery - webserver could not write to them:
+sudo chmod 777 /tmp/ckan_service.log
+sudo chmod 777 /tmp/job_store.db
+
+datapusher should respond on port 8800:
+http://162.242.167.138:8800/	
+you should be able to upload data from a resource to the datastore via ckan web.
+
+
+
+
+b) ETS application (assumes the latest code has already been checked out of SVN):
+i) cd to the source directory:
+cd …/ets/
+
+ii) build the app.:
+mvn -f pom.xml clean install
+
+iii) create a run directory:
+mkdir /usr/share/ckan/ets
+
+iv) copy over the necessary files
+cp …/ets/run.sh /usr/share/ckan/ets
+cp …/ets/src/main/resources/*.properties /usr/share/ckan/ets
+cp …/ets/target/ets-jar-with-dependencies.jar /usr/share/ckan/ets
+
+v) modify the config file (see …/ets/README.TXT):
+vi /usr/share/ckan/ets/config.properties
+
