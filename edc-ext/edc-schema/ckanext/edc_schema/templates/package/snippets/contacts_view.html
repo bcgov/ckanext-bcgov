@@ -14,6 +14,7 @@
 	{% set is_visible = (contact.private and contact.private != _('Private')) %}
 	{% if is_visible %}
 		{% set org = h.edc_org_title(contact.organization) %}
+        {% set branch = h.edc_org_title(contact.branch) %}
 		<table class="table dataset_view">
 			<tr>
 				<td><strong>Name</strong></td><td>{{ contact.name }} ({{ contact.role }})</td>
@@ -24,6 +25,11 @@
 			<tr>
 				<td><strong>Organization</strong></td><td>{{ org }}</td>
 			</tr>
+            {% if branch %}
+            <tr>
+                <td><strong>Sub-Organization</strong></td><td>{{ branch }}</td>
+            </tr>
+            {% endif %}
 		</table>
 	{% endif %}
 

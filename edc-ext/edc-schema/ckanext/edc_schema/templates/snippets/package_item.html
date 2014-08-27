@@ -30,10 +30,17 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
   <li class="{{ item_class or "dataset-item" }}">
     {% block content %}
       <div class="dataset-content">
-        {% set edc_state_class = package.edc_state|lower|replace(" ", "") %}
-        <div class="edc-state {{ edc_state_class }}">
-          {{ package.edc_state }}
-        </div>
+        {% block markers %}
+          {% snippet 'package/snippets/markers.html', type=package.type %}
+        {% endblock %}
+
+        {% if logged_in %}
+          {% set edc_state_class = package.edc_state|lower|replace(" ", "") %}
+          <div class="edc-state {{ edc_state_class }}">
+            {{ package.edc_state }}
+          </div>
+        {% endif %}
+
         {% block heading %}
           <h3 class="dataset-heading">
             {% block heading_private %}
@@ -46,6 +53,11 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
             {% endblock %}
             {% block heading_title %}
               {{ h.link_to(h.truncate(title, truncate_title), h.url_for(controller='package', action='read', id=package.name)) }}
+            {% endblock %}
+            {% block heading_orgs %}
+              <div class="dataset-heading-orgs">
+              {% snippet 'package/snippets/org_view.html', org=package.org, branch=package.sub_org %}
+              </div>
             {% endblock %}
             {% block heading_meta %}
               {% if package.get('state', '').startswith('draft') %}
@@ -84,6 +96,20 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
             </ul>
           {% endblock %}
         {% endif %}
+      {% endblock %}
+
+      {% block package_dates %}
+        <ul class="dataset-dates">
+          {% if package.record_publish_date %}
+            <li>Record Published: {{ h.render_datetime(package.record_publish_date, '%Y-%m-%d') }}</li>
+          {% endif %}
+
+          {% if package.metadata_modified %}
+            <li>Record Last Modified: {{ h.render_datetime(package.metadata_modified, '%Y-%m-%d') }}</li>
+          {% else %}
+            <li>Record Last Modified: {{ h.render_datetime(package.metadata_created, '%Y-%m-%d') }}</li>
+          {% endif %}
+        </ul>
       {% endblock %}
     {% endblock %}
   </li>

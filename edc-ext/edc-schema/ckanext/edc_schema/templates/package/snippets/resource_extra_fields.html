@@ -128,6 +128,12 @@
 			</div>
 		</div>
 
+    {% if not record_type == 'WebService' %}
+      {% block suppelement_info %}
+        {{ form.markdown('supplemental_info', id='field-supplemental_info', label=_('Supplemental information'), placeholder=_('Other descriptive information about the dataset'), value=data.supplemental_info, error=errors.supplemental_info) }}
+      {% endblock %}
+    {% endif %}
+
 	{#
       {{ form.markdown('resource_storage_location_info',
       					id='field-resource_storage_location_info',

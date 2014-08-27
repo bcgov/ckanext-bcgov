@@ -56,26 +56,6 @@ function add_contact(roles, orgs, sub_orgs) {
 							    </div> \
 							</div> \
 							<div class="control-group"> \
-								<label for="field-contacts-' + numberOfContacts + '-email" class="control-label"><span class="control-required">*</span> Email</label> \
-								<div class="controls"> \
-								<input id="field-contacts-' + numberOfContacts + '-email" \
-							   	   		type="text" \
-							   	   		name="contacts__' + numberOfContacts + '__email" \
-							   	   		placeholder="Contact email"/> \
-							   	</div> \
-							</div> \
-							<div class="control-group"> \
-								<label class="control-label"></label> \
-								<div class="controls"> \
-									<div class="checkbox-inline"> \
-										<input id="field-contacts-' + numberOfContacts + '-private" type="checkbox" name="contacts__' + numberOfContacts + '__private" class="private-contact" value="Display" checked="checked"/> \
-										<label for="field-contacts-' + numberOfContacts + '-private">Contact Displayed</label> \
-									</div> \
-								</div> \
-							</div> \
-						</div> \
-						<div class="span6"> \
-							<div class="control-group"> \
 								<label for="field-contacts-' + numberOfContacts + '-organization" class="control-label"><span class="control-required">*</span> Organization</label> \
 								<div class="controls"> \
 								 	<select id="field-contacts-' + numberOfContacts + '-organization" name="contacts__' + numberOfContacts + '__organization" data-module="autocomplete" data-group="org" class="contact-org"> \
@@ -94,6 +74,30 @@ function add_contact(roles, orgs, sub_orgs) {
 	html += '				</select> \
 						</div> \
 					</div> \
+							<div class="control-group"> \
+					   	<label for="field-contacts-' + numberOfContacts + '-role" class="control-label"><span class="control-required">*</span> Role</label> \
+					   	<div class="controls"> \
+					   		<select id="field-contacts-' + numberOfContacts + '-role" name="contacts__' + numberOfContacts + '__role" data-module="autocomplete"> \
+						   	<option value="" selected="selected">Select a contact role</option>';
+
+	for (var i = 0; i < roles.length; i++) {
+		html += '							 	<option value="' + roles[i].id + '">' + roles[i].name + '</option>';
+	}
+
+	html += '				</select> \
+						</div> \
+					</div> \
+						</div> \
+						<div class="span6"> \
+							<div class="control-group"> \
+								<label for="field-contacts-' + numberOfContacts + '-email" class="control-label"><span class="control-required">*</span> Email</label> \
+								<div class="controls"> \
+								<input id="field-contacts-' + numberOfContacts + '-email" \
+							   	   		type="text" \
+							   	   		name="contacts__' + numberOfContacts + '__email" \
+							   	   		placeholder="Contact email"/> \
+							   	</div> \
+							</div> \
 					<div class="control-group"> \
 						<label for="field-contacts-' + numberOfContacts + '-branch" class="control-label"><span class="control-required">*</span> Sub-Organization</label> \
 						<div class="controls"> \
@@ -115,18 +119,14 @@ function add_contact(roles, orgs, sub_orgs) {
 				 		</div> \
 					</div> \
 					<div class="control-group"> \
-					   	<label for="field-contacts-' + numberOfContacts + '-role" class="control-label"><span class="control-required">*</span> Role</label> \
-					   	<div class="controls"> \
-					   		<select id="field-contacts-' + numberOfContacts + '-role" name="contacts__' + numberOfContacts + '__role" data-module="autocomplete"> \
-						   	<option value="" selected="selected">Select a contact role</option>';
-
-	for (var i = 0; i < roles.length; i++) {
-		html += '							 	<option value="' + roles[i].id + '">' + roles[i].name + '</option>';
-	}
-
-	html += '				</select> \
-						</div> \
-					</div> \
+								<label class="control-label"></label> \
+								<div class="controls"> \
+									<div class="checkbox-inline"> \
+										<input id="field-contacts-' + numberOfContacts + '-private" type="checkbox" name="contacts__' + numberOfContacts + '__private" class="private-contact" value="Display" checked="checked"/> \
+										<label for="field-contacts-' + numberOfContacts + '-private">Contact Displayed</label> \
+									</div> \
+								</div> \
+							</div> \
 				</div> \
 			<div class="item-link"><a onclick="remove_contact(' + numberOfContacts + '); return false;" class="btn btn-primary btn-xs">Delete </a></div> \
 			<input id="field-contacts-' + numberOfContacts + '-delete" \
@@ -143,8 +143,22 @@ function add_contact(roles, orgs, sub_orgs) {
 }
 
 function remove_contact(index) {
-	$('#field-contacts-' + index + '-delete').val('1');
-	$('#contact_' + index).hide();
+	/*
+	var numContacts = $('#contacts_list').children(':visible').length;
+	if(numContacts > 1) {
+		*/
+		$('#field-contacts-' + index + '-delete').val('1');
+		$('#contact_' + index).hide();
+		/*
+	}
+	else {
+		$('#contact_' + index).find(':input:not(:submit), select').each(function() {
+			$(this).removeAttr('value');
+		});
+		$('#contact_' + index).find('[data-group="sub-org"]').find('option').remove().end().append($('<option>').val('').html('Select a sub-organization'));
+		$('#contact_' + index).find('select').select2();
+	}
+	*/
 }
 
 
@@ -211,7 +225,7 @@ function add_more_info() {
 					<div class="row-fluid"> \
 						<div class="span10"> \
 							<div class="control-group"> \
-								<label for="field-more_info-' + numberOfInfoLinks + '-link" class="control-label"><span class="control-required">*</span> More info</label> \
+								<label for="field-more_info-' + numberOfInfoLinks + '-link" class="control-label"> More info</label> \
 								<div class="controls"> \
 									<input id="field-more_info-' + numberOfInfoLinks + '-link" \
 										type="text" \
@@ -235,8 +249,13 @@ function add_more_info() {
 }
 
 function remove_info_link(index) {
-	$('#field-more_info-' + index + '-delete').val('1');
-	$('#more_info_' + index).hide();
+	var numInfoLinks = $('#info_list').children(':visible').length;
+	if(numInfoLinks > 1) {
+		$('#field-more_info-' + index + '-delete').val('1');
+		$('#more_info_' + index).hide();
+	} // If this is the only info-field left, just reset it rather than hide it
+	else
+		$('#field-more_info-' + index + '-link').val('');
 }
 
 

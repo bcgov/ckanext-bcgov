@@ -1,8 +1,15 @@
 import logging
+import pprint
 
 import ckan.plugins as p
 import ckan.logic as logic
+import ckan.model as model
+
+import ckan.plugins.toolkit as toolkit
+from ckan.common import  c
 from ckanext.hierarchy.model import GroupTreeNode
+from ckanext.edc_schema.util.helpers import org_record_is_viewable 
+
 
 log = logging.getLogger(__name__)
 _get_or_bust = logic.get_or_bust
@@ -53,6 +60,23 @@ def group_tree_section(context, data_dict):
                               type=group_type)
 
 
+
+
+def count_user_packages(group_id):
+    '''Counts the number of packages a user has access to in an organization
+    '''
+    count = 0
+    
+    group_packages = toolkit.get_action('group_package_show')(data_dict={'id': group_id})
+    
+    for package in group_packages:
+        
+        if org_record_is_viewable( package, c.userobj):
+            count += 1
+
+    return count
+    
+    
 def _group_tree_branch(root_group, pkg_count, highlight_group_name=None, type='group'):
     '''Returns a branch of the group tree hierarchy, rooted in the given group.
 
@@ -65,10 +89,12 @@ def _group_tree_branch(root_group, pkg_count, highlight_group_name=None, type='g
 
     #Calculate package count for root orgs
     root_count = pkg_count[root_group.id]
+    #root_count = count_user_packages(root_group.id)
     for group_id, group_name, group_title, parent_id in root_group.get_children_group_hierarchy(type=type):
         if group_id in pkg_count :
             root_count += pkg_count[group_id]
-
+            #root_count = count_user_packages(group_id)
+             
     root_node = nodes[root_group.id] = GroupTreeNode(
         {'id': root_group.id,
          'pkg_num': str(root_count),
@@ -82,6 +108,8 @@ def _group_tree_branch(root_group, pkg_count, highlight_group_name=None, type='g
             root_group.get_children_group_hierarchy(type=type):
         if group_id in pkg_count :
             pkg_num = pkg_count[group_id]
+            #pkg_num = count_user_packages(group_id)
+            #pprint.pprint(pkg_num)
         else :
             pkg_num = 0
 

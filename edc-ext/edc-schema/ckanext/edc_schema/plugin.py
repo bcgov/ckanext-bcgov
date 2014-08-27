@@ -3,6 +3,7 @@ import ckan.model as model
 from ckan.common import  c, _
 from ckan.logic import get_action, NotFound
 import ckan.lib.base as base
+import re
 
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
@@ -28,8 +29,9 @@ from ckanext.edc_schema.util.helpers import (get_suborg_sectors,
                                              get_record_type_label,
                                              get_suborgs,
                                              edc_linked_gravatar,
-                                             edc_gravatar, 
-                                             record_is_viewable)
+                                             edc_gravatar,
+                                             record_is_viewable
+                                             )
 
 abort = base.abort
 
@@ -96,6 +98,11 @@ def get_organization_title(org_id):
             return org['title']
     return None
 
+def get_espg_id(espg_string):
+  a = re.compile("_([0-9]+)")
+  espg_id = a.findall(espg_string)
+  return espg_id[0]
+
 class SchemaPlugin(plugins.SingletonPlugin):
 
 #    plugins.implements(plugins.IAuthFunctions)
@@ -137,7 +144,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "get_suborgs": get_suborgs,
                 "edc_linked_gravatar": edc_linked_gravatar,
                 "edc_gravatar": edc_gravatar,
-                "record_is_viewable": record_is_viewable
+                "record_is_viewable": record_is_viewable,
+                "get_espg_id" : get_espg_id
                 }
 
 
@@ -280,9 +288,9 @@ class SchemaPlugin(plugins.SingletonPlugin):
         revision_timestamp_time = from_utc(pkg_dict['revision_timestamp'])
 
         if (metadata_modified_time >= revision_timestamp_time):
-            pkg_dict['last_modified_date'] = metadata_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
+            pkg_dict['last_modified_date'] = metadata_modified_time.strftime('%Y-%m-%d')
         else:
-            pkg_dict['last_modified_date'] = revision_timestamp_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
+            pkg_dict['last_modified_date'] = revision_timestamp_time.strftime('%Y-%m-%d')
 
 #         #Ignore changes if dataset doesn't have any image
 #         if not 'image_url' in pkg_dict or not 'image_delete' in pkg_dict :
@@ -367,15 +375,15 @@ class SchemaPlugin(plugins.SingletonPlugin):
         if search_params.get('sort') in (None, 'rank'):
             search_params['sort'] = 'publish_date desc, metadata_modified desc'
 
-        
+
         #Change the query filter depending on the user
- 
+
 
         if 'fq' in search_params:
             fq = search_params['fq']
         else:
             fq = ''
-        
+
         #need to append solr param q.op to force an AND query
         if 'q' in search_params:
             q = search_params['q']
@@ -383,8 +391,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 q = '{!lucene q.op=AND}' + q
                 search_params['q'] = q
         else:
-		    q = ''          
-        
+		    q = ''
+
         try :
             user_name = c.user or 'visitor'
             #pprint.pprint(user_name)
@@ -394,8 +402,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 fq += ' '
             else:
                 if user_name != 'visitor':
-                    fq += ' (+(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))' 
-                             
+                    fq += ' (+(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
+
                     #IDIR users can also see private records of their organizations
                     user_id = c.userobj.id
                     #Get the list of orgs that the user is an admin or editor of
@@ -407,15 +415,15 @@ class SchemaPlugin(plugins.SingletonPlugin):
                         fq += ')'
                 #Public user can only view public and published records
                 else:
-                    fq = '+(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'        
-                
+                    fq = '+(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
+
         except Exception:
             if 'fq' in search_params:
                 fq = search_params['fq']
             else:
                 fq = ''
             fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
-            
+
         search_params['fq'] = fq
         pprint.pprint(search_params)
         return search_params

@@ -4,7 +4,7 @@
         <td>{{ res.format.lower() }} </td>
     </tr>
 {% endif %}
-              
+
 {% if res.edc_resource_type %}
 	<tr class="toggle-more">
     	<th scope="row">{{ _('Resource Type') }}</th>
@@ -35,10 +35,10 @@
     </tr>
 {% endif %}
 
-{% if record_type == 'Geospatial' and res.projection_name %}
+{% if record_type == 'Geographic' and res.projection_name %}
     <tr>
         <th>Spatial Reference System</th>
-        <td><a href="http://epsg.io/{{ res.projection_name }}">{{ res.projection_name }}</a></td>
+        <td><a href="http://epsg.io/{{ h.get_espg_id(res.projection_name) }}">{{ res.projection_name }}</a></td>
     </tr>
 {% endif %}
 

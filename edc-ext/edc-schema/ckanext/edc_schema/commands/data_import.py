@@ -357,7 +357,7 @@ def import_odc_records(con):
 
             contact_name = result[19] or 'DataBC Operations'
             contacts = []
-            contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'role' : 'pointOfContact', 'private' : 'Display'})
+            contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'branch': 'some branch', 'role' : 'pointOfContact', 'private' : 'Display'})
 
             edc_record['contacts'] = contacts
 
@@ -937,7 +937,7 @@ def import_discovery_records(con):
 
             for i in range(contact_len):
 #                (contact_org, contact_sub_org) = get_organization(contact_orgs[i])
-                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record['org'], 'role' : 'pointOfContact', 'private' : 'Display'})
+                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record['org'], 'branch': 'some branch', 'role' : 'pointOfContact', 'private' : 'Display'})
 
             edc_record['contacts'] = contacts
 

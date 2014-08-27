@@ -4,7 +4,7 @@ import sys, os
 version = '0.9.0'
 
 setup(
-	name='ckanext-edc-schema',
+	name='edc-schema',
 	version=version,
 	description="EDC Dataset Schema extension.",
 	long_description="""\

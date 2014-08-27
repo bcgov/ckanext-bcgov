@@ -1,7 +1,6 @@
 import pprint
 import logging
 import ckan.lib.helpers
-
 import ckan.model as model
 import ckan.plugins.toolkit as toolkit
 import ckan.logic as logic
@@ -99,6 +98,43 @@ def get_user_dataset_num(userobj):
 
     return count
 
+def get_index(seq, attr, value):
+    return next(index for (index, d) in enumerate(seq) if d[attr] == value)
+                    
+def org_record_is_viewable(package, userobj):
+    '''
+    Checks if the user can view the given record
+    '''
+    
+    from ckanext.edc_schema.util.util import get_user_orgs
+    
+    #Sysadmin can view all records
+    if userobj and userobj.sysadmin == True :
+        return True
+        
+    extras = package['extras']
+    
+    state_index = get_index(extras, "key", "edc_state") 
+    visibility_index = get_index(extras, "key", "metadata_visibility") 
+    state = package['extras'][state_index]['value']
+    visibility = package['extras'][visibility_index]['value']
+        
+#     pprint.pprint(state_index)
+#     pprint.pprint(visibility_index)
+
+#     pprint.pprint(state)
+#     pprint.pprint(visibility)
+
+    #Anonymous user (visitor) can only view published public records
+    published_state = ['PUBLISHED', 'PENDING ARCHIVE']
+
+    if visibility == 'Public' and state in published_state:
+        return True
+    if userobj  :
+        user_orgs = [org.id for org in get_user_orgs(userobj.id) ]
+        if package['owner_org'] in user_orgs:
+            return True
+    return False  
 
 def record_is_viewable(pkg_dict, userobj):
     '''

@@ -25,7 +25,7 @@
     {% endblock %}
 
     {% block basic_fields_name %}
-    		{{ form.input('name', id='field-name', label=_('Name'), placeholder=_('eg. January 2011 Gold Prices'), value=data.name, error=errors.name, classes=['control-full']) }}
+    		{{ form.input('name', id='field-name', label=_('Resource Name'), placeholder=_('eg. January 2011 Gold Prices'), value=data.name, error=errors.name, classes=['control-full']) }}
     {% endblock %}
 
   <div class="control-group dataset-form-resource-types">
@@ -52,7 +52,7 @@
 
 	{% if record_type == 'Geographic' or record_type=='Dataset'  %}
     	{% block basic_fields_description %}
-   	 		{{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('Some useful notes about the data'), value=data.description, error=errors.description) }}
+   	 		{{ form.markdown('description', id='field-description', label=_('Resource Description'), placeholder=_('Some useful notes about the data'), value=data.description, error=errors.description) }}
     	{% endblock %}
     {% endif %}
 
@@ -87,12 +87,6 @@
     {% snippet 'package/snippets/resource_extra_fields.html', data=data, errors=errors, record_type=record_type %}
 
     {% endblock %}
-
-	{% if not record_type == 'WebService' %}
-		{% block suppelement_info %}
-			{{ form.markdown('supplemental_info', id='field-supplemental_info', label=_('Supplemental information'), placeholder=_('Other descriptive information about the dataset'), value=data.supplemental_info, error=errors.supplemental_info) }}
-		{% endblock %}
-	{% endif %}
 
   {% endblock %}
 

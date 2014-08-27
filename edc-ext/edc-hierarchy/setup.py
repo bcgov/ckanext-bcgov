@@ -4,7 +4,7 @@ import sys, os
 version = '0.9.0'
 
 setup(
-	name='ckanext-hierarchy',
+	name='edc-hierarchy',
 	version=version,
 	description="CKAN Organization hierarchy - templates and configuration",
 	long_description="""\

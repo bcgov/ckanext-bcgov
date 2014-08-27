@@ -1,14 +1,21 @@
 {% set dataset_title = h.record_type_label(type) %}
-{% set org_title = h.edc_org_title(org) %}
-{% set branch_title = h.edc_org_title(branch) %}
-{% set sectors = h.get_suborg_sectors(org_title, branch_title) %}
-{% if iso_topic_cat != [] %}
+
+{% if org %}
+    {% set org_title = h.edc_org_title(org) %}
+{% endif %}
+
+{% if branch %}
+    {% set branch_title = h.edc_org_title(branch) %}
+    {% set sectors = h.get_suborg_sectors(org_title, branch_title) %}
+{% endif %}
+
+{% if iso_topic_cat and iso_topic_cat != [] %}
 	{% set iso_topic_title = iso_topic_cat[0] %}
 {% else %}
 	{% set iso_topic_title = None %}
 {% endif %}
 
-<ul id="dataset-markers">
+<ul class="dataset-markers">
     <li class="marker dataset-type {{ type|lower }}"><a href="{{ h.url_for(controller='package', action='search', type=type) }}">{{ dataset_title }}</a></li>
     {% if sectors %}
         {% for sec in sectors %}

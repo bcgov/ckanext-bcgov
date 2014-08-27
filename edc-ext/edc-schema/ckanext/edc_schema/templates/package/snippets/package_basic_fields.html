@@ -35,7 +35,7 @@
             {{ form.markdown('purpose', label=_('Purpose'), placeholder=_('Summary of the intentions for which the dataset was developed.'), value=data.purpose, error=errors.purpose, classes=['purpose']) }}
             {% endif %}
             {% block more_info_links %}
-                <div class="control-list control-group control-medium form-horizontal">
+                <div class="control-group control-medium form-horizontal">
                     {% block online_reference %}
                         {% snippet 'package/snippets/more_info.html', info_list=data.more_info, errors=errors %}
                     {% endblock %}

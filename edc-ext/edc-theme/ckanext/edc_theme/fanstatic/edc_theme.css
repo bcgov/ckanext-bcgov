@@ -480,21 +480,21 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
   left: 50%;
 }
 
-#dataset-markers {
+.dataset-markers {
   list-style-type: none;
   margin: 0 -25px 0 25px;
   padding: 0;
   float: right;
 }
 
-#dataset-markers .marker {
+.dataset-markers .marker {
   width: 130px;
   line-height: 22px;
   margin: 20px 0;
   background: #888;
 }
 
-#dataset-markers .marker:after {
+.dataset-markers .marker:after {
   content: "";
   width: 0;
   height: 0;
@@ -504,119 +504,119 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
   float: right;
 }
 
-#dataset-markers .marker:first-child {
+.dataset-markers .marker:first-child {
   margin-top: 0;
 }
 
-#dataset-markers .marker.geographic {
+.dataset-markers .marker.geographic {
   background: #27ae60;
 }
 
-#dataset-markers .marker.geographic:after {
+.dataset-markers .marker.geographic:after {
   border-right-color: #1e8449;
 }
 
-#dataset-markers .marker.dataset,
-#dataset-markers .marker.education {
+.dataset-markers .marker.dataset,
+.dataset-markers .marker.education {
   background: #2980b9;
 }
 
-#dataset-markers .marker.dataset:after,
-#dataset-markers .marker.education:after {
+.dataset-markers .marker.dataset:after,
+.dataset-markers .marker.education:after {
   border-right-color: #2472a4;
 }
 
-#dataset-markers .marker.application {
+.dataset-markers .marker.application {
   background: #9b59b6;
 }
 
-#dataset-markers .marker.application:after {
+.dataset-markers .marker.application:after {
   border-right-color: #8e44ad;
 }
 
-#dataset-markers .marker.webservice,
-#dataset-markers .marker.natural-resources {
+.dataset-markers .marker.webservice,
+.dataset-markers .marker.natural-resources {
   background: #e67e22;
 }
 
-#dataset-markers .marker.webservice:after,
-#dataset-markers .marker.natural-resources:after {
+.dataset-markers .marker.webservice:after,
+.dataset-markers .marker.natural-resources:after {
   border-right-color: #bf6515;
 }
 
-#dataset-markers .marker.economy {
+.dataset-markers .marker.economy {
   background: #1abc9c;
 }
 
-#dataset-markers .marker.economy:after {
+.dataset-markers .marker.economy:after {
   border-right-color: #17a689;
 }
 
-#dataset-markers .marker.finance {
+.dataset-markers .marker.finance {
   background: #f1c40f;
 }
 
-#dataset-markers .marker.finance:after {
+.dataset-markers .marker.finance:after {
   border-right-color: #dab10d;
 }
 
-#dataset-markers .marker.social-services {
+.dataset-markers .marker.social-services {
   background: #b1455a;
 }
 
-#dataset-markers .marker.social-services:after {
+.dataset-markers .marker.social-services:after {
   border-right-color: #8f3748;
 }
 
-#dataset-markers .marker.health-and-safety {
+.dataset-markers .marker.health-and-safety {
   background: #e74c3c;
 }
 
-#dataset-markers .marker.health-and-safety:after {
+.dataset-markers .marker.health-and-safety:after {
   border-right-color: #cd3121;
 }
 
-#dataset-markers .marker.justice {
+.dataset-markers .marker.justice {
   background: #2c3e50;
 }
 
-#dataset-markers .marker.justice:after {
+.dataset-markers .marker.justice:after {
   border-right-color: #233140;
 }
 
-#dataset-markers .marker.multiculturalism {
+.dataset-markers .marker.multiculturalism {
   background: #95a5a6;
 }
 
-#dataset-markers .marker.multiculturalism:after {
+.dataset-markers .marker.multiculturalism:after {
   border-right-color: #79898a;
 }
 
-#dataset-markers .marker.service {
+.dataset-markers .marker.service {
   background: #9b59b6;
 }
 
-#dataset-markers .marker.service:after {
+.dataset-markers .marker.service:after {
   border-right-color: #8f4bab;
 }
 
-#dataset-markers .marker.service {
+.dataset-markers .marker.service {
   background: #7f8c8d;
 }
 
-#dataset-markers .marker.service:after {
+.dataset-markers .marker.service:after {
   border-right-color: #667273;
 }
 
-#dataset-markers .marker.dataset-iso {
+.dataset-markers .marker.dataset-iso {
   background: #34495e;
 }
 
-#dataset-markers .marker.dataset-iso:after {
+.dataset-markers .marker.dataset-iso:after {
   border-right-color: #22303d;
 }
 
-#dataset-markers .marker a {
+.dataset-markers .marker a {
   display: block;
   padding: 5px 8px;
   color: #fff;
@@ -625,8 +625,29 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
   font-weight: bold;
 }
 
+.dataset-list .dataset-markers {
+  margin-right: 0;
+}
+
+.dataset-resources {
+  float: right;
+  clear: both;
+}
+
 #dataset-resources {
   margin-bottom: 50px;
+}
+
+.dataset-list .dataset-dates {
+  list-style-type: none;
+  padding: 0;
+  margin: 25px 0 0 0;
+  color: #999;
+}
+
+.dataset-list .dataset-dates li {
+  float: left;
+  margin-right: 70px;
 }
 
 .module-content:first-child {
@@ -1084,6 +1105,15 @@ input.search.tt-hint {
 .edc-state.archived {
   background: #95a5a6;
   color: #fff;
+}
+
+.dataset-heading .dataset-heading-orgs {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.dataset-heading .dataset-heading-orgs a {
+  color: #1A5A9C;
 }
 
 /* Responsive */

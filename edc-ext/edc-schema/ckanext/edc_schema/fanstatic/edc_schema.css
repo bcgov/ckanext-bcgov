@@ -100,17 +100,16 @@ input[type="text"] {
 }
 
 #contacts_panel #contacts_list .contact:nth-child(even),
-#dates_panel #date_list .date:nth-child(even),
-#info_panel #info_list .more_info:nth-child(even) {
+#dates_panel #date_list .date:nth-child(even) {
 	background: #eee;
 }
 
 .contacts .control-label {
-	width: 96px;
+	width: 130px;
 }
 
 .contacts .controls {
-	margin-left: 106px;
+	margin-left: 140px;
 }
 
 .contacts .controls .select2-container,
@@ -138,6 +137,12 @@ input[type="text"] {
 	margin: 10px 0;
 }
 
+#add_info_link {
+	position: absolute;
+	top: 5px;
+	right: 165px;
+}
+
 .date .select2-container,
 .date input[type="text"] {
 	width: 100%!important;
@@ -145,6 +150,11 @@ input[type="text"] {
 
 #dates_panel, #info_panel {
 	padding: 0;
+	position: relative;
+}
+
+#info_panel {
+	margin-bottom: -20px;
 }
 
 #dates_panel #date_list .date,

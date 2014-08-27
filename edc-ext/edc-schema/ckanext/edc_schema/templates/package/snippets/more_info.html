@@ -13,7 +13,7 @@
 {% import "macros/form.html" as form %}
 {% set info_list = info_list or [] %}
 
-<div id="info_panel" class="control-list form-horizontal">
+<div id="info_panel" class="form-horizontal">
 	<div id="info_list">
 	{% for item in info_list %}
 		{% if errors.more_info %}
@@ -77,7 +77,7 @@
 	</div>
 
 	<div id="add_info_link" align="center">
-		<a class="btn btn-primary" onclick="add_more_info(); return false;">
+		<a class="btn btn-primary btn-xs" onclick="add_more_info(); return false;">
 			<i class="icon-plus-sign-alt"></i>
 			Add additional link
 		</a>

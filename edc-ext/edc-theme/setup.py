@@ -4,7 +4,7 @@ import sys, os
 version = '0.9.0'
 
 setup(
-    name='ckanext-edc-theme',
+    name='edc-theme',
     version=version,
     description="Provides the look and feel of the DataBC site for CKAN.",
     long_description='''

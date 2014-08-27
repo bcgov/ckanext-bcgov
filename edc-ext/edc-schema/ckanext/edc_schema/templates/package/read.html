@@ -70,7 +70,7 @@
 
     {# Displaying Organization and Branch names #}
     {% block package_org %}
-        {% snippet 'package/snippets/org_view.html', org=pkg.org, branch=pkg.sub_org %}
+        Published by the {% snippet 'package/snippets/org_view.html', org=pkg.org, branch=pkg.sub_org %}
     {% endblock %}
 
     {% block package_license %}

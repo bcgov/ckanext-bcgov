@@ -47,7 +47,6 @@
               <li>{% snippet 'package/snippets/data_api_button.html', resource=res, datastore_root_url=c.datastore_api %}</li>
             {% endif %}
             {% endblock %}
-            <li><a href="#" class="btn btn-primary"><i class="icon-info"></i> {{ _('Details') }}</a></li>
           </ul>
           {% endblock %}
         </div>
@@ -82,18 +81,20 @@
     {% if res %}
       <section class="module module-resource">
         <div class="module-content">
+          {% if res.supplemental_info %}
           <h2>{{ _('Supplemental Information')}}</h2>
           <p>{{ res.supplemental_info }}</p>
+          {% endif %}
           <h2>{{ _('Additional Information') }}</h2>
           <table class="table">
             <tbody>
               <tr>
-                <th scope="row">{{ _('Last updated') }}</th>
-                <td>{{ h.render_datetime(res.last_modified) or h.render_datetime(res.revision_timestamp) or h.render_datetime(res.created) or _('unknown') }}</td>
+                <th scope="row">{{ _('Data Last Updated') }}</th>
+                <td>{{ h.render_datetime(res.last_modified, '%Y-%m-%d') or h.render_datetime(res.revision_timestamp, '%Y-%m-%d') or h.render_datetime(res.created, '%Y-%m-%d') or _('unknown') }}</td>
               </tr>
               <tr>
-                <th scope="row">{{ _('Created') }}</th>
-                <td>{{ h.render_datetime(res.created) or _('unknown') }}</td>
+                <th scope="row">{{ _('Data Created') }}</th>
+                <td>{{ h.render_datetime(res.created, '%Y-%m-%d') or _('unknown') }}</td>
               </tr>
               <tr>
                 <th scope="row">{{ _('License') }}</th>

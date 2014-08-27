@@ -29,7 +29,7 @@
 	%}
 	{% set sorting = [
     	(_('Relevance'), 'score desc, publish_date desc'),
-    	(_('Popular'), 'views_total desc') if g.tracking_enabled else (false, false), 
+    	(_('Popular'), 'views_total desc') if g.tracking_enabled else (false, false),
         (_('Name Ascending'), 'title_string asc'),
         (_('Name Descending'), 'title_string desc'),
 		(_('Published Date'), 'publish_date desc, metadata_modified desc'),
@@ -39,6 +39,10 @@
   {% resource 'edc_resource/typeahead.bundle.js' %}
   {% resource 'edc_resource/search.js' %}
 	{% snippet 'snippets/search_form.html', type='dataset', query=c.q, sorting=sorting, sorting_selected=c.sort_by_selected, count=c.page.item_count, facets=facets, show_empty=request.params, error=c.query_error %}
+{% endblock %}
+
+{% block package_search_results_list %}
+  {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user) }}
 {% endblock %}
 
 {% block secondary_content %}
