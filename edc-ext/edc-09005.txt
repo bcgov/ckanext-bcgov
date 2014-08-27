@@ -25,15 +25,15 @@ WebTest==1.4.3
 apachemiddleware==0.1.1
 argparse==1.2.1
 ckan==2.2
--e svn+http://apps.bcgov/svn/edc/source/trunk/edc-ext/edc-idir@145#egg=ckanext_edc_idir-dev_r145
--e svn+http://apps.bcgov/svn/edc/source/trunk/edc-ext/edc-rss@145#egg=ckanext_edc_rss-dev_r145
--e svn+http://apps.bcgov/svn/edc/source/trunk/edc-ext/edc-schema@145#egg=ckanext_edc_schema-dev_r145
--e svn+http://apps.bcgov/svn/edc/source/trunk/edc-ext/edc-theme@145#egg=ckanext_edc_theme-dev_r145
--e svn+http://apps.bcgov/svn/edc/source/trunk/edc-ext/edc-hierarchy@145#egg=ckanext_hierarchy-dev_r145
+-e svn+http://apps.bcgov/svn/edc/source/trunk/edc-ext/edc-idir@146#egg=ckanext_edc_idir-dev_r146
+-e svn+http://apps.bcgov/svn/edc/source/trunk/edc-ext/edc-rss@146#egg=ckanext_edc_rss-dev_r146
+-e svn+http://apps.bcgov/svn/edc/source/trunk/edc-ext/edc-schema@146#egg=ckanext_edc_schema-dev_r146
+-e svn+http://apps.bcgov/svn/edc/source/trunk/edc-ext/edc-theme@146#egg=ckanext_edc_theme-dev_r146
+-e svn+http://apps.bcgov/svn/edc/source/trunk/edc-ext/edc-hierarchy@146#egg=ckanext_hierarchy-dev_r146
 -e git+https://github.com/okfn/ckanext-spatial.git@release-v2.0#egg=ckanext-spatial
 -e git+https://github.com/ckan/ckanext-disqus.git@release-v2.0#egg=ckanext-disqus
 decorator==3.4.0
--e svn+http://apps.bcgov/svn/edc/source/trunk/edc-ext/edc-disqus@145#egg=edc_disqus-dev_r145
+-e svn+http://apps.bcgov/svn/edc/source/trunk/edc-ext/edc-disqus@146#egg=edc_disqus-dev_r146
 fanstatic==0.12
 lxml==3.3.5
 nose==1.3.0
