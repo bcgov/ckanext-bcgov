@@ -160,9 +160,7 @@ def record_is_viewable(pkg_dict, userobj):
 
     
 def get_package_data(pkg_id):
-    '''
-    Returns the list of orgs that the given user belongs to and has the given role('admin', 'member', 'editor', ...)
-    '''
+   
     pkg_data = []
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}    

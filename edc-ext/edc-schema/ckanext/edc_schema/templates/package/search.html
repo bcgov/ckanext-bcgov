@@ -1,10 +1,12 @@
 {% ckan_extends %}
 
+{% if c.user %}
+	{% set (admin_org, editor_org, mem_org) = h.get_user_role_orgs(c.userobj.id) %}
+{% endif %}
 
 {% block page_primary_action %}
   {% resource 'edc_resource/search.js' %}
-	{% set user_orgs = h.get_user_orgs(c.userobj.id) or null %}
-	{% if h.check_access('package_create') and (user_orgs or c.userobj.sysadmin == True) %}
+	{% if h.check_access('package_create') and (admin_org or editor_org or c.userobj.sysadmin == True) %}
 		<div class="page_primary_action">
 			{% link_for _('Add Dataset'), controller='ckanext.edc_schema.controllers.package:EDCPackageController', action='typeSelect', class_='btn btn-primary', icon='plus-sign-alt' %}
 		</div>
@@ -12,12 +14,15 @@
 {% endblock %}
 
 {% block package_search_results_api %}
-  {{ super() }}
-  <div id="request-data">
+  <section class="module">
+    <div class="module-content">
+      <div id="request-data">
     <a href="http://www.data.gov.bc.ca/dbc/catalogue/data_requests/request_data.page" target="_blank" class="btn btn-xs btn-primary">Request Data</a>
-    <p>Didn't find what you were looking for?  Request new data.</p>
+    <p>Did you not find what you were looking for?  Request new data.</p>
   </div>
-{% endblock %}
+    </div>
+  </section>
+  {% endblock %}
 
 {% block form %}
 	{% set facets = {
@@ -28,11 +33,11 @@
         'remove_field': c.remove_field }
 	%}
 	{% set sorting = [
-    	(_('Relevance'), 'score desc, publish_date desc'),
+    	(_('Relevance'), 'score desc, record_publish_date desc'),
     	(_('Popular'), 'views_total desc') if g.tracking_enabled else (false, false),
         (_('Name Ascending'), 'title_string asc'),
         (_('Name Descending'), 'title_string desc'),
-		(_('Published Date'), 'publish_date desc, metadata_modified desc'),
+		(_('Published Date'), 'record_publish_date desc, metadata_modified desc'),
         (_('Last Modified'), 'metadata_modified desc')
         ]
 	%}
@@ -42,7 +47,7 @@
 {% endblock %}
 
 {% block package_search_results_list %}
-  {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user) }}
+  {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, admin_org=admin_org, editor_org=editor_org, mem_org=mem_org) }}
 {% endblock %}
 
 {% block secondary_content %}

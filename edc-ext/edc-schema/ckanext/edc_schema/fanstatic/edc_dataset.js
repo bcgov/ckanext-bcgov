@@ -173,7 +173,7 @@ function add_date(date_types) {
 							<label for="field-dates-' + numberOfDates + '-type" class="control-label"><span class="control-required">*</span> Date type</label> \
 							<div class="controls"> \
 								<select id="field-dates-' + numberOfDates + '-type" name="dates__' + numberOfDates + '__type" data-module="autocomplete"> \
-									<option value="" selected="selected">Select a date type</option>';
+									<option value="" selected="selected" disabled>Select a date type</option>';
 
 	for ( var i = 0; i < date_types.length; i++) {
 		html += '							<option value="' + date_types[i].id + '">' + date_types[i].name + '</option>';
@@ -289,6 +289,8 @@ function hideDeletedRecords() {
 
 }
 
+var branch_available = false;
+
 function select_branch(org_branches) {
 	var org_id = $('#field-org').val();
 
@@ -299,6 +301,9 @@ function select_branch(org_branches) {
 			break;
 		}
 	}
+	
+	if (branches.length > 0)
+		branch_available = true;
 
 	var options = "<option></option>";
 	for (var i = 0; i < branches.length; i++) {
@@ -353,7 +358,7 @@ $('#field-sub_org').change(function() {
 $("#form-edc_dataset").submit(function( event ) {
 	var suborg_id = $("#field-sub_org").val();
 	var org_id = $('#field-org').val();
-	owner_org = (suborg_id) ? suborg_id : org_id;
+	owner_org = (branch_available) ? suborg_id : org_id;
 	//Add the select organization id as the owner of the dataset.
 	$("#field-owner_org").val(owner_org);
 });
@@ -377,6 +382,10 @@ $("#field-edc_state").change(function() {
 					$("#save1").hide();
 					$("#save2").hide();
 					$(this).dialog("close");
+					// Adding hidden input to save the form (wont save without it)
+					// edc_edit uses context[save] to save the form values
+					$('#form-edc_dataset').append($("<input>").val('save').attr('name', 'save').attr('type', 'hidden'));
+					$('#form-edc_dataset').submit();
 				},
 				"Cancel":function() {
 					$("#field-edc_state").val(previous_state);
@@ -384,7 +393,6 @@ $("#field-edc_state").change(function() {
 							{
 								width : "220px"
 							});
-					console.log("state: " + previous_state);
 					$(this).dialog("close")
 				}
 			}
@@ -490,5 +498,9 @@ $(function() {
 		load_keywords();
 
 	});
+	
+	var selected_org = $('#field-org').val();
+	if (selected_org)
+		select_branch(org_branches);
 
 });

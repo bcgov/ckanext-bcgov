@@ -70,5 +70,8 @@ class EDCDisqusPlugin(plugins.SingletonPlugin):
         data = {'identifier' : identifier, 'site_url': config.get('ckan.site_url') }
         return plugins.toolkit.render_snippet('package/comments_block.html', data)
 
+    def disqus_get_forum_name(self):
+        return config.get('edcdisqus.forum_name') or 'bccatalogue'
+
     def get_helpers(self):
-        return {'comments_block' : self.comments_block}
+        return { 'comments_block' : self.comments_block, 'disqus_get_forum_name': self.disqus_get_forum_name }

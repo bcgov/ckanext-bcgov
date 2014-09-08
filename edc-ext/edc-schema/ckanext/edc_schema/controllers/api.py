@@ -6,6 +6,7 @@ import cgi
 import datetime
 import glob
 import urllib
+import pprint
 
 from webob.multidict import UnicodeMultiDict
 from paste.util.multidict import MultiDict
@@ -20,7 +21,7 @@ import ckan.lib.jsonp as jsonp
 import ckan.lib.munge as munge
 
 from ckan.common import _, c, request, response
-
+from ckanext.edc_schema.util.util import get_all_orgs
 
 log = logging.getLogger(__name__)
 
@@ -275,6 +276,18 @@ class EDCApiController(ApiController):
         return_dict = {"help": help_str}
         try :
             pkg = get_action('package_show')(context, {'id' : pkg_id})
+            pprint.pprint('pkg:')
+            pprint.pprint(pkg)
+            #add the top-level org to the organization
+            #'organization, branch'
+            orgs = get_all_orgs()
+            org=orgs[pkg['org']]
+            branch=orgs[pkg['sub_org']]
+            org_title = org['title']
+            branch_title = branch['title']
+            pkg['organization']['full_title'] = org_title + ', ' + branch_title
+            pprint.pprint('org:')
+            pprint.pprint(pkg['organization']['title'])
             
             from ckanext.edc_schema.util.helpers import record_is_viewable
             

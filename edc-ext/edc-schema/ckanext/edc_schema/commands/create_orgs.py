@@ -5,11 +5,10 @@ import urllib2
 import urllib
 
 from ckanext.edc_schema.commands.base import (default_org_file,
-                                              site_url,
-                                              api_key,
-                                              create_org)
+                                              create_org, 
+                                              get_import_params)
 
-def create_orgs(org_file=None):
+def create_orgs(site_url, api_key, org_file=None):
         
     if not org_file:
         org_file = default_org_file
@@ -26,11 +25,11 @@ def create_orgs(org_file=None):
     for org_item in orgs:
         branches = org_item['branches']
             
-        org = create_org({ 'name': org_item['name'], 'title': org_item['title'] })
+        org = create_org({ 'name': org_item['name'], 'title': org_item['title'] }, site_url, api_key)
         print org['title']
                                          
         for branch in branches:
-            sub_org = create_org({ 'name': branch['name'], 'title': branch['title'] })
+            sub_org = create_org({ 'name': branch['name'], 'title': branch['title'] }, site_url, api_key)
             
                 #Add the sub_org as a member of the org
             member_dict = { 'id': sub_org['id'], 'object' : org['id'], 'object_type' : 'group', 'capacity' : 'admin' }
@@ -48,7 +47,7 @@ def create_orgs(org_file=None):
                 pass
         
 
-def create_odsi_orgs():
+def create_odsi_orgs(site_url, api_key):
     
     import pprint
     
@@ -70,7 +69,7 @@ def create_odsi_orgs():
                     'name'  : org_name.replace('_', '-'),
                     'title' : org_title
                     }
-        org = create_org(org_dict)
+        org = create_org(org_dict, site_url, api_key)
             
         #Get the list of sub-organizations for this organization
         suborgs_list = []
@@ -86,7 +85,7 @@ def create_odsi_orgs():
                            'name'  : suborg_name.replace('_', '-'),
                            'title' : suborg_title
                            }
-            suborg = create_org(suborg_dict)
+            suborg = create_org(suborg_dict, site_url, api_key)
             
             #Add this sub-organization as a child of the organization
             member_dict = { 'id': suborg['id'], 'object' : org['id'], 'object_type' : 'group', 'capacity' : 'admin' }
@@ -104,5 +103,9 @@ def create_odsi_orgs():
                 pass
             
         
-        
-create_odsi_orgs()
+
+import_params = get_import_params()
+site_url =  import_params['site_url']
+api_key = import_params['api_key'] 
+
+create_odsi_orgs(site_url, api_key)

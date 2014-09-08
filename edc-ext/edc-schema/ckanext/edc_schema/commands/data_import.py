@@ -17,16 +17,13 @@ import getpass
 
 import datetime
 
-from ckanext.edc_schema.commands.base import edc_package_create
+#A dictionary for import parameters
+import_dict = {}
 
-from ckanext.edc_schema.util.util import (get_organization_id,
-                                          get_user_id)
-
-admin_user = 'kmamakani'
-#admin_user = 'khalegh'
-#admin_user = 'admin'
-
-
+from ckanext.edc_schema.commands.base import (edc_package_create,
+                                              get_organization_id,
+                                              get_user_id,
+                                              get_import_params)
 def is_valid_url(url):
     import urlparse
     import string
@@ -43,9 +40,8 @@ def is_valid_url(url):
     #Invalid url is given
     return False
 
-def get_record_list():
+def get_record_list(site_url, api_key):
 
-    from ckanext.edc_schema.commands.base import (site_url, api_key)
     '''
     Returns the list of available records
     Records that have been already imported.
@@ -115,35 +111,33 @@ def get_record_name(pkg_list, title):
     return name
 
 
-def get_connection(data_source):
+def get_connection(repo_name):
+    print '\nPlease enter ' + repo_name + ' connection parameters (If connection uses a service name, leave SID empty).'
+    print '--------------------------------------------------------------------------------------------------'
+    
+    service_name = None
+    
+    host = raw_input("Server name : ")
+    port = raw_input("Port : ")
+    SID = raw_input("SID : ")
+    if not SID :
+        service_name = raw_input("Service name : ")
+    user_name = raw_input("User name : ")
+    password = getpass.getpass("Password: ")
 
-    if data_source.lower() == 'odc' :
-#         host = 'sponde.bcgov'
-#         port = 1521
-#         SID = 'idwprod1.bcgov'
-#         user_name = 'proxy_metastar'
-#         password = 'h0tsh0t'
-        connection_str = "proxy_metastar/h0tsh0t@slkux1.env.gov.bc.ca/idwprod1.bcgov"
+    if service_name :
+        connection_str = user_name + '/' + password + '@' + host + '/' + service_name
+        
+        #connection_str = "proxy_metastar/h0tsh0t@slkux1.env.gov.bc.ca/idwprod1.bcgov"
         con = cx_Oracle.connect(connection_str)
-    elif data_source.lower() == 'discovery' :
-         user_name = 'metastar'
-         host = 'slkux12.env.gov.bc.ca'
-         port = 1521
-         SID = 'BCGWDLV'
-         password = 'blueb1rd'
-         dsn_tns = cx_Oracle.makedsn(host, port, SID)
-         con = cx_Oracle.connect(user_name, password, dsn_tns)
-#        connection_str = "proxy_metastar/h0tsh0t@slkux1.env.gov.bc.ca/idwprod1.bcgov"
     else :
-        print "No data source is given."
-
-#    password = getpass.getpass("Password:")
-
-
-
-#    con = cx_Oracle.connect(connection_str)
-
+        dsn_tns = cx_Oracle.makedsn(host, port, SID)    
+        con = cx_Oracle.connect(user_name, password, dsn_tns)
+                
     return con
+
+
+
 
 def execute_odsi_query(con):
     '''
@@ -189,9 +183,9 @@ def execute_odsi_query(con):
                 "AND DBC_RT.RESOURCE_TYPE_ID=DBC_RS.RESOURCE_TYPE_ID " + \
                 "AND DBC_CS.CREATOR_SECTOR_ID=DBC_SO.CREATOR_SECTOR_ID " + \
                 "AND DBC_DC_MIN.RESOURCE_SET_ID(+)=DBC_RS.RESOURCE_SET_ID " + \
-                "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID " #+\
+                "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "  + \
+                "AND DBC_RS.RESOURCE_SET_ID = 173880 "
 #                "AND DBC_RT.RESOURCE_TYPE_NAME ='Geospatial Dataset'" #+ \
-#                "AND DBC_RS.RESOURCE_SET_ID = 178047 "
 
 
     cur = con.cursor()
@@ -204,12 +198,12 @@ def import_odc_records(con):
 
     from validate_email import validate_email
 
-    user_id = get_user_id(admin_user)
-#    print user_id
+    user_id = get_user_id(import_dict['admin_user'], import_dict['site_url'], import_dict['api_key'])
+    print 'user id :', user_id
 
 
     #Get the list of available records
-    pkg_list = get_record_list()
+    pkg_list = get_record_list(import_dict['site_url'], import_dict['api_key'])
 
 
     #Get the number of discovery records have already been imported.
@@ -255,7 +249,7 @@ def import_odc_records(con):
             edc_record['edc_state'] = result[21] or 'DRAFT'
 
             #Ignore DRAFT records or records with no title
-            if (not result[2]) or edc_record['edc_state'] == 'DRAFT':
+            if (not result[2]) or edc_record['edc_state'] == 'DRAFT' or edc_record['edc_state'] == 'PENDING PUBLISH':
                 index += 1
                 continue
 
@@ -312,42 +306,71 @@ def import_odc_records(con):
             edc_record['author'] = user_id
 
             #------------------------------------------------------------------< Dataset Organization >---------------------------------------------------------------------
-            org = get_organization_id(result[1])
+            org = get_organization_id(result[1], import_dict['site_url'], import_dict['api_key'])
             edc_record['org'] = org
-            edc_record['sub_org'] = get_organization_id(result[6])
+            edc_record['sub_org'] = get_organization_id(result[6], import_dict['site_url'], import_dict['api_key'])
             edc_record['owner_org'] = edc_record['sub_org'] or edc_record['org']
 
             #----------------------------------------------------------------------< Dataset Keywords >----------------------------------------------------------------------
             if result[4]:
                 # Extract the keywords(tags) names and add the list of tags to the record.
                 keywords = result[4].split(',')
-                edc_record['tags'] = [{'name' : remove_invalid_chars(keyword).strip()} for keyword in keywords if keyword and len(keyword) > 1]
+                keywords = [keyword.strip() for keyword in keywords]
+
+                #Read the keyword updates from csv file
+                import csv
+                key_dict = {}
+                with open('keyword_replacement.csv', 'r') as key_file :
+                    key_reader = csv.reader(key_file)
+                    for row in key_reader :
+                        key_dict[row[0]] = {'action' : row[1], 'new_keyword': row[2]}
+
+                #Making the new keywords list from the keyword replacement file.
+                keyword_list = []
+                for keyword in keywords :
+                    if keyword in key_dict :
+                        action_key_dict = key_dict[keyword]
+                        #new_keyword will be empty if the action is 'remove'
+                        new_keyword = action_key_dict['new_keyword']
+                    else :
+                        new_keyword = keyword
+
+                    if new_keyword :
+                        keyword_list.append(new_keyword)
+
+                edc_record['tags'] = [{'name' : remove_invalid_chars(keyword).strip()} for keyword in keyword_list if keyword and len(keyword) > 1]
 
 
 
             #-----------------------------------------------------------------< Dataset dates >-------------------------------------------------------------------
             dates = []
-
+            
+            
             if result[18] :
+                edc_record['record_create_date'] = result[18]
+            '''
                 dates.append({'type': 'Created', 'date': result[18], 'delete': '0'})
             else :
                 #Add today as dataset creation date
                 dates.append({'type': 'Created', 'date': str(datetime.date.today()), 'delete': '0'})
+            '''
 
             if result[16] :
-                dates.append({'type': 'Modified', 'date': result[16], 'delete': '0'})
+                edc_record['record_last_modified'] = result[16]
 
             if result[17] :
-                dates.append({'type': 'Published', 'date': result[17], 'delete': '0'})
                 #Adding record publish date
-                edc_record['publish_date'] = result[17]
                 edc_record['record_publish_date'] = result[17]
 
-            elif edc_record['edc_state'] == 'Published' :
-                edc_record['publish_date'] = str(datetime.date.today())
-                edc_record['record_publish_date'] = str(datetime.date.today())
+            #elif edc_record['edc_state'] == 'Published' :
+                #edc_record['record_publish_date'] = str(datetime.date.today())
+                
+            dates.append({'type': 'Published', 'date': str(datetime.date.today()), 'delete': '0'})
 
             edc_record['dates'] = dates
+            
+            print 'ODSI dates'
+            pprint.pprint(dates) 
 
             #-----------------------------------------------------------------< Dataset Contacts >----------------------------------------------------------------
             if result[20] and validate_email(result[20]) :
@@ -443,6 +466,12 @@ def import_odc_records(con):
 
                 edc_record['metadata_standard_version'] = discovery_record['metadata_standard_version']
 
+                #Get the record dates from discovery
+                edc_record['record_last_modified'] = discovery_record['date_modified']
+                
+                edc_record['record_create_date'] = discovery_record['date_created']
+                
+                edc_record['dates'] = discovery_record['dates']
 
             else :
 
@@ -462,7 +491,7 @@ def import_odc_records(con):
 
                 edc_record['iso_topic_cat'] = ['economy']          #Default value : economy
 
-                edc_record['metadata_language'] = 'English'
+                edc_record['metadata_language'] = 'eng'
 
                 edc_record['metadata_character_set'] = 'utf8'
 
@@ -470,7 +499,8 @@ def import_odc_records(con):
 
                 edc_record['metadata_standard_version'] = 'n/a'
 
-
+            print 'Record dates'
+            pprint.pprint(edc_record['dates'])
             record_id = result[0]
 
             resource_data = None
@@ -492,8 +522,10 @@ def import_odc_records(con):
                 # Setting resource name to PRODUCT_TYPE_NAME frrom ODC
                 if resource_url :
                     resource_name = resource_url.rsplit('/',1)[1]
-                    if resource_name == 'addProductsFromExternalApplication':
-                        resource_name = title #'External Resource'
+                    #if resource_name.startswith('addProductsFromExternalApplication') :
+                    #Change the resource name for BCGW datasets
+                    if resource_url.startswith('https://apps.gov.bc.ca/pub/dwds') :
+                        resource_name = title + ' - Custom Download'
                     resource_rec['name'] = resource_name
 
                 #----------------------------------------------------------< Resource Format >--------------------------------------------------------------------
@@ -605,7 +637,7 @@ def import_odc_records(con):
 
 #            pprint.pprint(edc_record)
 
-            (record_info, errors) = edc_package_create(edc_record)
+            (record_info, errors) = edc_package_create(edc_record, import_dict['site_url'], import_dict['api_key'])
 
             if  record_info :
                 pkg_list.append(edc_record['name'])
@@ -779,7 +811,9 @@ def execute_discovery_query(con):
                 "usr.LOGIN user_name, " \
                 "usr.description OWNER_DESC, " \
                 "usr.email OWNER_EMAIL, " \
-                "dat.sv_5 RECORD_TYPE " \
+                "dat.sv_5 RECORD_TYPE, " \
+                "to_char(dat.record_modifydate, 'YYYY-MM-DD') record_modified, " \
+                "metastar.getResourceDates(dat.record_uid) resource_dates " \
                 "FROM metastar.bat_records_104 dat, " \
                 "metastar.bat_users usr, " \
                 "metastar.bat_states st " \
@@ -801,7 +835,7 @@ def import_discovery_records(con):
 
 
     #Get the list of available records
-    pkg_list = get_record_list()
+    pkg_list = get_record_list(import_dict['site_url'], import_dict['api_key'])
 
     #Get the number of discovery records have already been imported.
     record_count_filename = 'discovery_record_count.txt'
@@ -858,11 +892,10 @@ def import_discovery_records(con):
 
             #---------------------------------------------------------------------<< Record Author >>----------------------------------------------------------------------
             username = result[46]
-            user_id = get_user_id(username)
+            user_id = get_user_id(username,import_dict['site_url'], import_dict['api_key'])
             if not user_id :
-                username = admin_user
-                user_id = get_user_id(admin_user)
-#            print 'username, userid --------------------> ', username, user_id
+                username = import_dict['admin_user']
+                user_id = get_user_id(username, import_dict['site_url'], import_dict['api_key'])
             edc_record['author'] = user_id
 
 
@@ -894,8 +927,8 @@ def import_discovery_records(con):
             #-----------------------------------------------------<< Records Organization and Sub-organization >>-----------------------------------------------------------
             (org_title, sub_org_title) = get_organization(result[2])
             print org_title, sub_org_title
-            edc_record['org'] = get_organization_id(org_title)
-            edc_record['sub_org'] = get_organization_id(sub_org_title)
+            edc_record['org'] = get_organization_id(org_title, import_dict['site_url'], import_dict['api_key'])
+            edc_record['sub_org'] = get_organization_id(sub_org_title, import_dict['site_url'], import_dict['api_key'])
             edc_record['owner_org'] = edc_record['sub_org']
 
             #-------------------------------------------------------------------<< ISO topic category >>---------------------------------------------------------------------
@@ -906,10 +939,33 @@ def import_discovery_records(con):
             # Extract the keywords(tags) names and add the list of tags to the record.
             keywords = []
             if result[5] :
+                # Extract the keywords(tags) names and add the list of tags to the record.
                 keywords = result[5].split(',')
+                keywords = [keyword.strip() for keyword in keywords]
 
+                #Read the keyword updates from csv file
+                import csv
+                key_dict = {}
+                with open('keyword_replacement.csv', 'r') as key_file :
+                    key_reader = csv.reader(key_file)
+                    for row in key_reader :
+                        key_dict[row[0]] = {'action' : row[1], 'new_keyword': row[2]}
 
-            edc_record['tags'] = [{'name' : remove_invalid_chars(keyword).strip()} for keyword in keywords if keyword and len(keyword) > 1]
+                #Making the new keywords list from the keyword replacement file.
+                keyword_list = []
+                for keyword in keywords :
+                    if keyword in key_dict :
+                        action_key_dict = key_dict[keyword]
+                        #new_keyword will be empty if the action is 'remove'
+                        new_keyword = action_key_dict['new_keyword']
+                    else :
+                        new_keyword = keyword
+
+                    if new_keyword :
+                        keyword_list.append(new_keyword)
+
+            edc_record['tags'] = [{'name' : remove_invalid_chars(keyword).strip()} for keyword in keyword_list if keyword and len(keyword) > 1]
+
 
             #----------------------------------------------------------------------<< Record Status >>-----------------------------------------------------------------------
             resource_status = result[6] or 'onGoing'
@@ -984,20 +1040,34 @@ def import_discovery_records(con):
 
             #---------------------------------------------------------------------<< Record dates >>----------------------------------------------------------------------
             # Adding dataset dates
+            dates_of_data = []
+            
+            if result[51] :
+                dates_of_data = result[51].split(',')
+            
+            date_type_dict = {'creation' : 'Created', 'revision' : 'Modified', 'publication': 'Published', 'archival' : 'Archived', 'destruction': 'Destroyed'}
             dates = []
+            
+            for date_of_data in dates_of_data :
+                rec_date = date_of_data[:4] + '-' + date_of_data[4:6] + '-' + date_of_data[6:8]
+                date_type = date_of_data[8:]
+                date_type = date_type_dict[date_type]
+                dates.append({'type': date_type, 'date': rec_date, 'delete': '0'})
+                
             if result[30] :
-                dates.append({'type': 'Created', 'date': result[30], 'delete': '0'})
-            if result[31] :
-                dates.append({'type': 'Modified', 'date': result[31], 'delete': '0'})
+                edc_record['record_create_date'] = result[30]
 
             #Add the publish date for records with publish state.
             if edc_record['edc_state'] == 'Published' :
-                edc_record['publish_date'] = str(datetime.date.today())
+                edc_record['record_publish_date'] = str(datetime.date.today())
 
+            if result[50] :
+                edc_record['record_last_modified'] = result[50]
+                
             edc_record['dates'] = dates
 
             #------------------------------------------------------------------<< Metadata Information >>-----------------------------------------------------------------
-            metadata_language = result[42] or 'English'
+            metadata_language = result[42] or 'eng'
             metadata_character_set = result[43] or 'utf8'
             metadata_standard_name = result[44]  or 'North American Profile of ISO 19115-1:2014 - Geographic information - Metadata (NAP-Metadata)'   #Add default value here if there is any
             metadata_standard_version = result[45]  or  'n/a' #Add default value here if there is any
@@ -1145,7 +1215,7 @@ def import_discovery_records(con):
             edc_record['more_info'] = more_info
 
 #            pprint.pprint(edc_record)
-            (record_info, errors) = edc_package_create(edc_record)
+            (record_info, errors) = edc_package_create(edc_record, import_dict['site_url'], import_dict['api_key'])
 
             if  record_info :
                 pkg_list.append(edc_record['name'])
@@ -1200,8 +1270,8 @@ def find_missing_orgs(con):
 #     projection_names_file.close()
 #     pass
             (org_title, suborg_title) = get_organization(result[0])
-            org_id = get_organization_id(org_title)
-            suborg_id = get_organization_id(suborg_title)
+            org_id = get_organization_id(org_title, import_dict)
+            suborg_id = get_organization_id(suborg_title, import_dict)
 
 
             if (not org_id) or (not suborg_id) :
@@ -1216,12 +1286,12 @@ def find_missing_orgs(con):
     org_error_file.close()
 
 def import_data():
-
-    data_source = raw_input("Data source (ODC/Discovery): ")
+    
+    data_source = raw_input("Data source (ODSI/Discovery): ")
     con =  get_connection(data_source)
 
     try:
-        if data_source.lower() == 'odc' :
+        if data_source.lower() == 'odsi' :
             import_odc_records(con)
         elif data_source.lower() == 'discovery' :
             import_discovery_records(con)
@@ -1230,5 +1300,8 @@ def import_data():
             print "No data source is given."
     except:
         pass
+
+#Get import parameters first    
+import_dict = get_import_params()
 
 import_data()

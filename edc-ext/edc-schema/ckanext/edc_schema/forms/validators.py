@@ -41,8 +41,6 @@ def license_not_empty(key, data, errors, content):
 
     value = data.get(key)
 
-#    print value
-
     if(value == '0'):
         errors[key].append(_('License is not specified'))
 
@@ -161,6 +159,8 @@ def check_branch(key, data, errors, context):
     return
  
     from ckanext.edc_schema.util.util import get_organization_branches
+    
+    print 'in validator'
     
     org_key = ('org',)
     

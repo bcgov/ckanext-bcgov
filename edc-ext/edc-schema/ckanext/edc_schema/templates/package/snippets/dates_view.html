@@ -8,14 +8,6 @@
 #}
 
 {# For each date in the list of dates, show the details #}
-{% set date = pkg.dates %}
-{% for date in dates %}
-	{% if date.type != 'Modified' and date.type != 'Published' %}
-		<tr>
-			<td><strong> Record {{ date.type }} </strong></td><td> {{ date.date }} </td>
-		</tr>
-	{% endif %}
-{% endfor %}
 
 {% if pkg.record_publish_date %}
 	<tr>

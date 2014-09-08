@@ -5,11 +5,11 @@ import urllib2
 import urllib
 
 from ckanext.edc_schema.commands.base import (default_vocab_file,
-                                              site_url,
                                               create_vocab,
-                                              create_tag)
+                                              create_tag,
+                                              get_import_params)
 
-def create_vocabs(vocab_file=None):
+def create_vocabs(site_url, api_key, vocab_file=None):
         
     vocab_file = default_vocab_file
     available_vocabs = []
@@ -43,7 +43,7 @@ def create_vocabs(vocab_file=None):
             #check if the vocabulary exists :
         if not vocab_name in available_vocab_names:
                 #Create the vocabulary 
-                create_vocab(vocab_name, vocab_tags)
+                create_vocab(vocab_name, vocab_tags, site_url, api_key)
         else:
             print 'Vocabulary {0} already exists, checking for new tags ...'.format(vocab_name)
             data_string = urllib.quote(json.dumps({'id': vocab_name}))
@@ -64,7 +64,10 @@ def create_vocabs(vocab_file=None):
                 #Add each tag that is not in the list of available tags
                 for tag in vocab_tags:
                     if not tag in available_tags:
-                        create_tag(vocab, tag)
+                        create_tag(vocab, tag, site_url, api_key)
 
-        
-create_vocabs()
+import_params = get_import_params()
+site_url =  import_params['site_url']
+api_key = import_params['api_key'] 
+
+create_vocabs(site_url, api_key)

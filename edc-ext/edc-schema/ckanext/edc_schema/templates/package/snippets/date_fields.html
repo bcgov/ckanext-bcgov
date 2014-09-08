@@ -17,7 +17,7 @@
 						<div class="control-group">
 							<label for="field-dates-{{ loop.index0 }}-type" class="control-label"><span class="control-required">*</span> Date type</label>
 							<div class="controls">
-								<select id="field-dates-{{ loop.index0 }}-type" name="dates__{{ loop.index0 }}__type" data-module="autocomplete" data-placeholder="Select a date type">
+								<select id="field-dates-{{ loop.index0 }}-type" name="dates__{{ loop.index0 }}__type" data-module="autocomplete">
 								<option value="" disabled>Select a date type</option>
 		      						{% for date_type in h.edc_tags(_("dataset_date_type"))  %}
 		      							{% set selected_type = (current_date_type and current_date_type == date_type) %}
@@ -64,8 +64,8 @@
 						<div class="control-group">
 							<label for="field-dates-0-type" class="control-label"><span class="control-required">*</span> Date type</label>
 							<div class="controls">
-								<select id="field-dates-0-type" name="dates__0__type" data-module="autocomplete" data-placeholder="Select a date type">
-									<option value="" disabled>Select a date type</option>
+								<select id="field-dates-0-type" name="dates__0__type" data-module="autocomplete">
+									<option value="" selected="selected" disabled>Select a date type</option>
 			      					{% for date_type in h.edc_tags(_("dataset_date_type"))  %}
 			      						<option value="{{ date_type }}">{{ date_type }}</option>
 			      					{% endfor %}

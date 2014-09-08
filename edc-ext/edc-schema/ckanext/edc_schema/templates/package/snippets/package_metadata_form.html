@@ -3,12 +3,12 @@
 {% set data = data or {} %}
 {% set errors = errors or {} %}
 {% set record_type = h.dataset_type(pkg_name) %}
-
+{% set user_id = h.user_id() %}
 <form class="dataset-form dataset-resource-form form-horizontal" method="post" data-module="basic-form" enctype="multipart/form-data">
   {{ h.snippet('package/snippets/stages.html', stages=['complete', 'complete', 'active'], pkg_name=pkg_name) }}
   {{ form.errors(error_summary) }}
 
-  {% snippet 'package/snippets/package_metadata_fields.html', record_type=record_type, data=data, errors=errors, groups_available=groups_available %}
+  {% snippet 'package/snippets/package_metadata_fields.html', record_type=record_type, data=data, errors=errors, user_id=user_id, groups_available=groups_available %}
 
   <div class="form-actions">
     {# TODO: Go back to previous resource form #}

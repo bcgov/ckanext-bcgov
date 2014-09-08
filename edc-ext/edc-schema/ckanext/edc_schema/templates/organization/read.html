@@ -1,9 +1,10 @@
-{% ckan_extends%}
+{% ckan_extends %}
+
+{% set (admin_org, editor_org, mem_org) = h.get_user_role_orgs(c.userobj.id) %}
 
 {% block page_primary_action %}
   {% set org_id = c.group_dict.id %}
-  {% set user_orgs = h.get_user_orgs_id(c.userobj.id) or null %}
-  {% if h.check_access('package_create', {'owner_org': c.group_dict.id}) and (org_id in user_orgs or c.userobj.sysadmin == True) %}
+  {% if h.check_access('package_create', {'owner_org': c.group_dict.id}) and ((org_id in admin_org) or (org_id in editor_org) or (c.userobj.sysadmin == True)) %}
     {% link_for _('Add Dataset'), controller='ckanext.edc_schema.controllers.package:EDCPackageController', action='typeSelect', group=org_id, class_='btn btn-primary', icon='plus-sign-alt' %}
   {% endif %}
 {% endblock %}
@@ -23,7 +24,7 @@
     	(_('Popular'), 'views_total desc') if g.tracking_enabled else (false, false),
         (_('Name Ascending'), 'title_string asc'),
         (_('Name Descending'), 'title_string desc'),
-		(_('Published Date'), 'publish_date desc, metadata_modified desc'),
+		    (_('Published Date'), 'record_publish_date desc, metadata_modified desc'),
         (_('Last Modified'), 'metadata_modified desc')
         ]
 	%}
@@ -31,7 +32,7 @@
     {% endblock %}
   {% block packages_list %}
     {% if c.page.items %}
-      {{ h.snippet('snippets/package_list.html', packages=c.page.items) }}
+      {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, admin_org=admin_org, editor_org=editor_org, mem_org=mem_org) }}
     {% endif %}
   {% endblock %}
   {% block page_pagination %}
@@ -41,6 +42,13 @@
 
 
 {% block organization_facets %}
+  <div class="module module-narrow module-shallow">
+    <div class="module-content">
+      {% if c.group_dict.url %}
+        <a href="{{ c.group_dict.url }}">{{ c.group_dict.url }}</a>
+      {% endif %}
+    </div>
+  </div>
   {% for facet in c.facet_titles %}
   	{% if facet == 'resource_download_format' %}
   		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_format_label, name=facet, extras={'id':c.group_dict.id}) }}

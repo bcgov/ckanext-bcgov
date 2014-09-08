@@ -2,7 +2,7 @@
     <h2 class="module-heading"><i class="icon-medium icon-rss"></i> Subscribe & Stay Up To Date</h2>
     <ul class="unstyled nav nav-simple nav-facet">
         <li class="nav-item"><a href="{{ h.url_for(controller='ckanext.edc_rss.controllers.rss:RSSController', action='recent') }}" title="Subscribe to New data"><span>Subscribe to New data</span></a></li>
-        <li class="nav-item"><a href="#" title="Subscribe to Catalogue Comments"><span>Subscribe to Catalogue Comments</span></a></li>
+        <li class="nav-item"><a href="http://{{ h.disqus_get_forum_name() }}.disqus.com/latest.rss" title="Subscribe to Catalogue Comments"><span>Subscribe to Catalogue Comments</span></a></li>
         <li class="nav-item"><a href="http://blog.data.gov.bc.ca/feed/" title="Subscribe to Blog Posts" target="_blank"><span>Subscribe to Blog Posts</span></a></li>
     </ul>
 </section>

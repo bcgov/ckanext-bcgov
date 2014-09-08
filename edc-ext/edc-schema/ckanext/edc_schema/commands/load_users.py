@@ -2,14 +2,16 @@ import json
 import urllib2
 import urllib
 
-from ckanext.edc_schema.commands.base import (site_url,
-                                              api_key,
-                                              env_name)
-
-
 import pprint
 
-user_filename = './data/' + env_name + '_users_list.json'
+
+
+user_filename = './data/users_list.json'
+
+from ckanext.edc_schema.commands.base import get_import_params
+import_params = get_import_params()
+site_url =  import_params['site_url']
+api_key = import_params['api_key'] 
 
 with open(user_filename, 'r') as user_file :
     user_list = json.loads(user_file.read())

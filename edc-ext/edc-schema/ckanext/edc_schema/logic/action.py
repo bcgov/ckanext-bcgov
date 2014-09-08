@@ -34,10 +34,10 @@ def edc_package_update(context, input_data_dict):
     1) Call __package_search to find the package
     2) Check the results (success == true), (count==1)
     3) Modify the data
-    4) Call get_action(package_update) to update the package 
+    4) Call get_action(package_update) to update the package
     '''
     from ckan.lib.search import SearchError
-    
+
     # first, do the search
     q = 'object_name:' + input_data_dict.get("object_name")
     fq = ''
@@ -53,14 +53,14 @@ def edc_package_update(context, input_data_dict):
                      'rows' : limit,
                      'sort' : sort
                     }
-             
+
         #Use package_search to filter the list
         query = get_action('package_search')(context, data_dict)
 
     except SearchError, se :
         print 'Search error', str(se)
         raise SearchError(str(se))
-    
+
     #check the search results - there can be only 1!!
     the_count = query['count']
     if the_count != 1:
@@ -84,7 +84,7 @@ def edc_package_update(context, input_data_dict):
 
 
 def package_update(context, data_dict):
-    
+
     '''Update a dataset (package).
 
     You must be authorized to edit the dataset and the groups that it belongs
@@ -105,35 +105,29 @@ def package_update(context, data_dict):
     :rtype: dictionary
 
     '''
+    
     model = context['model']
     user = context['user']
     name_or_id = data_dict.get("id") or data_dict['name']
-    
+
     pkg = model.Package.get(name_or_id)
-    
+
     if pkg is None:
         raise NotFound(_('Package was not found.'))
     context["package"] = pkg
     data_dict["id"] = pkg.id
-    
+
     old_data = get_action('package_show')(context, {'id': pkg.id})
+
+    #Set the package last modified date
+    data_dict['record_last_modified'] = str(datetime.date.today())
     
-    #Check if the user has chenged the publish date.
-    previous_publish_date = None
-    if 'dates' in old_data:
-        for date in old_data['dates']:
-            if date['type'] == 'Published': #Published date
-                previous_publish_date = date['date']
-    
-    new_publish_date = None
-    if 'dates' in data_dict:
-        for date in data_dict['dates']:
-            if date['type'] == 'Published': #Published date
-                new_publish_date = date['date']
-    
-    
-    if new_publish_date :
-        data_dict['publish_date'] = new_publish_date
+    # Keep record_publish_date
+    if 'record_publish_date' in old_data:
+        data_dict['record_publish_date'] = old_data['record_publish_date']
+
+    if 'record_archive_date' in old_data:
+        data_dict['record_archive_date'] = old_data['record_archive_date']
 
     _check_access('package_update', context, data_dict)
 
@@ -143,16 +137,16 @@ def package_update(context, data_dict):
         schema = context['schema']
     else:
         schema = package_plugin.update_package_schema()
-    
+
     image_url = old_data.get('image_url', None)
-               
+
     upload = uploader.Upload('edc', image_url)
     upload.update_data_dict(data_dict, 'image_url', 'image_upload', 'clear_upload')
-    
+
     #Adding image display url for the uploaded image
     image_url = data_dict.get('image_url')
     data_dict['image_display_url'] = image_url
-    
+
     if image_url and not image_url.startswith('http'):
         image_url = munge.munge_filename(image_url)
         data_dict['image_display_url'] = h.url_for_static('uploads/edc/%s' % data_dict.get('image_url'), qualified=True)
@@ -205,8 +199,8 @@ def package_update(context, data_dict):
         item.edit(pkg)
 
         item.after_update(context, data)
-        
-        
+
+
     upload.upload(uploader.get_max_image_size())
 
     if not context.get('defer_commit'):
@@ -225,7 +219,7 @@ def package_update(context, data_dict):
             else _get_action('package_show')(context, {'id': data_dict['id']})
 
     return output
-    
+
 @toolkit.side_effect_free
 def post_disqus_comment(context, comment_dict):
     '''
@@ -236,25 +230,25 @@ def post_disqus_comment(context, comment_dict):
         author_email :
         author_name :
     '''
-    
+
     import urllib2
     import urllib
     import json
 
     import pycurl
-    
+
 #    print comment_dict
-    
+
     from disqusapi import DisqusAPI
     import cStringIO
-    
+
     public_api = 'qUpq4pP5Kg6bKmAraTSig2lwghWO5KNqCTmiCdRHD66rgGTWKVCQloJVqvpfe5HI'
     secret_api = 'r7fjQCL36LDS2fTWMjLHYZpsiN99MnXZ5D6n8byIMPPZ1x9ohMvnTDOpczHba9N9'
-    
+
     '''
         Add the secret api to comment dictionary.
         The secret api is taken from the Disqus account(Login to your Disqus account to get the secret api key).
-    '''    
+    '''
     comment_dict['api_secret'] = secret_api
     comment_dict['forum'] = u'h3testblog'
     identifier = comment_dict['thread']
@@ -264,11 +258,11 @@ def post_disqus_comment(context, comment_dict):
     url = 'http://disqus.com/api/3.0/posts/create.json';
 
 #    url= 'https://disqus.com/api/3.0/threads/list.json?api_secret=frFrznmdh6WlR5Xz9dvv6749Ong8l4hWprLdFItoa743d9SwGJ7koQLJuyhKZ7A0&forum=h3testblog'
-     
+
 #     comment_dict = {'api_secret' : secret_api,
 #                     'forum': 'h3testblog'}
 #     data_string = urllib.quote(json.dumps(comment_dict))
-# 
+#
 #     try:
 #         request = urllib2.Request('https://disqus.com/api/3.0/threads/list.json')
 #         request.add_header('Accept', 'application/json')
@@ -277,7 +271,7 @@ def post_disqus_comment(context, comment_dict):
 #         response = urllib2.urlopen(request, data_string)
 # #        pprint.pprint(response)
 # #        assert response.code == 200
-# 
+#
 #         response_dict = json.loads(response.read())
 #         pprint.pprint( response_dict )
 # #        assert response_dict['success'] is True
@@ -286,52 +280,52 @@ def post_disqus_comment(context, comment_dict):
 #     except Exception:
 #         pass
 
-    
+
     #Get the thread id first :
     thread_dict = {'api_secret' : secret_api,
                    'forum' : 'h3testblog',
                    'thread' : 'ident:' + identifier }
-    
+
     thread_string = ''
     #Construct the post fields string
     for key, value in thread_dict.iteritems() :
         thread_string += key + '=' + value + '&'
     thread_string = thread_string[:-1]
-     
+
     buf = cStringIO.StringIO()
     c = pycurl.Curl()
     c.setopt(pycurl.URL, 'https://disqus.com/api/3.0/threads/set.json?' + thread_string)
     c.setopt(pycurl.VERBOSE, 0)
     c.setopt(c.WRITEFUNCTION, buf.write)
-     
+
     c.perform()
-    
+
     response = json.loads(buf.getvalue()).get('response', [])
-    
+
     thread = None
     if len(response) > 0 :
         thread = response[0]
-        
+
     if thread:
         thread_id = thread.get('id', None)
-    
+
     buf.close()
-    
+
     comment_dict['thread'] = thread_id
     del comment_dict['forum']
 
 #     from disqusapi import DisqusAPI
-#     
+#
 #     client = DisqusAPI(secret_api, public_api)
 #     client.posts.create(api_secret=public_api, **comment_dict)
-#     
+#
     #Construct the post fields string
     fields_string = ''
     for key, value in comment_dict.iteritems() :
         fields_string += key + '=' + value + '&'
     fields_string = fields_string[:-1]
-     
-    
+
+
     buf = cStringIO.StringIO()
 
     #Post the comment using curl
@@ -341,6 +335,5 @@ def post_disqus_comment(context, comment_dict):
     c.setopt(c.POSTFIELDS, fields_string)
     c.setopt(c.WRITEFUNCTION, buf.write)
     c.perform()
-    
+
     buf.close()
-    

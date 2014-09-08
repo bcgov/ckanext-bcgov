@@ -32,7 +32,7 @@ setup(
 	edc_geo = ckanext.edc_schema.forms.edc_datasets:EDC_GeoSpatialForm
 	edc_ngeo = ckanext.edc_schema.forms.edc_datasets:EDC_NonGeoSpatialForm
 	edc_webservice = ckanext.edc_schema.forms.edc_datasets:EDC_WebServiceForm
-	
+
 	[paste.paster_command]
 	edc_command = ckanext.edc_schema.commands.edc_commands:EdcCommand
 	""",

@@ -85,7 +85,11 @@
       {% resource 'edc_theme/edc_theme.css' %}
       {% resource 'edc_theme/wet-boew' %}
     {% endblock %}
-    
+
+    {% block base_href %}
+      <base href="{{ g.site_url }}">
+    {% endblock %}
+
 <script type="text/javascript">
 	var IDLE_TIMEOUT = 14400; //seconds =  4 hours
 	var _idleSecondsCounter = 0;
@@ -111,9 +115,9 @@
 			document.location.href = "/user/_logout";
 		}
 	}
-	
-	
-</script>   
+
+
+</script>
 
 	<!-- Copyright (c) 1996-2009 WebTrends Inc. All rights reserved. -->
 	<!-- Version: 8.6.0 -->
@@ -124,12 +128,12 @@
 	<!-- Warning: The two script blocks below must remain inline. Moving them to an external -->
 	<!-- JavaScript include file can cause serious problems with cross-domain tracking. -->
 	<!-- *********************************************************************************** -->
-	<script type="text/javascript"> 
+	<script type="text/javascript">
 		//<![CDATA[
 		  var _tag=new WebTrends();
 		//]]>>
 	</script>
-	<script type="text/javascript"> 
+	<script type="text/javascript">
 		//<![CDATA[
 			_tag.dcsCustom=function()
 			{ // Add custom parameters here. //_tag.DCSext.param_name=param_value;
@@ -193,6 +197,6 @@
       {# defined in the config.ini under "ckan.template_footer_end" #}
       {{ g.template_footer_end | safe }}
     {%- endblock %}
-          
+
   </body>
 </html>

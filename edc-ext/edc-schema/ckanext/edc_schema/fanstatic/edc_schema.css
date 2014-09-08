@@ -290,12 +290,18 @@ position: relative;
 
 .package-type {
 	float: right;
+	line-height: 2.5;
 }
 
 .package-type em {
 	font-style: normal;
 	font-weight: 700;
 	color: #22A7FF;
+}
+
+.form-actions-header {
+	float: right;
+	margin-right: 20px;
 }
 
 #field-image-upload {

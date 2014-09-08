@@ -4,6 +4,7 @@
 import logging
 
 import datetime
+import copy
 
 from ckan.controllers.package import PackageController
 from ckan.common import  _, request, c, response
@@ -11,6 +12,7 @@ import ckan.lib.base as base
 import ckan.model as model
 import ckan.logic as logic
 import ckan.lib.navl.dictization_functions as dict_fns
+import ckan.lib.dictization.model_save as model_save
 from ckan.controllers.home import CACHE_PARAMETERS
 from ckan.logic import get_action, NotFound
 import ckan.plugins.toolkit as toolkit
@@ -19,6 +21,7 @@ from urllib import urlencode
 from paste.deploy.converters import asbool
 
 from wsgiref.handlers import format_date_time
+from ckanext.edc_schema.util.util import get_user_list
 
 import ckan.lib.render as lib_render
 
@@ -54,7 +57,7 @@ def from_utc(utcTime,fmt="%Y-%m-%dT%H:%M:%S.%f"):
     return datetime.datetime.strptime(utcTime, fmt)
 
 
-def send_email(user, email_dict):
+def send_email(user_display_name, user_email, email_dict):
     '''
     Sends an email given by emai_dict to the given user.
     email_dict : {'subject' : ....., 'body' : .....}
@@ -63,17 +66,17 @@ def send_email(user, email_dict):
 
 #    pprint.pprint(user)
 #    pprint.pprint(email_dict)
-    if not user.email:
+    if not user_email:
         return
 
     try:
-        ckan.lib.mailer.mail_recipient(user.display_name, user.email,
+        ckan.lib.mailer.mail_recipient(user_display_name, user_email,
                 email_dict['subject'], email_dict['body'])
     except ckan.lib.mailer.MailerException:
         raise
 
 
-def check_record_state(old_state, new_data):
+def check_record_state(old_state, new_data, pkg_id):
 
 #    print '---------------------------------------- Checking record state changes ----------------------------------'
 
@@ -90,47 +93,96 @@ def check_record_state(old_state, new_data):
 
     #Create a state change activity
 #    edc_state_activity_create(user_name, new_data, old_state)
+#
 
-    dataset_url = h.url_for(controller='package', action="read", id = new_data['name'])
-    dataset_link = '<a href="'+ config.get('ckan.site_url') + dataset_url + '">' + new_data['title'] + '</a>'
+    # --------------------------------------- Emails on dataset update ---------------------------------------
+    # Get sub org info
+    sub_org_id = new_data['sub_org']
+    sub_org = get_action('organization_show')(context, {'id': sub_org_id })
 
-    #Get dataset author
+    # Basic dataset info
+    dataset_url = config.get('ckan.site_url') + h.url_for(controller='package', action="read", id = new_data['name'])
+    dataset_title = new_data['title']
+    org_title = new_data['organization']['title']
+    sub_org_title = sub_org['title']
+    orgs_titles = org_title + ' - ' + sub_org_title
+
+    # Get dataset author
     dataset_author = c.userobj
-#     if new_data['author'] != c.userobj.id:
-#         dataset_author = get_action('user_show')(context, {'id': new_data['author']})
-#         pprint.pprint(dataset_author)
 
-    #Get the list of admins
+    # Prepare email
+    subject = ''
+    body = ''
+    role = 'admin'
 
-
-    #Prepare email
-    subject = 'Dataset state change.'
-    body = 'The state of dataset at : ' + dataset_link + ' has been changed to <strong>' + new_state + '</strong>.'
-    email_dict = {
-                  'subject': subject,
-                  'body': body
-                  }
-
-    send_email(dataset_author, email_dict)
-
-    #Todo : Determine what to do based on the package new state
+    # Change email based on new_state changes
     if new_state == 'PENDING PUBLISH' :
-        pass
+        subject = 'EDC - PENDING PUBLISH ' + dataset_title
+        body = 'The following record is "Pending Publication" for ' + orgs_titles + '\n\n\
+Record ' + dataset_url + ', ' + dataset_title + '\n\n\
+Please review and act as required.'
+
     elif new_state == 'REJECTED':
-        pass
+        subject = 'EDC - REJECTED ' + new_data['title']
+        body = 'The following record is "REJECTED" for ' + orgs_titles + '\n\n\
+Record ' + dataset_url + ', ' + dataset_title + '\n\n\
+Please review and act as required.'
+        role = 'editor'
+
     elif new_state == 'PUBLISHED':
-        pass
+        subject = 'EDC - PUBLISHED ' + new_data['title']
+        body = 'The following record is "PUBLISHED" for ' + orgs_titles + '\n\n\
+Record ' + dataset_url + ', ' + dataset_title + '\n\n\
+Please review and act as required.'
+        role = 'editor'
+
     elif new_state == 'PENDING_ARCHIVED':
-        pass
+        subject = 'EDC - PENDING ARCHIVED ' + new_data['title']
+        body = 'The following record is "Pending Archival" for ' + orgs_titles + '\n\n\
+Record ' + dataset_url + ', ' + dataset_title + '\n\n\
+Please review and act as required.'
+
     elif new_state == 'ARCHIVED':
-        pass
+        subject = 'EDC - ARCHIVED ' + new_data['title']
+        body = 'The following record is "ARCHIVED" for ' + orgs_titles + '\n\n\
+Record ' + dataset_url + ', ' + dataset_title + '\n\n\
+Please review and act as required.'
+        role = 'editor'
     else :
         pass
 
-    #Add publish date to data if the state changed to published.
-    if new_state == 'PUBLISHED':
-        new_data['publish_date'] = str(datetime.date.today())
-        new_data['record_publish_date'] = str(datetime.date.today())
+    email_dict = { 'subject': subject, 'body': body }
+
+    # Get the entire list of users
+    users = get_user_list()
+
+    # Get list of sub org users and send emails
+    members = sub_org['users']
+    for member in members:
+        member_role = member['capacity']
+        # If the user matches the role required for the email, then send it
+        if member_role == role:
+            # Rather than call API for each user, let's just go through our entire list
+            for user in users:
+                if user['name'] == member['name']:
+                    if 'email' in user:
+                        email_address = user['email']
+                        email_display_name = user['fullname'] or user['name']
+                        send_email(email_display_name, email_address, email_dict)
+
+    # ------------------------------------ END Emails on dataset update --------------------------------------
+
+    old_data =  get_action('package_show')(context, {'id': pkg_id})
+
+    # Add publish date to data if the state changed to published (and hasn't
+    # been published already)
+    if new_state == 'PUBLISHED' or new_state == 'ARCHIVED':
+        if new_state == 'PUBLISHED' :
+            if not 'record_publish_date' in old_data:
+                new_data['record_publish_date'] = str(datetime.date.today())
+        if new_state == 'ARCHIVED' :
+            new_data['record_archive_date'] = str(datetime.date.today())
+
         #update the record
         pkg = get_action('package_update')(context, new_data)
 
@@ -244,7 +296,7 @@ class EDCPackageController(PackageController):
 
         new_data =  get_action('package_show')(context, {'id': pkgname})
         if new_data:
-            check_record_state(EDCPackageController.old_state, new_data)
+            check_record_state(EDCPackageController.old_state, new_data, pkgname)
             EDCPackageController.old_state = new_data['edc_state']
 #            self._check_file_upload(new_data)
 
@@ -327,6 +379,81 @@ class EDCPackageController(PackageController):
 
         return result
 
+
+    def resource_edit(self, id, resource_id, data=None, errors=None,
+                      error_summary=None):
+        print 'Test resource edit'
+        if request.method == 'POST' and not data:
+            data = data or clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(
+                request.POST))))
+            # we don't want to include save as it is part of the form
+            del data['save']
+            
+            context = {'model': model, 'session': model.Session,
+                       'api_version': 3, 'for_edit': True,
+                       'user': c.user or c.author, 'auth_user_obj': c.userobj}
+
+            data['package_id'] = id
+            try:
+                if resource_id:
+                    data['id'] = resource_id
+                    get_action('resource_update')(context, data)
+                else:
+                    get_action('resource_create')(context, data)
+            except ValidationError, e:
+                errors = e.error_dict
+                error_summary = e.error_summary
+                return self.resource_edit(id, resource_id, data,
+                                          errors, error_summary)
+            except NotAuthorized:
+                abort(401, _('Unauthorized to edit this resource'))
+            redirect(h.url_for(controller='package', action='resource_read',
+                               id=id, resource_id=resource_id))
+
+        context = {'model': model, 'session': model.Session,
+                   'api_version': 3, 'for_edit': True,
+                   'user': c.user or c.author, 'auth_user_obj': c.userobj}
+        pkg_dict = get_action('package_show')(context, {'id': id})
+        if pkg_dict['state'].startswith('draft'):
+            # dataset has not yet been fully created
+            resource_dict = get_action('resource_show')(context, {'id': resource_id})
+            fields = ['url', 'resource_type', 'format', 'name', 'description', 'id']
+            fields_dict = {'Application' : ['url', 'resource_type', 'name', 'description', 'id'],
+                           'Geographic' : ['resource_update_cycle', 'projection_name', 'edc_resource_type', 'resource_storage_access_method', 
+                                           'resource_storage_location', 'data_collection_start_date', 'data_collection_end_date', 
+                                           'url', 'resource_type', 'format', 'name', 'description', 'id', 'supplemental_info'],
+                           'Dataset' : ['resource_update_cycle', 'edc_resource_type', 'resource_storage_access_method', 
+                                           'resource_storage_location', 'data_collection_start_date', 'data_collection_end_date', 
+                                           'url', 'resource_type', 'format', 'name', 'description', 'id', 'supplemental_info'],
+                           'WebService' : ['url', 'resource_type', 'format', 'name', 'description', 'id'] }
+            
+            fields = fields_dict[pkg_dict['type']]
+            data = {}
+            for field in fields:
+                data[field] = resource_dict[field]
+            return self.new_resource(id, data=data)
+        # resource is fully created
+        try:
+            resource_dict = get_action('resource_show')(context, {'id': resource_id})
+        except NotFound:
+            abort(404, _('Resource not found'))
+        c.pkg_dict = pkg_dict
+        c.resource = resource_dict
+        print 'resource_dict : ', resource_dict
+        # set the form action
+        c.form_action = h.url_for(controller='package',
+                                  action='resource_edit',
+                                  resource_id=resource_id,
+                                  id=id)
+        if not data:
+            data = resource_dict
+
+        errors = errors or {}
+        error_summary = error_summary or {}
+        vars = {'data': data, 'errors': errors,
+                'error_summary': error_summary, 'action': 'new'}
+        return render('package/resource_edit.html', extra_vars=vars)
+    
 
     def resource_delete(self, id, resource_id):
 
@@ -428,8 +555,7 @@ class EDCPackageController(PackageController):
         for the title and the name.
         '''
         context = {'model': model, 'session': model.Session,
-                   'user': c.user or c.author, 'auth_user_obj': c.userobj,
-                   'save': 'save' in request.params}
+                   'user': c.user or c.author, 'auth_user_obj': c.userobj}
 
         # Check if the user is authorized to create a new dataset
         try:
@@ -439,7 +565,6 @@ class EDCPackageController(PackageController):
 
         #Get the dataset details
         try:
-            context['for_edit'] = True
             data_dict = get_action('package_show')(context, {'id': id})
         except NotAuthorized:
             abort(401, _('Unauthorized to read package %s') % '')
@@ -457,6 +582,7 @@ class EDCPackageController(PackageController):
 
         record_name = '__duplicate__' + record_name
 
+
         data_dict['name'] = record_name
         data_dict['title'] = record_title
         data_dict['edc_state'] = 'DRAFT'
@@ -464,25 +590,31 @@ class EDCPackageController(PackageController):
         #Remove resources if there are any
         del data_dict['resources']
 
-        #Prepare record tag_string field
-        tag_str = ','.join([tag['name'] for tag in data_dict['tags']])
-        data_dict['tag_string'] = tag_str
-        del data_dict['tags']
-
-
         del data_dict['id']
+
+        del data_dict['revision_id']
+        del data_dict['revision_timestamp']
+
 
         #To do - Image upload issues : Use a single copy for the original and duplicate record
         #        Create a new copy of the original record or remove the image link and let the user upload a new image.
 
         c.is_duplicate = True
         #Create the duplicate record
-        pkg_dict = get_action('package_create')(context, data_dict)
+        from ckanext.edc_schema.commands.base import edc_package_create
 
+        (pkg_dict, errors) = edc_package_create(data_dict)
+
+        #pkg_dict = get_action('package_create')(context, new_dict)
 
         redirect(h.url_for(controller='package', action='edit', id=pkg_dict['id']))
-
 
     def auth_error(self):
         return render('package/auth_error.html')
 
+
+
+def removekey(d, key):
+    r = dict(d)
+    del r[key]
+    return r

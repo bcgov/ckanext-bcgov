@@ -9,9 +9,10 @@ import json
 import urllib2
 import urllib
 
-from ckanext.edc_schema.commands.base import (site_url,
-                                              api_key,
-                                              env_name)
+from ckanext.edc_schema.commands.base import get_import_params 
+import_params = get_import_params()
+site_url =  import_params['site_url']
+api_key = import_params['api_key'] 
 
 
 import pprint
@@ -38,6 +39,6 @@ except Exception, e:
 
 #2) For each user find the list organizations and the user role in each org
 
-user_file = open('./data/' + env_name + '_users_list.json', 'w')
+user_file = open('./data/users_list.json', 'w')
 user_file.write(json.dumps(user_list))
 user_file.close()

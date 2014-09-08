@@ -72,9 +72,16 @@ then itself be extended to add/remove blocks of functionality. #}
 {% resource 'edc_resource/jquery-ui.js' %}
 
 {% block package_header %}
+
   {% block dataset_type %}
     <div class="package-type">
         <strong>{{ _("Record Type") }}</strong> <em>{{ h.record_type_label(record_type) }}</em>
+    </div>
+  {% endblock %}
+
+  {% block form_actions_header %}
+    <div class="form-actions-header">
+      <button class="btn btn-primary btn-sm" type="submit" name="save">{% block save_button_text_header %}{{ _('Next: Add Data') }}{% endblock %}</button>
     </div>
   {% endblock %}
 
@@ -102,7 +109,7 @@ then itself be extended to add/remove blocks of functionality. #}
 {% endblock %}
 
 {% block metadata_fields %}
-    {% snippet 'package/snippets/package_metadata_fields.html', record_type=record_type, data=data, errors=errors %}
+    {% snippet 'package/snippets/package_metadata_fields.html', record_type=record_type, data=data, errors=errors, user=user, userobj=c.userobj %}
 {% endblock %}
 
   {% block form_actions %}

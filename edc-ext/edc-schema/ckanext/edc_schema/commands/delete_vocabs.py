@@ -3,12 +3,8 @@ import urllib2
 import urllib
 
 
-from ckanext.edc_schema.commands.base import (site_url,
-                                              api_key)
 
-
-
-def delete_vocabs():
+def delete_vocabs(site_url, api_key):
 
     print 'Deleting all vocabularies ....'
     #Get the list of all vocabs
@@ -51,5 +47,10 @@ def delete_vocabs():
             pass
         
     print 'Done.'
-    
-delete_vocabs()
+
+from ckanext.edc_schema.commands.base import get_import_params
+import_params = get_import_params()
+site_url =  import_params['site_url']
+api_key = import_params['api_key'] 
+
+delete_vocabs(site_url, api_key)

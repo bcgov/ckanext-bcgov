@@ -4,8 +4,11 @@ import urllib2
 import urllib
 import pprint
 
-from ckanext.edc_schema.commands.base import (site_url,
-                                              api_key)
+from ckanext.edc_schema.commands.base import get_import_params
+import_params = get_import_params()
+site_url =  import_params['site_url']
+api_key = import_params['api_key'] 
+
 
 default_data_dir = os.path.dirname(os.path.abspath(__file__))
 REDIRECTION_FILE = default_data_dir + '/../../../data/redirection_map.txt'

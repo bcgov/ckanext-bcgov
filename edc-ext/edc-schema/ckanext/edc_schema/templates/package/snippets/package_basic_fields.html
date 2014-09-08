@@ -4,7 +4,7 @@
 	{% resource 'edc_resource/edc_dataset.js' %}
 
 	<div class="form-horizontal">
-  	{{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large']) }}
+  	{{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], is_required=true) }}
 
     {% set prefix = h.url_for(controller='package', action='read', id='') %}
     {% set domain = h.url_for(controller='package', action='read', id='', qualified=true) %}
@@ -30,7 +30,7 @@
 
     <div class="control-list control-full form-horizontal">
         <div class='required'>
-            {{ form.markdown('notes', id='field-notes', label=_('Description'), placeholder=_('eg. Some useful notes about the data'), value=data.notes, error=errors.notes) }}
+            {{ form.markdown('notes', id='field-notes', label=_('Description'), placeholder=_('eg. Some useful notes about the data'), value=data.notes, error=errors.notes, is_required=true) }}
             {% if record_type != 'Application' and record_type != 'WebService' %}
             {{ form.markdown('purpose', label=_('Purpose'), placeholder=_('Summary of the intentions for which the dataset was developed.'), value=data.purpose, error=errors.purpose, classes=['purpose']) }}
             {% endif %}
@@ -178,8 +178,9 @@
                       <label class="control-label" for="field-license"><span class="control-required">*</span> {{ _("License") }}</label>
                       <div class="controls">
                         <select id="field-license" name="license_id" data-module="autocomplete">
+                          <option value ='' {% if not license_id %} selected="selected" {% endif %} disabled>Select license</option>
                           {% for license_desc, license_id in licenses|sort if license_desc  %}
-                            <option value="{{ license_id }}" {% if data.get('license_id', '0') == license_id %}selected="selected"{% endif %}>{{ license_desc }}</option>
+                            <option value="{{ license_id }}" {% if data.get('license_id', None) == license_id %}selected="selected"{% endif %}>{{ license_desc }}</option>
                           {% endfor %}
                         </select>
                         {% if error %}<span class="error-block">{{ error|join(', ') }}</span>{% endif %}

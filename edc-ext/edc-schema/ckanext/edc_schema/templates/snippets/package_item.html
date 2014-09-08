@@ -31,10 +31,17 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
     {% block content %}
       <div class="dataset-content">
         {% block markers %}
-          {% snippet 'package/snippets/markers.html', type=package.type %}
+          {% if package.sector %}
+            {% set marker_strlen = 12 %}
+            {% set sector_length = package.sector|truncate(marker_strlen+1, False, '')|length %}
+            <ul class="dataset-markers">
+              <li class="marker dataset-sector {{ package.sector|lower|replace(' ', '-')|replace('.', '-')  }}{% if sector_length >= marker_strlen or sector_length == 0 %} small{% endif %}"><a href="{{ h.url_for(controller='package', action='search', sector=package.sector) }}">{{ package.sector }}</a></li>
+            </ul>
+          {% endif %}
         {% endblock %}
 
-        {% if logged_in %}
+		{# Check if the user is a member of the package orgs #}
+        {% if logged_in and is_editor %}
           {% set edc_state_class = package.edc_state|lower|replace(" ", "") %}
           <div class="edc-state {{ edc_state_class }}">
             {{ package.edc_state }}
@@ -56,7 +63,7 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
             {% endblock %}
             {% block heading_orgs %}
               <div class="dataset-heading-orgs">
-              {% snippet 'package/snippets/org_view.html', org=package.org, branch=package.sub_org %}
+              {% snippet 'package/snippets/org_view.html', org=orgs[package.org], branch=orgs[package.sub_org] %}
               </div>
             {% endblock %}
             {% block heading_meta %}
@@ -98,19 +105,22 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
         {% endif %}
       {% endblock %}
 
-      {% block package_dates %}
-        <ul class="dataset-dates">
-          {% if package.record_publish_date %}
-            <li>Record Published: {{ h.render_datetime(package.record_publish_date, '%Y-%m-%d') }}</li>
-          {% endif %}
+	  {# Check if the user is a member of the owner org #}
+      {% if logged_in and is_member %}
+        {% block package_dates %}
+          <ul class="dataset-dates">
+            {% if package.record_publish_date %}
+              <li>Record Published: {{ h.render_datetime(package.record_publish_date, '%Y-%m-%d') }}</li>
+            {% endif %}
 
-          {% if package.metadata_modified %}
-            <li>Record Last Modified: {{ h.render_datetime(package.metadata_modified, '%Y-%m-%d') }}</li>
-          {% else %}
-            <li>Record Last Modified: {{ h.render_datetime(package.metadata_created, '%Y-%m-%d') }}</li>
-          {% endif %}
-        </ul>
-      {% endblock %}
+            {% if package.record_last_modified %}
+              <li>Record Last Modified: {{ h.render_datetime(package.record_last_modified, '%Y-%m-%d') }}</li>
+            {% else %}
+            	<li>Record Last Modified: {{ h.render_datetime(package.metadata_modified, '%Y-%m-%d') or h.render_datetime(package.revision_timestamp, '%Y-%m-%d') or _('unknown') }}</li>
+            {% endif %}
+          </ul>
+        {% endblock %}
+      {% endif %}
     {% endblock %}
   </li>
 {% endblock %}

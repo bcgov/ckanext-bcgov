@@ -1,14 +1,14 @@
 
-from ckanext.edc_schema.commands.base import (site_url,
-                                              api_key)
 import urllib2
 import urllib
 import json
 import pprint
 import sys
 
-from ckanext.edc_schema.util.helpers import get_license_data
-#Get the list of all data
+from ckanext.edc_schema.commands.base import get_import_params 
+import_params = get_import_params()
+site_url =  import_params['site_url']
+api_key = import_params['api_key'] 
 
 print "Updating records ..."
 try:

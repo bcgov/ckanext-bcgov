@@ -11,13 +11,16 @@ truncate_title - The length to truncate the title to (default: 80).
 
 Example:
 
-  {% snippet 'snippets/package_list.html', packages=c.datasets %}
+  {% snippet 'snippets/package_list.html', packages=c.datasets, user=c.userobj %}
 
 #}
 {% if packages %}
+  {% set orgs_list = h.get_all_orgs() %}
   <ul class="dataset-list unstyled">
     {% for package in packages %}
-      {% snippet 'snippets/package_item.html', package=package, item_class=item_class, hide_resources=hide_resources, banner=banner, truncate=truncate, truncate_title=truncate_title, logged_in=logged_in %}
+    	{% set is_editor = (package.owner_org in admin_org) or (package.owner_org in editor_org) %}
+    	{% set is_member = is_editor or (package.owner_org in mem_org) %}
+      	{% snippet 'snippets/package_item.html', package=package, item_class=item_class, hide_resources=hide_resources, banner=banner, truncate=truncate, truncate_title=truncate_title, logged_in=logged_in, user_orgs=user_orgs, is_editor=is_editor, is_member=is_member, orgs=orgs_list  %}
     {% endfor %}
   </ul>
 {% endif %}

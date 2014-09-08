@@ -157,7 +157,6 @@ class DisqusController(ApiController):
         widget_api_key = config.get('edcdisqus.widget_api_key')
 
         if parent:
-            print parent
             data_string = urllib.urlencode({'thread': thread_id, 'author_name': name, 'author_email': email, 'message': message, 'parent': parent, 'api_key': widget_api_key })
         else:
             data_string = urllib.urlencode({'thread': thread_id, 'author_name': name, 'author_email': email, 'message': message, 'api_key': widget_api_key })

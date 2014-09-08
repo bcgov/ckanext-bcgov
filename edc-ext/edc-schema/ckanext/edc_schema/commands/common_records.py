@@ -5,18 +5,37 @@ import urllib
 import os
 import sys
 import json
+import getpass
 
 
-
-def get_connection():
+def get_connection(repo_name):
+    print '\nPlease enter ' + repo_name + ' connection parameters (If connection uses a service name, leave SID empty).'
+    print '--------------------------------------------------------------------------------------------------'
     
-    connection_str = "proxy_metastar/h0tsh0t@slkux1.env.gov.bc.ca/idwprod1.bcgov"
-    con = cx_Oracle.connect(connection_str)
+    service_name = None
+    
+    host = raw_input("Server name : ")
+    port = raw_input("Port : ")
+    SID = raw_input("SID : ")
+    if not SID :
+        service_name = raw_input("Service name : ")
+    user_name = raw_input("User name : ")
+    password = getpass.getpass("Password: ")
+
+    if service_name :
+        connection_str = user_name + '/' + password + '@' + host + '/' + service_name
+        
+        #connection_str = "proxy_metastar/h0tsh0t@slkux1.env.gov.bc.ca/idwprod1.bcgov"
+        con = cx_Oracle.connect(connection_str)
+    else :
+        dsn_tns = cx_Oracle.makedsn(host, port, SID)    
+        con = cx_Oracle.connect(user_name, password, dsn_tns)
+                
     return con
 
 
 def get_discovery_record(con, record_uid):
-    
+
     '''
     Fetches the discovery record from database
     '''
@@ -68,43 +87,49 @@ def get_discovery_record(con, record_uid):
                 "dat.xml_data.extract('//E9264/text()').getStringVal() standard_ersion, " \
                 "usr.description OWNER_DESC, " \
                 "usr.email OWNER_EMAIL, " \
-                "dat.sv_5 RECORD_TYPE " \
+                "dat.sv_5 RECORD_TYPE, " \
+                "to_char(dat.record_modifydate, 'YYYY-MM-DD') record_modified, " \
+                "metastar.getResourceDates(dat.record_uid) resource_dates " \
                 "FROM metastar.bat_records_104 dat, " \
                 "metastar.bat_users usr, " \
                 "metastar.bat_states st " \
                 "WHERE dat.state_uid IN (164,166,168,172) " \
                 "AND usr.user_uid = dat.user_uid " \
                 "AND st.state_uid = dat.state_uid " \
-                "AND dat.RECORD_UID = " + record_uid 
+                "AND dat.RECORD_UID = " + record_uid
 #                /* state is Draft, Approve, Published or ZPublished */
 
     cur = con.cursor()
 
     cur.execute(edc_query)
-    
+
     return cur.fetchone()
 
 def add_discovery_data():
     import pprint
-    
-    
+
+    con = get_connection('discovery')
+
     #Get discovery connection
-    
+
+    '''
     user_name = 'metastar'
     host = 'slkux12.env.gov.bc.ca'
     port = 1521
-    SID = 'BCGWDLV'
+    SID = 'BCGWDLV2'
     password = 'blueb1rd'
-    dsn_tns = cx_Oracle.makedsn(host, port, SID)
-    con = cx_Oracle.connect(user_name, password, dsn_tns)
     
-                                          
+    
+    dsn_tns = cx_Oracle.makedsn(host, port, SID)    
+    con = cx_Oracle.connect(user_name, password, dsn_tns)
+    '''
+    
     discovery_data = {}
 
-    '''    
-        For each common record with metastar uid 
+    '''
+        For each common record with metastar uid
         Get the record data from discovery
-    ''' 
+    '''
     with open('common_records_uids.txt', 'r') as common_records_file :
         common_records_uids = [line.rstrip('\n') for line in common_records_file]
 
@@ -112,79 +137,100 @@ def add_discovery_data():
         record_data = get_discovery_record(con, record_uid)
         if not record_data :
             continue
-        
-        #---------------------------------------------------- Access Constraints ------------------------------------------------           
+
+        #---------------------------------------------------- Access Constraints ------------------------------------------------
         metadata_visibility = 'IDIR'
-        if record_data[19] and record_data[19].lower().startswith('tru'):       
+        if record_data[19] and record_data[19].lower().startswith('tru'):
             metadata_visibility = 'Public'
-        
+
         view_audience = 'Government'
         download_audience = 'Government'
         privacy_impact_assessment = 'No'
-        
+
         if (record_data[11] and record_data[11].lower() == 'yes'):
             view_audience = 'Public'
         if (record_data[12] and record_data[12].lower() == 'yes'):
-            download_audience = 'Public' 
-        
+            download_audience = 'Public'
+
         if (record_data[13] and record_data[13] == 'TRUE'):
             privacy_impact_assessment = 'Yes'
-        
-        #---------------------------------------------------- Iso topic Category ------------------------------------------------           
-        iso_topic_cat = (record_data[29] or 'unknown').split(',')   
+
+        #---------------------------------------------------- Iso topic Category ------------------------------------------------
+        iso_topic_cat = (record_data[29] or 'unknown').split(',')
         lineage_statement =  record_data[18]
         source_data_path = record_data[22]
-        
+
         archive_retention_schedule = record_data[20]
         retention_expiry_date = record_data[21]
 
-        #---------------------------------------------------- Security Classification ------------------------------------------------           
+        #---------------------------------------------------- Security Classification ------------------------------------------------
         security_class = record_data[28]
-        
+
         security_dict = {'topSecret': 'MEDIUM-SENSITIVITY', 'secret': 'MEDIUM-SENSITIVITY', 'restricted' : 'MEDIUM-SENSITIVITY', 'confidential': 'MEDIUM-SENSITIVITY', 'unclassified' : 'LOW-PUBLIC'}
-            
+
         if security_class in security_dict :
             security_class = security_dict[security_class]
         else :
             security_class = 'LOW-PUBLIC'
-                
+
         resource_status = record_data[6] or 'completed'
-        #------------------------------------------------------ Dataset Extent --------------------------------------------------           
+        #------------------------------------------------------ Dataset Extent --------------------------------------------------
         #Get dataset map extent coordinates
         if (record_data[36] and record_data[37] and record_data[38] and record_data[39]) :
             north = record_data[36]
             south = record_data[37]
             east = record_data[38]
             west = record_data[39]
-            
+
             spatial_extent = {"type":"Polygon",
                               "coordinates":[[[west, south], [west, north], [east, north], [east, south],[west, south]]]
                              }
             spatial = json.dumps(spatial_extent)
-                
+
             west_bound_longitude = west
             east_bound_longitude = east
             south_bound_latitude = south
             north_bound_latitude = north
-            
+
         resource_type = record_data[23] or 'Data'
         edc_resource_type = resource_type.strip()
-        
+
 
         # Set record's resource update cycle
         resource_update_cycle = record_data[10] or 'unknown'
-              
+
         data_collection_start_date = record_data[16]
         data_collection_end_date = record_data[17]
-        
+
         purpose = record_data[4]
 
         #------------------------------------------------------------------<< Metadata Information >>-----------------------------------------------------------------
-        metadata_language = record_data[42] or 'English'
+        metadata_language = record_data[42] or 'eng'
         metadata_character_set = record_data[43] or 'utf8'
         metadata_standard_name = record_data[44]    or 'North American Profile of ISO 19115-1:2014 - Geographic information - Metadata (NAP-Metadata)' #Add default value here if there is any
         metadata_standard_version = record_data[45]  or 'n/a' #Add default value here if there is any
+
+        #-----------------------------------------------------------------------<< Record Dates >>---------------------------------------------------------------------
+        date_modified = record_data[49]
+        date_created = record_data[30]
+
+
+        # Adding dataset dates
+        dates_of_data = []
             
+        if record_data[50] :
+            dates_of_data = record_data[50].split(',')
+            
+        date_type_dict = {'creation' : 'Created', 'revision' : 'Modified', 'publication': 'Published', 'archival' : 'Archived', 'destruction': 'Destroyed'}
+        dates = []
+            
+        for date_of_data in dates_of_data :
+            rec_date = date_of_data[:4] + '-' + date_of_data[4:6] + '-' + date_of_data[6:8]
+            date_type = date_of_data[8:]
+            date_type = date_type_dict[date_type]
+            dates.append({'type': date_type, 'date': rec_date, 'delete': '0'})
+                
+
         data_dict = {
                      'purpose' : purpose,
                      'resource_status' : resource_status,
@@ -210,22 +256,25 @@ def add_discovery_data():
                      'metadata_language' : metadata_language,
                      'metadata_character_set' : metadata_character_set,
                      'metadata_standard_name' : metadata_standard_name,
-                     'metadata_standard_version' : metadata_standard_version
+                     'metadata_standard_version' : metadata_standard_version,
+                     'date_modified' : date_modified,
+                     'date_created' : date_created,
+                     'dates' : dates
                      }
         discovery_data[str(record_uid)] = data_dict
-    
+
     con.close()
-    
+
     #Write the data dictionary to a file
     with open('discovery_ODSI.json', 'w') as data_file:
         data_file.write(json.dumps(discovery_data))
-    
+
 def get_common_records():
-    
-    con = get_connection()
-    
+
+    con = get_connection('ODSI')
+
     print 'Connection established. Getting data from database... '
-    
+
     auery = "SELECT DBC_RS.RESOURCE_SET_ID RESOURCE_SET_ID " + \
                 ",DBC_CO.CREATOR_ORGANIZATION CREATOR_ORGANIZATION " + \
                 ",DBC_RS.TITLE TITLE " + \
@@ -268,8 +317,8 @@ def get_common_records():
                 "AND DBC_DC_MIN.RESOURCE_SET_ID(+)=DBC_RS.RESOURCE_SET_ID " + \
                 "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID " + \
                 "AND DBC_RT.RESOURCE_TYPE_NAME='Geospatial Dataset'"
-    
-    
+
+
     cur = con.cursor()
     cur.execute(auery)
     data = cur.fetchall()
@@ -277,29 +326,29 @@ def get_common_records():
 
     #Create ODSI error file
     common_records_title_file = open('common_records_titles.txt', 'w')
-    common_records_uid_file = open('common_records_uids.txt', 'w') 
+    common_records_uid_file = open('common_records_uids.txt', 'w')
 
     common_records_title = []
     common_records_uid = []
-    
+
     for result in data:
-        
-        # If this is record exists in discovery add it to the list            
+
+        # If this is record exists in discovery add it to the list
         if result[9] or result[22]:
             common_records_title.append(result[2])
             print result[2]
             if result[22]:
                 common_records_uid.append(result[22])
-        
+
     for record_title in common_records_title :
         common_records_title_file.write('%s\n' % record_title)
 
     for record_uid in common_records_uid :
         common_records_uid_file.write('%s\n' % record_uid)
-    
-    
+
+
     common_records_title_file.close()
     common_records_uid_file.close()
-    
+
 get_common_records()
 add_discovery_data()

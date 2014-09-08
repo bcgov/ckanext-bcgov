@@ -1,12 +1,16 @@
 
 {% import "macros/form.html" as form %}
 {# {% set organizations = h.edc_orgs() %} #}
-{% set (organizations,user_suborgs)  = h.get_user_toporgs(user.id) %}
+{% if user.sysadmin == True %}
+	{% set (organizations,user_suborgs)  = h.get_user_toporgs(user.id) %}
+{% else %}
+	{% set (organizations,user_suborgs)  = h.get_user_toporgs(user.id, 'editor') %}
+{% endif %}
 {# set user_suborgs = h.get_user_suborgs(user.id) #}
 
 {% set current_org = data.org or data.group_id %}
 {% set org_error = errors.org %}
-{% set sub_org_error = errors.sub_org %}
+{% set sub_org_error = errors.sub_org or errors.owner_org %}
 
 <div>
 
@@ -25,7 +29,6 @@
 		i++;
 	{% endfor %}
 </script>
-
 
 <div class="required control-group control-full {{ " error" if org_error }}">
 	<label for="field-org" class="control-label"><span class="control-required">*</span> Organization</label>

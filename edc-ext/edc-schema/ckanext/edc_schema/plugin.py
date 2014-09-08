@@ -16,10 +16,12 @@ from ckanext.edc_schema.util.util import (get_edc_tags,
                                           get_state_values,
                                           get_username,
                                           get_user_orgs,
+                                          get_user_role_orgs,
                                           get_user_orgs_id,
                                           get_user_toporgs,
                                           check_user_member_of_org,
-                                          get_organization_branches
+                                          get_organization_branches,
+                                          get_all_orgs
                                           )
 
 from ckanext.edc_schema.util.helpers import (get_suborg_sectors,
@@ -58,6 +60,9 @@ def get_dataset_type(id):
     except NotFound:
         abort(404, _('The dataset {id} could not be found.').format(id=id))
 
+def get_user_id():
+
+    return c.userobj.id
 
 def get_organizations():
     context = {'model': model, 'session': model.Session,
@@ -123,6 +128,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
     def get_helpers(self):
         return {
                 "dataset_type" : get_dataset_type,
+                "user_id" : get_user_id,
                 "edc_tags" : get_edc_tags,
                 "edc_orgs" : get_organizations,
                 "edc_org_branches" : get_organization_branches,
@@ -145,7 +151,9 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "edc_linked_gravatar": edc_linked_gravatar,
                 "edc_gravatar": edc_gravatar,
                 "record_is_viewable": record_is_viewable,
-                "get_espg_id" : get_espg_id
+                "get_espg_id" : get_espg_id,
+                "get_user_role_orgs" : get_user_role_orgs,
+                "get_all_orgs" : get_all_orgs
                 }
 
 
@@ -180,6 +188,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('/dataset/{id}/resource/{resource_id}', action='resource_read')
             m.connect('/dataset/{id}/resource_delete/{resource_id}', action='resource_delete')
             m.connect('/authorization-error', action='auth_error')
+            m.connect('resource_edit', '/dataset/{id}/resource_edit/{resource_id}', action='resource_edit', ckan_icon='edit')
 
         with SubMapper(map, controller=user_controller) as m:
             m.connect('user_dashboard_unpublished', '/dashboard/unpublished',
@@ -257,7 +266,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
         # /api ver 3 or none
         #with SubMapper(map, controller=api_controller, path_prefix='/api{ver:/3|}', ver='/3') as m:
-        #    m.connect('/action/{logic_function}', action='action', conditions=GET_POST)
+        m.connect('/action/{logic_function}', action='action', conditions=GET_POST)
 
 
         return map
@@ -284,6 +293,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         from ckanext.edc_schema.controllers.package import from_utc
 
         #Set the last modified date of the record.
+        '''
         metadata_modified_time = from_utc(pkg_dict['metadata_modified'])
         revision_timestamp_time = from_utc(pkg_dict['revision_timestamp'])
 
@@ -291,6 +301,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             pkg_dict['last_modified_date'] = metadata_modified_time.strftime('%Y-%m-%d')
         else:
             pkg_dict['last_modified_date'] = revision_timestamp_time.strftime('%Y-%m-%d')
+        '''
 
 #         #Ignore changes if dataset doesn't have any image
 #         if not 'image_url' in pkg_dict or not 'image_delete' in pkg_dict :
@@ -373,7 +384,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
         #Change the default sort order
         if search_params.get('sort') in (None, 'rank'):
-            search_params['sort'] = 'publish_date desc, metadata_modified desc'
+            search_params['sort'] = 'record_publish_date desc, metadata_modified desc'
 
 
         #Change the query filter depending on the user
@@ -415,7 +426,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
                         fq += ')'
                 #Public user can only view public and published records
                 else:
-                    fq = '+(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
+                    fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
 
         except Exception:
             if 'fq' in search_params:
@@ -425,7 +436,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
             fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
 
         search_params['fq'] = fq
-        pprint.pprint(search_params)
         return search_params
 
     def dataset_facets(self, facet_dict, package_type):
@@ -452,6 +462,12 @@ class SchemaPlugin(plugins.SingletonPlugin):
         facet_dict['type'] = _('Dataset types')
         facet_dict['res_format'] = _('Format')
         facet_dict['organization'] = _('Organizations')
+
+        context = {'model': model, 'session': model.Session,
+               'user': c.user or c.author, 'auth_user_obj': c.userobj}
+
+        if c.userobj and c.userobj.sysadmin:
+          facet_dict['edc_state'] = _('States')
 
         return facet_dict
 

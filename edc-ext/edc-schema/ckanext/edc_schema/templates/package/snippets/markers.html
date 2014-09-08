@@ -1,3 +1,4 @@
+{% set marker_strlen = 12 %}
 {% set dataset_title = h.record_type_label(type) %}
 
 {% if org %}
@@ -19,10 +20,11 @@
     <li class="marker dataset-type {{ type|lower }}"><a href="{{ h.url_for(controller='package', action='search', type=type) }}">{{ dataset_title }}</a></li>
     {% if sectors %}
         {% for sec in sectors %}
-            <li class="marker dataset-sector {{ sec|lower|replace(' ', '-')|replace('.', '-') }}"><a href="{{ h.url_for(controller='package', action='search', sector=sec) }}">{{ sec }}</a></li>
+            {% set sector_length = sec|truncate(marker_strlen+1, False, '')|length %}
+            <li class="marker dataset-sector {{ sec|lower|replace(' ', '-')|replace('.', '-') }}{% if sector_length >= marker_strlen or sector_length == 0 %} small{% endif %}"><a href="{{ h.url_for(controller='package', action='search', sector=sec) }}">{{ sec }}</a></li>
         {% endfor %}
     {% endif %}
     {% if iso_topic_cat and type == 'Geographic' %}
-    <li class="marker dataset-iso"><a href="{{ h.url_for(controller='package', action='search', q='iso_topic_cat:' + iso_topic_title) }}">{{ iso_topic_title }}</a></li>
+    <li class="marker dataset-iso{% if iso_topic_title|length >= marker_strlen %} small{% endif %}"><a href="{{ h.url_for(controller='package', action='search', q='iso_topic_cat:' + iso_topic_title) }}">{{ iso_topic_title }}</a></li>
     {% endif %}
 </ul>

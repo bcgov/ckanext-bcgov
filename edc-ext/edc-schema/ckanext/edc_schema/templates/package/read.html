@@ -70,7 +70,8 @@
 
     {# Displaying Organization and Branch names #}
     {% block package_org %}
-        Published by the {% snippet 'package/snippets/org_view.html', org=pkg.org, branch=pkg.sub_org %}
+        {% set orgs = h.get_all_orgs() %}
+        Published by the {% snippet 'package/snippets/org_view.html', org=orgs[pkg.org], branch=orgs[pkg.sub_org] %}
     {% endblock %}
 
     {% block package_license %}
@@ -165,7 +166,7 @@
 
     {# Showing dates #}
     {% block package_dates %}
-        {% snippet 'package/snippets/dates_view.html', pkg=pkg, last_modified = pkg.last_modified_date %}
+        {% snippet 'package/snippets/dates_view.html', pkg=pkg, last_modified = pkg.get('record_last_modified', '') %}
     {% endblock %}
 
 
@@ -214,10 +215,11 @@
 
   {% endblock %}
 
-  {% block edc_disqus_comments %}
-    {{ h.comments_block() }}
-  {% endblock %}
-
+  {% if (pkg.edc_state.upper() == 'PUBLISHED' or pkg.edc_state.upper() == 'PENDING ARCHIVE') %}
+      {% block edc_disqus_comments %}
+          {{ h.comments_block() }}
+      {% endblock %}
+  {% endif %}
 {% endblock %}
 
 

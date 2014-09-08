@@ -2,15 +2,15 @@ import json
 import urllib2
 import urllib
 
-from ckanext.edc_schema.commands.base import (site_url,
-                                              api_key,
-                                              env_name)
-
-
 import pprint
 
 
-org_filename = './data/' + env_name + '_orgs_list.json'
+from ckanext.edc_schema.commands.base import get_import_params 
+import_params = get_import_params()
+site_url =  import_params['site_url']
+api_key = import_params['api_key'] 
+
+org_filename = './data/orgs_list.json'
 
 data_string = json.dumps({'all_fields' : True})
 

@@ -9,14 +9,11 @@ import pprint
 import logging
 
 
-#site_url = 'http://cat.data.gov.bc.ca'
-#api_key = '82e0ebd4-ae23-47c0-b687-3601689152ff'
 site_url = 'http://edc.highwaythreesolutions.com/'
-api_key = '13be7be0-4af5-4a5f-9f5c-4bcfab2176c1'
+api_key = '77f620cb-e98b-4195-91a6-b0e50812d240'
+
 #site_url = 'http://localhost:5000'
 #api_key = 'ecc41117-7a38-470a-86ce-adbfac08a5a2'
-#site_url = 'http://edc-delivery.highwaythreesolutions.com/'
-#api_key = 'f062420f-14d2-4cb0-9eb5-471c1a685f32'
 
 env_name = 'local'
 
@@ -25,8 +22,18 @@ default_org_file =   default_data_dir + '/../../../data/orgs.json'
 default_vocab_file = default_data_dir + '/../../../data/edc-vocabs.json'
 
 
+def get_import_params():
+    #Get import parameters first 
+    import_dict = {}   
+    print 'Please provide import parameters (Site url, admin user, api_key ). '
+    import_dict['site_url'] = raw_input("Site url (http://localhost:5000): ") or 'http://localhost:5000'
+    import_dict['admin_user'] = raw_input('Admin username : ')
+    import_dict['api_key'] = raw_input('Admin api_key : ')
+    
+    return import_dict
+    
 
-def create_tag(vocab, tag):
+def create_tag(vocab, tag, site_url, api_key):
     tag_dict = {'name': tag,
                 'vocabulary_id': vocab['id']}
     data_string = urllib.quote(json.dumps(tag_dict))
@@ -45,7 +52,7 @@ def create_tag(vocab, tag):
         pass
 
 
-def create_vocab(vocab_name, tags):
+def create_vocab(vocab_name, tags, site_url, api_key):
     data_string = urllib.quote(json.dumps({'name': vocab_name}))
     try:
         request = urllib2.Request(site_url + '/api/3/action/vocabulary_create')
@@ -66,12 +73,12 @@ def create_vocab(vocab_name, tags):
         return None
 
     for tag in tags:
-        create_tag(vocab, tag)
+        create_tag(vocab, tag, site_url, api_key)
 
     return vocab
 
 
-def create_org(org_dict):
+def create_org(org_dict, site_url, api_key):
 
     org = None
     data_string =  urllib.quote(json.dumps({'id' : org_dict['name'], 'include_datasets': False}))
@@ -106,7 +113,7 @@ def create_org(org_dict):
     return org
 
 
-def edc_package_create(edc_record):
+def edc_package_create(edc_record, site_url, api_key):
 
 
     data_string = urllib.quote(json.dumps(edc_record))
@@ -132,20 +139,49 @@ def edc_package_create(edc_record):
     return (pkg_dict, errors)
 
 
-def edc_keywords():
-    tag_list = []
+#Return the name of an organization with the given id
+def get_organization_id(org_title, site_url, api_key):
+
+    data_string = urllib.quote(json.dumps({'all_fields': True}))
     try:
-        request = urllib2.Request(site_url + '/api/3/action/tag_list')
-        response = urllib2.urlopen(request)
+        request = urllib2.Request(site_url + '/api/3/action/organization_list')
+        request.add_header('Authorization', api_key)
+        response = urllib2.urlopen(request, data_string)
         assert response.code == 200
 
+        # Use the json module to load CKAN's response into a dictionary.
         response_dict = json.loads(response.read())
         assert response_dict['success'] is True
 
-        #package_create returns the created package as its result.
-        tag_list = response_dict['result']
-    except Exception:
-        pass
-    return tag_list
+        # package_create returns the created package as its result.
+        orgs = response_dict['result']
+    except:
+        orgs = []
 
+    for org in orgs:
+        if org_title and org_title.startswith(org['title']) :
+            return org['id']
+    return None
+
+def get_user_id(user_name, site_url, api_key):
+    user_info = None
+    data_string = urllib.quote(json.dumps({'id':user_name}))
+
+    request = urllib2.Request(site_url + '/api/3/action/user_show')
+    request.add_header('Authorization', api_key)
+    try:
+        response = urllib2.urlopen(request, data_string)
+        assert response.code == 200
+
+        # Use the json module to load CKAN's response into a dictionary.
+        response_dict = json.loads(response.read())
+        assert response_dict['success'] is True
+
+        # package_create returns the created package as its result.
+        user_info = response_dict['result']
+
+        return user_info['id']
+
+    except Exception:
+        return None
 

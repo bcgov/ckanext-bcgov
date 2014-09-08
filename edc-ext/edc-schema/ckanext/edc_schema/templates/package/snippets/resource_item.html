@@ -2,6 +2,8 @@
 {% set url_action = 'resource_edit' if url_is_edit and can_edit else 'resource_read' %}
 {% set url = h.url_for(controller='package', action=url_action, id=pkg.name, resource_id=res.id) %}
 
+{% set archived = pkg.edc_state == "ARCHIVED" %}
+
 <li class="resource-item" data-id="{{ res.id }}">
   {% block resource_item_title %}
   <a class="heading" href="{{ res.url }}" title="{{ res.name or res.description }}">
@@ -20,6 +22,13 @@
     <a href="{{ url }}" class="btn btn-primary dropdown-toggle">
       <i class="icon-share-alt"></i>
       {{ _('Explore') }}
+    </a>
+  </div>
+  {% else %}
+  <div class="dropdown btn-group">
+    <a href="{{ url }}"{% if archived %} disabled="disabled"{% endif %} class="btn dropdown-toggle">
+      <i class="icon-wrench"></i>
+      {{ _('Manage') }}
     </a>
   </div>
   {% endif %}

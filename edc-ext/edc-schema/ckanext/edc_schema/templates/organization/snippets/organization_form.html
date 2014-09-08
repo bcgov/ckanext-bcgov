@@ -13,6 +13,8 @@
 
     {{ form.prepend('name', label=_('URL'), prepend=prefix, id='field-url', placeholder=_('my-organization'), value=data.name, error=errors.name, attrs=attrs, is_required=true) }}
 
+    {{ form.input('url', label=_('External URL'), id='field-url', placeholder=_('Enter an external link to the organization'), value=data.url, error=errors.url, classes=['control-full']) }}
+
     {{ form.markdown('description', label=_('Description'), id='field-description', placeholder=_('A little information about my organization...'), value=data.description, error=errors.description) }}
 
     {% set is_upload = data.image_url and not data.image_url.startswith('http') %}

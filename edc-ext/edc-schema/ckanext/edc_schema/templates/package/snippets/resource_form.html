@@ -6,7 +6,7 @@
 {% set record_type = h.dataset_type(pkg_name) %}
 
 {% resource 'edc_resource/edc_schema.css' %}
-{% set archived = state == 'ARCHIVED' %}
+{% set archived = (state == 'ARCHIVED') %}
 <form class="dataset-form dataset-resource-form form-horizontal {% if archived %} archived {% endif %}" method="post" action="{{ action }}" data-module="basic-form resource-form" enctype="multipart/form-data">
   {% block stages %}
     {# An empty stages variable will not show the stages #}
@@ -35,28 +35,14 @@
 		{% resource 'edc_resource/jquery-ui.js' %}
 		{% resource 'edc_resource/jquery-ui.css' %}
 		{% resource 'edc_resource/edc_resource.js' %}
-
-{#
-    {% block basic_fields_data %}
-      <div class="controls"{% if allow_upload %} data-module="resource-upload-field"{% endif %}>
-        <i class="ckan-icon ckan-icon-link-file"></i>
-        <input id="field-resource-type-file" type="radio" name="resource_type" checked="checked" value="file" />
-        <label class="radio inline" for="field-resource-type-file">{{ _('Link to a file') }}</label>
-        <i class="ckan-icon ckan-icon-link-plugin"></i>
-        <input id="field-resource-type-api" type="radio" name="resource_type" value="api" />
-        <label class="radio inline" for="field-resource-type-api">{{ _('Link to an API') }}</label>
-      </div>
-    </div>
-    {% endblock %}
- #}
-
+	
 	{% if record_type == 'Geographic' or record_type=='Dataset'  %}
     	{% block basic_fields_description %}
    	 		{{ form.markdown('description', id='field-description', label=_('Resource Description'), placeholder=_('Some useful notes about the data'), value=data.description, error=errors.description) }}
     	{% endblock %}
     {% endif %}
 
-	{% if not record_type == 'WebService' or not record_type == 'Application'%}
+	{% if record_type != 'WebService' and record_type != 'Application'%}
 	    {% block resource_update_cycle %}
 	        {% set update_cycle_error = errors.resource_update_cycle %}
 	        <div class="required control-group control-full{{ " error" if update_cycle_error }}">

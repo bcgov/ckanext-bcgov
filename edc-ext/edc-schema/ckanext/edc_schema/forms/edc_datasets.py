@@ -9,11 +9,11 @@ from converters import (convert_to_extras,
 from validators import (valid_date)
 from ckan.logic.validators import (url_validator,)
 
-import ckan.logic.converters as converters
+import ckan.logic.converters as ckan_converter
 import ckan.plugins.toolkit as toolkit
 
-cnvrt_to_ext = converters.convert_to_extras;
-cnvrt_from_ext = converters.convert_from_extras;
+cnvrt_to_ext = ckan_converter.convert_to_extras;
+cnvrt_from_ext = ckan_converter.convert_from_extras;
 
 class EDC_ApplicationForm(edc_form.EDC_DatasetForm):
     
@@ -105,6 +105,7 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'details' : details_schema()
                       })
         schema['resources'].update({
+                                    'resource_update_cycle' : [ not_empty, cnvrt_to_ext ],
                                     'projection_name' : [not_empty, cnvrt_to_ext],
                                     'format' : [not_empty, unicode],
 #                                    'storage_format_description' : [ not_empty, cnvrt_to_ext ],
@@ -155,6 +156,7 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'details' : [convert_from_extras, ignore_missing]
                         })
         schema['resources'].update({
+                                    'resource_update_cycle' : [ cnvrt_from_ext, not_empty],
                                     'format' : [not_empty, unicode],
 #                                    'storage_format_description' : [cnvrt_from_ext, not_empty],
                                     'edc_resource_type': [ cnvrt_from_ext, not_empty ],
@@ -199,6 +201,7 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
                      })
          
         schema['resources'].update({
+                                    'resource_update_cycle' : [ not_empty, cnvrt_to_ext ],
                                     'format' : [not_empty, unicode],
 #                                    'storage_format_description' : [ not_empty, cnvrt_to_ext ],
                                     'edc_resource_type': [ not_empty, cnvrt_to_ext ],
@@ -236,6 +239,7 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
                         'north_bound_latitude' : [convert_from_extras, ignore_missing]
                          })
         schema['resources'].update({
+                                    'resource_update_cycle' : [ cnvrt_from_ext, not_empty],
                                     'format' : [not_empty, unicode],
 #                                    'storage_format_description' : [cnvrt_from_ext, not_empty],
                                     'edc_resource_type': [ cnvrt_from_ext, not_empty ],
@@ -265,21 +269,27 @@ class EDC_WebServiceForm(edc_form.EDC_DatasetForm):
          
         c.record_type = 'WebService'
         
-#     def _update_webservice_schema(self, schema):
-#         return schema
+    def _update_webservice_schema(self, schema):
+        schema['resources'].update({
+                                    'format' : [not_empty, unicode]
+                                    })
+        return schema
     
     def create_package_schema(self):
         schema = super(EDC_WebServiceForm, self).create_package_schema()
-#        self._update_webservice_schema(schema)
+        self._update_webservice_schema(schema)
         return schema
     
     def update_package_schema(self):
         schema = super(EDC_WebServiceForm, self).update_package_schema()
-#        self._update_webservice_schema(schema)
+        self._update_webservice_schema(schema)
         return schema
     
     def show_package_schema(self):
         schema = super(EDC_WebServiceForm, self).show_package_schema()
+        schema['resources'].update({
+                                    'format' : [not_empty, unicode]
+                                    })
         return schema
 
     

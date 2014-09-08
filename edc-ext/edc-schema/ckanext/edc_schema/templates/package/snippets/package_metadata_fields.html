@@ -8,6 +8,13 @@
 {% if record_type=='Geographic' %}
 <h3 class="module-sub-heading">Preview Information</h3>
 <div class="control-list">
+{% set current_org = data.org %}
+{% set current_suborg = data.sub_org %}
+{% set user_orgs = h.get_user_orgs_id(user_id, role='admin') %}
+
+{% set is_admin = (current_org in user_orgs) or (current_suborg in user_orgs) %}
+
+{% if is_admin %}
 	{{ form.input('layer_name',
 					label=_('Layer name'),
 					id='field-layer_name',
@@ -46,6 +53,7 @@
     				value=data.preview_zoom_level,
     				error=errors.preview_zoom_level,
     				classes=['control-medium']) }}
+{% endif %}
 
     {{ form.input('preview_image_url',
     				label=_("Image URL"),
