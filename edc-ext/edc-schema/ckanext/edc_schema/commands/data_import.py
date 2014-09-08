@@ -183,8 +183,8 @@ def execute_odsi_query(con):
                 "AND DBC_RT.RESOURCE_TYPE_ID=DBC_RS.RESOURCE_TYPE_ID " + \
                 "AND DBC_CS.CREATOR_SECTOR_ID=DBC_SO.CREATOR_SECTOR_ID " + \
                 "AND DBC_DC_MIN.RESOURCE_SET_ID(+)=DBC_RS.RESOURCE_SET_ID " + \
-                "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "  + \
-                "AND DBC_RS.RESOURCE_SET_ID = 173880 "
+                "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "
+#                "AND DBC_RS.RESOURCE_SET_ID = 173880 "
 #                "AND DBC_RT.RESOURCE_TYPE_NAME ='Geospatial Dataset'" #+ \
 
 
