@@ -1,0 +1,584 @@
+Biogeoclimatic Attribute Catalogue
+Biogeoclimatic Ecosystem Classification ( BEC ) Map
+Bioterrain Mapping (TBT) Detailed Polygons with Short Attribute Table Spatial View
+Bird Colonies - Coastal Resource Information Management System (CRIMS)
+Black Oystercatchers - Coastal Resource Information Management System (CRIMS)
+Boreal Caribou Core Habitat Areas - Peace Region
+DO NOT MIGRATE British Columbia Topographic Basemap
+California and Stellar Sealion Haulout Areas
+California and Stellar Sealion Haulout Points
+Caribou Herd Locations for BC
+(DEPRECATED) Climate Station
+Closed Heli-Skiing Areas in Mounatin Caribou Habitat
+Coal Fields of BC with Coal Bed Methane Potential
+Coastal BC Anchorages
+Coastal BC Boat Launches
+Ecosections - Ecoregion Ecosystem Classification of British Columbia
+Bald Eagles - Coastal Resource Information Management System (CRIMS)
+Baseline Thematic Mapping Present Land Use Version 1 Spatial Layer
+Terrain Mapping (TER) Polygon Attributes
+Terrain Mapping (TER) Project Boundaries
+Terrain Stability for the Cariboo Region
+Terrain Stability Mapping (TSM) Detailed Polygons with Short Attribute Table Spatial View
+Terrestrial Ecosystem Information (TEI) Detailed Polygons with Short Table Attribute Table
+Terrestrial Ecosystem Information Project Boundaries
+Terrestrial Ecosystem Mapping - Brewer Cr
+Terrestrial Ecosystem Mapping - Broadwater
+Terrestrial Ecosystem Mapping - Bull Mtn
+Terrestrial Ecosystem Mapping - Cummins River
+Terrestrial Ecosystem Mapping - East Columbia Lake
+Terrestrial Ecosystem Mapping - Fort Sheppard
+Natural Resource Districts
+FADM - Mountain Pine Beetle Salvage Area
+Eelgrasses - Coastal Resource Information Management System (CRIMS)
+MTA - Coal Tenure Lines (MIDA)
+MTA - Coal Tenure Points (MIDA)
+(DEPRECATED) MTA - Coal Tenure Polygons (MIDA)
+MTA - Mineral, Placer and Coal Titles
+MTA  - Mineral, Placer and Coal Tenure SVW
+MTA - Mineral and Placer Legacy Claims from MIDA
+(DEPRECATED) MTA - Mineral Mining Divisions
+(DEPRECATED) MTA - Mineral Reserve Sites
+MTA - Mineral Titles Client Tenure XREF
+Endangered Species and Ecosystems - Masked Occurrences
+Endangered Species and Ecosystems - Non-Confidential Occurrences
+ENV Regional Boundaries
+FADM - BC Timber Sales Area
+Terrestrial Protected Areas Representation by Biogeoclimatic Unit
+Terrestrial Protected Areas Representation by Biogeoclimatic Zone
+Trapline Cabins - Kootenay Region
+Traplines of British Columbia
+Ungulate Winter Range
+UTM Zones of British Columbia
+VRI - Forest Vegetation Composite Polygons and Rank 1 Layer
+Water Allocation Restrictions View
+Water Intakes (Extraction Points) for Human Consumption -  BC
+Water Licensed Works - Lines
+Water Licensed Works - Points
+Water Management Districts
+Water Management Precincts
+Water Officer Boundaries for Vancouver Island
+Water Quality Objectives Reports - Index
+Water Reserves and Water Allocation Restrictions
+FADM - Provincial Forest
+FADM - Provincial Forest Addition
+FADM - Provincial Forest Deletion
+FADM - Provincial Forest Exclusion
+FADM - Pulpwood Agreement
+FADM - Pulpwood Area
+Natural Resource Regions
+FADM - Region Compartment
+FADM - Timber Supply Area (TSA)
+FADM - Tree Farm License (TFL)
+FADM - Tree Farm License (TFL) Addition
+FADM - Tree Farm License (TFL) Deletion
+FADM - Tree Farm License (TFL) Schedule A
+FDU - Forest Licence Reference
+Fire Incident Locations - Historical
+Fire Locations - Current
+Forest Tenure Communication Sites
+Forest Tenure Free Use Permit
+Forest Tenure Managed Licence
+Forest Tenure Map Notation Line
+Forest Tenure Map Notation Point
+Forest Tenure Real Property Project
+Wetland Riparian Classes for the Cariboo Region
+Wetland Riparian Management for the Cariboo Region
+Wildlife Management Units
+Wildlife Mgmt Units - Kootenay Region
+WSA - AQUATIC FEATURES (50,000)
+WSA - STREAM CENTRELINE NETWORK (50,000)
+WSA - STREAM ROUTES (50,000)
+WSA - THE MAJOR WATERSHED CODE NUMBERS OF BC (50,000)
+WSA - THIRD-ORDER AND GREATER WATERSHEDS (50,000)
+WSA - WATER FEATURES ANNOTATION (50,000)
+WSA - WATER POLYGON FEATURES (50,000)
+Fire Maintained Ecosystem Restoration for the Rocky Mountain Forest District
+Fire Perimeters - Current
+Fire Suppression Zones in Parks for the Cariboo Region
+Forest Tenure Road Section Amendment
+Forest Tenure Road Segment Lines
+Forest Tenure Special Access Road Line
+Forest Tenure Special Access Road Polygon
+Forest Tenure Special Use Permit Polygon
+Forest Tenure Timber Licence
+Forest Tenure Timber Licence Elimination
+Forest Tenure Timber Licence Remaining
+Freshwater Atlas 20K-50K Stream Cross Reference Table
+Freshwater Atlas 20K-50K Waterbody Cross Reference Table
+Freshwater Atlas Assessment Watersheds
+Freshwater Atlas Bays and Channels
+Freshwater Atlas Edge Type Codes
+Freshwater Atlas Glaciers
+Freshwater Atlas Islands
+Freshwater Atlas Linear Boundaries
+Air Contaminant Emissions 1 KM Polygon Grid -  except Lower Fraser Valley
+Air Contaminant Emissions 5 KM Polygon Grid -  except Lower Fraser Valley
+Air Photo System - Air Photo Polygons (Spatial View)
+Air Photo System - Centre Points (Spatial View)
+Alcids - Coastal Resource Information Management System (CRIMS)
+Alexander Mackenzie Heritage Trail
+Archaeology Borden Grid
+Atmospheric and Environment Climate Stations - Lower Mainland
+Shoreunit Lines
+Shoreunit Polygons (Unmapped)
+Shorezone Shoreunit Break Points
+Snow Survey Administrative Basin Areas
+Snowpack for the Cariboo Region
+Fisheries Sensitive Watersheds
+Flood Protection Works - Appurtenant Structures.
+Flood Protection Works - Structural Works
+Mapped Floodplains in BC (Historical) - Mapsheets Index with Links to Reports in EcoCat
+Mapped Floodplains in BC (Historical)
+Floodplains in BC Area
+Mapped Floodplains in BC (Historical) - Study Area Limits
+Forest Licensee Operating Areas
+Forest Licensee Operating Areas - Arrow Boundary FD
+Forest Licensee Operating Areas - Columbia Forest District
+Forest Licensee Operating Areas - Rocky Mountain Forest District
+Forest Road Segment Tenure
+Predictive Ecosystem Mapping (PEM) Project Boundaries
+Productive Forest Landbase for the Cariboo Region
+Protected Area Strategy Goal 2 Candidate Areas - Kootenay Boundary LUP
+Protected Area Strategy Goal 2 Candidate Trails - Kootenay Boundary LUP
+Provincial Electoral Districts of British Columbia
+Provincial Fish Ranges - Generalized
+Range Tenure
+BC Health Care Facilities (Hospital)
+Biodiversity Corridors Clearwater Forest District
+Biodiversity Corridors Kamloops Forest District
+Freshwater Atlas Manmade Waterbodies
+Freshwater Atlas Named Point Features
+Freshwater Atlas Named Watersheds
+Freshwater Atlas Obstructions
+Freshwater Atlas Rivers
+Freshwater Atlas Stream Network
+Freshwater Atlas Waterbody Type Codes
+Freshwater Atlas Watershed Boundaries
+Freshwater Atlas Watershed Groups
+Freshwater Atlas Watersheds
+Licenced Springs
+Limited Entry Hunting (LEH) Zones - Current Opportunities Polygon
+Limited Entry Hunting Zone Boundaries 1:20,000
+Limited Entry Hunting Zone Polygons 1:20,000
+Species Distribution Modeling and Wildlife Habitat Ratings Project Boundaries
+(DEPRECATED) Wildlife Species Inventory Telemetry Observations - Non-sensitive
+(DEPRECATED) Wildlife Species Inventory Wildlife Observations - Non-sensitive
+Strategic Land and Resource Plans - Current
+Stream Classification Double Line for the Cariboo Region
+Stream Classification for the Cariboo Region
+Stream Management for the Cariboo Region
+Summer Limnology Survey Sites for the Cariboo Region
+Surficial Geology - Kootenay Region
+TANTALIS - Conservancy Areas
+TANTALIS - Crown Land Development Agreements
+Freshwater Atlas Wetlands
+FSP Agreement Holders
+FWCP Columbia Basin Dam Units
+Game Management Zones
+Generalized Forest Cover Ownership
+Geology Faults
+Georgia Basin Ecosystem Initiative Boundary - Linework
+Georgia Basin Ecosystem Initiative Boundary - Polygon
+Grassland Encroachment for the Cariboo Region
+Great Blue Herons - Coastal Resource Information Management System (CRIMS)
+LWBC Field Offices (Water)
+LWBC Service Regions (Water)
+Marbled Murrelets - Coastal Resource Information Management System (CRIMS)
+Marine Ecosections - Coastal Resource Information Management System (CRIMS)
+Muskwa Kechika Access Routes (Line)
+Naquadat Ground Water Quality Stations
+Reconnaissance Karst Potential Mapping
+Recreation Line
+Recreation Points
+Recreation Polygon
+Recreational Features Inventory
+Recreational Opportunity Spectrum Inventory
+Visual Resource Management  - Scenic Areas - View
+Visual Landscape Inventory - Screenings (Polygons)
+Visual Landscape Inventory - Viewing Direction (Lines)
+Visual Resource Management - Established Visual Quality Objectives View
+Visual Landscape Inventory - Visual Sensitivity Units - View
+Regional Geochemical Stream Survey Areas
+RESULTS - Forest Cover Inventory
+RESULTS - Forest Cover Reserve
+RESULTS - Forest Cover Species (Attribute Only)
+RESULTS - Openings svw
+RESULTS - Openings (Attribute Only)
+RESULTS - Planting
+Caribou Movement Corridors Clearwater Forest District - Lines
+Cedar Hemlock Partition Boundaries FDP 2001Kamloops TSA
+Coastal BC Diving Sites
+Coastal BC Ferry Terminals
+Coastal BC Marinas
+Coastal BC Marine and Freshwater Kayaking Routes
+Coastal BC Marine Kayaking Destinations
+Ground Water Well Capture Zones
+Ground Water Wells (spatial, no attribute info)
+Ground Water Wells (Spatial View, with attribute info)
+Growth and Yield  Samples - Active Status
+Growth and Yield  Samples - All Status
+Guide Outfitter Areas
+Guide Outfitter Cabins - Kootenay Region
+Hydrology: 10 Year Peak Flow Isolines
+Hydrology: Hydrologic Zone Boundaries of British Columbia
+Hydrology: Hydrometric Watershed Boundaries
+Hydrology: Low Flow Zones
+Hydrology: Normal Annual Runoff Isolines (1961 - 1990)
+Hydrometric Stations - Active
+Non Legal Planning Features - Current - Line
+Non Legal Planning Features - Current - Point
+Non Legal Planning Features - Current - Polygon
+Non-TRIM Hydrography
+Non-TRIM Hydrography View
+NTS 250K Grid - Digital Baseline Mapping at 1:250,000 (NTS)
+Offshore Oil and Gas Exploration Potential
+Coastal BC Marine Navigation Aids
+Coastal BC Marine Navigation Hazards - Line
+Coastal BC Marine Navigation Hazards - Point
+Coastal BC Moorages
+Coastal BC Recreational Craft Cruising Routes
+Douglas Fir Management for Mule Deer in the Cariboo Region
+Ground Water Aquifers
+Ground Water Quality Zones Impacted by Non-Point Source (NPS) Human Activites in BC
+Ground Water Quality Zones of Chloride Concentrations in BC
+Ground Water Quality Zones of Hardness Concentrations in BC
+Ground Water Quality Zones of Nitrate-Nitrogen Concentrations in BC
+Ground Water Quality Zones of Specific Conductance Values in BC
+Ground Water Quality Zones of Total Alkalinity Concentrations in BC
+Ground Water Quality Zones of Total Dissolved Solids (TDS) in BC
+Okanagan Lake Reach Breaks
+Old Growth Management Areas - Legal - Current
+Old Growth Management Areas - Non Legal - Current
+Open Snowmobile Areas in Mountain Caribou Habitat
+Park Structures (camps and cabins) in the Okanagan Region
+RESULTS - Standards Units
+Regional Geochemical Stream Survey Locations
+Salmon Biophysical Suitability Study (Theme)
+Saltwater Finfish Tenures - Coastal Resource Information Management System (CRIMS)
+Sealion Rafting Areas
+Seed Planning Zones (Geometry)
+Environmental Assessment Office (EAO) - Points
+Elk Connectivity Corridors Merritt TSA
+Elk Corridors Merritt TSA
+FADM - Designated Areas
+Fish Distribution Habitat Reconnaisance Lillooet TSA
+Fish Distribution Okanagan Shuswap TSA
+Sensitive Ecosystems Inventory (SEI) Detailed Polygons with Short Attribute Table Spatial View
+Sensitive Ecosystems Inventory (SEI) Project Boundaries
+Seral Stage Assessment for the 100 Mile House Forest District
+Seral Stage Assessment for the Chilcotin Forest District
+Seral Stage Assessment for the Horsefly Forest District
+Seral Stage Assessment for the Quesnel Forest District
+Seral Stage Assessment for the Williams Lake Forest District
+Sheep Winter Range for the Kamloops TSA
+Sheep Winter Range for the Okanagan TSA
+Shellfish Tenures - Coastal Resource Information Management System (CRIMS)
+Hydrometric Stations - Discontinued
+Hydrometric Stations (2001) - Active and Discontinued
+IDMI Project Boundary
+Inactive Snow Course Locations
+Indian Reserves - National Framework Canada Lands Administrative Boundaries Level 1
+Intrinsic Aquifer Vulnerability
+Intrinsic Aquifer Vulnerability - EcoCat Reports Index
+Kelp Beds - Coastal Resource Information Management System (CRIMS)
+Known BC Fish Observations and BC Fish Distributions
+Pest Infestation Points
+Pest Infestation Polygons
+Predictive Ecosystem Mapping (PEM) Detailed Polygons with Short Attribute Table - 20,000 Spatial View
+Predictive Ecosystem Mapping (PEM) Detailed Polygons with Short Attribute Table - 50,000 Spatial View
+1998 Lower Mainland Proposed Protected Areas
+Active Snow Course Locations
+Kokanee Shore Spawner Data - Okanagan Region
+Kokanee Shore Spawner REDDS Data - Okanagan Region
+Lake Inventory Surveys
+Land Officer Boundaries for Vancouver Island
+Landsat Image Capture Date Polygon (SII)
+Landscape Units of British Columbia - Current
+Legal Planning Objectives - Current - Line
+Legal Planning Objectives - Current - Point
+BC Community Watersheds - Cancelled
+BC Dams (Public View)
+BC Environmental Monitoring Location Groups
+BC Environmental Monitoring Location Types
+Gazetteer - old and archived
+BC HISTORICAL FISH DISTRIBUTION - ZONES (50,000)
+BC MACRO-REACHES (50,000)
+BC Offshore Oil and Gas Seismic Profiles
+BC Offshore Petroleum Grid
+BC Points of Diversion with Water Licence Information
+BCGS 1:2,500 Mapsheet Grid - NAD 83
+BCGS 1:2,500 Mapsheet Grid - NAD 27
+BCGS 1:20,000 Grid
+BCGS 1:5,000 Grid.
+BCGS 1:50,000 Grid
+TANTALIS - Crown Land Inclusions
+TANTALIS - Crown Land Inventory
+Coastal BC Campsites
+Coastal BC Marine Industrial Sites
+TANTALIS - Crown Land Leases
+TANTALIS - Crown Land Licenses
+TANTALIS - Crown Land Operating Agreements
+TANTALIS - Crown Land Permits
+TANTALIS - Crown Land Reserves and Notations
+TANTALIS - Crown Land Revenue Sharing Agreements
+TANTALIS - Crown Land Rights-of-way
+TANTALIS - Crown Tenures
+TANTALIS - Land Districts
+TANTALIS - Municipalities
+BC Parks, Ecological Reserves, and Protected Areas
+TANTALIS - Regional Districts
+TANTALIS - Surveyed Right-of-way Parcels
+Community Watersheds - Current
+Cruise Ship Routes
+Dabbling Ducks - Coastal Resource Information Management System (CRIMS)
+Distribution of California Sealions
+Distribution of Dall's Porpoises
+Distribution of Harbour Porpoises
+Distribution of Harbour Seals
+Distribution of Humpback Whales
+Distribution of Killer Whales
+Distribution of Northern Fur Seals
+Distribution of Pacific White Sided Dolphins
+Distribution of Sea Otters
+Distribution of Stellar Sealions
+Diving Ducks - Coastal Resource Information Management System (CRIMS)
+Drinking Water Sources (Surface Water PODs)
+Ecodomains - Ecoregion Ecosystem Classification of British Columbia
+Ecological Catalogue (formerly AquaCat)
+Ecoprovinces - Ecoregion Ecosystem Classification of British Columbia
+Ecoregions - Ecoregion Ecosystem Classification of British Columbia
+Terrestrial Ecosystem Mapping - MT Broadwood Heritage Cons Area
+Terrestrial Ecosystem Mapping - Sheep Mtn
+BEC Site Series Attribute Catalogue
+Benthic Marine Ecounits - Coastal Resource Information Management System (CRIMS)
+Terrestrial Ecosystem Mapping - Steam Boat Mtn
+Terrestrial Ecosystem Mapping - Stoddart Creek
+Terrestrial Ecosystem Mapping - TFL 14 / Spillimachine
+Terrestrial Ecosystem Mapping - Wilson/Stagleap Creeks
+Terrestrial Ecosystem Mapping (TEM) Detailed Polygons with Short Attribute Table - 20,000 Spatial View
+Terrestrial Ecosystem Mapping (TEM) Detailed Polygons with Short Attribute Table - 50,000 Spatial View
+Terrestrial Ecosystem Mapping (TEM) Detailed Polygons with Short Attribute Table Spatial View
+Terrestrial Ecosystem Mapping (TEM) Project Boundaries
+Terrestrial Protected Area Representation by Ecosection
+Foreshore Plant Habitat Zones Okanagan Region
+Grassland  and Shrub-Steppe South Okanagan-Similkameen SOSCP
+Grizzly Class 1 and 2 Habitat for the Mid-Coast Forest District
+Habitat Capability for the Cariboo Region
+Harbour Seal Haulouts
+Hydrology: 100 Year Peak Flow Isolines
+Identified Management Initiatives SOSCP
+Kokanee Habitat Zones Okanagan Region
+Lakeshore Management Zones For Classified Lakes Merritt TSA
+Leading Group for the Cariboo Region
+Mgmnt Initiative Crown Land Priority Habitat South Okanagan SOSCP
+Moose Management for the Cariboo Region
+Mountain Caribou Critical Habitat in the Hart and Cariboo Mountains
+Mountain Goat Inventory Areas for the Mid-Coast Forest District
+Mussel Habitat Zones Okanagan Region
+Natural Resource Operations Administrative Boundaries
+Natural Resource Operations Regions
+North Thompson Caribou Habitat Clearwater Forest District
+Potential Moose Habitat Lillooet Forest District
+Range Pastures
+Range Units
+Reservoir Permits Over Crown Land
+RESULTS - Activity Treatment Units
+RESULTS - Forest Cover Silviculture
+Rose Swanson Sensitive Area Vernon Forest District
+Sheep Wintering Habitat for the Cariboo Region
+Shellfish Aquaculture Plan Unit Boundaries
+Shorezone Flight Image Points
+Shuswap Lake Foreshore Riparian Areas Okanagan Shuswap TSA
+Shoreunit Polygons
+South Okanagan Conservation Stragegy Wildlife Reserves
+South Okanagan Similkameen Conservation Program Bndry SOSCP
+Stoyoma Wilderness Area Merritt TSA
+Terrestrial Ecosystem Information Scanned Map Boundary
+Tourism Facilities for the Cariboo Region
+Tourism Feature Areas for the Cariboo Region
+Ungulate Winter Range - Proposed - Peace Region
+Walk In Lakes and Surrounding Buffers Clearwater FD
+First Nation Statement of Intent Boundaries BC
+Forest Tenure Road Section Lines
+Non-Productive Forest for the Cariboo Region
+Operability - Boundary TSA
+Operability - Golden TSA
+Operability - Revelstoke TSA
+Recreation Opportunity Spectrum
+Tsunami Notification Zones for BC
+CEEI Primary Indicators Total 2007 Communities
+CEEI Primary Indicators Per Capita 2007 Regional Districts
+Ministry of Transportation (MOT) Special Lane
+Ministry of Transportation (MOT) Highway Maintenance Class
+CEEI Primary Indicators Per Capita 2007 Communities
+Ministry of Transportation (MOT) Highway Reference Points (HRP)
+Ministry of Transportation (MOT) Surface Type
+Ministry of Transportation (MOT) Highway Profile
+Ministry of Transportation (MOT) Storm Sewer
+CEEI Primary Indicators Total 2007 Regional Districts
+Ministry of Transportation (MOT) Road Features Inventory (RFI)
+Ministry of Transportation (MOT) Road Structures
+CEEI Supporting Indicators Total 1996 Regional Districts
+Ministry of Transportation (MOT) Culverts
+Ministry of Transportation (MOT) Drainage Appliance
+CEEI Supporting Indicators Total 2009 Regional Districts
+Ministry of Transportation (MOT) Linear Safety Feature
+Ministry of Transportation (MOT) Railroad Crossing
+CEEI Supporting Indicators Total 1996 Communities
+Ministry of Transportation (MOT) Retaining Wall
+Ministry of Transportation (MOT) Sign
+CEEI Supporting Indicators Total 2001 Communities
+Ministry of Transportation (MOT) Guardrail
+CEEI Supporting Indicators Total 2001 Regional Districts
+Ministry of Transportation (MOT) District Boundary
+CEEI Supporting Indicators Total 2006 Communities
+CEEI Supporting Indicators Total 2006 Regional Districts
+CEEI Supporting Indicators Total 2009 Communities
+Oil and Gas Land Plats
+Oil and Gas Tenure Areas
+ALC Agricultural Land Reserve Lines
+Parks and Protected Areas Regional Boundaries
+Parks and Protected Areas Section Boundaries
+MTA - Coal Tenure Grid, Mapsheet
+MTA - Coal Tenure Grid, Group
+MTA - Coal Tenure Grid, Block
+MTA - Coal Tenure Grid, Unit
+Grizzly Bear Population Units
+Breeding Bird Inventory - S. Ainslie Watershed - Lower Mainland
+Clam Beds - Coastal Resource Information Management System (CRIMS)
+Coastal BC Airports
+Coastal BC Bathymetry
+Terrain Inventory Mapping (TIM) Detailed Polygons with Short Attribute Table Spatial View
+FADM - Cascade Mountain Boundary
+Water Reserves View
+Waterfowl Unspecified - Coastal Resource Information Management System (CRIMS)
+FADM - Public Sustained Yield Units
+Fish Processor Tenures - Coastal Resource Information Management System (CRIMS)
+Forest Tenure Cutblock Polygons (FTA 4.0)
+Forest Tenure Harvesting Authority Polygons
+Forest Tenure Map Notation Polygon
+Wildlife Habitat Areas
+Winter Limnology Sites for the Cariboo Region
+WSA - BC WATERSHED GROUPS (50,000)
+WSA - THE MAJOR DRAINAGE REGIONS OF BC (50,000)
+Fire Perimeters - Historical
+Fish Holding Areas - Coastal Resource Information Management System (CRIMS)
+Freshwater Atlas Coastlines
+Freshwater Atlas Lakes
+Active Snow Pillow Locations
+Air Contaminant Emissions Grid Factors
+Air Photo System - Flightlines (Spatial View)
+Soil Mapping (SOIL) Project Boundaries
+Forest Development Units
+Forest Licensee Operating Areas - Kootenay Lake FD
+Predictive Ecosystem Mapping (PEM) Detailed Polygons with Short Attribute Table Spatial View
+Provincial Obstacles to Fish Passage
+Freshwater Atlas Watershed Type Codes
+Legal Planning Objectives - Current - Polygon
+Freshwater Finfish Tenures - Coastal Resource Information Management System (CRIMS)
+Fulmars, Shearwaters and Petrels - Coastal Resource Information Management System (CRIMS)
+Loons and Grebes - Coastal Resource Information Management System (CRIMS)
+Mascot Geodetic Control Monuments
+National Parks - National Framework Canada Lands Administrative Boundaries Level 1
+Visual Landscape Inventory
+Harvesting Hauling Authority
+Herring Spawn - Coastal Resource Information Management System (CRIMS)
+Hydrometric Stations - Active and Discontinued
+(DESTROYED) Orthophoto Year Index
+Park Trails in the Okanagan Region
+Seed Planning Units (Geometry)
+Pelagic Marine Ecounits - Coastal Resource Information Management System (CRIMS)
+Landsat Image Catalogue Acquisition Dates Spatial View (SII)
+BC HISTORICAL FISH DISTRIBUTION - POINTS (50,000)
+BC Major Watersheds
+BC Points of Diversion
+BCGS 1:10,000 Grid
+TANTALIS - Integrated Survey Areas
+TANTALIS - Management Areas (Spatial)
+TANTALIS - Surveyed Parcels
+TANTALIS - Wildlife Management Areas
+Cormorants - Coastal Resource Information Management System (CRIMS)
+Digital Road Atlas (DRA) - Master Partially Attributed Road Data
+Distribution of Gray Whales
+Domestic Watersheds - KBLUP
+Ecodivisions - Ecoregion Ecosystem Classification of British Columbia
+Terrestrial Ecosystem Mapping - Fort Sheppard - Sample Plots
+Terrestrial Ecosystem Mapping (TEM) Detailed Polygons with Short Attribute Table - Greater Than 20,000 Spatial View
+Management Initiatives Crown Land South Okanagan SOSCP
+Stock Range
+Wildlife Habitat Areas - Proposed
+Operability - Cranbrook TSA
+Outside Boundary of Class 3 Domestic Watersheds - Kootenay Region
+Provincial Fish Ranges - Watersheds
+Ministry of Transportation (MOT) Landmark Kilometre Inventory (LKI)
+Ministry of Transportation (MOT) Rest Area
+Ministry of Transportation (MOT) Safety Feature
+Ministry of Transportation (MOT) Regional Boundary
+!!ODSI TEST 2.2 w/o OGL
+!!ODSI TEST 2.1 with OGL
+Digital Road Atlas (DRA) - Master Partially-Attributed Roads
+Digital Road Atlas (DRA) - Demographic Partially-Attributed Roads
+Emergency Management BC Boundaries
+Tourism Feature Sites for the Cariboo Region
+Tourism Reported Operators for the Cariboo Region
+Tourism Feature Trails for the Cariboo Region
+Deer Wintering Habitat for the Mid-Coast Forest District
+Tourism Feature Trails for the Cariboo Region
+Marbled Murrelet Suitability Model
+Access Management Areas - East Kootenay
+First Nation Statement of Intent Boundaries BC (Arc Regions)
+Bioslide Points
+CHS High Water Mark Lines
+CHS High Water Mark SP
+CHS Low Water Mark Lines
+CHS Low Water Mark SP
+PSCIS Assessments
+PSCIS Design Proposal
+PSCIS Remediation
+Range Developments - Infrastructure - Points
+Natural Range Barriers - Topological
+Ground Water Well Capture Zones
+Water Reserve Polygons
+Water Resource Management Streams
+Water Resource Management Locations
+Salmon Hatcheries
+Conservation Lands
+BC Geographical Names
+Petroleum and Natural Gas Grid Unit
+Petroleum and Natural Gas Grid Map Group
+Petroleum and Natural Gas Grid Block
+Petroleum and Natural Gas Grid Map Sheet
+BC Gazetteer
+MTA - Mineral Reserve Sites Business View
+Major Projects Inventory (Economic) - Points
+Snowmobile Management Trails - Access Management Area (AMA)
+Snowmobile Management Areas - Access Management Areas (AMA)
+Derenzy Bighorn Sheep Wildlife Management Area Southern Interior Area (Recommended)
+Lithology of Ground Water Wells
+School Districts of BC
+Employment and Labour Market Services Division Employment Program Catchment Areas
+Employment Program of British Columbia Regional Boundaries
+Ministry of Social Development and Social Innovation Regional Boundaries
+Employment Service Office Locations
+MTA - Mineral Mining Divisions with Codes
+Mule Deer Winter Range Topographic Buffers - Cariboo Region
+Mule Deer Winter Range Habitat Management Zones - Cariboo Region
+Natural Resource Sector Major Projects - Points
+MTA - Crown Granted Mineral Claims
+BC Environmental Monitoring System
+Recreational Opportunity Spectrum Inventory (Spatial View)
+Post-secondary Education Facilities
+Wildlife Species Inventory Telemetry Observations - Non-sensitive
+Wildlife Species Inventory Feature Observations - Non-secured
+Wildlife Species Inventory - Results by Area - All
+Wildlife Species Inventory Incidental Observations - Non-secured
+Wildlife Species Inventory Study Areas - All
+Wildlife Species Inventory Survey Observations - Non-sensitive
+DUPLICATE MTA - Located Mineral and Placer Legacy Claims from MIDA
+MTA -  Mineral & Coal Land Reserve History SP
+DUPLICATE MTA - Mineral, Placer and Coal History Tenure SP
+MTA  - Mineral, Placer and Coal History Tenure SP
+Stand Structure Habitat Classes in Mule Deer Winter Range - Cariboo Region
+Northern Caribou Habitat Units of the Itcha and Ilgachuz Areas - Cariboo Region
+Predicted Spawning Periods for Reduced Risk Work Windows for Quesnel and Central Cariboo Districts
