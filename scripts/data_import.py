@@ -197,7 +197,10 @@ def execute_odsi_query(con):
                 "AND DBC_RT.RESOURCE_TYPE_ID=DBC_RS.RESOURCE_TYPE_ID " + \
                 "AND DBC_CS.CREATOR_SECTOR_ID=DBC_SO.CREATOR_SECTOR_ID " + \
                 "AND DBC_DC_MIN.RESOURCE_SET_ID(+)=DBC_RS.RESOURCE_SET_ID " + \
-                "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "  
+                "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "  #+ \
+#                "AND DBC_RS.RESOURCE_SET_ID = 178047 "
+#                "AND DBC_RT.RESOURCE_TYPE_NAME ='Geospatial Dataset'" #+ \
+
 
     cur = con.cursor()
     cur.execute(edc_auery)
@@ -399,7 +402,7 @@ def import_odc_records(con):
 
             contact_name = result[19] or 'DataBC Operations'
             contacts = []
-            contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'branch': 'some branch', 'role' : 'pointOfContact', 'private' : 'Display'})
+            contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'branch': edc_record['sub_org'], 'role' : 'pointOfContact', 'private' : 'Display'})
 
             edc_record['contacts'] = contacts
 
@@ -955,7 +958,8 @@ def import_discovery_records(con):
 
             #-------------------------------------------------------------------<< ISO topic category >>---------------------------------------------------------------------
             iso_topic_cat = (result[29] or 'unknown').split(',')
-            edc_record['iso_topic_cat'] = iso_topic_cat
+            if edc_record['type'] == 'Geographic' or edc_record['type'] == 'Dataset':
+                edc_record['iso_topic_cat'] = iso_topic_cat
 
             #-------------------------------------------------------------------------<< Keywords >>-------------------------------------------------------------------------
             # Extract the keywords(tags) names and add the list of tags to the record.
@@ -1015,7 +1019,7 @@ def import_discovery_records(con):
 
             for i in range(contact_len):
 #                (contact_org, contact_sub_org) = get_organization(contact_orgs[i])
-                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record['org'], 'branch': 'some branch', 'role' : 'pointOfContact', 'private' : 'Display'})
+                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record['org'], 'branch': edc_record['sub_org'], 'role' : 'pointOfContact', 'private' : 'Display'})
 
             edc_record['contacts'] = contacts
 
