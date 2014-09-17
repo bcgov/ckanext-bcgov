@@ -32,13 +32,9 @@ from validators import (check_empty,
                         validate_link,
                         get_org_sector,
                         check_branch,
-                        duplicate_pkg)
-
-import ckan.logic.converters as converters
-
-cnvrt_to_ext = converters.convert_to_extras;
-cnvrt_from_ext = converters.convert_from_extras;
-
+                        duplicate_pkg,
+                        check_duplicates,
+                        check_dashes)
 
 log = logging.getLogger(__name__)
 
@@ -155,7 +151,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     def _modify_package_schema(self, schema):
         cnvrt_to_tags = toolkit.get_converter('convert_to_tags')
         schema.update({
-                        'title' : [not_empty, unicode],
+                        'title' : [not_empty, check_dashes, check_duplicates, unicode],
                         'notes' : [not_empty, unicode],
                         'org' : [not_empty, convert_to_extras],
                         'sub_org' : [check_branch, convert_to_extras],
@@ -167,11 +163,11 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 #                        'resource_update_cycle' : [ not_empty, convert_to_extras ],
                         'replacement_record': [ check_resource_status, url_validator, convert_to_extras ],
                         'contacts' : contacts_db_schema(),
-                        'dates' : dates_to_db_schema(),
+#                        'dates' : dates_to_db_schema(),
                         'view_audience' : [not_empty, convert_to_extras],
                         'download_audience' : [not_empty, convert_to_extras],
                         'privacy_impact_assessment' : [not_empty, convert_to_extras],
-                        'iso_topic_cat' : [not_empty, cnvrt_to_tags('iso_topic_category')],
+#                        'iso_topic_cat' : [not_empty, cnvrt_to_tags('iso_topic_category')],
 #                        'metadata_hierarchy_level' : [not_empty, convert_to_extras],
                         'metadata_visibility' : [not_empty, convert_to_extras],
                         'object_relationships' : [ ignore_missing, convert_to_extras ],
@@ -199,7 +195,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                         'metadata_standard_version' : [ignore_missing, convert_to_extras]
                       })
         schema['resources'].update( {
-                                     'supplemental_info' : [ignore_missing, cnvrt_to_ext]
+                                     'supplemental_info' : [ignore_missing, convert_to_extras]
                                      })
         return schema
 
@@ -213,7 +209,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         schema = self._modify_package_schema(schema)
         schema.update({
                        'name': [not_empty, unicode, name_validator, package_name_validator, duplicate_pkg],
-                       'title': [if_empty_same_as("name"), unicode, duplicate_pkg]
+                       'title': [if_empty_same_as("name"), check_dashes, check_duplicates, unicode, duplicate_pkg]
                        })
         return schema
 
@@ -235,11 +231,11 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 #                        'replacement_record': [ convert_from_extras, check_resource_status ],
                         'replacement_record': [ convert_from_extras, check_resource_status ],
                         'contacts' : [convert_from_extras, ignore_missing],
-                        'dates' : [convert_from_extras, ignore_missing],
+#                        'dates' : [convert_from_extras, ignore_missing],
                         'view_audience' : [convert_from_extras, not_empty],
                         'download_audience' : [convert_from_extras, not_empty],
                         'privacy_impact_assessment' : [convert_from_extras, not_empty],
-                        'iso_topic_cat' : [cnvrt_from_tags('iso_topic_category'), not_empty],
+#                        'iso_topic_cat' : [cnvrt_from_tags('iso_topic_category'), not_empty],
 #                        'metadata_hierarchy_level' : [convert_from_extras, not_empty],
                         'metadata_visibility' :  [convert_from_extras, not_empty],
                         'object_relationships' : [ convert_from_extras, ignore_missing ],
@@ -269,7 +265,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
                        })
         schema['resources'].update( {
-                                     'supplemental_info' : [ cnvrt_from_ext, ignore_missing ]
+                                     'supplemental_info' : [ convert_from_extras, ignore_missing ]
                                      })
 
         return schema

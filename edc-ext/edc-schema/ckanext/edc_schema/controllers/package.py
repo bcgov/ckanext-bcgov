@@ -6,8 +6,10 @@ import logging
 import datetime
 import copy
 
+import ckan as ckan
+
 from ckan.controllers.package import PackageController
-from ckan.common import  _, request, c, response
+from ckan.common import  _, request, c, response, g
 import ckan.lib.base as base
 import ckan.model as model
 import ckan.logic as logic
@@ -19,11 +21,21 @@ import ckan.plugins.toolkit as toolkit
 import ckan.lib.helpers as h
 from urllib import urlencode
 from paste.deploy.converters import asbool
+from email.mime.text import MIMEText
+from email.header import Header
+from email import Utils
+from urlparse import urljoin
+from time import time
 
 from wsgiref.handlers import format_date_time
 from ckanext.edc_schema.util.util import get_user_list
 
 import ckan.lib.render as lib_render
+
+import smtplib
+import logging
+import uuid
+import paste.deploy.converters
 
 
 import pprint
@@ -56,29 +68,80 @@ def from_utc(utcTime,fmt="%Y-%m-%dT%H:%M:%S.%f"):
     # change datetime.datetime to time, return time.struct_time type
     return datetime.datetime.strptime(utcTime, fmt)
 
+def add_msg_niceties(recipient_name, body, sender_name, sender_url):
+    return _(u"Dear %s,<br><br>") % recipient_name \
+           + u"\r\n\r\n%s\r\n\r\n" % body \
+           + u"<br><br>--<br>\r\n%s (%s)" % (sender_name, sender_url)
 
 def send_email(user_display_name, user_email, email_dict):
-    '''
-    Sends an email given by emai_dict to the given user.
-    email_dict : {'subject' : ....., 'body' : .....}
-    '''
-    import ckan.lib.mailer
+    subject = email_dict['subject']
+    body = email_dict['body']
+    recipient_name = user_display_name
+    recipient_email = user_email
+    sender_name = g.site_title
+    sender_url = g.site_url
 
-#    pprint.pprint(user)
-#    pprint.pprint(email_dict)
-    if not user_email:
-        return
+    mail_from = config.get('smtp.mail_from')
+    body = add_msg_niceties(recipient_name, body, sender_name, sender_url)
+    msg = MIMEText(body.encode('utf-8'), 'html', 'utf-8')
+    subject = Header(subject.encode('utf-8'), 'utf-8')
+    msg['Subject'] = subject
+    msg['From'] = _("%s <%s>") % (sender_name, mail_from)
+    recipient = u"%s <%s>" % (recipient_name, recipient_email)
+    msg['To'] = Header(recipient, 'utf-8')
+    msg['Date'] = Utils.formatdate(time())
+    #msg['X-Mailer'] = "CKAN %s" % ckan.__version__
 
+    # Send the email using Python's smtplib.
+    smtp_connection = smtplib.SMTP()
+    if 'smtp.test_server' in config:
+        # If 'smtp.test_server' is configured we assume we're running tests,
+        # and don't use the smtp.server, starttls, user, password etc. options.
+        smtp_server = config['smtp.test_server']
+        smtp_starttls = False
+        smtp_user = None
+        smtp_password = None
+    else:
+        smtp_server = config.get('smtp.server', 'localhost')
+        smtp_starttls = paste.deploy.converters.asbool(
+                config.get('smtp.starttls'))
+        smtp_user = config.get('smtp.user')
+        smtp_password = config.get('smtp.password')
+    smtp_connection.connect(smtp_server)
     try:
-        ckan.lib.mailer.mail_recipient(user_display_name, user_email,
-                email_dict['subject'], email_dict['body'])
-    except ckan.lib.mailer.MailerException:
-        raise
+        #smtp_connection.set_debuglevel(True)
 
+        # Identify ourselves and prompt the server for supported features.
+        smtp_connection.ehlo()
+
+        # If 'smtp.starttls' is on in CKAN config, try to put the SMTP
+        # connection into TLS mode.
+        if smtp_starttls:
+            if smtp_connection.has_extn('STARTTLS'):
+                smtp_connection.starttls()
+                # Re-identify ourselves over TLS connection.
+                smtp_connection.ehlo()
+            else:
+                raise MailerException("SMTP server does not support STARTTLS")
+
+        # If 'smtp.user' is in CKAN config, try to login to SMTP server.
+        if smtp_user:
+            assert smtp_password, ("If smtp.user is configured then "
+                    "smtp.password must be configured as well.")
+            smtp_connection.login(smtp_user, smtp_password)
+
+        smtp_connection.sendmail(mail_from, [recipient_email], msg.as_string())
+        log.info("Sent email to {0}".format(recipient_email))
+
+    except smtplib.SMTPException, e:
+        msg = '%r' % e
+        log.exception(msg)
+        raise MailerException(msg)
+    finally:
+        smtp_connection.quit()
 
 def check_record_state(old_state, new_data, pkg_id):
 
-#    print '---------------------------------------- Checking record state changes ----------------------------------'
 
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
@@ -96,14 +159,22 @@ def check_record_state(old_state, new_data, pkg_id):
 #
 
     # --------------------------------------- Emails on dataset update ---------------------------------------
+
+    # Do not send emails for "DRAFT" datasets
+    if new_state == "DRAFT":
+        return
+
     # Get sub org info
     sub_org_id = new_data['sub_org']
     sub_org = get_action('organization_show')(context, {'id': sub_org_id })
 
+    org_id = new_data['org']
+    org = get_action('organization_show')(context, {'id': org_id })
+
     # Basic dataset info
     dataset_url = config.get('ckan.site_url') + h.url_for(controller='package', action="read", id = new_data['name'])
     dataset_title = new_data['title']
-    org_title = new_data['organization']['title']
+    org_title = org['title']
     sub_org_title = sub_org['title']
     orgs_titles = org_title + ' - ' + sub_org_title
 
@@ -118,34 +189,34 @@ def check_record_state(old_state, new_data, pkg_id):
     # Change email based on new_state changes
     if new_state == 'PENDING PUBLISH' :
         subject = 'EDC - PENDING PUBLISH ' + dataset_title
-        body = 'The following record is "Pending Publication" for ' + orgs_titles + '\n\n\
-Record ' + dataset_url + ', ' + dataset_title + '\n\n\
+        body = 'The following record is "Pending Publication" for ' + orgs_titles + '<br><br>\
+Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
 Please review and act as required.'
 
     elif new_state == 'REJECTED':
         subject = 'EDC - REJECTED ' + new_data['title']
-        body = 'The following record is "REJECTED" for ' + orgs_titles + '\n\n\
-Record ' + dataset_url + ', ' + dataset_title + '\n\n\
+        body = 'The following record is "REJECTED" for ' + orgs_titles + '<br><br>\
+Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
 Please review and act as required.'
         role = 'editor'
 
     elif new_state == 'PUBLISHED':
         subject = 'EDC - PUBLISHED ' + new_data['title']
-        body = 'The following record is "PUBLISHED" for ' + orgs_titles + '\n\n\
-Record ' + dataset_url + ', ' + dataset_title + '\n\n\
+        body = 'The following record is "PUBLISHED" for ' + orgs_titles + '<br><br>\
+Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
 Please review and act as required.'
         role = 'editor'
 
-    elif new_state == 'PENDING_ARCHIVED':
-        subject = 'EDC - PENDING ARCHIVED ' + new_data['title']
-        body = 'The following record is "Pending Archival" for ' + orgs_titles + '\n\n\
-Record ' + dataset_url + ', ' + dataset_title + '\n\n\
+    elif new_state == 'PENDING ARCHIVE':
+        subject = 'EDC - PENDING ARCHIVE ' + new_data['title']
+        body = 'The following record is "Pending Archival" for ' + orgs_titles + '<br><br>\
+Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
 Please review and act as required.'
 
     elif new_state == 'ARCHIVED':
         subject = 'EDC - ARCHIVED ' + new_data['title']
-        body = 'The following record is "ARCHIVED" for ' + orgs_titles + '\n\n\
-Record ' + dataset_url + ', ' + dataset_title + '\n\n\
+        body = 'The following record is "ARCHIVED" for ' + orgs_titles + '<br><br>\
+Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
 Please review and act as required.'
         role = 'editor'
     else :
@@ -159,7 +230,11 @@ Please review and act as required.'
     # Get list of sub org users and send emails
     members = sub_org['users']
     for member in members:
-        member_role = member['capacity']
+        if 'capacity' in member:
+            member_role = member['capacity'].lower()
+        else:
+            member_role = ''
+
         # If the user matches the role required for the email, then send it
         if member_role == role:
             # Rather than call API for each user, let's just go through our entire list
@@ -172,19 +247,20 @@ Please review and act as required.'
 
     # ------------------------------------ END Emails on dataset update --------------------------------------
 
-    old_data =  get_action('package_show')(context, {'id': pkg_id})
-
-    # Add publish date to data if the state changed to published (and hasn't
-    # been published already)
-    if new_state == 'PUBLISHED' or new_state == 'ARCHIVED':
-        if new_state == 'PUBLISHED' :
-            if not 'record_publish_date' in old_data:
-                new_data['record_publish_date'] = str(datetime.date.today())
-        if new_state == 'ARCHIVED' :
-            new_data['record_archive_date'] = str(datetime.date.today())
-
-        #update the record
-        pkg = get_action('package_update')(context, new_data)
+#     old_data =  get_action('package_show')(context, {'id': pkg_id})
+# 
+#     # Add publish date to data if the state changed to published (and hasn't
+#     # been published already)
+#     if new_state == 'PUBLISHED' or new_state == 'ARCHIVED':
+#         if new_state == 'PUBLISHED' :
+#             if not 'record_publish_date' in old_data:
+#                 new_data['record_publish_date'] = str(datetime.date.today())
+#         if new_state == 'ARCHIVED' :
+#             new_data['record_archive_date'] = str(datetime.date.today())
+# 
+#         #update the record
+#         new_data['resources'] = old_data['resources']
+#         pkg = get_action('package_update')(context, new_data)
 
 
 class EDCPackageController(PackageController):
@@ -338,28 +414,28 @@ class EDCPackageController(PackageController):
         metadata_modified_time = from_utc(c.pkg_dict['metadata_modified'])
         revision_timestamp_time = from_utc(c.pkg_dict['revision_timestamp'])
 
-#        print "metadata_modified_time: " + c.pkg_dict['metadata_modified']
-#        print "revision_timestamp_time: " + c.pkg_dict['revision_timestamp']
-
         if (metadata_modified_time >= revision_timestamp_time):
             timestamp = metadata_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
         else:
             timestamp = revision_timestamp_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
+        #we only want Google Search Appliance to re-index records that have changed
+        if ('gsa-crawler' in request.user_agent):
+            response.headers['Last-Modified']  = timestamp
+            response.headers['Cache-Control'] = 'public, max-age=31536000'
+            response.headers['Pragma'] = 'cache'
 
-#        print metadata_modified_time.strftime('%Y-%m-%d')
-        response.headers['Last-Modified']  = timestamp
-        response.headers['Cache-Control'] = 'public, max-age=31536000'
-        response.headers['Pragma'] = 'cache'
-
-        if ('If-Modified-Since' in request.headers and request.headers['If-Modified-Since']):
-            if_modified = request.headers.get('If-Modified-Since')
-            #print 'IF MODIFIED DATE:' + if_modified
-            #print 'LAST REVISION DATE:' + timestamp
-            if (timestamp > if_modified):
-                response.status = 200
-            else:
-                response.status = 304
+            if ('If-Modified-Since' in request.headers and request.headers['If-Modified-Since']):
+                if_modified = request.headers.get('If-Modified-Since')
+                if (timestamp > if_modified):
+                    response.status = 200
+                else:
+                    response.status = 304
+        else:
+            response.headers['Pragma'] = 'no-cache'
+            response.headers['Expires'] = '0'
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response.status = 200
 
         return result
 
@@ -382,13 +458,12 @@ class EDCPackageController(PackageController):
 
     def resource_edit(self, id, resource_id, data=None, errors=None,
                       error_summary=None):
-        print 'Test resource edit'
         if request.method == 'POST' and not data:
             data = data or clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(
                 request.POST))))
             # we don't want to include save as it is part of the form
             del data['save']
-            
+
             context = {'model': model, 'session': model.Session,
                        'api_version': 3, 'for_edit': True,
                        'user': c.user or c.author, 'auth_user_obj': c.userobj}
@@ -419,14 +494,14 @@ class EDCPackageController(PackageController):
             resource_dict = get_action('resource_show')(context, {'id': resource_id})
             fields = ['url', 'resource_type', 'format', 'name', 'description', 'id']
             fields_dict = {'Application' : ['url', 'resource_type', 'name', 'description', 'id'],
-                           'Geographic' : ['resource_update_cycle', 'projection_name', 'edc_resource_type', 'resource_storage_access_method', 
-                                           'resource_storage_location', 'data_collection_start_date', 'data_collection_end_date', 
+                           'Geographic' : ['resource_update_cycle', 'projection_name', 'edc_resource_type', 'resource_storage_access_method',
+                                           'resource_storage_location', 'data_collection_start_date', 'data_collection_end_date',
                                            'url', 'resource_type', 'format', 'name', 'description', 'id', 'supplemental_info'],
-                           'Dataset' : ['resource_update_cycle', 'edc_resource_type', 'resource_storage_access_method', 
-                                           'resource_storage_location', 'data_collection_start_date', 'data_collection_end_date', 
+                           'Dataset' : ['resource_update_cycle', 'edc_resource_type', 'resource_storage_access_method',
+                                           'resource_storage_location', 'data_collection_start_date', 'data_collection_end_date',
                                            'url', 'resource_type', 'format', 'name', 'description', 'id', 'supplemental_info'],
                            'WebService' : ['url', 'resource_type', 'format', 'name', 'description', 'id'] }
-            
+
             fields = fields_dict[pkg_dict['type']]
             data = {}
             for field in fields:
@@ -439,7 +514,6 @@ class EDCPackageController(PackageController):
             abort(404, _('Resource not found'))
         c.pkg_dict = pkg_dict
         c.resource = resource_dict
-        print 'resource_dict : ', resource_dict
         # set the form action
         c.form_action = h.url_for(controller='package',
                                   action='resource_edit',
@@ -453,7 +527,7 @@ class EDCPackageController(PackageController):
         vars = {'data': data, 'errors': errors,
                 'error_summary': error_summary, 'action': 'new'}
         return render('package/resource_edit.html', extra_vars=vars)
-    
+
 
     def resource_delete(self, id, resource_id):
 

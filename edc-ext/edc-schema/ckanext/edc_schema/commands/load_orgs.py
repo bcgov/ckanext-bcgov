@@ -4,9 +4,9 @@ import json
 import urllib2
 import urllib
 
-from ckanext.edc_schema.commands.base import (create_org, get_import_params)
+from base import (create_org, site_url, api_key)
 
-def create_org_members(id, members, site_url, api_key):
+def create_org_members(id, members):
     
     for member in members :
         data_dict = {
@@ -27,10 +27,6 @@ def create_org_members(id, members, site_url, api_key):
         except Exception, e:
             pass                
     
-import_params = get_import_params()
-site_url =  import_params['site_url']
-api_key = import_params['api_key'] 
-
 
 #Get the json file for organization and sun-organizations (Ministry and branches)
 orgs_dict = json.load(urllib2.urlopen('http://apps.gov.bc.ca/pub/odc/v2/orgs.json'))
@@ -59,9 +55,9 @@ for org_obj in orgs_list :
                 'title' : org_title,
                 'id' : org_data['id']
                 }
-    org = create_org(org_dict, site_url, api_key)
+    org = create_org(org_dict)
             
-    create_org_members(org_data['id'], org_data['members'], site_url, api_key)
+    create_org_members(org_data['id'], org_data['members'])
     
     #Get the list of sub-organizations for this organization
     suborgs_list = []
@@ -82,8 +78,8 @@ for org_obj in orgs_list :
                            'title' : suborg_title,
                            'id' : suborg_data['id']
                            }
-        suborg = create_org(suborg_dict, site_url, api_key)
-        create_org_members(suborg_data['id'], suborg_data['members'], site_url, api_key)
+        suborg = create_org(suborg_dict)
+        create_org_members(suborg_data['id'], suborg_data['members'])
             
         #Add this sub-organization as a child of the organization
         member_dict = { 'id': suborg_data['id'], 'object' : org_data['id'], 'object_type' : 'group', 'capacity' : 'admin' }

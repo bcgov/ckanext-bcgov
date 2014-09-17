@@ -73,7 +73,6 @@
         {% set orgs = h.get_all_orgs() %}
         Published by the {% snippet 'package/snippets/org_view.html', org=orgs[pkg.org], branch=orgs[pkg.sub_org] %}
     {% endblock %}
-
     {% block package_license %}
       <br/>
       Licensed under
@@ -175,6 +174,18 @@
             <tr>
                 <td><strong>Resource Status</strong></td><td> {{ pkg.resource_status }} </td>
             </tr>
+            {% if pkg.resource_status == _('historicalArchive')%}
+            	{% if pkg.retention_expiry_date %}
+            	<tr>
+                	<td><strong>Retention Expiry Date </strong></td><td> {{ pkg.retention_expiry_date }} </td>
+            	</tr>
+            	{% endif %}
+            	{% if pkg.source_data_path %}
+            	<tr>
+                	<td><strong>Source Data Path </strong></td><td> {{ pkg.source_data_path }} </td>
+            	</tr>
+            	{% endif %}
+            {% endif %}
         {% endif %}
         {% if pkg.replacement_record %}
             <tr>

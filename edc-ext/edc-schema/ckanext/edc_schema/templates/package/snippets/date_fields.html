@@ -50,8 +50,13 @@
 						<div class="item-link"> <a onclick="remove_date({{ loop.index0 }}); return false;" class="btn btn-primary btn-xs">Delete </a> </div>
 						<input id="field-dates-{{ loop.index0 }}-delete"
 					   			type="hidden"
-					   			name="dates__{{ loop.index0 }}__delete"
-					   			value="{{ dataset_date['delete'] }}">
+					   			name="dates__{{ loop.index0 }}__delete "
+				   				{% if errors %}
+				   					value="0">
+				   				{% else %}
+				   					value="{{ dataset_date['delete'] }}">
+				   				{% endif %}
+							   			
 					</div>
 				</div>
 			</div>

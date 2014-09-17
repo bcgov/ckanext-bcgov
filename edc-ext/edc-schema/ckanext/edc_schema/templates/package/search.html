@@ -1,7 +1,7 @@
 {% ckan_extends %}
 
 {% if c.user %}
-	{% set (admin_org, editor_org, mem_org) = h.get_user_role_orgs(c.userobj.id) %}
+	{% set (admin_org, editor_org, mem_org) = h.get_user_role_orgs(c.userobj.id, c.userobj.sysadmin) %}
 {% endif %}
 
 {% block page_primary_action %}

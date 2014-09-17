@@ -49,6 +49,7 @@
     		  {% snippet 'package/snippets/edc_keywords.html', data=data, user=userobj, errors=errors %}
     	    {% endblock %}
 
+            {% if record_type != 'Application' and record_type != 'WebService' %}
             {% set topic_error = errors.iso_topic_cat %}
             <div class="control-group {{ " error" if topic_error }}">
                 <label class="control-label" for="field-iso_topic_cat"><span class="control-required">*</span> {{ _("ISO Topic Category") }}</label>
@@ -68,7 +69,7 @@
                     {% endif %}
                 </div>
             </div>
-
+            {% endif %}
         </div>
 
         {% block package_contact_fields %}
@@ -89,7 +90,9 @@
         {% block resource_status_fields %}
             {% snippet 'package/snippets/resource_status_fields.html', data=data, errors=errors %}
         {% endblock %}
+        {% if record_type != 'Application' and record_type != 'WebService' %}
 		{% snippet 'package/snippets/date_fields.html', dates=data.dates, errors=errors %}
+		{% endif %}
 	{% endblock %}
 </div>
 	{% block package_security_classification %}

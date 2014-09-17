@@ -40,7 +40,7 @@ class EDCUserController(UserController):
 #        
         user_id = c.userobj.id
         #Get the list of organizations that this user is the admin
-        user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
+        user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
         fq = '+owner_org:(' + ' OR '.join(user_orgs) + ')'
         fq += ' +edc_state:("DRAFT" OR "PENDING PUBLISH" OR "REJECTED")'
         self._user_datasets('dashboard_unpublished', c.userobj.id, fq)
@@ -56,10 +56,11 @@ class EDCUserController(UserController):
         if c.userobj and c.userobj.sysadmin == True:
             fq = ''
         else :
-            fq = 'author:("%s")' % (c.userobj.id) 
-            user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id)]
+            fq = ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
+            user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
             if len(user_orgs) > 0:
                 fq += ' OR owner_org:(' + ' OR '.join(user_orgs) + ')'
+            fq += ')'
         self._user_datasets('read',id, fq)
         return render('user/read.html')
  

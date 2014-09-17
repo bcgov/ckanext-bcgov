@@ -7,21 +7,34 @@ import sys
 import json
 import getpass
 
+from base import import_properties
 
 def get_connection(repo_name):
-    print '\nPlease enter ' + repo_name + ' connection parameters (If connection uses a service name, leave SID empty).'
-    print '--------------------------------------------------------------------------------------------------'
     
-    service_name = None
-    
-    host = raw_input("Server name : ")
-    port = raw_input("Port : ")
-    SID = raw_input("SID : ")
-    if not SID :
-        service_name = raw_input("Service name : ")
-    user_name = raw_input("User name : ")
-    password = getpass.getpass("Password: ")
+    SID = service_name = None
 
+    if repo_name.lower() == 'odsi' :
+        host = import_properties['odsi_host']
+        port = import_properties['odsi_port']
+    
+        if 'odsi_sid' in import_properties :
+            SID = import_properties['odsi_sid']
+        else :
+            service_name = import_properties['odsi_service_name']
+        user_name = import_properties['odsi_username']
+        password = import_properties['odsi_password']
+    else :
+        host = import_properties['discovery_host']
+        port = import_properties['discovery_port']
+    
+        if 'discovery_sid' in import_properties :
+            SID = import_properties['discovery_sid']
+        else :
+            service_name = import_properties['discovery_service_name']
+        user_name = import_properties['discovery_username']
+        password = import_properties['discovery_password']
+        
+    
     if service_name :
         connection_str = user_name + '/' + password + '@' + host + '/' + service_name
         
@@ -102,6 +115,7 @@ def get_discovery_record(con, record_uid):
     cur = con.cursor()
 
     cur.execute(edc_query)
+    
 
     return cur.fetchone()
 
@@ -112,25 +126,13 @@ def add_discovery_data():
 
     #Get discovery connection
 
-    '''
-    user_name = 'metastar'
-    host = 'slkux12.env.gov.bc.ca'
-    port = 1521
-    SID = 'BCGWDLV2'
-    password = 'blueb1rd'
-    
-    
-    dsn_tns = cx_Oracle.makedsn(host, port, SID)    
-    con = cx_Oracle.connect(user_name, password, dsn_tns)
-    '''
-    
     discovery_data = {}
 
     '''
         For each common record with metastar uid
         Get the record data from discovery
     '''
-    with open('common_records_uids.txt', 'r') as common_records_file :
+    with open('./data/common_records_uids.txt', 'r') as common_records_file :
         common_records_uids = [line.rstrip('\n') for line in common_records_file]
 
     for record_uid in common_records_uids :
@@ -266,14 +268,14 @@ def add_discovery_data():
     con.close()
 
     #Write the data dictionary to a file
-    with open('discovery_ODSI.json', 'w') as data_file:
+    with open('./data/discovery_ODSI.json', 'w') as data_file:
         data_file.write(json.dumps(discovery_data))
 
 def get_common_records():
 
     con = get_connection('ODSI')
 
-    print 'Connection established. Getting data from database... '
+    print 'Updating records from discovery ... '
 
     auery = "SELECT DBC_RS.RESOURCE_SET_ID RESOURCE_SET_ID " + \
                 ",DBC_CO.CREATOR_ORGANIZATION CREATOR_ORGANIZATION " + \
@@ -325,8 +327,8 @@ def get_common_records():
 
 
     #Create ODSI error file
-    common_records_title_file = open('common_records_titles.txt', 'w')
-    common_records_uid_file = open('common_records_uids.txt', 'w')
+    common_records_title_file = open('./data/common_records_titles.txt', 'w')
+    common_records_uid_file = open('./data/common_records_uids.txt', 'w')
 
     common_records_title = []
     common_records_uid = []
@@ -336,7 +338,6 @@ def get_common_records():
         # If this is record exists in discovery add it to the list
         if result[9] or result[22]:
             common_records_title.append(result[2])
-            print result[2]
             if result[22]:
                 common_records_uid.append(result[22])
 
@@ -350,5 +351,8 @@ def get_common_records():
     common_records_title_file.close()
     common_records_uid_file.close()
 
-get_common_records()
-add_discovery_data()
+def get_discovery_data():
+    get_common_records()
+    add_discovery_data()
+
+    

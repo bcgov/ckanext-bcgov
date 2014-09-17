@@ -2,6 +2,7 @@ import ckan.plugins.toolkit as toolkit
 
 import logging
 import datetime
+import sqlalchemy
 
 import ckan.logic as logic
 import ckan.lib.dictization.model_save as model_save
@@ -26,6 +27,8 @@ ValidationError = logic.ValidationError
 _get_action = logic.get_action
 
 log = logging.getLogger(__name__)
+
+_or_ = sqlalchemy.or_
 
 @toolkit.side_effect_free
 def edc_package_update(context, input_data_dict):
@@ -82,7 +85,7 @@ def edc_package_update(context, input_data_dict):
 
     return response_dict
 
-
+@toolkit.side_effect_free
 def package_update(context, data_dict):
 
     '''Update a dataset (package).
@@ -105,7 +108,7 @@ def package_update(context, data_dict):
     :rtype: dictionary
 
     '''
-    
+
     model = context['model']
     user = context['user']
     name_or_id = data_dict.get("id") or data_dict['name']
@@ -121,13 +124,19 @@ def package_update(context, data_dict):
 
     #Set the package last modified date
     data_dict['record_last_modified'] = str(datetime.date.today())
-    
-    # Keep record_publish_date
-    if 'record_publish_date' in old_data:
-        data_dict['record_publish_date'] = old_data['record_publish_date']
 
-    if 'record_archive_date' in old_data:
-        data_dict['record_archive_date'] = old_data['record_archive_date']
+    # Keep record_publish_date
+    if data_dict['edc_state'] == 'PUBLISHED':
+        if 'record_publish_date' in old_data:
+            data_dict['record_publish_date'] = old_data['record_publish_date']
+        else :
+            data_dict['record_publish_date'] = str(datetime.date.today())
+
+    if data_dict['edc_state'] == 'ARCHIVED' :
+        if 'record_archive_date' in old_data:
+            data_dict['record_archive_date'] = old_data['record_archive_date']
+        else :
+            data_dict['record_archive_date'] = str(datetime.date.today())
 
     _check_access('package_update', context, data_dict)
 
@@ -165,10 +174,10 @@ def package_update(context, data_dict):
                 package_plugin.check_data_dict(data_dict)
 
     data, errors = _validate(data_dict, schema, context)
-    log.debug('package_update validate_errs=%r user=%s package=%s data=%r',
-              errors, context.get('user'),
-              context.get('package').name if context.get('package') else '',
-              data)
+#     log.debug('package_update validate_errs=%r user=%s package=%s data=%r',
+#               errors, context.get('user'),
+#               context.get('package').name if context.get('package') else '',
+#               data)
 
     if errors:
         model.Session.rollback()
@@ -180,6 +189,8 @@ def package_update(context, data_dict):
         rev.message = context['message']
     else:
         rev.message = _(u'REST API: Update object %s') % data.get("name")
+
+
 
     #avoid revisioning by updating directly
     model.Session.query(model.Package).filter_by(id=pkg.id).update(
@@ -237,7 +248,6 @@ def post_disqus_comment(context, comment_dict):
 
     import pycurl
 
-#    print comment_dict
 
     from disqusapi import DisqusAPI
     import cStringIO
@@ -269,14 +279,11 @@ def post_disqus_comment(context, comment_dict):
 #         request.add_header('Authorization', public_api)
 # #        request.add_header('Authorization', secret_api)
 #         response = urllib2.urlopen(request, data_string)
-# #        pprint.pprint(response)
 # #        assert response.code == 200
 #
 #         response_dict = json.loads(response.read())
-#         pprint.pprint( response_dict )
 # #        assert response_dict['success'] is True
 # #        result = response_dict['result']
-# #        pprint.pprint(result)
 #     except Exception:
 #         pass
 
@@ -337,3 +344,46 @@ def post_disqus_comment(context, comment_dict):
     c.perform()
 
     buf.close()
+
+@toolkit.side_effect_free
+def package_autocomplete(context, data_dict):
+    '''Return a list of datasets (packages) that match a string.
+
+    Datasets with names or titles that contain the query string will be
+    returned.
+
+    :param q: the string to search for
+    :type q: string
+    :param limit: the maximum number of resource formats to return (optional,
+        default: 10)
+    :type limit: int
+
+    :rtype: list of dictionaries
+
+    '''
+    model = context['model']
+
+
+    _check_access('package_autocomplete', context, data_dict)
+
+    limit = data_dict.get('limit', 10)
+    q = data_dict['q']
+
+    q_lower = q.lower()
+    pkg_list = []
+
+    pkg_dict = get_action('package_search')(context, {'fq': 'title:' + q, 'rows': limit})
+
+    pkg_dict = pkg_dict['results']
+    for package in pkg_dict:
+        if package['name'].startswith(q_lower):
+            match_field = 'name'
+            match_displayed = package['name']
+        else:
+            match_field = 'title'
+            match_displayed = '%s (%s)' % (package['title'], package['name'])
+        result_dict = {'name':package['name'], 'title':package['title'],
+                       'match_field':match_field, 'match_displayed':match_displayed}
+        pkg_list.append(result_dict)
+
+    return pkg_list

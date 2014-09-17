@@ -7,11 +7,7 @@ import sys
 
 #Get the list of all data
 
-from ckanext.edc_schema.commands.base import get_import_params
-import_params = get_import_params()
-site_url =  import_params['site_url']
-api_key = import_params['api_key'] 
-
+from base import (site_url, api_key)
 
 print "Deleting records ..."
 try:

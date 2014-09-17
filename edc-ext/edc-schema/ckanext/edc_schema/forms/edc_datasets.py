@@ -6,15 +6,20 @@ from ckan.lib.navl.validators import (ignore_missing,
                                       )
 from converters import (convert_to_extras, 
                         convert_from_extras)
-from validators import (valid_date)
+from validators import (valid_date, check_empty)
 from ckan.logic.validators import (url_validator,)
 
-import ckan.logic.converters as ckan_converter
 import ckan.plugins.toolkit as toolkit
 
-cnvrt_to_ext = ckan_converter.convert_to_extras;
-cnvrt_from_ext = ckan_converter.convert_from_extras;
 
+def dates_to_db_schema():
+    schema = {
+              'date' : [check_empty, valid_date, convert_to_extras],
+              'type' : [check_empty, convert_to_extras],
+              'delete' :[ignore_missing, convert_to_extras],
+              }
+    return schema
+    
 class EDC_ApplicationForm(edc_form.EDC_DatasetForm):
     
     #Setting dataset type associated to edc Application dataset type
@@ -77,6 +82,7 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
         super(EDC_GeoSpatialForm, self).setup_template_variables(context, data_dict)
          
         c.record_type = 'Geographic'
+
         
     #Customize schema for EDC Application Dataset
     def _update_geospatial_schema(self, schema):
@@ -93,8 +99,8 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'link_to_imap' : [ignore_missing, url_validator, convert_to_extras ],
                         'data_quality': [ignore_missing, convert_to_extras ],
                         'lineage_statement': [ignore_missing, convert_to_extras ],
-                        'spatial' : [ignore_missing, cnvrt_to_ext],
-                        'object_name' : [ ignore_missing, cnvrt_to_ext ],
+                        'spatial' : [ignore_missing, convert_to_extras],
+                        'object_name' : [ ignore_missing, convert_to_extras ],
                         'imap_layer_key' : [ignore_missing, convert_to_extras],
                         'imap_display_name' : [ignore_missing, convert_to_extras],
                         'west_bound_longitude' : [ignore_missing, convert_to_extras],
@@ -102,20 +108,22 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'south_bound_latitude' : [ignore_missing, convert_to_extras],
                         'north_bound_latitude' : [ignore_missing, convert_to_extras],
                         'table_comment' : [ignore_missing, convert_to_extras],
-                        'details' : details_schema()
+                        'details' : details_schema(),
+                        'iso_topic_cat' : [not_empty, cnvrt_to_tags('iso_topic_category')],
+                        'dates' : dates_to_db_schema()
                       })
         schema['resources'].update({
-                                    'resource_update_cycle' : [ not_empty, cnvrt_to_ext ],
-                                    'projection_name' : [not_empty, cnvrt_to_ext],
+                                    'resource_update_cycle' : [ not_empty, convert_to_extras ],
+                                    'projection_name' : [not_empty, convert_to_extras],
                                     'format' : [not_empty, unicode],
-#                                    'storage_format_description' : [ not_empty, cnvrt_to_ext ],
-                                    'edc_resource_type': [ not_empty, cnvrt_to_ext ],
-#                                    'resource_download_format': [ not_empty, cnvrt_to_ext ],
-                                    'resource_storage_access_method': [ not_empty, cnvrt_to_ext ],
-                                    'resource_storage_location': [not_empty, unicode, cnvrt_to_ext],
-#                                    'resource_storage_location_info': [not_empty, cnvrt_to_ext],
-                                    'data_collection_start_date' : [ignore_missing, valid_date, cnvrt_to_ext ],
-                                    'data_collection_end_date' : [ignore_missing, valid_date, cnvrt_to_ext ],
+#                                    'storage_format_description' : [ not_empty, convert_to_extras ],
+                                    'edc_resource_type': [ not_empty, convert_to_extras ],
+#                                    'resource_download_format': [ not_empty, convert_to_extras ],
+                                    'resource_storage_access_method': [ not_empty, convert_to_extras ],
+                                    'resource_storage_location': [not_empty, unicode, convert_to_extras],
+#                                    'resource_storage_location_info': [not_empty, convert_to_extras],
+                                    'data_collection_start_date' : [ignore_missing, valid_date, convert_to_extras ],
+                                    'data_collection_end_date' : [ignore_missing, valid_date, convert_to_extras ],
                                     })
         return schema      
 
@@ -144,8 +152,8 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'link_to_imap' : [ convert_from_extras,  ignore_missing ],
                         'data_quality': [ convert_from_extras, ignore_missing ],
                         'lineage_statement': [ convert_from_extras, ignore_missing ],
-                        'spatial' : [cnvrt_from_ext, ignore_missing],
-                        'object_name' : [ cnvrt_from_ext, ignore_missing],
+                        'spatial' : [convert_from_extras, ignore_missing],
+                        'object_name' : [ convert_from_extras, ignore_missing],
                         'imap_layer_key' : [convert_from_extras, ignore_missing],
                         'imap_display_name' : [convert_from_extras, ignore_missing],
                         'west_bound_longitude' : [convert_from_extras, ignore_missing],
@@ -153,20 +161,22 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'south_bound_latitude' : [convert_from_extras, ignore_missing],
                         'north_bound_latitude' : [convert_from_extras, ignore_missing],
                         'table_comment' : [convert_from_extras, ignore_missing],
-                        'details' : [convert_from_extras, ignore_missing]
+                        'details' : [convert_from_extras, ignore_missing],
+                        'iso_topic_cat' : [cnvrt_from_tags('iso_topic_category'), not_empty],
+                        'dates' : [convert_from_extras, ignore_missing]
                         })
         schema['resources'].update({
-                                    'resource_update_cycle' : [ cnvrt_from_ext, not_empty],
+                                    'resource_update_cycle' : [ convert_from_extras, not_empty],
                                     'format' : [not_empty, unicode],
-#                                    'storage_format_description' : [cnvrt_from_ext, not_empty],
-                                    'edc_resource_type': [ cnvrt_from_ext, not_empty ],
-#                                    'resource_download_format': [ cnvrt_from_ext, not_empty ],
-                                    'resource_storage_access_method': [ cnvrt_from_ext],
-                                    'resource_storage_location': [cnvrt_from_ext, unicode, not_empty],
-#                                    'resource_storage_location_info': [cnvrt_from_ext, not_empty],
-                                    'data_collection_start_date' : [cnvrt_from_ext, ignore_missing ],
-                                    'data_collection_end_date' : [cnvrt_from_ext, ignore_missing ],               
-                                    'projection_name' : [cnvrt_from_ext, not_empty ]
+#                                    'storage_format_description' : [convert_from_extras, not_empty],
+                                    'edc_resource_type': [ convert_from_extras, not_empty ],
+#                                    'resource_download_format': [ convert_from_extras, not_empty ],
+                                    'resource_storage_access_method': [ convert_from_extras],
+                                    'resource_storage_location': [convert_from_extras, unicode, not_empty],
+#                                    'resource_storage_location_info': [convert_from_extras, not_empty],
+                                    'data_collection_start_date' : [convert_from_extras, ignore_missing ],
+                                    'data_collection_end_date' : [convert_from_extras, ignore_missing ],               
+                                    'projection_name' : [convert_from_extras, not_empty ]
                                     })
         return schema
 
@@ -197,20 +207,22 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
                         'west_bound_longitude' : [ignore_missing, convert_to_extras],
                         'east_bound_longitude' : [ignore_missing, convert_to_extras],
                         'south_bound_latitude' : [ignore_missing, convert_to_extras],
-                        'north_bound_latitude' : [ignore_missing, convert_to_extras]
+                        'north_bound_latitude' : [ignore_missing, convert_to_extras],
+                        'iso_topic_cat' : [not_empty, cnvrt_to_tags('iso_topic_category')],
+                        'dates' : dates_to_db_schema()
                      })
          
         schema['resources'].update({
-                                    'resource_update_cycle' : [ not_empty, cnvrt_to_ext ],
+                                    'resource_update_cycle' : [ not_empty, convert_to_extras ],
                                     'format' : [not_empty, unicode],
-#                                    'storage_format_description' : [ not_empty, cnvrt_to_ext ],
-                                    'edc_resource_type': [ not_empty, cnvrt_to_ext ],
-#                                    'resource_download_format': [ not_empty, cnvrt_to_ext],
-                                    'resource_storage_access_method': [ not_empty, cnvrt_to_ext ],
-                                    'resource_storage_location': [not_empty, unicode, cnvrt_to_ext],
-#                                    'resource_storage_location_info': [not_empty, cnvrt_to_ext]
-                                    'data_collection_start_date' : [ignore_missing, valid_date, cnvrt_to_ext ],
-                                    'data_collection_end_date' : [ignore_missing, valid_date, cnvrt_to_ext ],
+#                                    'storage_format_description' : [ not_empty, convert_to_extras ],
+                                    'edc_resource_type': [ not_empty, convert_to_extras ],
+#                                    'resource_download_format': [ not_empty, convert_to_extras],
+                                    'resource_storage_access_method': [ not_empty, convert_to_extras ],
+                                    'resource_storage_location': [not_empty, unicode, convert_to_extras],
+#                                    'resource_storage_location_info': [not_empty, convert_to_extras]
+                                    'data_collection_start_date' : [ignore_missing, valid_date, convert_to_extras ],
+                                    'data_collection_end_date' : [ignore_missing, valid_date, convert_to_extras ],
                                     })
         return schema      
 
@@ -236,19 +248,21 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
                         'west_bound_longitude' : [convert_from_extras, ignore_missing],
                         'east_bound_longitude' : [convert_from_extras, ignore_missing],
                         'south_bound_latitude' : [convert_from_extras, ignore_missing],
-                        'north_bound_latitude' : [convert_from_extras, ignore_missing]
+                        'north_bound_latitude' : [convert_from_extras, ignore_missing],
+                        'iso_topic_cat' : [cnvrt_from_tags('iso_topic_category'), not_empty],
+                        'dates' : [convert_from_extras, ignore_missing]
                          })
         schema['resources'].update({
-                                    'resource_update_cycle' : [ cnvrt_from_ext, not_empty],
+                                    'resource_update_cycle' : [ convert_from_extras, not_empty],
                                     'format' : [not_empty, unicode],
-#                                    'storage_format_description' : [cnvrt_from_ext, not_empty],
-                                    'edc_resource_type': [ cnvrt_from_ext, not_empty ],
-#                                    'resource_download_format': [ cnvrt_from_ext, not_empty ],
-                                    'resource_storage_access_method': [ cnvrt_from_ext],
-                                    'resource_storage_location': [cnvrt_from_ext, unicode, not_empty],
-#                                    'resource_storage_location_info': [cnvrt_from_ext, not_empty]
-                                    'data_collection_start_date' : [cnvrt_from_ext, ignore_missing ],
-                                    'data_collection_end_date' : [cnvrt_from_ext, ignore_missing ],               
+#                                    'storage_format_description' : [convert_from_extras, not_empty],
+                                    'edc_resource_type': [ convert_from_extras, not_empty ],
+#                                    'resource_download_format': [ convert_from_extras, not_empty ],
+                                    'resource_storage_access_method': [ convert_from_extras],
+                                    'resource_storage_location': [convert_from_extras, unicode, not_empty],
+#                                    'resource_storage_location_info': [convert_from_extras, not_empty]
+                                    'data_collection_start_date' : [convert_from_extras, ignore_missing ],
+                                    'data_collection_end_date' : [convert_from_extras, ignore_missing ],               
                                     })
         return schema
 

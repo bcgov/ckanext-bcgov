@@ -66,7 +66,6 @@ class EDCOrganizationController(OrganizationController):
         #The results list is used by ckan when the hierarchy extension in not added
         results = [org for org in search_result if org['id'] in [top_org.id for top_org in top_level_orgs]]
         
-#        pprint.pprint(results)
                 
         c.page = h.Page(
             collection=results,

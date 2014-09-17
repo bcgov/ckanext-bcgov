@@ -18,12 +18,16 @@ import getpass
 import datetime
 
 #A dictionary for import parameters
-import_dict = {}
+from base import (edc_package_create,
+                  get_organization_id,
+                  get_user_id,
+                  import_properties)
 
-from ckanext.edc_schema.commands.base import (edc_package_create,
-                                              get_organization_id,
-                                              get_user_id,
-                                              get_import_params)
+odsi_discovery_file = './data/discovery_ODSI.json'
+admin_user = import_properties['admin_user']
+site_url = import_properties['site_url']
+api_key = import_properties['api_key']
+
 def is_valid_url(url):
     import urlparse
     import string
@@ -40,7 +44,7 @@ def is_valid_url(url):
     #Invalid url is given
     return False
 
-def get_record_list(site_url, api_key):
+def get_record_list():
 
     '''
     Returns the list of available records
@@ -112,19 +116,31 @@ def get_record_name(pkg_list, title):
 
 
 def get_connection(repo_name):
-    print '\nPlease enter ' + repo_name + ' connection parameters (If connection uses a service name, leave SID empty).'
-    print '--------------------------------------------------------------------------------------------------'
     
-    service_name = None
-    
-    host = raw_input("Server name : ")
-    port = raw_input("Port : ")
-    SID = raw_input("SID : ")
-    if not SID :
-        service_name = raw_input("Service name : ")
-    user_name = raw_input("User name : ")
-    password = getpass.getpass("Password: ")
+    SID = service_name = None
 
+    if repo_name.lower() == 'odsi' :
+        host = import_properties['odsi_host']
+        port = import_properties['odsi_port']
+    
+        if 'odsi_sid' in import_properties :
+            SID = import_properties['odsi_sid']
+        else :
+            service_name = import_properties['odsi_service_name']
+        user_name = import_properties['odsi_username']
+        password = import_properties['odsi_password']
+    else :
+        host = import_properties['discovery_host']
+        port = import_properties['discovery_port']
+    
+        if 'discovery_sid' in import_properties :
+            SID = import_properties['discovery_sid']
+        else :
+            service_name = import_properties['discovery_service_name']
+        user_name = import_properties['discovery_username']
+        password = import_properties['discovery_password']
+        
+    
     if service_name :
         connection_str = user_name + '/' + password + '@' + host + '/' + service_name
         
@@ -135,8 +151,6 @@ def get_connection(repo_name):
         con = cx_Oracle.connect(user_name, password, dsn_tns)
                 
     return con
-
-
 
 
 def execute_odsi_query(con):
@@ -183,8 +197,8 @@ def execute_odsi_query(con):
                 "AND DBC_RT.RESOURCE_TYPE_ID=DBC_RS.RESOURCE_TYPE_ID " + \
                 "AND DBC_CS.CREATOR_SECTOR_ID=DBC_SO.CREATOR_SECTOR_ID " + \
                 "AND DBC_DC_MIN.RESOURCE_SET_ID(+)=DBC_RS.RESOURCE_SET_ID " + \
-                "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "
-#                "AND DBC_RS.RESOURCE_SET_ID = 173880 "
+                "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "  #+ \
+#                "AND DBC_RS.RESOURCE_SET_ID = 178047 "
 #                "AND DBC_RT.RESOURCE_TYPE_NAME ='Geospatial Dataset'" #+ \
 
 
@@ -197,27 +211,38 @@ def execute_odsi_query(con):
 def import_odc_records(con):
 
     from validate_email import validate_email
+    
+    
+    '''
+    Check first if the file that contains the data of discovery records that are linked in ODSI
+    is available.
+    '''
+    if not os.path.exists(odsi_discovery_file):
+        from common_records import get_discovery_data
+        get_discovery_data()
+    #Load data for discovery records available in ODSI
+    with open(odsi_discovery_file, 'r') as discovery_file :
+        discovery_data = json.loads(discovery_file.read())
 
-    user_id = get_user_id(import_dict['admin_user'], import_dict['site_url'], import_dict['api_key'])
+
+    print 'Importing ODSI records ....'
+    
+    user_id = get_user_id(admin_user)
     print 'user id :', user_id
 
 
     #Get the list of available records
-    pkg_list = get_record_list(import_dict['site_url'], import_dict['api_key'])
+    pkg_list = get_record_list()
 
 
     #Get the number of discovery records have already been imported.
-    record_count_filename = 'odsi_record_count.txt'
+    record_count_filename = './data/odsi_record_count.txt'
     if not os.path.exists(record_count_filename):
         previous_count = 0
     else :
         with open(record_count_filename, 'r') as record_count_file :
             previous_count = int(record_count_file.read())
     print previous_count
-
-    #Load data for discovery records available in ODSI
-    with open('discovery_ODSI.json', 'r') as discovery_file :
-        discovery_data = json.loads(discovery_file.read())
 
     #Fetch raw records.
     data = execute_odsi_query(con)
@@ -228,7 +253,7 @@ def import_odc_records(con):
     records_created = 0
 
     #Create ODSI error file
-    error_file = open('ODSI_errors.txt', 'a')
+    error_file = open('./data/ODSI_errors.txt', 'a')
 
 #    for result in data:
     for result in data:
@@ -306,9 +331,9 @@ def import_odc_records(con):
             edc_record['author'] = user_id
 
             #------------------------------------------------------------------< Dataset Organization >---------------------------------------------------------------------
-            org = get_organization_id(result[1], import_dict['site_url'], import_dict['api_key'])
+            org = get_organization_id(result[1])
             edc_record['org'] = org
-            edc_record['sub_org'] = get_organization_id(result[6], import_dict['site_url'], import_dict['api_key'])
+            edc_record['sub_org'] = get_organization_id(result[6])
             edc_record['owner_org'] = edc_record['sub_org'] or edc_record['org']
 
             #----------------------------------------------------------------------< Dataset Keywords >----------------------------------------------------------------------
@@ -320,7 +345,7 @@ def import_odc_records(con):
                 #Read the keyword updates from csv file
                 import csv
                 key_dict = {}
-                with open('keyword_replacement.csv', 'r') as key_file :
+                with open('./data/keyword_replacement.csv', 'r') as key_file :
                     key_reader = csv.reader(key_file)
                     for row in key_reader :
                         key_dict[row[0]] = {'action' : row[1], 'new_keyword': row[2]}
@@ -369,9 +394,6 @@ def import_odc_records(con):
 
             edc_record['dates'] = dates
             
-            print 'ODSI dates'
-            pprint.pprint(dates) 
-
             #-----------------------------------------------------------------< Dataset Contacts >----------------------------------------------------------------
             if result[20] and validate_email(result[20]) :
                 contact_email = result[20]
@@ -380,7 +402,7 @@ def import_odc_records(con):
 
             contact_name = result[19] or 'DataBC Operations'
             contacts = []
-            contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'branch': 'some branch', 'role' : 'pointOfContact', 'private' : 'Display'})
+            contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'branch': edc_record['sub_org'], 'role' : 'pointOfContact', 'private' : 'Display'})
 
             edc_record['contacts'] = contacts
 
@@ -499,8 +521,6 @@ def import_odc_records(con):
 
                 edc_record['metadata_standard_version'] = 'n/a'
 
-            print 'Record dates'
-            pprint.pprint(edc_record['dates'])
             record_id = result[0]
 
             resource_data = None
@@ -637,7 +657,7 @@ def import_odc_records(con):
 
 #            pprint.pprint(edc_record)
 
-            (record_info, errors) = edc_package_create(edc_record, import_dict['site_url'], import_dict['api_key'])
+            (record_info, errors) = edc_package_create(edc_record)
 
             if  record_info :
                 pkg_list.append(edc_record['name'])
@@ -665,7 +685,7 @@ def import_odc_records(con):
     con.close()
 
     #Save the number of ODSI records have been imported.
-    with open('odsi_record_count.txt', 'w') as record_count_file :
+    with open('./data/odsi_record_count.txt', 'w') as record_count_file :
         record_count_file.write(str(index))
 
     print "Total number of records : ", total_number_of_records
@@ -749,10 +769,17 @@ def get_organization(org_str):
 
 def load_common_records() :
 
-    with open('common_records_titles.txt', 'r') as common_records_file :
+    '''
+    Check first if the files of record titles or record id's that are already in DOSI, are available.
+    '''
+    if not os.path.exists('./data/common_records_titles.txt') or not os.path.exists('./data/common_records_uids.txt') :
+        from common_records import get_common_records
+        get_common_records()
+ 
+    with open('./data/common_records_titles.txt', 'r') as common_records_file :
         common_records_titles = [line.rstrip('\n') for line in common_records_file]
 
-    with open('common_records_uids.txt', 'r') as common_records_file :
+    with open('./data/common_records_uids.txt', 'r') as common_records_file :
         common_records_uids = [line.rstrip('\n') for line in common_records_file]
 
     return (common_records_uids, common_records_titles)
@@ -833,12 +860,11 @@ def import_discovery_records(con):
     #Required for email validation
     from validate_email import validate_email
 
-
     #Get the list of available records
-    pkg_list = get_record_list(import_dict['site_url'], import_dict['api_key'])
+    pkg_list = get_record_list()
 
     #Get the number of discovery records have already been imported.
-    record_count_filename = 'discovery_record_count.txt'
+    record_count_filename = './data/discovery_record_count.txt'
     if not os.path.exists(record_count_filename):
         previous_count = 0
     else :
@@ -853,7 +879,7 @@ def import_discovery_records(con):
 
 
     #Create error file
-    error_file = open('Discovery_errors.txt', 'a')
+    error_file = open('./data/Discovery_errors.txt', 'a')
 
     #Get the raw records from discovery database
     data = execute_discovery_query(con)
@@ -892,10 +918,9 @@ def import_discovery_records(con):
 
             #---------------------------------------------------------------------<< Record Author >>----------------------------------------------------------------------
             username = result[46]
-            user_id = get_user_id(username,import_dict['site_url'], import_dict['api_key'])
+            user_id = get_user_id(username)
             if not user_id :
-                username = import_dict['admin_user']
-                user_id = get_user_id(username, import_dict['site_url'], import_dict['api_key'])
+                user_id = get_user_id(admin_user)
             edc_record['author'] = user_id
 
 
@@ -926,14 +951,15 @@ def import_discovery_records(con):
 
             #-----------------------------------------------------<< Records Organization and Sub-organization >>-----------------------------------------------------------
             (org_title, sub_org_title) = get_organization(result[2])
-            print org_title, sub_org_title
-            edc_record['org'] = get_organization_id(org_title, import_dict['site_url'], import_dict['api_key'])
-            edc_record['sub_org'] = get_organization_id(sub_org_title, import_dict['site_url'], import_dict['api_key'])
+#            print org_title, sub_org_title
+            edc_record['org'] = get_organization_id(org_title)
+            edc_record['sub_org'] = get_organization_id(sub_org_title)
             edc_record['owner_org'] = edc_record['sub_org']
 
             #-------------------------------------------------------------------<< ISO topic category >>---------------------------------------------------------------------
             iso_topic_cat = (result[29] or 'unknown').split(',')
-            edc_record['iso_topic_cat'] = iso_topic_cat
+            if edc_record['type'] == 'Geographic' or edc_record['type'] == 'Dataset':
+                edc_record['iso_topic_cat'] = iso_topic_cat
 
             #-------------------------------------------------------------------------<< Keywords >>-------------------------------------------------------------------------
             # Extract the keywords(tags) names and add the list of tags to the record.
@@ -946,7 +972,7 @@ def import_discovery_records(con):
                 #Read the keyword updates from csv file
                 import csv
                 key_dict = {}
-                with open('keyword_replacement.csv', 'r') as key_file :
+                with open('./data/keyword_replacement.csv', 'r') as key_file :
                     key_reader = csv.reader(key_file)
                     for row in key_reader :
                         key_dict[row[0]] = {'action' : row[1], 'new_keyword': row[2]}
@@ -993,7 +1019,7 @@ def import_discovery_records(con):
 
             for i in range(contact_len):
 #                (contact_org, contact_sub_org) = get_organization(contact_orgs[i])
-                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record['org'], 'branch': 'some branch', 'role' : 'pointOfContact', 'private' : 'Display'})
+                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record['org'], 'branch': edc_record['sub_org'], 'role' : 'pointOfContact', 'private' : 'Display'})
 
             edc_record['contacts'] = contacts
 
@@ -1215,11 +1241,12 @@ def import_discovery_records(con):
             edc_record['more_info'] = more_info
 
 #            pprint.pprint(edc_record)
-            (record_info, errors) = edc_package_create(edc_record, import_dict['site_url'], import_dict['api_key'])
+            (record_info, errors) = edc_package_create(edc_record)
 
             if  record_info :
                 pkg_list.append(edc_record['name'])
                 records_created += 1
+                print '--------------------<< Record with uid %s is imported >>--------------------' % str(result[14])
             else :
                 pprint.pprint(errors)
 
@@ -1241,7 +1268,7 @@ def import_discovery_records(con):
     error_file.close()
 
     #Save the number of discovery records have been imported.
-    with open('discovery_record_count.txt', 'w') as record_count_file :
+    with open('./data/discovery_record_count.txt', 'w') as record_count_file :
         record_count_file.write(index)
 
 
@@ -1258,7 +1285,7 @@ def find_missing_orgs(con):
     data = cur.execute(edc_query)
     #Get the raw records from discovery database
 
-    org_error_file = open('orgs_not_available.txt', 'w')
+    org_error_file = open('./data/orgs_not_available.txt', 'w')
 
     missing_orgs = []
     try :
@@ -1270,8 +1297,8 @@ def find_missing_orgs(con):
 #     projection_names_file.close()
 #     pass
             (org_title, suborg_title) = get_organization(result[0])
-            org_id = get_organization_id(org_title, import_dict)
-            suborg_id = get_organization_id(suborg_title, import_dict)
+            org_id = get_organization_id(org_title)
+            suborg_id = get_organization_id(suborg_title)
 
 
             if (not org_id) or (not suborg_id) :
@@ -1300,8 +1327,5 @@ def import_data():
             print "No data source is given."
     except:
         pass
-
-#Get import parameters first    
-import_dict = get_import_params()
 
 import_data()

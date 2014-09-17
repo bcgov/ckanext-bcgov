@@ -5,9 +5,6 @@
 from ckan import model
 from ckan.lib.cli import CkanCommand
 from ckan.logic import get_action, NotFound
-from ckan.common import  c
-
-from ckanext.edc_schema.forms import dataset_form
 
 import logging
 import os

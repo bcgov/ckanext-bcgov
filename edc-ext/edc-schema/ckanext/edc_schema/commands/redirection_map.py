@@ -4,15 +4,10 @@ import urllib2
 import urllib
 import pprint
 
-from ckanext.edc_schema.commands.base import get_import_params
-import_params = get_import_params()
-site_url =  import_params['site_url']
-api_key = import_params['api_key'] 
+from ckanext.edc_schema.commands.base import site_url
 
-
-default_data_dir = os.path.dirname(os.path.abspath(__file__))
-REDIRECTION_FILE = default_data_dir + '/../../../data/redirection_map.txt'
-edc_site_url = 'http://cat.data.gov.bc.ca/dataset/'
+REDIRECTION_FILE = './data//redirection_map.txt'
+edc_site_url = site_url + "/"
 
 #Get the list of all dataset through api
 

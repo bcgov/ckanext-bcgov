@@ -11,22 +11,24 @@ import urllib2
 import urllib
 import getpass
 
-from ckanext.edc_schema.commands.base import (get_organization_id, get_import_params)
+from base import (get_organization_id, import_properties)
 user_filename = './data/odsi_users.json' 
 
+site_url = import_properties['site_url']
+api_key = import_properties['api_key']
+
 def get_connection():
-    print '\nPlease enter connection parameters (If connection uses a service name, leave SID empty).'
-    print '-----------------------------------------------------------------------------------------'
     
-    service_name = None
+    host = import_properties['odsi_host']
+    port = import_properties['odsi_port']
     
-    host = raw_input("Server name : ")
-    port = raw_input("Port : ")
-    SID = raw_input("SID : ")
-    if not SID :
-        service_name = raw_input("Service name : ")
-    user_name = raw_input("User name : ")
-    password = getpass.getpass("Password: ")
+    SID = service_name = None
+    if 'odsi_sid' in import_properties :
+        SID = import_properties['odsi_sid']
+    else :
+        service_name = import_properties['odsi_service_name']
+    user_name = import_properties['odsi_username']
+    password = import_properties['odsi_password']
 
     if service_name :
         connection_str = user_name + '/' + password + '@' + host + '/' + service_name
@@ -116,7 +118,7 @@ def load_users():
     return user_dict
     
 
-def user_exists(username, site_url, api_key):
+def user_exists(username):
     
     data_string = json.dumps({'id' : username})
     
@@ -135,7 +137,7 @@ def user_exists(username, site_url, api_key):
     
     return user
     
-def create_user(user_dict, site_url, api_key):
+def create_user(user_dict):
     
     data_string = json.dumps(user_dict)
     
@@ -154,7 +156,7 @@ def create_user(user_dict, site_url, api_key):
     
     return user    
 
-def add_user_to_org(user, org_id, site_url, api_key):
+def add_user_to_org(user, org_id):
     
     member_dict = {
                    'id' : org_id,
@@ -176,7 +178,7 @@ def add_user_to_org(user, org_id, site_url, api_key):
         pass
             
     
-def import_users(site_url, api_key):
+def import_users():
     
     '''
     For each user in user dictionary :
@@ -187,7 +189,7 @@ def import_users(site_url, api_key):
     for name, user_orgs in user_data.iteritems():        
         user_name = name.lower()
         #Check if the user exists
-        user = user_exists(user_name, site_url, api_key)
+        user = user_exists(user_name)
          
         user_dict = {
                      'name' : user_name,
@@ -195,18 +197,14 @@ def import_users(site_url, api_key):
                      'password' : 'r3db1rd'
                      }
         if not user :
-            user = create_user(user_dict, site_url, api_key)
+            user = create_user(user_dict)
          
         #Add user to organization(s) 
         if user :
             for org_title in user_orgs :
-                org_id = get_organization_id(org_title, site_url, api_key)
+                org_id = get_organization_id(org_title)
                 if org_id :
-                    add_user_to_org(user, org_id, site_url, api_key)
+                    add_user_to_org(user, org_id)
 
 
-import_params = get_import_params()
-site_url =  import_params['site_url']
-api_key = import_params['api_key'] 
-
-import_users(site_url, api_key)                   
+import_users()                   

@@ -262,28 +262,28 @@ function remove_info_link(index) {
 
 function hideDeletedRecords() {
 	var numberOfContacts = $('.contacts').length;
-	var numberOfDates = $('.dates').length;
-	var numberOfInfoLinks = $('.more_info')
+	var numberOfDates = $('.date').length;
+	var numberOfInfoLinks = $('.more_info').length
 
 	//Hide all deleted records
 	for (i = 0; i < numberOfContacts; i++) {
 		var delete_stat  = $('#field-contacts-' + i + '-delete').val();
 		if (delete_stat == '1') {
-			$('#contact_' + i).hide();
+			$('#contact_' + i).remove();
 		}
 	}
 
 	for (i = 0; i < numberOfDates; i++) {
 		var delete_stat  = $('#field-dates-' + i + '-delete').val();
 		if (delete_stat == '1') {
-			$('#dataset_date_' + i).hide();
+			$('#dataset_date_' + i).remove();
 		}
 	}
 
 	for (i = 0; i < numberOfInfoLinks; i++) {
 		var delete_stat  = $('#field-more_info-' + i + '-delete').val();
 		if (delete_stat == '1') {
-			$('#more_info_' + i).hide();
+			$('#more_info_' + i).remove();
 		}
 	}
 
@@ -293,6 +293,8 @@ var branch_available = false;
 
 function select_branch(org_branches) {
 	var org_id = $('#field-org').val();
+	var sub_org_id = $('#field-sub_org').val();
+
 
 	var branches = [];
 	for (var i = 0; i < org_branches.length; i++) {
@@ -301,13 +303,17 @@ function select_branch(org_branches) {
 			break;
 		}
 	}
-	
+
 	if (branches.length > 0)
 		branch_available = true;
 
 	var options = "<option></option>";
 	for (var i = 0; i < branches.length; i++) {
-		options += '<option value="' + branches[i].id + '">' + branches[i].title + '</option>';
+		options += '<option value="' + branches[i].id + '"';
+		if (sub_org_id == branches[i].id) {
+			options += ' selected="selected"';
+		}
+		options += '>' + branches[i].title + '</option>';
 	}
 
 	$("#field-sub_org").find('option').remove().end().append(options);
@@ -319,6 +325,7 @@ function select_branch(org_branches) {
 	$('[data-group="org"]').val(org_id)
 	$('[data-group="org"]').select2();
 	$('[data-group="org"]').trigger('change');
+	$('[data-group="sub-org"]').val(sub_org_id);
 }
 
 $(document).on('change', '.contact-org', function() {
@@ -359,8 +366,10 @@ $("#form-edc_dataset").submit(function( event ) {
 	var suborg_id = $("#field-sub_org").val();
 	var org_id = $('#field-org').val();
 	owner_org = (branch_available) ? suborg_id : org_id;
+
 	//Add the select organization id as the owner of the dataset.
 	$("#field-owner_org").val(owner_org);
+	hideDeletedRecords();
 });
 
 
@@ -481,7 +490,7 @@ $("#field-title").on('keyup change', function(){
 $(function() {
 	just_loaded = true;
 	check_resource_stat();
-	hideDeletedRecords();
+//	hideDeletedRecords();
 	$( ".datefield" ).datepicker({ dateFormat: "yy-mm-dd", showOtherMonths: true, selectOtherMonths: true });
 	$("#field-retention_expiry_date").datepicker({ dateFormat: "yy-mm-dd", showOtherMonths: true, selectOtherMonths: true });
 
@@ -498,8 +507,10 @@ $(function() {
 		load_keywords();
 
 	});
-	
+
 	var selected_org = $('#field-org').val();
+	var selected_suborg = $('#field-sub_org').val();
+
 	if (selected_org)
 		select_branch(org_branches);
 

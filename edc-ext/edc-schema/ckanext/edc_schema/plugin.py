@@ -402,28 +402,27 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 q = '{!lucene q.op=AND}' + q
                 search_params['q'] = q
         else:
-		    q = ''
+            q = ''
 
         try :
             user_name = c.user or 'visitor'
-            #pprint.pprint(user_name)
 
             #  There are no restrictions for sysadmin
             if c.userobj and c.userobj.sysadmin == True:
                 fq += ' '
             else:
                 if user_name != 'visitor':
-                    fq += ' (+(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
+                    #fq += ' (+(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
+                    fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
 
                     #IDIR users can also see private records of their organizations
                     user_id = c.userobj.id
                     #Get the list of orgs that the user is an admin or editor of
-                    user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
-                    user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
+#                    user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
+                    user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
                     if user_orgs != []:
-                        fq += ' OR (' + 'owner_org:(' + ' OR '.join(user_orgs) + ') ))'
-                    else:
-                        fq += ')'
+                        fq += ' OR ' + 'owner_org:(' + ' OR '.join(user_orgs) + ')'
+                    fq += ')'
                 #Public user can only view public and published records
                 else:
                     fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
@@ -434,7 +433,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             else:
                 fq = ''
             fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
-
+            
+            
         search_params['fq'] = fq
         return search_params
 
@@ -476,7 +476,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         import ckanext.edc_schema.logic.action as edc_action
         return {'edc_package_update' : edc_action.edc_package_update,
                 'package_update' : edc_action.package_update,
-                'post_comment' : edc_action.post_disqus_comment }
+                'package_autocomplete' : edc_action.package_autocomplete }
 
 #     def get_auth_functions(self):
 #

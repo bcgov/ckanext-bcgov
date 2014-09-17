@@ -110,7 +110,6 @@ def valid_date(key, data, errors, context):
 
 def check_resource_status(key, data, errors, context):
     #Get the current value of resource status
-#    pprint.pprint(data)
     resource_status_key = (_('resource_status'),)
     if resource_status_key in data :
         resource_status = data[resource_status_key]
@@ -160,8 +159,6 @@ def check_branch(key, data, errors, context):
  
     from ckanext.edc_schema.util.util import get_organization_branches
     
-    print 'in validator'
-    
     org_key = ('org',)
     
     org_id = None
@@ -177,7 +174,19 @@ def check_branch(key, data, errors, context):
             errors[key].append(_('Missing value'))
             raise StopOnError
 
+def check_dashes(key, data, errors, context):
+    ''' make sure dashes have space after them '''
+    #Get the package title
+    title = data[key]
+ 
+    dashes = re.findall(r'\s+(?:-+\w+)+',title)
+    
+    if len(dashes) > 0:
+        errors[key].append('Non-hyphenated dashes in Title must be followed by a space. Please change the title.')
 
+    multiple_dashes = re.findall(r'\s+(?:-{2,})+',title)
+    if len(multiple_dashes) > 0:
+        errors[key].append('Multiple consecutive dashes are not allowed in Titles. Please change the title.')
 
 def duplicate_pkg(key, data, errors, context):
     '''
@@ -196,3 +205,43 @@ def duplicate_pkg(key, data, errors, context):
     #Check if the duplicated name has not been changed.
     if key[0] == 'name' and pkg_name.startswith('__duplicate__') :
         errors[name_key].append(_('A new name must be given for the duplicated record.'))
+
+
+def check_duplicates(key, data, errors, context):
+    '''
+    Checks if there are any packages with same title
+    '''
+    #Get the package title
+    title = data[key]
+    
+    #Search for packages with the same title
+    from ckan.logic import get_action 
+    from ckan.lib.search import SearchError
+    try :
+        data_dict = {
+                     'q' : '"' + title + '"'
+                     }
+
+        #Use package_search to filter the list
+        results = get_action('package_autocomplete')(context, data_dict)
+    #    results = query['result']
+        
+        count = 0        
+        for record in results :
+            record_title = record['title'].lower()
+            if title.lower() == record_title : 
+                result_name = record['name']
+                count = 1
+                break
+        #If this the same record that we are editing ignore the only record in search result
+        id_key = ('name',)
+        if count == 1 and id_key in data :
+            if  result_name == data[id_key] :
+                return        
+        if count > 0 :
+            errors[key].append('Record title must be unique. Please change the title.')
+            raise StopOnError
+    except SearchError, se :
+        return
+
+

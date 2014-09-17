@@ -1,7 +1,7 @@
 {% extends "user/read_base.html" %}
 
 {% block dashboard_activity_stream_context %}{% endblock %}
-{% set (admin_org, editor_org, mem_org) = h.get_user_role_orgs(c.userobj.id) %}
+{% set (admin_org, editor_org, mem_org) = h.get_user_role_orgs(c.userobj.id, c.userobj.sysadmin) %}
 
 {% block page_primary_action %}
 	{% if h.check_access('package_create') and (admin_org or editor_org or c.userobj.sysadmin == True) %}

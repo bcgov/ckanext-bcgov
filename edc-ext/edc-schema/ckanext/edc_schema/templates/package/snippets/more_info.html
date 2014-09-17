@@ -43,7 +43,12 @@
 				<input id="field-more_info-{{ loop.index0 }}-delete"
 				   			type="hidden"
 				   			name="more_info__{{ loop.index0 }}__delete"
-				   			value="{{ item['delete'] }}">
+				   			{% if errors %}
+				   					value="0">
+				   			{% else %}
+				   				value="{{ item['delete'] }}">
+				   			{% endif %}
+							   			
 			</div>
 		</div>
 	{% endfor %}

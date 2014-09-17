@@ -8,32 +8,28 @@ import urllib
 import pprint
 import logging
 
+default_vocab_file = './data/edc-vocabs.json'
 
-site_url = 'http://edc.highwaythreesolutions.com/'
-api_key = '77f620cb-e98b-4195-91a6-b0e50812d240'
+import_properties = {}
 
-#site_url = 'http://localhost:5000'
-#api_key = 'ecc41117-7a38-470a-86ce-adbfac08a5a2'
+with open('./config/import.ini', 'r') as config_file :
+    for line in config_file :
+        line = line.rstrip()
+        
+        if "=" not in line: continue
+        if line.startswith("#") : continue
+        
+        key, value = line.split("=", 1)
+        if value :
+            value = value.strip()
+        key = key.strip() 
+        import_properties[key] = value
 
-env_name = 'local'
+#Get the site_url and api_key used by most scripts.
+site_url = import_properties['site_url']
+api_key = import_properties['api_key']
 
-default_data_dir = os.path.dirname(os.path.abspath(__file__))
-default_org_file =   default_data_dir + '/../../../data/orgs.json'
-default_vocab_file = default_data_dir + '/../../../data/edc-vocabs.json'
-
-
-def get_import_params():
-    #Get import parameters first 
-    import_dict = {}   
-    print 'Please provide import parameters (Site url, admin user, api_key ). '
-    import_dict['site_url'] = raw_input("Site url (http://localhost:5000): ") or 'http://localhost:5000'
-    import_dict['admin_user'] = raw_input('Admin username : ')
-    import_dict['api_key'] = raw_input('Admin api_key : ')
-    
-    return import_dict
-    
-
-def create_tag(vocab, tag, site_url, api_key):
+def create_tag(vocab, tag):
     tag_dict = {'name': tag,
                 'vocabulary_id': vocab['id']}
     data_string = urllib.quote(json.dumps(tag_dict))
@@ -52,7 +48,7 @@ def create_tag(vocab, tag, site_url, api_key):
         pass
 
 
-def create_vocab(vocab_name, tags, site_url, api_key):
+def create_vocab(vocab_name, tags):
     data_string = urllib.quote(json.dumps({'name': vocab_name}))
     try:
         request = urllib2.Request(site_url + '/api/3/action/vocabulary_create')
@@ -73,12 +69,12 @@ def create_vocab(vocab_name, tags, site_url, api_key):
         return None
 
     for tag in tags:
-        create_tag(vocab, tag, site_url, api_key)
+        create_tag(vocab, tag)
 
     return vocab
 
 
-def create_org(org_dict, site_url, api_key):
+def create_org(org_dict):
 
     org = None
     data_string =  urllib.quote(json.dumps({'id' : org_dict['name'], 'include_datasets': False}))
@@ -113,7 +109,7 @@ def create_org(org_dict, site_url, api_key):
     return org
 
 
-def edc_package_create(edc_record, site_url, api_key):
+def edc_package_create(edc_record):
 
 
     data_string = urllib.quote(json.dumps(edc_record))
@@ -140,7 +136,7 @@ def edc_package_create(edc_record, site_url, api_key):
 
 
 #Return the name of an organization with the given id
-def get_organization_id(org_title, site_url, api_key):
+def get_organization_id(org_title):
 
     data_string = urllib.quote(json.dumps({'all_fields': True}))
     try:
@@ -163,7 +159,7 @@ def get_organization_id(org_title, site_url, api_key):
             return org['id']
     return None
 
-def get_user_id(user_name, site_url, api_key):
+def get_user_id(user_name):
     user_info = None
     data_string = urllib.quote(json.dumps({'id':user_name}))
 

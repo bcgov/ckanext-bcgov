@@ -22,6 +22,29 @@ def edc_type_label(item):
     rec_type = item['display_name']
     return get_record_type_label(rec_type)
 
+def add_admin(member, site_url, api_key):
+    ''' adds a user as admin of an organization'''
+
+    data_string = urllib.quote(json.dumps(member))
+
+    member_dict = None
+    errors = None
+    try:
+        request = urllib2.Request(site_url + '/api/3/action/organization_member_create')
+        request.add_header('Authorization', api_key)
+        response = urllib2.urlopen(request, data_string)
+        assert response.code == 200
+
+		# Use the json module to load CKAN's response into a dictionary.
+        response_dict = json.loads(response.read())
+        if response_dict['success'] == True :
+            member_dict = response_dict
+        else:
+            errors = response_dict['error']
+    except Exception, e:
+        print str(e)
+        pass
+    return (member_dict, errors)
 
 def get_edc_tags(vocab_id):
     tags = []
@@ -66,10 +89,8 @@ def get_username(id):
         return None
 
 def check_user_member_of_org(user_id, org_id):
-#    print user_id, org_id
     orgs = get_user_orgs(user_id)
 
-#    pprint.pprint(orgs)
 
     member_orgs = [org.id for org in orgs if org.id == org_id]
 
@@ -94,7 +115,6 @@ def get_user_toporgs(user_id, role=None):
 #    all_orgs = [org.id for org in org_model.Group.get_top_level_groups(type="organization")]
     all_orgs = org_model.Group.get_top_level_groups(type="organization")
 
-#    pprint.pprint(all_orgs)
 
     for org in all_orgs:
         members = []
@@ -104,14 +124,13 @@ def get_user_toporgs(user_id, role=None):
             members = [member[0] for member in toolkit.get_action('member_list')(data_dict=member_dict)]
         except toolkit.ObjectNotFound:
             members = []
-#        pprint.pprint(members)
 
         #Add the org if user is a member of at least one suborg.
         group = org_model.Group.get(org.id)
         suborgs = group.get_children_groups(type = 'organization')
 
         #If the user id in the list of org's admins then add the org to the final list.
-        if user_id in members:
+        if user_id in members or c.userobj.sysadmin :
             orgs.append(org)
             for suborg in suborgs :
                 sub_orgs.append(suborg)
@@ -151,7 +170,6 @@ def get_user_orgs(user_id, role=None):
 #    all_orgs = [org.id for org in org_model.Group.get_top_level_groups(type="organization")]
     all_orgs = org_model.Group.get_top_level_groups(type="organization")
 
-#    pprint.pprint(all_orgs)
 
     for org in all_orgs:
         members = []
@@ -161,12 +179,11 @@ def get_user_orgs(user_id, role=None):
             members = [member[0] for member in toolkit.get_action('member_list')(data_dict=member_dict)]
         except toolkit.ObjectNotFound:
             members = []
-#        pprint.pprint(members)
 
         #Add the org if user is a member of at least one suborg.
         group = org_model.Group.get(org.id)
         suborgs = group.get_children_groups(type = 'organization')
-
+        
         #If the user id in the list of org's admins then add the org to the final list.
         if user_id in members:
             orgs.append(org)
@@ -185,10 +202,10 @@ def get_user_orgs(user_id, role=None):
                 #If the user id in the list of org's admins then add the org to the final list.
                 if user_id in members:
                     orgs.append(suborg)
-
+    
     return orgs
 
-def get_user_role_orgs(user_id):
+def get_user_role_orgs(user_id, sysadmin):
     '''
         Returns the list of all  organizations that the given user is a member of.
         The organizations are splitted in three lists depending of the user role.
@@ -209,11 +226,13 @@ def get_user_role_orgs(user_id):
     except:
         all_orgs = []
 
+    if sysadmin :
+        return ([org['id'] for org in all_orgs], [], [])
+    
     admin_orgs = []
     editor_orgs = []
     member_orgs = []
 
-    orgs = []
     for org in all_orgs:
         members = []
         try:
@@ -253,28 +272,20 @@ def get_organization_branches(org_id):
     #should only return branches the user is a member of
     return branches
     
-    '''
-    param_dict = {'id' : org_id,
-                  'capacity' : 'organization'
-                  }
-
-    data_string = urllib.quote(json.dumps(param_dict))
-    request = urllib2.Request(site_url + '/api/3/action/member_list')
-    request.add_header('Authorization', api_key)
-
-    try:
-        response = urllib2.urlopen(request, data_string)
-        assert response.code == 200
-
-        # Use the json module to load CKAN's response into a dictionary.
-        response_dict = json.loads(response.read())
-        assert response_dict['success'] is True
-        branches = response_dict['result']
-    except:
-        return []
+def get_parent_orgs(org_id):
     
-    return branches
-    '''
+    context = {'model': model, 'session': model.Session,
+               'user': c.user or c.author, 'auth_user_obj': c.userobj}
+    org_model = context['model']
+
+    #Get the list of all parents of the organization with the given id
+    group = org_model.Group.get(org_id)
+    parents = group.get_parent_groups(type = 'organization')
+
+    
+    return parents    
+    
+
 
 def get_org_admins(org_id):
     '''
@@ -286,7 +297,6 @@ def get_org_admins(org_id):
         members = [member[0] for member in toolkit.get_action('member_list')(data_dict=member_dict)]
     except toolkit.ObjectNotFound:
         members = []
-#        pprint.pprint(members)
     return members
 
 
@@ -300,7 +310,6 @@ def get_org_users(org_id, role=None):
         members = [member[0] for member in toolkit.get_action('member_list')(data_dict=member_dict)]
     except toolkit.ObjectNotFound:
         members = []
-#        pprint.pprint(members)
     return members
 
 
@@ -341,7 +350,6 @@ def get_state_values(user_id, pkg):
     '''
     states = []
 
-#    pprint.pprint(pkg)
 
     if not pkg or not pkg.has_key('id'):
         return ['DRAFT']
@@ -362,9 +370,6 @@ def get_state_values(user_id, pkg):
         admins = [admin[0] for admin in toolkit.get_action('member_list')(data_dict=member_data)]
     else :
         admins = []
-
-#    pprint.pprint(user_id)
-#    pprint.pprint(admins)
 
     current_state = pkg['edc_state']
     author_id = pkg['author']
@@ -428,10 +433,10 @@ def get_all_orgs():
     response = urllib2.urlopen(request, data_string)
     response_dict = json.loads(response.read())
 
-    pprint.pprint(response_dict)
 
     for org in response_dict['result']:
         orgs_dict[org['id']] = {'name': org['name'], 'title': org['title']}
 
     return orgs_dict
 
+    

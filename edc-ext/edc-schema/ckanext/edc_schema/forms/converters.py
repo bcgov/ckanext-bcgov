@@ -1,5 +1,4 @@
 def convert_to_extras(key, data, errors, context):
-#    print "key :====> ", key, "data : ====>", data[key] 
     extras = data.get(('extras',), [])
     if not extras:
         data[('extras',)] = extras
@@ -10,7 +9,6 @@ def convert_to_extras(key, data, errors, context):
 
 def convert_from_extras(key, data, errors, context):
 
-#    print "key : <====", key, "\n"
     def remove_from_extras(data, keyList):
         to_remove = []
         for data_key, data_value in data.iteritems():
@@ -32,13 +30,12 @@ def convert_from_extras(key, data, errors, context):
                 keyList[1] = int(keyList[1])
             #Construct the key for the stored value(s)
             newKey = tuple(keyList)
-            if (key[-1] == newKey[0]):
+            if (key[-1] == newKey[0] or key == newKey):
                 #Retrieve data from extras and add it to new_data so it can be added to the data dictionary. 
                 new_data[newKey] = data[('extras', data_key[1], 'value')]
                 #Add the data index in extras to the list of items to be removed. 
                 indexList.append(data_key[1])
     
-    #print new_data
     #Remove all data from extras with the given index
     remove_from_extras(data, indexList)
 
@@ -66,5 +63,4 @@ def convert_from_extras(key, data, errors, context):
         
 
 def convert_dates_form(data):
-#    print data;
     return data

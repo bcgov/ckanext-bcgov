@@ -30,10 +30,12 @@ def get_suborgs(org_id):
         
 
 def get_suborg_sectors(org, suborg):
-    from ckanext.edc_schema.commands.base import default_org_file
     import os
     import json
     import sys
+    
+    default_data_dir = os.path.dirname(os.path.abspath(__file__))
+    default_org_file =   default_data_dir + '/../../../data/orgs.json'
     
     sectors = []
     
@@ -75,10 +77,11 @@ def get_user_dataset_num(userobj):
         fq = ''
     else :
         #Include only datsset created by this user or those from the orgs that the user has the admin role.
-        fq = 'author:("%s")' %(user_id) 
-        user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
+        fq = ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
+        user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
         if len(user_orgs) > 0:
             fq += ' OR owner_org:(' + ' OR '.join(user_orgs) + ')'
+        fq += ')'
     try:
         # package search
         context = {'model': model, 'session': model.Session,
@@ -119,12 +122,6 @@ def org_record_is_viewable(package, userobj):
     state = package['extras'][state_index]['value']
     visibility = package['extras'][visibility_index]['value']
         
-#     pprint.pprint(state_index)
-#     pprint.pprint(visibility_index)
-
-#     pprint.pprint(state)
-#     pprint.pprint(visibility)
-
     #Anonymous user (visitor) can only view published public records
     published_state = ['PUBLISHED', 'PENDING ARCHIVE']
 
@@ -153,7 +150,9 @@ def record_is_viewable(pkg_dict, userobj):
     if pkg_dict['metadata_visibility'] == 'Public' and pkg_dict['edc_state'] in published_state:
         return True
     if userobj  :
-        user_orgs = [org.id for org in get_user_orgs(userobj.id) ]
+        if pkg_dict['metadata_visibility'] == 'IDIR' and pkg_dict['edc_state'] in published_state:
+            return True
+        user_orgs = [org.id for org in get_user_orgs(userobj.id, 'editor') ]
         if pkg_dict['owner_org'] in user_orgs:
             return True
     return False

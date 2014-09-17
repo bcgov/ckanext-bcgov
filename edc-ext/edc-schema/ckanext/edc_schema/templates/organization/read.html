@@ -1,6 +1,6 @@
 {% ckan_extends %}
 
-{% set (admin_org, editor_org, mem_org) = h.get_user_role_orgs(c.userobj.id) %}
+{% set (admin_org, editor_org, mem_org) = h.get_user_role_orgs(c.userobj.id, c.userobj.sysadmin) %}
 
 {% block page_primary_action %}
   {% set org_id = c.group_dict.id %}
