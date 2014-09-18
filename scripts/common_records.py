@@ -38,7 +38,6 @@ def get_connection(repo_name):
     if service_name :
         connection_str = user_name + '/' + password + '@' + host + '/' + service_name
         
-        #connection_str = "proxy_metastar/h0tsh0t@slkux1.env.gov.bc.ca/idwprod1.bcgov"
         con = cx_Oracle.connect(connection_str)
     else :
         dsn_tns = cx_Oracle.makedsn(host, port, SID)    

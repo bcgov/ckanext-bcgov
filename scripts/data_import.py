@@ -19,7 +19,7 @@ import datetime
 
 #A dictionary for import parameters
 from base import (edc_package_create,
-                  get_organization_id,
+                  get_organizations_dict,
                   get_user_id,
                   import_properties)
 
@@ -27,6 +27,8 @@ odsi_discovery_file = './data/discovery_ODSI.json'
 admin_user = import_properties['admin_user']
 site_url = import_properties['site_url']
 api_key = import_properties['api_key']
+
+orgs_title_id_dic = get_organizations_dict()
 
 def is_valid_url(url):
     import urlparse
@@ -144,7 +146,6 @@ def get_connection(repo_name):
     if service_name :
         connection_str = user_name + '/' + password + '@' + host + '/' + service_name
         
-        #connection_str = "proxy_metastar/h0tsh0t@slkux1.env.gov.bc.ca/idwprod1.bcgov"
         con = cx_Oracle.connect(connection_str)
     else :
         dsn_tns = cx_Oracle.makedsn(host, port, SID)    
@@ -152,6 +153,25 @@ def get_connection(repo_name):
                 
     return con
 
+
+def get_odsi_resources(con):
+    
+    record_resource_dict = {}
+    
+    query = "SELECT * FROM APP_DATABC.DBC_RESOURCE_ACCESS_ODC_VW"
+    cur = con.cursor()
+    cur.execute(query)
+    data = cur.fetchall()
+    
+    for item in data :
+        record_id = item[0]
+        resources = []
+        if record_id in record_resource_dict :
+            resources = record_resource_dict[record_id]
+        resources.append(item)
+        record_resource_dict[record_id] = resources
+    
+    return record_resource_dict
 
 def execute_odsi_query(con):
     '''
@@ -197,10 +217,7 @@ def execute_odsi_query(con):
                 "AND DBC_RT.RESOURCE_TYPE_ID=DBC_RS.RESOURCE_TYPE_ID " + \
                 "AND DBC_CS.CREATOR_SECTOR_ID=DBC_SO.CREATOR_SECTOR_ID " + \
                 "AND DBC_DC_MIN.RESOURCE_SET_ID(+)=DBC_RS.RESOURCE_SET_ID " + \
-                "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "  #+ \
-#                "AND DBC_RS.RESOURCE_SET_ID = 178047 "
-#                "AND DBC_RT.RESOURCE_TYPE_NAME ='Geospatial Dataset'" #+ \
-
+                "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "  
 
     cur = con.cursor()
     cur.execute(edc_auery)
@@ -225,6 +242,16 @@ def import_odc_records(con):
         discovery_data = json.loads(discovery_file.read())
 
 
+    #Create the dictionary for keywords replacement    
+    #Read the keyword updates from csv file
+    import csv
+    key_dict = {}
+    with open('./data/keyword_replacement.csv', 'r') as key_file :
+        key_reader = csv.reader(key_file)
+        for row in key_reader :
+            key_dict[row[0]] = {'action' : row[1], 'new_keyword': row[2]}
+
+    
     print 'Importing ODSI records ....'
     
     user_id = get_user_id(admin_user)
@@ -244,6 +271,7 @@ def import_odc_records(con):
             previous_count = int(record_count_file.read())
     print previous_count
 
+    resources_dict = get_odsi_resources(con)
     #Fetch raw records.
     data = execute_odsi_query(con)
 
@@ -331,9 +359,9 @@ def import_odc_records(con):
             edc_record['author'] = user_id
 
             #------------------------------------------------------------------< Dataset Organization >---------------------------------------------------------------------
-            org = get_organization_id(result[1])
+            org = orgs_title_id_dic[result[1]]
             edc_record['org'] = org
-            edc_record['sub_org'] = get_organization_id(result[6])
+            edc_record['sub_org'] = orgs_title_id_dic[result[6]]
             edc_record['owner_org'] = edc_record['sub_org'] or edc_record['org']
 
             #----------------------------------------------------------------------< Dataset Keywords >----------------------------------------------------------------------
@@ -341,14 +369,6 @@ def import_odc_records(con):
                 # Extract the keywords(tags) names and add the list of tags to the record.
                 keywords = result[4].split(',')
                 keywords = [keyword.strip() for keyword in keywords]
-
-                #Read the keyword updates from csv file
-                import csv
-                key_dict = {}
-                with open('./data/keyword_replacement.csv', 'r') as key_file :
-                    key_reader = csv.reader(key_file)
-                    for row in key_reader :
-                        key_dict[row[0]] = {'action' : row[1], 'new_keyword': row[2]}
 
                 #Making the new keywords list from the keyword replacement file.
                 keyword_list = []
@@ -524,11 +544,10 @@ def import_odc_records(con):
             record_id = result[0]
 
             resource_data = None
-            if record_id :
-                resource_query = "SELECT * FROM APP_DATABC.DBC_RESOURCE_ACCESS_ODC_VW WHERE RESOURCE_SET_ID = '" + str(record_id) + "'"
-                resource_cur = con.cursor()
-                resource_cur.execute(resource_query)
-                resource_data = resource_cur.fetchall()
+            if record_id and record_id in resources_dict:
+                resource_data = resources_dict[record_id]
+            else:
+                resource_data = []
 
             resources = []
             for resource in resource_data:
@@ -872,6 +891,16 @@ def import_discovery_records(con):
             previous_count = int(record_count_file.read())
     print previous_count
 
+    #Create the dictionary for keywords replacement    
+    #Read the keyword updates from csv file
+    import csv
+    key_dict = {}
+    with open('./data/keyword_replacement.csv', 'r') as key_file :
+        key_reader = csv.reader(key_file)
+        for row in key_reader :
+            key_dict[row[0]] = {'action' : row[1], 'new_keyword': row[2]}
+
+    
     index = 0
     records_created = 0
 
@@ -883,7 +912,7 @@ def import_discovery_records(con):
 
     #Get the raw records from discovery database
     data = execute_discovery_query(con)
-
+    
     for result in data:
 
         try :
@@ -951,11 +980,18 @@ def import_discovery_records(con):
 
             #-----------------------------------------------------<< Records Organization and Sub-organization >>-----------------------------------------------------------
             (org_title, sub_org_title) = get_organization(result[2])
-#            print org_title, sub_org_title
-            edc_record['org'] = get_organization_id(org_title)
-            edc_record['sub_org'] = get_organization_id(sub_org_title)
+            edc_record['org'] = edc_record['sub_org'] = None
+            
+            if (org_title not in orgs_title_id_dic) or (sub_org_title not in orgs_title_id_dic) :
+                index += 1
+                continue
+            
+            edc_record['org'] = orgs_title_id_dic[org_title]
+                
+            edc_record['sub_org'] = orgs_title_id_dic[sub_org_title]
+                
             edc_record['owner_org'] = edc_record['sub_org']
-
+            
             #-------------------------------------------------------------------<< ISO topic category >>---------------------------------------------------------------------
             iso_topic_cat = (result[29] or 'unknown').split(',')
             if edc_record['type'] == 'Geographic' or edc_record['type'] == 'Dataset':
@@ -968,14 +1004,6 @@ def import_discovery_records(con):
                 # Extract the keywords(tags) names and add the list of tags to the record.
                 keywords = result[5].split(',')
                 keywords = [keyword.strip() for keyword in keywords]
-
-                #Read the keyword updates from csv file
-                import csv
-                key_dict = {}
-                with open('./data/keyword_replacement.csv', 'r') as key_file :
-                    key_reader = csv.reader(key_file)
-                    for row in key_reader :
-                        key_dict[row[0]] = {'action' : row[1], 'new_keyword': row[2]}
 
                 #Making the new keywords list from the keyword replacement file.
                 keyword_list = []
@@ -1240,7 +1268,6 @@ def import_discovery_records(con):
 
             edc_record['more_info'] = more_info
 
-#            pprint.pprint(edc_record)
             (record_info, errors) = edc_package_create(edc_record)
 
             if  record_info :
@@ -1297,8 +1324,8 @@ def find_missing_orgs(con):
 #     projection_names_file.close()
 #     pass
             (org_title, suborg_title) = get_organization(result[0])
-            org_id = get_organization_id(org_title)
-            suborg_id = get_organization_id(suborg_title)
+            org_id = orgs_title_id_dic[org_title]
+            suborg_id = orgs_title_id_dic[suborg_title]
 
 
             if (not org_id) or (not suborg_id) :
