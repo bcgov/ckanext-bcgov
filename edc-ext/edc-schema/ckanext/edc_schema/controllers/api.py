@@ -322,9 +322,9 @@ class EDCApiController(ApiController):
 
         return self._finish_ok(return_dict)
 
-    def __organization_list(self, context, ver=None, data_dict=None):
+    def organization_list_related(self, ver=None):
         '''
-        Returns the list of organizations - overrides the ckan organization_list api call
+        Returns the list of organizations including parent_of and child_of relationships. 
         '''
         from ckan.lib.search import SearchError
         
@@ -346,13 +346,19 @@ class EDCApiController(ApiController):
 
         return_dict = {"help": help_str}
             
+        data_dict = self._get_request_data(try_url_params=True)    
         all_fields = data_dict.get('all_fields', False)
         order_by = data_dict.get('order_by', 'name')
         sort = data_dict.get('sort', 'name asc')
         organizations = data_dict.get('organizations', [])
              
-        org_list = get_action('organization_list')(context, data_dict)
 
+        
+        context = {'model': model, 'session': model.Session, 'user': c.user,
+                   'api_version': ver, 'auth_user_obj': c.userobj}
+
+        org_list = get_action('organization_list')(context, data_dict)
+        
         if (all_fields):
 			#add the child orgs to the response:
 			for org in org_list:
@@ -383,7 +389,9 @@ class EDCApiController(ApiController):
     
     def action(self, logic_function, ver=None):
         import ckanext.edc_schema.logic.action as edc_action
-
+        
+        pprint.pprint('***** logic_function:')
+        pprint.pprint(logic_function)
         #ToDo :
         #Create a list of logic_functions that need to be restricted to anonymous users
         restricted_functions = [
@@ -402,13 +410,13 @@ class EDCApiController(ApiController):
             return self._finish_bad_request(_('Action name not known: %s') % logic_function)
 
         try:
-            side_effect_free = getattr(function, 'side_effect_free', False)
-            request_data = self._get_request_data(try_url_params=
-                                                  side_effect_free)
+			side_effect_free = getattr(function, 'side_effect_free', False)
+			request_data = self._get_request_data(try_url_params=
+													  side_effect_free)
         except ValueError, inst:
             log.error('Bad request data: %s' % inst)
             return self._finish_bad_request(
-                _('JSON Error: %s') % inst)
+					_('JSON Error: %s') % inst)
 
 
         context = {'model': model, 'session': model.Session, 'user': c.user,
@@ -422,8 +430,6 @@ class EDCApiController(ApiController):
         elif logic_function == 'current_package_list_with_resources' :
             return self.__get_package_list_with_resources(context, ver)
         elif logic_function == 'package_search':
-            return self.__package_search(context, ver)
-        elif logic_function == 'organization_list':
-            return self.__organization_list(context, ver, request_data)            
+            return self.__package_search(context, ver)            
         else :
             return super(EDCApiController, self).action(logic_function, ver)
