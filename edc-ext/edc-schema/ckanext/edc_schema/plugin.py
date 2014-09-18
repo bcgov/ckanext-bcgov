@@ -263,11 +263,11 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('/')
 
         GET_POST = dict(method=['GET', 'POST'])
-
+        m.connect('/action/organization_list_related', action='organization_list_related', conditions=GET_POST)
         # /api ver 3 or none
         #with SubMapper(map, controller=api_controller, path_prefix='/api{ver:/3|}', ver='/3') as m:
         m.connect('/action/{logic_function}', action='action', conditions=GET_POST)
-
+        
 
         return map
 
