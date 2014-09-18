@@ -370,7 +370,7 @@ def edc_state_activity_create(user_name, edc_record, old_state):
 
 
 #Getting the proper values for the possible states of a dataset
-def get_state_values(user_id, pkg):
+def get_state_values(userobj, pkg):
     '''
     This methods creates a list of possible values for the state of given dataset
     based on the current state of dataset and the user that updates the dataset.
@@ -412,22 +412,22 @@ def get_state_values(user_id, pkg):
     elif current_state == 'REJECTED' :
         states = ['DRAFT', 'PENDING PUBLISH', 'REJECTED']
     elif current_state == 'PENDING PUBLISH':
-        if user_id in admins :
+        if userobj.id in admins or userobj.sysadmin :
             states = ['PENDING PUBLISH', 'PUBLISHED', 'REJECTED']
         else :
             states = ['DRAFT', 'PENDING PUBLISH']
     elif current_state == 'PUBLISHED' :
-        if user_id in admins :
+        if userobj.id in admins or userobj.sysadmin :
             states = ['PENDING PUBLISH', 'PUBLISHED', 'PENDING ARCHIVE']
         else :
             states = ['PUBLISHED', 'PENDING ARCHIVE']
     elif current_state == 'PENDING ARCHIVE' :
-        if user_id in admins :
+        if userobj.id in admins or userobj.sysadmin :
             states = ['PUBLISHED', 'PENDING ARCHIVE', 'ARCHIVED']
         else :
             states = ['PUBLISHED', 'PENDING ARCHIVE']
     elif current_state == 'ARCHIVED' :
-        if user_id in admins:
+        if userobj.id in admins or userobj.sysadmin:
             states = ['PENDING ARCHIVE', 'ARCHIVED']
         else :
             states = ['ARCHIVED']

@@ -85,7 +85,7 @@ then itself be extended to add/remove blocks of functionality. #}
     </div>
   {% endblock %}
 
-	{% set state_options = h.edc_state_values(c.userobj.id, data) %}
+	{% set state_options = h.edc_state_values(c.userobj, data) %}
 	<div class="control-group form-horizontal">
 		<label class="control-label" for="field-edc_state">State</label>
 		<div class="controls">
