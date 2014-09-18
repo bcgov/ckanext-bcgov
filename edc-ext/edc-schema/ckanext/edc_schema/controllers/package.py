@@ -675,7 +675,7 @@ class EDCPackageController(PackageController):
 
         c.is_duplicate = True
         #Create the duplicate record
-        from ckanext.edc_schema.commands.base import edc_package_create
+        from ckanext.edc_schema.util.util import edc_package_create
 
         (pkg_dict, errors) = edc_package_create(data_dict)
 
