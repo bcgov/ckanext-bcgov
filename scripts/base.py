@@ -7,10 +7,9 @@ import urllib
 
 import pprint
 import logging
-
+import re
 
 default_vocab_file = './data/edc-vocabs.json'
-
 
 import_properties = {}
 
@@ -27,7 +26,6 @@ with open('./config/import.ini', 'r') as config_file :
         key = key.strip() 
         import_properties[key] = value
 
-pprint.pprint(import_properties)
 #Get the site_url and api_key used by most scripts.
 site_url = import_properties['site_url']
 api_key = import_properties['api_key']
@@ -138,9 +136,56 @@ def edc_package_create(edc_record):
     return (pkg_dict, errors)
 
 
+def get_organizations_dict():
+    '''
+    This function returns a mapping of organization titles to organization id's
+    '''
+    orgs_dict = {}
+    
+    #Getting the list of available organizations
+    try:
+        request = urllib2.Request(site_url + '/api/3/action/organization_list')
+        request.add_header('Authorization', api_key)
+        response = urllib2.urlopen(request)
+        assert response.code == 200
+
+        # Use the json module to load CKAN's response into a dictionary.
+        response_dict = json.loads(response.read())
+        assert response_dict['success'] is True
+
+        # package_create returns the created package as its result.
+        orgs = response_dict['result']
+    except:
+        orgs = []
+        
+    #Creating the title-id mapping
+    for org in orgs:
+        data_string = urllib.quote(json.dumps({'id': org, 'include_datasets': False}))
+        try:
+            request = urllib2.Request(site_url + '/api/3/action/organization_show')
+            request.add_header('Authorization', api_key)
+            response = urllib2.urlopen(request, data_string)
+            assert response.code == 200
+
+            # Use the json module to load CKAN's response into a dictionary.
+            response_dict = json.loads(response.read())
+            assert response_dict['success'] is True
+
+            org = response_dict['result']
+            
+            org_title = org['title']
+            org_id = org['id']
+            orgs_dict[org_title] = org_id
+        except:
+            pass
+        
+    return orgs_dict
+
+    
+
 #Return the name of an organization with the given id
 def get_organization_id(org_title):
-
+    
     data_string = urllib.quote(json.dumps({'all_fields': True}))
     try:
         request = urllib2.Request(site_url + '/api/3/action/organization_list')
