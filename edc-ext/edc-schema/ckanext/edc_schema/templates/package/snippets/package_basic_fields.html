@@ -27,7 +27,6 @@
 
 
 {% block package_basic_fields_description %}
-
     <div class="control-list control-full form-horizontal">
         <div class='required'>
             {{ form.markdown('notes', id='field-notes', label=_('Description'), placeholder=_('eg. Some useful notes about the data'), value=data.notes, error=errors.notes, is_required=true) }}
@@ -82,6 +81,12 @@
     	<input type="hidden" id="field-owner_org" name="owner_org" value="" />
     	{% set author = data.author or userobj.id %}
     	<input type="hidden" id="field-author" name="author" value = "{{ author }}" />
+        {% set record_create_date = data.record_create_date or null %}
+        <input type="hidden" id="field-record_create_date" name="record_create_date" value = "{{ record_create_date }}" />
+        {% set record_publish_date = data.record_publish_date or null %}
+        <input type="hidden" id="field-record_publish_date" name="record_publish_date" value = "{{ record_publish_date }}" />
+        {% set record_archive_date = data.record_archive_date or null %}
+        <input type="hidden" id="field-record_archive_date" name="record_archive_date" value = "{{ record_archive_date }}" />
     {% endblock %}
 
 <h3 class="module-sub-heading">Data Currency/Update</h3>

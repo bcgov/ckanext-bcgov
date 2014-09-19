@@ -125,18 +125,17 @@ def package_update(context, data_dict):
     #Set the package last modified date
     data_dict['record_last_modified'] = str(datetime.date.today())
 
-    # Keep record_publish_date
-    if data_dict['edc_state'] == 'PUBLISHED':
-        if 'record_publish_date' in old_data:
-            data_dict['record_publish_date'] = old_data['record_publish_date']
-        else :
-            data_dict['record_publish_date'] = str(datetime.date.today())
+    # If the Created Date has not yet been set, then set it
+    if data_dict['edc_state'] == 'DRAFT' and not data_dict['record_create_date']:
+        data_dict['record_create_date'] = str(datetime.date.today())
 
-    if data_dict['edc_state'] == 'ARCHIVED' :
-        if 'record_archive_date' in old_data:
-            data_dict['record_archive_date'] = old_data['record_archive_date']
-        else :
-            data_dict['record_archive_date'] = str(datetime.date.today())
+    # If the Publish Date has not yet been set, then set it
+    if data_dict['edc_state'] == 'PUBLISHED' and not data_dict['record_publish_date']:
+        data_dict['record_publish_date'] = str(datetime.date.today())
+
+    # If the Archive Date has not yet been set, then set it
+    if data_dict['edc_state'] == 'ARCHIVED' and not data_dict['record_archive_date']:
+        data_dict['record_archive_date'] = str(datetime.date.today())
 
     _check_access('package_update', context, data_dict)
 

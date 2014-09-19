@@ -248,7 +248,7 @@ Please review and act as required.'
     # ------------------------------------ END Emails on dataset update --------------------------------------
 
 #     old_data =  get_action('package_show')(context, {'id': pkg_id})
-# 
+#
 #     # Add publish date to data if the state changed to published (and hasn't
 #     # been published already)
 #     if new_state == 'PUBLISHED' or new_state == 'ARCHIVED':
@@ -257,7 +257,7 @@ Please review and act as required.'
 #                 new_data['record_publish_date'] = str(datetime.date.today())
 #         if new_state == 'ARCHIVED' :
 #             new_data['record_archive_date'] = str(datetime.date.today())
-# 
+#
 #         #update the record
 #         new_data['resources'] = old_data['resources']
 #         pkg = get_action('package_update')(context, new_data)
