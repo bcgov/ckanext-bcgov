@@ -87,8 +87,8 @@ class EDCApiController(ApiController):
                     #IDIR users can also see private records of their organizations
                 user_id = c.userobj.id
                     #Get the list of orgs that the user is an admin or editor of
-#                    user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
-                user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
+                user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
+                user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
                 if user_orgs != []:
                     fq += ' OR ' + 'owner_org:(' + ' OR '.join(user_orgs) + ')'
                 fq += ')'

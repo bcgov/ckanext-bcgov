@@ -1,11 +1,8 @@
 
 {% import "macros/form.html" as form %}
 {# {% set organizations = h.edc_orgs() %} #}
-{% if user.sysadmin == True %}
-	{% set (organizations,user_suborgs)  = h.get_user_toporgs(user.id) %}
-{% else %}
-	{% set (organizations,user_suborgs)  = h.get_user_toporgs(user.id, 'editor') %}
-{% endif %}
+{% set (organizations,user_suborgs)  = h.get_user_toporgs(user.id) %}
+
 {# set user_suborgs = h.get_user_suborgs(user.id) #}
 
 {% set current_org = data.org or data.group_id %}

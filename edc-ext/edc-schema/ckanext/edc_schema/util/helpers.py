@@ -153,6 +153,7 @@ def record_is_viewable(pkg_dict, userobj):
         if pkg_dict['metadata_visibility'] == 'IDIR' and pkg_dict['edc_state'] in published_state:
             return True
         user_orgs = [org.id for org in get_user_orgs(userobj.id, 'editor') ]
+        user_orgs += [org.id for org in get_user_orgs(userobj.id, 'admin') ]
         if pkg_dict['owner_org'] in user_orgs:
             return True
     return False
