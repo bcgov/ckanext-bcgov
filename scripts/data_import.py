@@ -1340,18 +1340,24 @@ def find_missing_orgs(con):
     org_error_file.close()
 
 def import_data():
+    import sys
+    args = sys.argv
+    if len(args) < 2 :
+        print 'Please provide the datasource (odsi or discovery)'
+        return
+    data_source = sys.argv[1]
+    #    data_source = raw_input("Data source (ODSI/Discovery): ")
     
-    data_source = raw_input("Data source (ODSI/Discovery): ")
     con =  get_connection(data_source)
-
+    
     try:
         if data_source.lower() == 'odsi' :
             import_odc_records(con)
         elif data_source.lower() == 'discovery' :
             import_discovery_records(con)
-#            find_missing_orgs(con)
+        #            find_missing_orgs(con)
         else :
-            print "No data source is given."
+            print "A proper datasource must be given."
     except:
         pass
 
