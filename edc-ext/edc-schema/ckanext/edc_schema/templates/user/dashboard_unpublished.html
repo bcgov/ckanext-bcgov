@@ -4,6 +4,7 @@
 
 {% set (admin_org, editor_org, mem_org) = h.get_user_role_orgs(c.userobj.id, c.userobj.sysadmin) %}
 
+{% set is_editor = (admin_org or editor_org or c.userobj.sysadmin) %}
 {% block secondary_content %}
   <aside class="secondary">
     {% for facet in c.facet_titles %}
@@ -28,7 +29,7 @@
   <div class="clearfix">
     <h2 class="hide-heading">{{ _('My Datasets') }}</h2>
       {% block packages_list %}
-      {% if c.page.items %}
+      {% if c.page.items and is_editor %}
         {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, admin_org=admin_org, editor_org=editor_org, mem_org=mem_org) }}
       {% endif %}
     {% endblock %}
