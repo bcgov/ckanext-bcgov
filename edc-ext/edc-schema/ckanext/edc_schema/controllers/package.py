@@ -71,7 +71,7 @@ def from_utc(utcTime,fmt="%Y-%m-%dT%H:%M:%S.%f"):
 def add_msg_niceties(recipient_name, body, sender_name, sender_url):
     return _(u"Dear %s,<br><br>") % recipient_name \
            + u"\r\n\r\n%s\r\n\r\n" % body \
-           + u"<br><br>--<br>\r\n%s (%s)" % (sender_name, sender_url)
+           + u"<br><br>--<br>\r\n%s (<a href=\"%s\">%s</a>)" % (sender_name, sender_url, sender_url)
 
 def send_email(user_display_name, user_email, email_dict):
     subject = email_dict['subject']
