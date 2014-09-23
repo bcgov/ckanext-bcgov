@@ -153,7 +153,6 @@ def get_organizations_dict():
         response_dict = json.loads(response.read())
         assert response_dict['success'] is True
 
-        # package_create returns the created package as its result.
         orgs = response_dict['result']
     except:
         orgs = []
@@ -181,7 +180,35 @@ def get_organizations_dict():
         
     return orgs_dict
 
+
+def get_users_dict():
+    '''
+    Creates a mapping of username-userid for the available users
+    '''    
+    users_dict = {}
     
+    #Getting the list of available users
+    try:
+        request = urllib2.Request(site_url + '/api/3/action/user_list')
+        request.add_header('Authorization', api_key)
+        response = urllib2.urlopen(request)
+        assert response.code == 200
+
+        # Use the json module to load CKAN's response into a dictionary.
+        response_dict = json.loads(response.read())
+        assert response_dict['success'] is True
+
+        users = response_dict['result']
+    except:
+        users = []
+        
+    #Creating the name-id mapping
+    for user in users:
+        username = user.get('name')
+        userid = user.get('id')
+        users_dict[username] = userid
+    return users_dict
+
 
 #Return the name of an organization with the given id
 def get_organization_id(org_title):

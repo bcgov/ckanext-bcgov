@@ -1,0 +1,117 @@
+Current Discovery Organization (name includes organization and sub-organization),Organization,Replacement Sub-Organization
+BCAGENCY Agricultural Land Commission (ALC),BC Agency,Agricultural Land Commission
+BCAGENCY BC Assessment Authority,BC Agency,BC Assessment Authority
+BCAGENCY BC Transmission Corporation (BCTC),BC Agency,BC Hydro and Power Authority
+NONGOV BC Hydro,BC Agency,BC Hydro and Power Authority
+BCAGENCY Elections British Columbia (EBC),BC Agency,Elections BC
+BCAGENCY Interior Health Authority (IHA),BC Agency,Interior Health Authority
+NONGOV LTSA BC Land Title Survey Authority,BC Agency,BC Land Title Survey Authority
+BCAGENCY Oil and Gas Commission (OGC),BC Agency,Oil and Gas Commission
+BCGOV FLNRO Strategic Policy and Planning ,Ministry of Aboriginal Relations and Reconciliation,Strategic Policy and Planning 
+ODSI,Ministry of Aboriginal Relations and Reconciliation,Lands and Resources 
+ODSI,Ministry of Aboriginal Relations and Reconciliation,Intergovernmental and Community Relations
+BCGOV AVED Post Secondary Audit and Accountability ,Ministry of Advanced Education,Post-Secondary Audit and Accountability
+ODSI,Ministry of Advanced Education,Advanced Education
+ODSI,Ministry of Agriculture,Innovation and Industry Development
+ODSI,Ministry of Children and Family Development,Integrated Quality Assurance
+ODSI,Ministry of Children and Family Development,Information Management
+BCGOV CSCD Local Government Division,Ministry of Community, Sport and Cultural Development,Local Government Division
+BCGOV ED Analysis and Reporting,Ministry of Education,Analysis and Reporting
+BCGOV ED Governance and Legislation,Ministry of Education,Governance and Legislation
+BCGOV EMPR BC Geological Survey Branch,Ministry of Energy and Mines,BC Geological Survey 
+BCGOV EMPR Offshore Oil and Gas ,Ministry of Energy and Mines,BC Geological Survey 
+BCGOV EMPR Mining and Minerals Division,Ministry of Energy and Mines,Mines and Mineral Resources Division
+BCGOV ENV Climate Action Secretariat,Ministry of Environment,Climate Action Secretariat
+BCGOV ENV Conservation Officer Service,Ministry of Environment,Conservation Officer Service
+BCGOV ENV Science and Information ,Ministry of Environment,Conservation Science Section
+BCGOV ENV Ecosystems Branch (MOE),Ministry of Environment,Ecosystems 
+BCAGENCY Environmental Assessment Office (EAO),Ministry of Environment,Environmental Assessment Office
+BCGOV ENV Management and Standards ,Ministry of Environment,Environmental Management 
+BCGOV ENV Environmental Management  (MOE),Ministry of Environment,Environmental Management 
+BCGOV ENV Environmental Protection Division (MOE),Ministry of Environment,Environmental Protection Division
+BCGOV ENV Environmental Quality  (MOE),Ministry of Environment,Environmental Standards 
+BCGOV ENV Fish and Wildlife Compensation Program (MOE),Ministry of Environment,Fish and Wildlife Compensation Program
+BCGOV ENV Aquatic Information  (MOE),Ministry of Environment,Knowledge Management 
+BCGOV ENV Knowledge Management ,Ministry of Environment,Knowledge Management 
+BCGOV ENV Parks and Protected Areas ,Ministry of Environment,Parks Planning and  Management 
+BCGOV ENV Ministry of Environment Regions,Ministry of Environment,Regional Operations 
+BCGOV ENV ES Division Regional Operations  (MOE),Ministry of Environment,Regional Operations 
+BCGOV ENV ES Division Regional Operations  (MOE),Ministry of Environment,Regional Operations 
+BCGOV ENV Water Protection and Sustainability ,Ministry of Environment,Water Protection and Sustainability 
+BCGOV FLNRO Archaeology ,Ministry of Forests, Lands and Natural Resource Operations,Archaeology 
+BCGOV TCA Archaeology ,Ministry of Forests, Lands and Natural Resource Operations,Archaeology 
+BCGOV AL CLAD Strategic Land Policy and Legislation ,Ministry of Forests, Lands and Natural Resource Operations,Crown Land Restoration 
+BCGOV FOR Aboriginal Affairs  (AAB),Ministry of Forests, Lands and Natural Resource Operations,First Nations Relations 
+BCGOV ENV Business Services and Innovation ,Ministry of Forests, Lands and Natural Resource Operations,Fish, Wildlife and Habitat Management
+BCGOV ENV Fish and Wildlife  (MOE),Ministry of Forests, Lands and Natural Resource Operations,Fish, Wildlife and Habitat Management
+BCGOV ENV Fish and Wildlife Legislation and Regulations Section (MOE),Ministry of Forests, Lands and Natural Resource Operations,Fish, Wildlife and Habitat Management
+BCGOV ENV Fish and Wildlife Recreation and Allocation Branch (MOE),Ministry of Forests, Lands and Natural Resource Operations,Fish, Wildlife and Habitat Management
+BCGOV FOR Forest Analysis and Inventory ,Ministry of Forests, Lands and Natural Resource Operations,Forest Analysis and Inventory 
+BCGOV FLNRO Forest Analysis and Inventory ,Ministry of Forests, Lands and Natural Resource Operations,Forest Analysis and Inventory 
+BCGOV FOR Forest Analysis and Inventory ,Ministry of Forests, Lands and Natural Resource Operations,Forest Analysis and Inventory 
+BCGOV FLNRO Forest Tenures ,Ministry of Forests, Lands and Natural Resource Operations,Forest Tenures 
+BCGOV FLNRO GeoBC,Ministry of Forests, Lands and Natural Resource Operations,GeoBC
+BCGOV FLNRO Crown Land Opportunities and Restoration ,Ministry of Forests, Lands and Natural Resource Operations,LNG, Crown Land Opportunities and Restoration
+BCGOV TCA Resort Development ,Ministry of Forests, Lands and Natural Resource Operations,Mountain Resorts 
+BCGOV FLNRO Provincial Range Operations,Ministry of Forests, Lands and Natural Resource Operations,Range 
+BCGOV FLNRO Recreation Sites and Trails ,Ministry of Forests, Lands and Natural Resource Operations,Recreation Sites and Trails BC
+BCGOV FLNRO Regional Operations (Cariboo),Ministry of Forests, Lands and Natural Resource Operations,Regional Operations - Cariboo
+BCGOV FLNRO Regional Operations (Kootenay Boundary),Ministry of Forests, Lands and Natural Resource Operations,Regional Operations - Kootenay Boundary
+BCGOV FLNRO Regional Operations (Northeast),Ministry of Forests, Lands and Natural Resource Operations,Regional Operations - Northeast
+BCGOV FLNRO Regional Operations (Omineca),Ministry of Forests, Lands and Natural Resource Operations,Regional Operations - Omineca
+BCGOV FLNRO Regional Operations (Skeena),Ministry of Forests, Lands and Natural Resource Operations,Regional Operations - Skeena
+BCGOV FLNRO Regional Operations (South Coast),Ministry of Forests, Lands and Natural Resource Operations,Regional Operations - South Coast
+BCGOV FLNRO Regional Operations (Thompson Okanagan),Ministry of Forests, Lands and Natural Resource Operations,Regional Operations - Thompson Okanagan
+BCGOV FLNRO Regional Operations (West Coast),Ministry of Forests, Lands and Natural Resource Operations,Regional Operations - West Coast
+BCGOV FOR Research ,Ministry of Forests, Lands and Natural Resource Operations,Research, Innovation and Knowledge Management
+BCGOV FLNRO Resource Management Objectives ,Ministry of Forests, Lands and Natural Resource Operations,Resource Management Objectives 
+BCGOV FOR Resource Practices ,Ministry of Forests, Lands and Natural Resource Operations,Resource Practices 
+BCGOV FOR Forest Practices ,Ministry of Forests, Lands and Natural Resource Operations,Resource Practices 
+BCGOV FOR Tree Improvement Branch,Ministry of Forests, Lands and Natural Resource Operations,Tree Improvement 
+BCGOV FLNRO Water Management ,Ministry of Forests, Lands and Natural Resource Operations,Water Management 
+BCGOV FOR Protection ,Ministry of Forests, Lands and Natural Resource Operations,Wildfire Management 
+BCGOV FOR Wildfire Management ,Ministry of Forests, Lands and Natural Resource Operations,Wildfire Management 
+BCGOV HLS Health Protection ,Ministry of Health,Health Protection 
+BCGOV HLTH Ministry of Health,Ministry of Health,Laboratory, Diagnostic and Blood Services
+BCGOV IGRS Intergovernmental Relations Secretariat (Francophone Affairs Program ),Office of the Premier and Cabinet Office,Intergovernmental Relations Secretariat
+Court Services ,Ministry of Justice,Court Services 
+EMBC Emergency Coordination,Ministry of Justice,Emergency Management BC
+BCGOV PSSG Provincial Emergency Program,Ministry of Justice,Emergency Management BC
+BCGOV PSSG Office of the Fire Commissioner,Ministry of Justice,Office of the Fire Commissioner
+Policing and Security Programs ,Ministry of Justice,Policing and Security Programs 
+Labour Market Programs,Ministry of Jobs, Tourism and Skills Training,Labour Market Programs 
+Regional Economic Policy, Projects and Operations,Ministry of Jobs, Tourism and Skills Training,Regional Economic Policy and  Projects
+BCGOV TCA Tourism Division,Ministry of Jobs, Tourism and Skills Training,Tourism 
+BCGOV TCA Tourism Operations ,Ministry of Jobs, Tourism and Skills Training,Tourism 
+BCGOV MCFD Ministry of Children and Family Development,Ministry of Children and Family Development,Provincial Interface and Partnerships Team
+BCGOV MDSDI Employment and Labour Market Service Division,Ministry of Social Development and Social Innovation,Employment and Labour Market Service Division
+Mineral Titles and Policy ,Ministry of Energy and Mines,Mineral Titles 
+BCGOV EMPR GeoScience and Natural Gas Development ,Ministry of Natural Gas Development,Geoscience
+BCGOV MOT Construction and Maintenance ,Ministry of Transportation and Infrastructure,Construction and Maintenance 
+BCGOV LCS Accomodation and Real Estate Services (ARES),Ministry of Technology, Innovation and Citizens' Services,Accommodation Management
+BCGOV LCS BCStats,Ministry of Technology, Innovation and Citizens' Services,BC Stats
+BCGOV EMPR Resource Development and Geoscience ,Ministry of Natural Gas Development,Tenure and Geoscience 
+BCGOV NGD Petroleum and Natural Gas Titles ,Ministry of Natural Gas Development,Tenure and Geoscience 
+CDNGOV Canadian Wildlife Service (CWS),Government of Canada,Canadian Wildlife Service
+CDNGOV Environment Canada,Government of Canada,Environment Canada
+CDNGOV Fisheries and Oceans Canada,Government of Canada,Fisheries and Oceans Canada
+CDNGOV Industry Canada,Government of Canada,Industry Canada
+CDNGOV Natural Resources Canada,Government of Canada,Natural Resources Canada
+CDNGOV Royal Canadian Mounted Police,Government of Canada,Royal Canadian Mounted Police
+CDNGOV Statistics Canada,Government of Canada,Statistics Canada
+MUNIC City of Abbotsford,Municipality,City of Abbotsford
+MUNIC City of North Vancouver,Municipality,City of North Vancouver
+MUNIC City of Surrey,Municipality,City of Surrey
+MUNIC Cowichan Valley Regional District,Municipality,Cowichan Valley Regional District
+MUNIC Fraser Valley Regional District,Municipality,Fraser Valley Regional District
+MUNIC Greater Vancouver Regional District (GVRD),Municipality,Greater Vancouver Regional District
+MUNIC Regional District of Central Okanagan,Municipality,Regional District of Central Okanagan
+NONGOV Geomatics Data Management Inc.,Non-government ,Geomatics Data Management Inc.
+NONGOV GIS Innovations,Non-government ,GIS Innovations
+NONGOV Integrated Cadastral Information Society (ICIS),Non-government ,Integrated Cadastral Information Society
+NONGOV INTERFOR,Non-government ,INTERFOR
+NONGOV Timberwest,Non-government ,Timberwest
+NONGOV TransLink,Non-government ,TransLink
+NONGOV Vancouver 2010 Integrated Security Unit (V2010ISU),Non-government ,Vancouver 2010 Integrated Security Unit
+NONGOV Vancouver Olympic Organizing Committee (VANOC),Non-government ,Vancouver Olympic Organizing Committee
+NONGOV Weyerhaeuser,Non-government ,Weyerhaeuser

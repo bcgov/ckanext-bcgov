@@ -20,15 +20,16 @@ import datetime
 #A dictionary for import parameters
 from base import (edc_package_create,
                   get_organizations_dict,
-                  get_user_id,
+                  get_users_dict,
                   import_properties)
 
 odsi_discovery_file = './data/discovery_ODSI.json'
-admin_user = import_properties['admin_user']
-site_url = import_properties['site_url']
-api_key = import_properties['api_key']
+admin_user = import_properties.get('admin_user', 'admin')
+site_url = import_properties.get('site_url', 'http://localhost:5000')
+api_key = import_properties.get('api_key')
 
 orgs_title_id_dic = get_organizations_dict()
+users_name_id_map = get_users_dict()
 
 def is_valid_url(url):
     import urlparse
@@ -122,25 +123,25 @@ def get_connection(repo_name):
     SID = service_name = None
 
     if repo_name.lower() == 'odsi' :
-        host = import_properties['odsi_host']
-        port = import_properties['odsi_port']
+        host = import_properties.get('odsi_host')
+        port = import_properties.get('odsi_port')
     
         if 'odsi_sid' in import_properties :
             SID = import_properties['odsi_sid']
         else :
-            service_name = import_properties['odsi_service_name']
-        user_name = import_properties['odsi_username']
-        password = import_properties['odsi_password']
+            service_name = import_properties.get('odsi_service_name')
+        user_name = import_properties.get('odsi_username')
+        password = import_properties.get('odsi_password')
     else :
-        host = import_properties['discovery_host']
-        port = import_properties['discovery_port']
+        host = import_properties.get('discovery_host')
+        port = import_properties.get('discovery_port')
     
         if 'discovery_sid' in import_properties :
             SID = import_properties['discovery_sid']
         else :
-            service_name = import_properties['discovery_service_name']
-        user_name = import_properties['discovery_username']
-        password = import_properties['discovery_password']
+            service_name = import_properties.get('discovery_service_name')
+        user_name = import_properties.get('discovery_username')
+        password = import_properties.get('discovery_password')
         
     
     if service_name :
@@ -165,9 +166,7 @@ def get_odsi_resources(con):
     
     for item in data :
         record_id = item[0]
-        resources = []
-        if record_id in record_resource_dict :
-            resources = record_resource_dict[record_id]
+        resources = record_resource_dict.get(record_id, [])
         resources.append(item)
         record_resource_dict[record_id] = resources
     
@@ -217,7 +216,10 @@ def execute_odsi_query(con):
                 "AND DBC_RT.RESOURCE_TYPE_ID=DBC_RS.RESOURCE_TYPE_ID " + \
                 "AND DBC_CS.CREATOR_SECTOR_ID=DBC_SO.CREATOR_SECTOR_ID " + \
                 "AND DBC_DC_MIN.RESOURCE_SET_ID(+)=DBC_RS.RESOURCE_SET_ID " + \
-                "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "  
+                "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "  #+ \
+#                "AND DBC_RS.RESOURCE_SET_ID = 179345 "
+#                "AND DBC_RT.RESOURCE_TYPE_NAME ='Geospatial Dataset'" #+ \
+
 
     cur = con.cursor()
     cur.execute(edc_auery)
@@ -254,7 +256,7 @@ def import_odc_records(con):
     
     print 'Importing ODSI records ....'
     
-    user_id = get_user_id(admin_user)
+    user_id = users_name_id_map.get(admin_user)
     print 'user id :', user_id
 
 
@@ -269,7 +271,7 @@ def import_odc_records(con):
     else :
         with open(record_count_filename, 'r') as record_count_file :
             previous_count = int(record_count_file.read())
-    print previous_count
+    print 'Records from the previous loads: ', previous_count
 
     resources_dict = get_odsi_resources(con)
     #Fetch raw records.
@@ -295,14 +297,13 @@ def import_odc_records(con):
             #------------------------------------------------------------------< Discovery Records >------------------------------------------------------------------
             # Get Discovery info if the records has metastar_uid
             if result[22] :
-                if str(result[22]) in discovery_data :
-                    discovery_record = discovery_data[str(result[22])]
+                discovery_record = discovery_data.get(str(result[22]))
 
             #-------------------------------------------------------------------< Dataset State >---------------------------------------------------------------------
             edc_record['edc_state'] = result[21] or 'DRAFT'
 
             #Ignore DRAFT records or records with no title
-            if (not result[2]) or edc_record['edc_state'] == 'DRAFT' or edc_record['edc_state'] == 'PENDING PUBLISH':
+            if (not result[2]) or edc_record.get('edc_state') == 'DRAFT' or edc_record.get('edc_state') == 'PENDING PUBLISH':
                 index += 1
                 continue
 
@@ -353,15 +354,15 @@ def import_odc_records(con):
             #-----------------------------------------------------------------------< Dataset Type >-----------------------------------------------------------------------
             # Setting the record type
             type_dict = {'Application' : 'Application', 'Geospatial Dataset' : 'Geographic', 'Non-Geospatial Dataset' : 'Dataset', 'Web Service' : 'WebService'}
-            edc_record['type'] = type_dict[result[8]]
+            edc_record['type'] = type_dict.get(result[8])
 
             #----------------------------------------------------------------------< Dataset Author >-----------------------------------------------------------------------
             edc_record['author'] = user_id
 
             #------------------------------------------------------------------< Dataset Organization >---------------------------------------------------------------------
-            org = orgs_title_id_dic[result[1]]
+            org = orgs_title_id_dic.get(result[1], None)
             edc_record['org'] = org
-            edc_record['sub_org'] = orgs_title_id_dic[result[6]]
+            edc_record['sub_org'] = orgs_title_id_dic.get(result[6], None)
             edc_record['owner_org'] = edc_record['sub_org'] or edc_record['org']
 
             #----------------------------------------------------------------------< Dataset Keywords >----------------------------------------------------------------------
@@ -374,9 +375,9 @@ def import_odc_records(con):
                 keyword_list = []
                 for keyword in keywords :
                     if keyword in key_dict :
-                        action_key_dict = key_dict[keyword]
+                        action_key_dict = key_dict.get(keyword)
                         #new_keyword will be empty if the action is 'remove'
-                        new_keyword = action_key_dict['new_keyword']
+                        new_keyword = action_key_dict.get('new_keyword')
                     else :
                         new_keyword = keyword
 
@@ -388,7 +389,6 @@ def import_odc_records(con):
 
 
             #-----------------------------------------------------------------< Dataset dates >-------------------------------------------------------------------
-            dates = []
             
             
             if result[18] :
@@ -410,9 +410,10 @@ def import_odc_records(con):
             #elif edc_record['edc_state'] == 'Published' :
                 #edc_record['record_publish_date'] = str(datetime.date.today())
                 
-            dates.append({'type': 'Published', 'date': str(datetime.date.today()), 'delete': '0'})
-
-            edc_record['dates'] = dates
+            if edc_record.get('type') == 'Geographic' or edc_record.get('type') == 'Dataset':
+                dates = []
+                dates.append({'type': 'Published', 'date': str(datetime.date.today()), 'delete': '0'})
+                edc_record['dates'] = dates
             
             #-----------------------------------------------------------------< Dataset Contacts >----------------------------------------------------------------
             if result[20] and validate_email(result[20]) :
@@ -422,7 +423,7 @@ def import_odc_records(con):
 
             contact_name = result[19] or 'DataBC Operations'
             contacts = []
-            contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'branch': edc_record['sub_org'], 'role' : 'pointOfContact', 'private' : 'Display'})
+            contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Display'})
 
             edc_record['contacts'] = contacts
 
@@ -441,7 +442,7 @@ def import_odc_records(con):
 
 
             #----------------------------------------------------------< Dataset map preview >--------------------------------------------------------------------
-            if edc_record['type'] == 'Geographic':
+            if edc_record.get('type') == 'Geographic':
                 map_layer_name = result[11]
                 if map_layer_name and map_layer_name != 'DBM_7H_MIL_POLITICAL_POLY_BC':
                     edc_record['layer_name'] = result[11]
@@ -456,7 +457,7 @@ def import_odc_records(con):
 
 
             #----------------------------------------------------------< Dataset Object name >--------------------------------------------------------------------
-            if (edc_record['type'] == 'Geographic') and result[9]:
+            if (edc_record.get('type') == 'Geographic') and result[9]:
                 object_name = result[9]
                 if (object_name.startswith('WHSE_') or object_name.startswith('REG_')) :
                     edc_record['object_name'] = object_name
@@ -466,54 +467,54 @@ def import_odc_records(con):
             Update record data if it is available in discovery.
             '''
             if result[22] and discovery_record :
-                edc_record['resource_status'] = discovery_record['resource_status']
+                edc_record['resource_status'] = discovery_record.get('resource_status')
 
-                edc_record['security_class'] = discovery_record['security_class']
+                edc_record['security_class'] = discovery_record.get('security_class')
 
-                edc_record['view_audience'] = discovery_record['view_audience']
+                edc_record['view_audience'] = discovery_record.get('view_audience')
 
-                edc_record['download_audience'] = discovery_record['download_audience']
+                edc_record['download_audience'] = discovery_record.get('download_audience')
 
-                edc_record['metadata_visibility'] = discovery_record['metadata_visibility']
+                edc_record['metadata_visibility'] = discovery_record.get('metadata_visibility')
 
-                edc_record['privacy_impact_assessment'] = discovery_record['privacy_impact_assessment']
+                edc_record['privacy_impact_assessment'] = discovery_record.get('privacy_impact_assessment')
 
-                edc_record['iso_topic_cat'] = discovery_record['iso_topic_cat']
+                edc_record['iso_topic_cat'] = discovery_record.get('iso_topic_cat')
 
-                edc_record['spatial'] = discovery_record['spatial']
+                edc_record['spatial'] = discovery_record.get('spatial')
 
-                edc_record['south_bound_latitude']  =  discovery_record['south_bound_latitude']
+                edc_record['south_bound_latitude']  =  discovery_record.get('south_bound_latitude')
 
-                edc_record['north_bound_latitude'] =   discovery_record['north_bound_latitude']
+                edc_record['north_bound_latitude'] =   discovery_record.get('north_bound_latitude')
 
-                edc_record['west_bound_longitude'] =   discovery_record['west_bound_longitude']
+                edc_record['west_bound_longitude'] =   discovery_record.get('west_bound_longitude')
 
-                edc_record['east_bound_longitude'] =  discovery_record['east_bound_longitude']
+                edc_record['east_bound_longitude'] =  discovery_record.get('east_bound_longitude')
 
-                edc_record['retention_expiry_date'] = discovery_record['retention_expiry_date']
+                edc_record['retention_expiry_date'] = discovery_record.get('retention_expiry_date')
 
-                edc_record['source_data_path'] = discovery_record['source_data_path']
+                edc_record['source_data_path'] = discovery_record.get('source_data_path')
 
-                edc_record['lineage_statement'] = discovery_record['lineage_statement']
+                edc_record['lineage_statement'] = discovery_record.get('lineage_statement')
 
-                edc_record['archive_retention_schedule'] = discovery_record['archive_retention_schedule']
+                edc_record['archive_retention_schedule'] = discovery_record.get('archive_retention_schedule')
 
-                edc_record['purpose'] =  discovery_record['purpose']
+                edc_record['purpose'] =  discovery_record.get('purpose')
 
-                edc_record['metadata_language'] = discovery_record['metadata_language']
+                edc_record['metadata_language'] = discovery_record.get('metadata_language')
 
-                edc_record['metadata_character_set'] = discovery_record['metadata_character_set']
+                edc_record['metadata_character_set'] = discovery_record.get('metadata_character_set')
 
-                edc_record['metadata_standard_name'] = discovery_record['metadata_standard_name']
+                edc_record['metadata_standard_name'] = discovery_record.get('metadata_standard_name')
 
-                edc_record['metadata_standard_version'] = discovery_record['metadata_standard_version']
+                edc_record['metadata_standard_version'] = discovery_record.get('metadata_standard_version')
 
                 #Get the record dates from discovery
-                edc_record['record_last_modified'] = discovery_record['date_modified']
+                edc_record['record_last_modified'] = discovery_record.get('date_modified')
                 
-                edc_record['record_create_date'] = discovery_record['date_created']
+                edc_record['record_create_date'] = discovery_record.get('date_created')
                 
-                edc_record['dates'] = discovery_record['dates']
+                edc_record['dates'] = discovery_record.get('dates')
 
             else :
 
@@ -531,7 +532,8 @@ def import_odc_records(con):
 
                 edc_record['privacy_impact_assessment'] = 'Yes' #Default value : YES
 
-                edc_record['iso_topic_cat'] = ['economy']          #Default value : economy
+                if edc_record.get('type') == 'Geographic' or edc_record.get('type') == 'Dataset':
+                    edc_record['iso_topic_cat'] = ['economy']          #Default value : economy
 
                 edc_record['metadata_language'] = 'eng'
 
@@ -544,10 +546,7 @@ def import_odc_records(con):
             record_id = result[0]
 
             resource_data = None
-            if record_id and record_id in resources_dict:
-                resource_data = resources_dict[record_id]
-            else:
-                resource_data = []
+            resource_data = resources_dict.get(record_id, [])
 
             resources = []
             for resource in resource_data:
@@ -600,7 +599,7 @@ def import_odc_records(con):
                 resource_rec['format'] = res_format
 
                 # Setting Geospatial and Non-geospatial specific resource fields
-                if edc_record['type'] == 'Geographic' or edc_record['type'] == 'Dataset':
+                if edc_record.get('type') == 'Geographic' or edc_record.get('type') == 'Dataset':
             #----------------------------------------------------------< Resource Type >--------------------------------------------------------------------
                     resource_rec['edc_resource_type'] = 'Data'
 
@@ -621,7 +620,7 @@ def import_odc_records(con):
 
 
             #----------------------------------------------------------< Resource Projection Name >--------------------------------------------------------------------
-                    if edc_record['type'] == 'Geographic':
+                    if edc_record.get('type') == 'Geographic':
                         projection_name = 'EPSG_4326 - WGS84 - World Geodetic System 1984'
                         resource_rec['projection_name'] = projection_name
 
@@ -663,10 +662,10 @@ def import_odc_records(con):
 
                 #Update resource data if the record is available in discovery
                 if result[22] and discovery_record :
-                    resource_rec['edc_resource_type'] = discovery_record['edc_resource_type']
-                    resource_rec['resource_update_cycle'] = discovery_record['resource_update_cycle'] or 'monthly'
-                    resource_rec['data_collection_start_date'] = discovery_record['data_collection_start_date']
-                    resource_rec['data_collection_end_date'] = discovery_record['data_collection_end_date']
+                    resource_rec['edc_resource_type'] = discovery_record.get('edc_resource_type')
+                    resource_rec['resource_update_cycle'] = discovery_record.get('resource_update_cycle', 'monthly')
+                    resource_rec['data_collection_start_date'] = discovery_record.get('data_collection_start_date')
+                    resource_rec['data_collection_end_date'] = discovery_record.get('data_collection_end_date')
 
                 # Add the current resource record to the list of dataset resources
                 resources.append(resource_rec)
@@ -679,7 +678,7 @@ def import_odc_records(con):
             (record_info, errors) = edc_package_create(edc_record)
 
             if  record_info :
-                pkg_list.append(edc_record['name'])
+                pkg_list.append(edc_record.get('name'))
                 records_created += 1
                 print '--------------------<< Record with uid %s is imported >>--------------------' % str(result[0])
             else :
@@ -713,77 +712,102 @@ def import_odc_records(con):
 
 #    save_record_dict(record_dict, "odsi_dict.json")
 
+def create_discovery_org_map(org_map_filename):
+    #Create the dictionary for discovery org/suborg replacement    
+    #Read the organization replacement from a csv file
+    import csv
+    import sys
+    org_map = {}
 
-def get_organization(org_str):
+    print 'Discovery organization/sub-organization mapping ...'
+    try:
+        reader = csv.reader(open(org_map_filename, 'r'))
+        for row in reader:
+            org_map[row[0]] = {'org' : row[1], 'sub_org': row[2]}
+    except csv.Error, e:
+        sys.exit('file %s, line %d: %s' % (org_map_filename, reader.line_num, e))
+    
+    return org_map
 
-    if not org_str :
-        return (None, None)
 
-    #Get the organization type code (BCGOV, BCAGENCY, NONGOV, MUNIC, ...)
-    prefix = org_str.split(' ', 1)[0]
-    prefix_len = len(prefix)
+def get_organization(org_str, org_map):
+    '''
+    Gets the organization and sub-organization titles for the given org_str
+    '''
+    
+#    print 'Organization in use : ', org_str
+    org_dict = org_map.get(org_str, {})
+    
+    return (org_dict.get('org'), org_dict.get('sub_org'))
 
-    org_code = ''
-    org_titles = {
-                    'AL' : 'Ministry of Agriculture',
-                    'ARR': 'Ministry of Aboriginal Relations and Reconciliation',
-                    'CSCD': 'Ministry of Community, Sport and Cultural Development',
-                    'ED': 'Ministry of Education',
-                    'EMPR': 'Ministry of Energy and Mines',
-                    'ENV': 'Ministry of Environment',
-                    'FLNRO': 'Ministry of Forests, Lands and Natural Resource Operations',
-                    'FOR' : 'Ministry of Forests, Lands and Natural Resource Operations',
-                    'HLS' : 'Ministry of Health',
-                    'HLTH': 'Ministry of Health',
-                    'ILMB': 'Integrated Land Management Bureau',
-                    'JAG': 'Ministry of Justice',
-                    'LCS': "Ministry of Technology, Innovation and Citizens Services",
-                    'MEM': 'Ministry of Energy and Mines',
-                    'MCFD': 'Ministry of Children and Family Development',
-                    'MOT': 'Ministry of Transportation and Infrastructure',
-                    'MSDSI': 'Ministry of Social Development and Social Innovation',
-                    'NGD' : 'Ministry of Natural Gas Development',
-                    'PSSG': 'Public Safety and Solicitor General',
-                    'TCA': 'Ministry of Jobs, Tourism and Skills Training'
-                }
-
-    org_title = None
-    sub_org_title = None
-
-    if prefix == 'BCGOV':
-        org_code = org_str.split(' ', 2)[1]
-        org_title = org_titles[org_code]
-        sub_org_index = len(org_code) + 7
-        sub_org_title = org_str[sub_org_index:]
-    elif prefix == 'CDNGOV':
-        org_title = 'Government of Canada'
-        sub_org_title =  org_str[7:]
-    elif prefix == 'BCAGENCY':
-        org_title = org_str[9:]
-        if org_title and org_title.startswith('Agricultural Land Commission'):
-            sub_org_title = org_title
-            org_title = 'Ministry of Agriculture'
-        elif org_title and org_title.startswith('Environmental Assessment Office'):
-            sub_org_title = 'Environmental Assessment Office'
-            org_title = 'Ministry of Environment'
-        elif org_title and org_title.startswith('Elections British Columbia'):
-            sub_org_title = 'Elections British Columbia'
-            org_title = 'Ministry of Technology, Innovation and Citizens Services'
-        elif org_title and org_title.startswith('Oil and Gas Commission') :
-            sub_org_title = 'Oil and Gas Commission'
-            org_title = 'Ministry of Natural Gas Development'
-        else:
-            sub_org_title = ''
-    elif prefix == 'NONGOV' or prefix == 'MUNIC':
-        org_title = org_str[prefix_len+1:]
-        sub_org_title = ''
-    elif prefix == 'OTHER':
-        org_title = 'BC Government'
-        sub_org_title = ''
-    else :
-        pass
-
-    return (org_title, sub_org_title)
+#     if not org_str :
+#         return (None, None)
+# 
+#     #Get the organization type code (BCGOV, BCAGENCY, NONGOV, MUNIC, ...)
+#     prefix = org_str.split(' ', 1)[0]
+#     prefix_len = len(prefix)
+# 
+#     org_code = ''
+#     org_titles = {
+#                     'AL' : 'Ministry of Agriculture',
+#                     'ARR': 'Ministry of Aboriginal Relations and Reconciliation',
+#                     'CSCD': 'Ministry of Community, Sport and Cultural Development',
+#                     'ED': 'Ministry of Education',
+#                     'EMPR': 'Ministry of Energy and Mines',
+#                     'ENV': 'Ministry of Environment',
+#                     'FLNRO': 'Ministry of Forests, Lands and Natural Resource Operations',
+#                     'FOR' : 'Ministry of Forests, Lands and Natural Resource Operations',
+#                     'HLS' : 'Ministry of Health',
+#                     'HLTH': 'Ministry of Health',
+#                     'ILMB': 'Integrated Land Management Bureau',
+#                     'JAG': 'Ministry of Justice',
+#                     'LCS': "Ministry of Technology, Innovation and Citizens Services",
+#                     'MEM': 'Ministry of Energy and Mines',
+#                     'MCFD': 'Ministry of Children and Family Development',
+#                     'MOT': 'Ministry of Transportation and Infrastructure',
+#                     'MSDSI': 'Ministry of Social Development and Social Innovation',
+#                     'NGD' : 'Ministry of Natural Gas Development',
+#                     'PSSG': 'Public Safety and Solicitor General',
+#                     'TCA': 'Ministry of Jobs, Tourism and Skills Training'
+#                 }
+# 
+#     org_title = None
+#     sub_org_title = None
+# 
+#     if prefix == 'BCGOV':
+#         org_code = org_str.split(' ', 2)[1]
+#         org_title = org_titles[org_code]
+#         sub_org_index = len(org_code) + 7
+#         sub_org_title = org_str[sub_org_index:]
+#     elif prefix == 'CDNGOV':
+#         org_title = 'Government of Canada'
+#         sub_org_title =  org_str[7:]
+#     elif prefix == 'BCAGENCY':
+#         org_title = org_str[9:]
+#         if org_title and org_title.startswith('Agricultural Land Commission'):
+#             sub_org_title = org_title
+#             org_title = 'Ministry of Agriculture'
+#         elif org_title and org_title.startswith('Environmental Assessment Office'):
+#             sub_org_title = 'Environmental Assessment Office'
+#             org_title = 'Ministry of Environment'
+#         elif org_title and org_title.startswith('Elections British Columbia'):
+#             sub_org_title = 'Elections British Columbia'
+#             org_title = 'Ministry of Technology, Innovation and Citizens Services'
+#         elif org_title and org_title.startswith('Oil and Gas Commission') :
+#             sub_org_title = 'Oil and Gas Commission'
+#             org_title = 'Ministry of Natural Gas Development'
+#         else:
+#             sub_org_title = ''
+#     elif prefix == 'NONGOV' or prefix == 'MUNIC':
+#         org_title = org_str[prefix_len+1:]
+#         sub_org_title = ''
+#     elif prefix == 'OTHER':
+#         org_title = 'BC Government'
+#         sub_org_title = ''
+#     else :
+#         pass
+# 
+#     return (org_title, sub_org_title)
 
 
 def load_common_records() :
@@ -878,7 +902,19 @@ def import_discovery_records(con):
 
     #Required for email validation
     from validate_email import validate_email
+    
+    
+    '''
+    Check if the organization mapping file exists.
+    Otherwise exit.
+    '''
+    org_map_filename = './data/discovery_org_suborg_replacement.csv'
+    if not os.path.exists(org_map_filename) :
+        print 'Organization mapping file is not given.'
+        return
 
+    org_map = create_discovery_org_map(org_map_filename)
+    
     #Get the list of available records
     pkg_list = get_record_list()
 
@@ -889,7 +925,7 @@ def import_discovery_records(con):
     else :
         with open(record_count_filename, 'r') as record_count_file :
             previous_count = int(record_count_file.read())
-    print previous_count
+    print 'Records from previous loads: ', previous_count
 
     #Create the dictionary for keywords replacement    
     #Read the keyword updates from csv file
@@ -917,6 +953,7 @@ def import_discovery_records(con):
 
         try :
 
+#            print '-----------------<< Trying to import record with id :', result[14], ' >>-----------------------'
             edc_record = {}
 
             if index < previous_count :
@@ -938,18 +975,18 @@ def import_discovery_records(con):
 
             #---------------------------------------------------------------------<< Record state >>-----------------------------------------------------------------------
             state_convert_dict = {'Draft': 'DRAFT', 'Approve': 'PENDING PUBLISH', 'Published': 'PUBLISHED', 'ZPublished': 'ARCHIVED'}
-            edc_record['edc_state'] = state_convert_dict[result[3]]
+            edc_record['edc_state'] = state_convert_dict.get(result[3])
 
             # Ignore DRAFT records or Theme records (Records with Theme in title).
-            if edc_record['edc_state'] == 'DRAFT' or '(Theme)' in result[0]:
+            if edc_record.get('edc_state') == 'DRAFT' or '(Theme)' in result[0]:
                 index += 1
                 continue
 
             #---------------------------------------------------------------------<< Record Author >>----------------------------------------------------------------------
             username = result[46]
-            user_id = get_user_id(username)
+            user_id = users_name_id_map.get(username)
             if not user_id :
-                user_id = get_user_id(admin_user)
+                user_id = users_name_id_map.get(admin_user)
             edc_record['author'] = user_id
 
 
@@ -979,22 +1016,24 @@ def import_discovery_records(con):
             edc_record['type'] = 'Geographic'
 
             #-----------------------------------------------------<< Records Organization and Sub-organization >>-----------------------------------------------------------
-            (org_title, sub_org_title) = get_organization(result[2])
+            (org_title, sub_org_title) = get_organization(result[2], org_map)
+#            print 'Organization : ', org_title, '    Sub-organization:  ', sub_org_title
             edc_record['org'] = edc_record['sub_org'] = None
             
             if (org_title not in orgs_title_id_dic) or (sub_org_title not in orgs_title_id_dic) :
+#                print '***** Organization is not available in ODSI *****'
                 index += 1
                 continue
             
-            edc_record['org'] = orgs_title_id_dic[org_title]
+            edc_record['org'] = orgs_title_id_dic.get(org_title)
                 
-            edc_record['sub_org'] = orgs_title_id_dic[sub_org_title]
+            edc_record['sub_org'] = orgs_title_id_dic.get(sub_org_title)
                 
-            edc_record['owner_org'] = edc_record['sub_org']
+            edc_record['owner_org'] = edc_record.get('sub_org')
             
             #-------------------------------------------------------------------<< ISO topic category >>---------------------------------------------------------------------
             iso_topic_cat = (result[29] or 'unknown').split(',')
-            if edc_record['type'] == 'Geographic' or edc_record['type'] == 'Dataset':
+            if edc_record.get('type') == 'Geographic' or edc_record.get('type') == 'Dataset':
                 edc_record['iso_topic_cat'] = iso_topic_cat
 
             #-------------------------------------------------------------------------<< Keywords >>-------------------------------------------------------------------------
@@ -1009,9 +1048,9 @@ def import_discovery_records(con):
                 keyword_list = []
                 for keyword in keywords :
                     if keyword in key_dict :
-                        action_key_dict = key_dict[keyword]
+                        action_key_dict = key_dict.get(keyword)
                         #new_keyword will be empty if the action is 'remove'
-                        new_keyword = action_key_dict['new_keyword']
+                        new_keyword = action_key_dict.get('new_keyword')
                     else :
                         new_keyword = keyword
 
@@ -1046,8 +1085,7 @@ def import_discovery_records(con):
             contact_len = min(len(contact_names), len(contact_emails), len(contact_orgs))
 
             for i in range(contact_len):
-#                (contact_org, contact_sub_org) = get_organization(contact_orgs[i])
-                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record['org'], 'branch': edc_record['sub_org'], 'role' : 'pointOfContact', 'private' : 'Display'})
+                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record.get('org'), 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Display'})
 
             edc_record['contacts'] = contacts
 
@@ -1067,8 +1105,9 @@ def import_discovery_records(con):
                 edc_record['privacy_impact_assessment'] = 'Yes'
             else :
                 edc_record['privacy_impact_assessment'] = 'No'
-
-            edc_record['metastar_uid'] = str(result[14])
+            
+            if result[14] :
+                edc_record['metastar_uid'] = str(result[14])
 
             edc_record['lineage_statement'] = result[18]
 
@@ -1086,11 +1125,7 @@ def import_discovery_records(con):
 
             security_dict = {'topSecret': 'MEDIUM-SENSITIVITY', 'secret': 'MEDIUM-SENSITIVITY', 'restricted' : 'MEDIUM-SENSITIVITY', 'confidential': 'MEDIUM-SENSITIVITY', 'unclassified' : 'LOW-PUBLIC'}
 
-            if security_class and security_class in security_dict :
-                edc_record['security_class'] = security_dict[security_class]
-            else :
-                edc_record['security_class'] = 'LOW-PUBLIC'
-
+            edc_record['security_class'] = security_dict.get(security_class, 'LOW-PUBLIC')
 
             #---------------------------------------------------------------------<< Record dates >>----------------------------------------------------------------------
             # Adding dataset dates
@@ -1103,16 +1138,17 @@ def import_discovery_records(con):
             dates = []
             
             for date_of_data in dates_of_data :
-                rec_date = date_of_data[:4] + '-' + date_of_data[4:6] + '-' + date_of_data[6:8]
-                date_type = date_of_data[8:]
-                date_type = date_type_dict[date_type]
-                dates.append({'type': date_type, 'date': rec_date, 'delete': '0'})
+                if len(date_of_data) > 8 :
+                    rec_date = date_of_data[:4] + '-' + date_of_data[4:6] + '-' + date_of_data[6:8]
+                    date_type = date_of_data[8:]
+                    date_type = date_type_dict[date_type]
+                    dates.append({'type': date_type, 'date': rec_date, 'delete': '0'})
                 
             if result[30] :
                 edc_record['record_create_date'] = result[30]
 
             #Add the publish date for records with publish state.
-            if edc_record['edc_state'] == 'Published' :
+            if edc_record.get('edc_state') == 'Published' :
                 edc_record['record_publish_date'] = str(datetime.date.today())
 
             if result[50] :
@@ -1200,8 +1236,7 @@ def import_discovery_records(con):
                 product_type = result[40]
                 product_id = result[41]
                 product_type_id = None
-                if product_type and product_type in product_type_id_dic :
-                    product_type_id = product_type_id_dic[product_type]
+                product_type_id = product_type_id_dic.get(product_type)
                 if product_id and product_type_id:
                     resource_url = 'https://apps.gov.bc.ca/pub/dwds/addProductsFromExternalApplication.do?productTypeId={0}&productId={1}'.format(product_type_id, product_id)
 
@@ -1271,7 +1306,7 @@ def import_discovery_records(con):
             (record_info, errors) = edc_package_create(edc_record)
 
             if  record_info :
-                pkg_list.append(edc_record['name'])
+                pkg_list.append(edc_record.get('name'))
                 records_created += 1
                 print '--------------------<< Record with uid %s is imported >>--------------------' % str(result[14])
             else :
@@ -1310,7 +1345,17 @@ def find_missing_orgs(con):
     cur = con.cursor()
 
     data = cur.execute(edc_query)
-    #Get the raw records from discovery database
+    '''
+    Check if the organization mapping file exists.
+    Otherwise exit.
+    '''
+    org_map_filename = './data/discovery_org_replacement.csv'
+    if not os.path.exists(org_map_filename) :
+        print 'Organization mapping file is not given.'
+        return
+
+    org_map = create_discovery_org_map(org_map_filename)
+    
 
     org_error_file = open('./data/orgs_not_available.txt', 'w')
 
@@ -1323,7 +1368,7 @@ def find_missing_orgs(con):
 #
 #     projection_names_file.close()
 #     pass
-            (org_title, suborg_title) = get_organization(result[0])
+            (org_title, suborg_title) = get_organization(result[0], org_map)
             org_id = orgs_title_id_dic[org_title]
             suborg_id = orgs_title_id_dic[suborg_title]
 
@@ -1346,16 +1391,16 @@ def import_data():
         print 'Please provide the datasource (odsi or discovery)'
         return
     data_source = sys.argv[1]
-    #    data_source = raw_input("Data source (ODSI/Discovery): ")
+#    data_source = raw_input("Data source (ODSI/Discovery): ")
     
     con =  get_connection(data_source)
-    
+
     try:
         if data_source.lower() == 'odsi' :
             import_odc_records(con)
         elif data_source.lower() == 'discovery' :
             import_discovery_records(con)
-        #            find_missing_orgs(con)
+#            find_missing_orgs(con)
         else :
             print "A proper datasource must be given."
     except:
