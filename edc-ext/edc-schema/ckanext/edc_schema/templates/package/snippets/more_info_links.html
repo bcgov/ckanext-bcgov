@@ -1,4 +1,5 @@
-{% if links[0].link %}
+{% set links_len = links|length %}
+{% if links_len > 0 %}
     <h2>More Information</h2>
     <ul class="more-info-links">
     {% for info in links %}

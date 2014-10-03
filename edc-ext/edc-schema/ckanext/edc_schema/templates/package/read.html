@@ -130,8 +130,7 @@
       {% endblock %}
 
       {% block more_info_links %}
-          {% snippet "package/snippets/more_info_links.html", links=pkg.more_info %}
-        
+          {% snippet "package/snippets/more_info_links.html", links=pkg.get('more_info',[]) %}
       {% endblock %}
 
       {# Displaying contact info #}
