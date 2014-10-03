@@ -1,0 +1,235 @@
+[
+	{
+		"name": "dataset_type_vocab",
+		"tags": [
+					"Dataset",
+					"Geographic Dataset",
+					"Application",
+					"Web Service - API"
+				]
+	},
+    {
+        "name" : "dataset_date_type",
+        "tags" : [
+        			"Created",
+        			"Modified",
+                  	"Published",
+                  	"Archived",
+                  	"Destroyed"
+                  ]
+    },
+    {
+    	"name" : "resource_format",
+    	"tags" : [
+                "atom",
+                "cded",
+ 				"csv",
+                "e00",
+                "fgdb",
+                "geojson",
+                "georss",
+                "html",
+                "json",
+                "kml",
+                "kmz",
+                "pdf",
+                "rdf",
+                "shp",
+                "txt",
+                "wms",
+                "xls",
+                "xlsx",
+                "xml",
+                "zip",
+                "other"
+    			]
+    },
+	{
+		"name" : "resource_status",
+		"tags" : [
+					"completed",
+                    "historicalArchive",
+                    "obsolete",
+                    "onGoing",
+                    "planned",
+                    "required",
+                    "underDevelopment",
+                    "destroyed"
+                  ]
+	},
+	{
+		"name" : "security_class",
+		"tags" : [
+					"HIGH-CABINET",
+					"HIGH-CONFIDENTIAL",
+					"HIGH-SENSITIVITY",
+					"MEDIUM-SENSITIVITY",
+					"MEDIUM-PERSONAL",
+					"LOW-SENSITIVITY",
+					"LOW-PUBLIC"
+				  ]
+	},
+ {
+ "name" : "metadata_hierarchy_level",
+ "tags" : [
+ 			"attribute",
+            "attributeType",
+            "collectionHardware",
+            "collectionSession",
+            "dataset",
+            "series",
+            "nonGeographicalDataset",
+            "dimensionGroup",
+            "feature",
+            "featureType",
+            "propertyType",
+            "fieldSession",
+            "software",
+            "service",
+            "model",
+            "tile",
+            "Unknown"
+          ]
+ },
+ {
+ 	"name" : "viewable",
+ 	"tags" : [
+ 				"Public",
+ 				"Government",
+ 				"Named users"
+ 			]
+ },
+ {
+ 	"name" : "downloadable",
+ 	"tags" : [
+ 				"Public",
+ 				"Government",
+ 				"Named users"
+ 			]
+ },
+ {
+ 	"name" : "iso_topic_category",
+ 	"tags" : [
+ 				"farming",
+				"biota",
+				"boundaries",
+				"climatologyMeteorologyAtmosphere",
+				"economy",
+				"elevation",
+				"environment",
+				"geoscientificInformation",
+				"health",
+				"imageryBaseMapsEarthCover",
+				"intelligenceMilitary",
+				"inlandWaters",
+				"location",
+				"oceans",
+				"planningCadastre",
+				"society",
+				"structure",
+				"transportation",
+				"utilitiesCommuncation",
+				"unknown"
+			]
+ },
+ {
+ 	"name" : "metadata_visibility",
+ 	"tags" : [
+ 				"Public",
+                "IDIR"
+ 			  ]
+ },
+ {
+ 	"name" : "resource_type",
+ 	"tags" : [
+ 				"Data",
+ 				"Abstraction",
+ 				"Reports"
+ 			 ]
+ },
+ {
+ 	"name" : "object_relationships",
+ 	"tags" : [
+ 				"depends on",
+ 				"drives from",
+ 				"child of",
+ 				"parent of",
+ 				"used in"
+ 			 ]
+ },
+ {
+ 	"name" : "contact_roles",
+ 	"tags" : [
+ 				"custodian",
+ 				"pointOfContact",
+ 				"distributor",
+                "businessExpert"
+ 			 ]
+ },
+ {
+ 	"name" : "resource_storage_access_method",
+ 	"tags" : [
+ 				"Application",
+ 				"Direct Access",
+ 				"Indirect Access",
+ 				"Service"
+ 			 ]
+ },
+ {
+    "name": "resource_update_cycle",
+    "tags":  [
+                "continual",
+                "daily",
+                "weekly",
+                "fortnightly",
+                "monthly",
+                "quarterly",
+                "biannually",
+                "annually",
+                "asNeeded",
+                "irregular",
+                "notPlanned",
+                "unknown"
+
+             ]
+
+ },
+ {
+    "name": "resource_storage_location",
+    "tags": [
+
+                "BCGW Data Store",
+                "EDC Data Store",
+                "pub.data.gov.bc.ca",
+                "External"
+            ]
+ },
+ {
+    "name": "projection_name",
+    "tags": [
+                "EPSG_3005 - NAD83 BC Albers",
+                "EPSG_3857 - WGS84 Pseudo-Mercator -- Spherical Mercator",
+                "EPSG_4326 - WGS84 - World Geodetic System 1984",
+                "EPSG_26907 - NAD83 UTM zone 7N",
+                "EPSG_26707 - NAD27 UTM zone 7N",
+                "EPSG_32607 - WGS 84 UTM zone 7N",
+                "EPSG_4269 - NAD83",
+                "EPSG_26708 - NAD27 UTM zone 8N",
+                "EPSG_26709 - NAD27 UTM zone 9N",
+                "EPSG_26710 - NAD27 UTM zone 10N",
+                "EPSG_26711 - NAD27 UTM zone 11N",
+                "EPSG_26712 - NAD27 UTM zone 12N",
+                "EPSG_26908 - NAD83 UTM zone 8N",
+                "EPSG_26909 - NAD83 UTM zone 9N",
+                "EPSG_26910 - NAD83 UTM zone 10N",
+                "EPSG_26911 - NAD83 UTM zone 11N",
+                "EPSG_26912 - NAD83 UTM zone 12N",
+                "EPSG_32608 - WGS 84 UTM zone 8N",
+                "EPSG_32609 - WGS 84 UTM zone 9N",
+                "EPSG_32610 - WGS 84 UTM zone 10N",
+                "EPSG_32611 - WGS 84 UTM zone 11N",
+                "EPSG_32612 - WGS 84 UTM zone 12N",
+                "UTM"
+            ]
+}
+]

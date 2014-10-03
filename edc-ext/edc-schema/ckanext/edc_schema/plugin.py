@@ -104,9 +104,9 @@ def get_organization_title(org_id):
     return None
 
 def get_espg_id(espg_string):
-  a = re.compile("_([0-9]+)")
-  espg_id = a.findall(espg_string)
-  return espg_id[0]
+    a = re.compile("_([0-9]+)")
+    espg_id = a.findall(espg_string)
+    return espg_id[0]
 
 class SchemaPlugin(plugins.SingletonPlugin):
 
@@ -123,8 +123,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IFacets, inherit=True)
 
     plugins.implements(plugins.IActions, inherit=True)
-
-
+            
     def get_helpers(self):
         return {
                 "dataset_type" : get_dataset_type,
@@ -267,7 +266,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         # /api ver 3 or none
         #with SubMapper(map, controller=api_controller, path_prefix='/api{ver:/3|}', ver='/3') as m:
         m.connect('/action/{logic_function}', action='action', conditions=GET_POST)
-        
+
 
         return map
 
@@ -433,9 +432,10 @@ class SchemaPlugin(plugins.SingletonPlugin):
             else:
                 fq = ''
             fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
-            
-            
+
+
         search_params['fq'] = fq
+
         return search_params
 
     def dataset_facets(self, facet_dict, package_type):
@@ -467,7 +467,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
 
         if c.userobj and c.userobj.sysadmin:
-          facet_dict['edc_state'] = _('States')
+            facet_dict['edc_state'] = _('States')
 
         return facet_dict
 
@@ -475,6 +475,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
     def get_actions(self):
         import ckanext.edc_schema.logic.action as edc_action
         return {'edc_package_update' : edc_action.edc_package_update,
+                'edc_package_update_bcgw' : edc_action.edc_package_update_bcgw,
                 'package_update' : edc_action.package_update,
                 'package_autocomplete' : edc_action.package_autocomplete }
 

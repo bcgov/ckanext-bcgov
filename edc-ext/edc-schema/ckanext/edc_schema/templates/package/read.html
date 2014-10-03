@@ -130,14 +130,19 @@
       {% endblock %}
 
       {% block more_info_links %}
-        {% if pkg.more_info %}
           {% snippet "package/snippets/more_info_links.html", links=pkg.more_info %}
-        {% endif %}
+        
       {% endblock %}
 
       {# Displaying contact info #}
       {% block package_contacts %}
-        {% snippet 'package/snippets/contacts_view.html', contacts=pkg.contacts %}
+      	{% if c.userobj %}
+        	{% set user_orgs =  c.userobj.get_group_ids('organization', 'admin') + c.userobj.get_group_ids('organization', 'editor') %}
+        	{% set is_editor = (pkg.owner_org in user_orgs) %}
+        {% else %}
+        	{% set is_editor = False %}
+        {% endif %}
+        {% snippet 'package/snippets/contacts_view.html', contacts=pkg.contacts, userobj=c.userobj, is_editor = is_editor %}
       {% endblock %}
 
       {% block security_classification %}
@@ -224,6 +229,58 @@
 
   </div>
 
+  {% endblock %}
+
+  {% block bcgw_data %}
+    {% if pkg.type == 'Geographic' %}
+
+      {% set object_name = pkg.object_name or '' %}
+      {% set object_short_name = pkg.object_short_name or '' %}
+      {% set object_table_comments = pkg.object_table_comments or '' %}
+      {% set object_details = pkg.details or '' %}
+
+      {% if object_name and ( object_short_name or object_table_comments or object_details ) %}
+        <h3>Object Description</h3>
+        <div id="object-description">
+          {% if object_name %}
+          <p><strong>Object Description for: {{ object_name }}</strong></p>
+          {% endif %}
+          <p>
+            {% if object_short_name %}
+            <strong>Short Name</strong>: {{ object_short_name }}<br/>
+            {% endif %}
+
+            {% if object_table_comments %}
+            <strong>Comments</strong>: {{ object_table_comments }}
+            {% endif %}
+          </p>
+          {% if object_details %}
+          <table class="table details">
+            <thead>
+              <tr>
+                <th class="column-name">Column Name</th>
+                <th class="short-name">Short Name</th>
+                <th class="data-type">Data Type</th>
+                <th class="data-precision">Data Precision</th>
+                <th class="data-comments">Comments</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for detail in object_details %}
+              <tr>
+                <td class="column-name">{{ detail['column_name'] }}</td>
+                <td class="short-name">{{ detail['short_name'] }}</td>
+                <td class="data-type">{{ detail['data_type'] }}</td>
+                <td class="data-precision">{{ detail['data_precision'] }}</td>
+                <td class="data-comments">{{ detail['column_comments'] }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endif %}
   {% endblock %}
 
   {% if (pkg.edc_state.upper() == 'PUBLISHED' or pkg.edc_state.upper() == 'PENDING ARCHIVE') %}

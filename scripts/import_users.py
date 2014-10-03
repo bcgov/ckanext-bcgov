@@ -193,7 +193,7 @@ def import_users():
         user_dict = {
                      'name' : user_name,
                      'email' : 'databc@gov.bc.ca',
-                     'password' : 'r3db1rd'
+                     'password' : 'test1234'
                      }
         if not user :
             user = create_user(user_dict)

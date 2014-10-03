@@ -243,5 +243,3 @@ def check_duplicates(key, data, errors, context):
             raise StopOnError
     except SearchError, se :
         return
-
-

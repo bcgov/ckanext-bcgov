@@ -15,6 +15,19 @@
     {% endif %}
   {% endblock %}
 
+  {% block errors %}
+    {% if error_summary %}
+      <div class="error-explanation alert alert-error">
+        <p>{{ _('The form contains invalid entries. Please fix the following errors :') }}
+        <ul>
+        {% for type, error in error_summary.items() %}
+          <li>{{ type }}: {{ error }}</li>
+        {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  {% endblock %}
+
   <input name="id" value="{{ data.id }}" type="hidden"/>
 
     {% block basic_fields_url %}
@@ -35,7 +48,7 @@
 		{% resource 'edc_resource/jquery-ui.js' %}
 		{% resource 'edc_resource/jquery-ui.css' %}
 		{% resource 'edc_resource/edc_resource.js' %}
-	
+
 	{% if record_type == 'Geographic' or record_type=='Dataset'  %}
     	{% block basic_fields_description %}
    	 		{{ form.markdown('description', id='field-description', label=_('Resource Description'), placeholder=_('Some useful notes about the data'), value=data.description, error=errors.description) }}

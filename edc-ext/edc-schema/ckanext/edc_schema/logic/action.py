@@ -8,6 +8,9 @@ import ckan.logic as logic
 import ckan.lib.dictization.model_save as model_save
 import ckan.plugins as plugins
 
+
+from pylons import config
+
 from ckan.common import _, c, request
 import ckan.lib.plugins as lib_plugins
 import ckan.lib as lib
@@ -41,6 +44,7 @@ def edc_package_update(context, input_data_dict):
     '''
     from ckan.lib.search import SearchError
 
+    pprint.pprint(input_data_dict)
     # first, do the search
     q = 'object_name:' + input_data_dict.get("object_name")
     fq = ''
@@ -62,21 +66,49 @@ def edc_package_update(context, input_data_dict):
 
     except SearchError, se :
         print 'Search error', str(se)
+        pprint.pprint('Search error!')
         raise SearchError(str(se))
 
     #check the search results - there can be only 1!!
     the_count = query['count']
     if the_count != 1:
+        pprint.pprint('count error!')
         raise SearchError('Search returned 0 or more than 1 item')
 
     results = query['results']
-    results[0]['imap_layer_key'] = input_data_dict.get("imap_layer_key")
+    #results[0]['imap_layer_key'] = input_data_dict.get("imap_layer_key")
     # JER - the line below was removed because we don't use the data, and getting it into the query was a nightmare
+    #
     #results[0]['imap_display_name'] = input_data_dict.get("imap_display_name")
-    results[0]['link_to_imap'] = input_data_dict.get("link_to_imap")
+    #results[0]['link_to_imap'] = input_data_dict.get("link_to_imap")
 
     try :
-        update = get_action('package_update')(context, results[0])
+        package_dict = get_action('package_show')(context, {'id': results[0]['id']})
+        
+        visibility = package_dict['metadata_visibility']
+        
+        #pprint.pprint('package_dict:')
+        #pprint.pprint(package_dict)
+        #package_dict['imap_layer_key'] = input_data_dict.get("imap_layer_key")
+        
+        public_map_link = config.get('edc.imap_url_pub')
+        private_map_link = config.get('edc.imap_url_gov')
+        update = {}
+        #don't update archived records
+        
+        if (package_dict['edc_state'] != 'ARCHIVED'):
+			if (visibility == 'Public'):
+				if (input_data_dict.get("imap_layers_pub")):
+					package_dict['link_to_imap'] = public_map_link + input_data_dict.get("imap_layers_pub")
+					update = get_action('package_update')(context, package_dict)
+					#pprint.pprint('update results:')
+					#pprint.pprint(update)                
+			else:        
+				if (input_data_dict.get("imap_layers_gov")):   
+					package_dict['link_to_imap'] = private_map_link + input_data_dict.get("imap_layers_gov")
+					update = get_action('package_update')(context, package_dict)
+					#pprint.pprint('update results:')
+					#pprint.pprint(update)
     except Exception, ue:
         raise Exception(str(ue))
 
@@ -84,6 +116,86 @@ def edc_package_update(context, input_data_dict):
     response_dict['results'] = update
 
     return response_dict
+
+@toolkit.side_effect_free
+def edc_package_update_bcgw(context, input_data_dict):
+    '''
+    Find a package, from the given object_name, and update it with the given fields.
+    1) Call __package_search to find the package
+    2) Check the results (success == true), (count==1)
+    3) Modify the data
+    4) Call get_action(package_update) to update the package
+    '''
+    from ckan.lib.search import SearchError
+    pprint.pprint('*********  edc_package_update_bcgw')
+    update = {}
+    # first, do the search
+    q = 'object_name:' + input_data_dict.get("object_name")
+    fq = ''
+    offset = 0
+    limit = 2
+    sort = 'metadata_modified desc'
+
+    try :
+        pprint.pprint('*********  trying search')
+        data_dict = {
+                     'q' : q,
+                     'fq' : fq,
+                     'start' : offset,
+                     'rows' : limit,
+                     'sort' : sort
+                    }
+
+        #Use package_search to filter the list
+        query = get_action('package_search')(context, data_dict)
+        pprint.pprint(query)
+        pprint.pprint('********* search ok')
+    except SearchError, se :
+        pprint.pprint('*********  search error!')
+        print 'Search error', str(se)
+        raise SearchError(str(se))
+
+    #check the search results - there can be only 1!!
+    the_count = query['count']
+    if the_count != 1: 
+        pprint.pprint('*********  search error 2')
+        #raise SearchError('Search returned 0 or more than 1 item')
+        return_dict = {}
+        return_dict['results'] = query
+        return_dict['success'] = False
+        return_dict['error'] = True
+        #pprint.pprint(return_dict)
+        return return_dict
+    pprint.pprint('*********  trying results')
+    results = query['results']
+    results[0]['details'] = input_data_dict.get("details")
+#     pprint.pprint('*********  DETAILS:')
+#     pprint.pprint(results[0]['details'])
+    try :
+        pprint.pprint('*********  trying update')
+        
+        #need the right data package
+        package_dict = get_action('package_show')(context, {'id': results[0]['id']})
+        #pprint.pprint('*********  package before update')
+        #pprint.pprint(package_dict)
+        package_dict['details'] = input_data_dict.get("details")
+        package_dict['object_short_name'] = input_data_dict.get("object_short_name")
+        package_dict['object_table_comments'] = input_data_dict.get("object_table_comments")
+        if (package_dict['edc_state'] != 'ARCHIVED'):
+            update = get_action('package_update')(context, package_dict)
+        
+        #pprint.pprint('*********  package after update')
+        #pprint.pprint(update)
+    except Exception, ue:
+        pprint.pprint('*********  update error')
+        raise Exception(str(ue))
+
+    response_dict = {}
+    response_dict['results'] = update
+    #pprint.pprint('response dict:')
+    #pprint.pprint(response_dict)
+    return response_dict
+
 
 @toolkit.side_effect_free
 def package_update(context, data_dict):
@@ -108,7 +220,7 @@ def package_update(context, data_dict):
     :rtype: dictionary
 
     '''
-
+    
     model = context['model']
     user = context['user']
     name_or_id = data_dict.get("id") or data_dict['name']
@@ -121,20 +233,37 @@ def package_update(context, data_dict):
     data_dict["id"] = pkg.id
 
     old_data = get_action('package_show')(context, {'id': pkg.id})
+    
+        
+    '''
+    Constructing the tag_string from the given tags.
+    There must be at least one tag, otherwise the tag_string will be empty and a validation error 
+    will be raised. 
+    '''
+    if not data_dict.get('tag_string'):
+        data_dict['tag_string'] = ', '.join(
+                h.dict_list_reduce(data_dict.get('tags', {}), 'name'))
 
+
+    for key, value in old_data.iteritems() :
+        if key not in data_dict :
+            data_dict[key] = value
+            
+    data_dict['resources'] = data_dict.get('resources', old_data.get('resources'))
+    
     #Set the package last modified date
     data_dict['record_last_modified'] = str(datetime.date.today())
 
     # If the Created Date has not yet been set, then set it
-    if data_dict['edc_state'] == 'DRAFT' and not data_dict['record_create_date']:
+    if data_dict['edc_state'] == 'DRAFT' and not data_dict.get('record_create_date'):
         data_dict['record_create_date'] = str(datetime.date.today())
 
     # If the Publish Date has not yet been set, then set it
-    if data_dict['edc_state'] == 'PUBLISHED' and not data_dict['record_publish_date']:
+    if data_dict['edc_state'] == 'PUBLISHED' and not data_dict.get('record_publish_date'):
         data_dict['record_publish_date'] = str(datetime.date.today())
 
     # If the Archive Date has not yet been set, then set it
-    if data_dict['edc_state'] == 'ARCHIVED' and not data_dict['record_archive_date']:
+    if data_dict['edc_state'] == 'ARCHIVED' and not data_dict.get('record_archive_date'):
         data_dict['record_archive_date'] = str(datetime.date.today())
 
     _check_access('package_update', context, data_dict)

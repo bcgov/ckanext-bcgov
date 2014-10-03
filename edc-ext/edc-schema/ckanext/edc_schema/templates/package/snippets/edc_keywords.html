@@ -1,13 +1,11 @@
-
-
-<div class="control-group control-full">
+{% set tag_error = errors.tags or errors.tag_string %}
+<div class="control-group control-full{% if tag_error %} error{% endif %}">
 	<label for="field-tags" class="control-label"><span class="control-required">*</span> Keywords</label>
 	<div class="controls">
     	<input type="hidden" id="field-tags" name="tag_string" value = "{{ data.tag_string }}" />
-    	{% set tag_error = errors.tag_string %} 
 		{% if tag_error and tag_error is iterable %}
 			<span class="group-error error-block">{{ tag_error|join(', ') }}</span>
 		{% endif %}
 	</div>
 </div>
-			            
+

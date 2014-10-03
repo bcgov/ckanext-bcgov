@@ -195,8 +195,8 @@ def execute_odsi_query(con):
                 ",TO_CHAR(DBC_RS.DATE_MODIFIED, 'YYYY-MM-DD')  AS DATE_MODIFIED " + \
                 ",TO_CHAR(DBC_RS.DATE_PUBLISHED, 'YYYY-MM-DD')  AS DATE_PUBLISHED " + \
                 ",TO_CHAR(DBC_RS.DATE_ADDED, 'YYYY-MM-DD')  AS DATE_ADDED" + \
-                ",DBC_DC.DISPLAY_NAME " + \
-                ",DBC_DC.DISPLAY_EMAIL " + \
+                ",DBC_RS.CONTACT_NAME " + \
+                ",DBC_RS.CONTACT_EMAIL " + \
                 ",DBC_RS.RESOURCE_STATE " + \
                 ",DBC_RS.DISCOVERY_UID DISCOVERY_ID " + \
                 "FROM APP_DATABC.DBC_RESOURCE_SETS DBC_RS " + \
@@ -217,7 +217,7 @@ def execute_odsi_query(con):
                 "AND DBC_CS.CREATOR_SECTOR_ID=DBC_SO.CREATOR_SECTOR_ID " + \
                 "AND DBC_DC_MIN.RESOURCE_SET_ID(+)=DBC_RS.RESOURCE_SET_ID " + \
                 "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "  #+ \
-#                "AND DBC_RS.RESOURCE_SET_ID = 179345 "
+#                "AND DBC_RS.RESOURCE_SET_ID = 175964 "
 #                "AND DBC_RT.RESOURCE_TYPE_NAME ='Geospatial Dataset'" #+ \
 
 
@@ -283,7 +283,7 @@ def import_odc_records(con):
     records_created = 0
 
     #Create ODSI error file
-    error_file = open('./data/ODSI_errors.txt', 'a')
+    import_log_file = open('./data/ODSI_errors.txt', 'a')
 
 #    for result in data:
     for result in data:
@@ -294,6 +294,9 @@ def import_odc_records(con):
 
             edc_record = {}
 
+            import_log_file.write('Importing record with uid %s...\n' % str(result[0]))
+            print 'Importing record with uid %s...\n' % str(result[0])
+            
             #------------------------------------------------------------------< Discovery Records >------------------------------------------------------------------
             # Get Discovery info if the records has metastar_uid
             if result[22] :
@@ -302,19 +305,39 @@ def import_odc_records(con):
             #-------------------------------------------------------------------< Dataset State >---------------------------------------------------------------------
             edc_record['edc_state'] = result[21] or 'DRAFT'
 
+            if (not result[2]):
+                import_log_file.write('Record is not imported. No title is given.\n')
+                print 'Record is not imported. No title is given.\n'
+                import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
+                print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+                index += 1
+                continue
+                
             #Ignore DRAFT records or records with no title
-            if (not result[2]) or edc_record.get('edc_state') == 'DRAFT' or edc_record.get('edc_state') == 'PENDING PUBLISH':
+            if (edc_record.get('edc_state') == 'DRAFT' or edc_record.get('edc_state') == 'PENDING PUBLISH'):
+                import_log_file.write('Record is not imported. The record state is ' + edc_record.get('edc_state') + '.\n')
+                print 'Record is not imported. The record state is ' + edc_record.get('edc_state') + '.\n'
+                import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
+                print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
                 index += 1
                 continue
 
             #Do not import Theme records
             if '(Theme)' in result[2] :
+                import_log_file.write('Record is not imported. This is a Theme record.\n')
+                print 'Record is not imported. This is a Theme record.\n'
+                import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
+                print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
                 index += 1
                 continue
 
             #********** Note : this is temporary. ************
             #Drop records from Ministry of Health, British Columbia Vital Statistics Agency
             if (result[1] == 'Ministry of Health') and  (result[6] == 'British Columbia Vital Statistics Agency') :
+                import_log_file.write('Record is not imported. Organization : Ministry of Health, Sub-organization: British Columbia Vital Statistics Agency.\n')
+                print 'Record is not imported. Organization : Ministry of Health, Sub-organization: British Columbia Vital Statistics Agency.\n'
+                import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
+                print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
                 index += 1
                 continue
 
@@ -364,6 +387,14 @@ def import_odc_records(con):
             edc_record['org'] = org
             edc_record['sub_org'] = orgs_title_id_dic.get(result[6], None)
             edc_record['owner_org'] = edc_record['sub_org'] or edc_record['org']
+            
+            if (not edc_record.get('org')) or (not edc_record.get('sub_org')) :
+                import_log_file.write('Record is not imported. Unknown organization/sub-organization name.\n')
+                print 'Record is not imported. Unknown organization/sub-organization name.\n'
+                import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
+                print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+                index += 1
+                continue                
 
             #----------------------------------------------------------------------< Dataset Keywords >----------------------------------------------------------------------
             if result[4]:
@@ -385,6 +416,7 @@ def import_odc_records(con):
                         keyword_list.append(new_keyword)
 
                 edc_record['tags'] = [{'name' : remove_invalid_chars(keyword).strip()} for keyword in keyword_list if keyword and len(keyword) > 1]
+                edc_record['tag_string'] = result[4]
 
 
 
@@ -393,12 +425,6 @@ def import_odc_records(con):
             
             if result[18] :
                 edc_record['record_create_date'] = result[18]
-            '''
-                dates.append({'type': 'Created', 'date': result[18], 'delete': '0'})
-            else :
-                #Add today as dataset creation date
-                dates.append({'type': 'Created', 'date': str(datetime.date.today()), 'delete': '0'})
-            '''
 
             if result[16] :
                 edc_record['record_last_modified'] = result[16]
@@ -423,7 +449,7 @@ def import_odc_records(con):
 
             contact_name = result[19] or 'DataBC Operations'
             contacts = []
-            contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Display'})
+            contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Private'})
 
             edc_record['contacts'] = contacts
 
@@ -567,34 +593,38 @@ def import_odc_records(con):
                     resource_rec['name'] = resource_name
 
                 #----------------------------------------------------------< Resource Format >--------------------------------------------------------------------
-                res_format = ""
-                resource_extension = os.path.splitext(resource_name)[1]
-                if resource_extension and '.' in resource_extension :
-                    resource_extension = resource_extension[1:]
-                    res_format = resource_extension.upper()
+                # Check if the record from discovery
+                if result[22] :
+                    res_format = 'Other'
+                else:
+                    res_format = ""
+                    resource_extension = os.path.splitext(resource_name)[1]
+                    if resource_extension and '.' in resource_extension :
+                        resource_extension = resource_extension[1:]
+                        res_format = resource_extension.upper()
 
-                valid_formats = ["ATOM","CDED", "CSV", "E00", "FGDB", "GEOJSON",
-                                "GEORSS", "HTML", "JSON", "KML", "KMZ", "PDF", "RDF",
-                                "SHP", "TXT", "WMS", "XLS", "XLSX", "XML", "ZIP"]
+                    valid_formats = ["ATOM","CDED", "CSV", "E00", "FGDB", "GEOJSON",
+                                     "GEORSS", "HTML", "JSON", "KML", "KMZ", "PDF", "RDF",
+                                     "SHP", "TXT", "WMS", "XLS", "XLSX", "XML", "ZIP"]
 
-                if res_format == "" or res_format not in valid_formats :
-                    mimeType = (resource[1] or 'Unknown').lower()
-                    if mimeType == 'application/zip' :
-                        res_format = 'ZIP'
-                    elif mimeType == 'application/json':
-                        res_format = "JSON"
-                    elif mimeType == 'application/xls' :
-                        res_format = 'XLS'
-                    elif mimeType == 'application/xml' or mimeType == 'application/rdf+xml':
-                        res_format = 'XML'
-                    elif mimeType == 'text/csv' :
-                        res_format = 'CSV'
-                    elif mimeType == 'text/plain' :
-                        res_format = 'TXT'
-                    elif mimeType == 'application/vnd.google-earth.kmz' or mimeType == 'application/vnd.google-earth.kml+xml' :
-                        res_format = 'KMZ'
-                    else:
-                        res_format = 'Other'
+                    if res_format == "" or res_format not in valid_formats :
+                        mimeType = (resource[1] or 'Unknown').lower()
+                        if mimeType == 'application/zip' :
+                            res_format = 'ZIP'
+                        elif mimeType == 'application/json':
+                            res_format = "JSON"
+                        elif mimeType == 'application/xls' :
+                            res_format = 'XLS'
+                        elif mimeType == 'application/xml' or mimeType == 'application/rdf+xml':
+                            res_format = 'XML'
+                        elif mimeType == 'text/csv' :
+                            res_format = 'CSV'
+                        elif mimeType == 'text/plain' :
+                            res_format = 'TXT'
+                        elif mimeType == 'application/vnd.google-earth.kmz' or mimeType == 'application/vnd.google-earth.kml+xml' :
+                            res_format = 'KMZ'
+                        else:
+                            res_format = 'Other'
 
                 resource_rec['format'] = res_format
 
@@ -675,30 +705,35 @@ def import_odc_records(con):
 
 #            pprint.pprint(edc_record)
 
-            (record_info, errors) = edc_package_create(edc_record)
+            response_dict = edc_package_create(edc_record)
 
-            if  record_info :
+            if  response_dict and response_dict.get('success') == True :
+                record_info = response_dict.get('result')
                 pkg_list.append(edc_record.get('name'))
                 records_created += 1
-                print '--------------------<< Record with uid %s is imported >>--------------------' % str(result[0])
+                print 'Record with uid %s is imported.' % odsi_uid_str
+                import_log_file.write('Record with uid %s is imported.\n' % odsi_uid_str)
             else :
-                pprint.pprint(errors)
-
-                error_file.write('Error in importing record with UID : ' + str(result[0]) + '\n')
-                error_file.write('Record info :\n')
-                json.dump(edc_record, error_file)
-                error_file.write('\nError details :')
-                json.dump(errors, error_file)
-                error_file.write('\n\n------------------------------------------------------------------------------------------------------------------------------------\n\n')
+                print "Error in importing record with UID " +  odsi_uid_str +  " via api call. Please see ckan logs.\n"
+                import_log_file.write("Error in importing record with UID : " +  odsi_uid_str +  " via api call. Please see ckan logs.\n")
+                if response_dict :
+                    error = response_dict.get('error')
+                    if error :
+                        pprint.pprint(error) 
+                        import_log_file.write('\nError details :')
+                        json.dump(error, import_log_file)
+                import_log_file.write('Record info :\n')
+                json.dump(edc_record, import_log_file)
 
             index = index + 1
 
         except Exception, e:
+            index = index + 1
             print str(e)
-            error_file.write('Exception in importing record with UID ' + odsi_uid_str) + '\n'
-#             import traceback
-#             print traceback.format_exc()
-            pass
+            import_log_file.write('Exception in importing record with UID %s.\n' % odsi_uid_str)
+            import_log_file.write(str(e) + '\n')
+        import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
+        print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
 
     con.close()
 
@@ -719,11 +754,14 @@ def create_discovery_org_map(org_map_filename):
     import sys
     org_map = {}
 
+    i = 0
     print 'Discovery organization/sub-organization mapping ...'
     try:
-        reader = csv.reader(open(org_map_filename, 'r'))
+        reader = csv.reader(open(org_map_filename, 'r'), skipinitialspace=True)
         for row in reader:
+            i += 1
             org_map[row[0]] = {'org' : row[1], 'sub_org': row[2]}
+            print str(i).rjust(4), ' ------> ', row[0].ljust(85), ' ', row[1].ljust(70), ' ', row[2].ljust(50)
     except csv.Error, e:
         sys.exit('file %s, line %d: %s' % (org_map_filename, reader.line_num, e))
     
@@ -739,75 +777,6 @@ def get_organization(org_str, org_map):
     org_dict = org_map.get(org_str, {})
     
     return (org_dict.get('org'), org_dict.get('sub_org'))
-
-#     if not org_str :
-#         return (None, None)
-# 
-#     #Get the organization type code (BCGOV, BCAGENCY, NONGOV, MUNIC, ...)
-#     prefix = org_str.split(' ', 1)[0]
-#     prefix_len = len(prefix)
-# 
-#     org_code = ''
-#     org_titles = {
-#                     'AL' : 'Ministry of Agriculture',
-#                     'ARR': 'Ministry of Aboriginal Relations and Reconciliation',
-#                     'CSCD': 'Ministry of Community, Sport and Cultural Development',
-#                     'ED': 'Ministry of Education',
-#                     'EMPR': 'Ministry of Energy and Mines',
-#                     'ENV': 'Ministry of Environment',
-#                     'FLNRO': 'Ministry of Forests, Lands and Natural Resource Operations',
-#                     'FOR' : 'Ministry of Forests, Lands and Natural Resource Operations',
-#                     'HLS' : 'Ministry of Health',
-#                     'HLTH': 'Ministry of Health',
-#                     'ILMB': 'Integrated Land Management Bureau',
-#                     'JAG': 'Ministry of Justice',
-#                     'LCS': "Ministry of Technology, Innovation and Citizens Services",
-#                     'MEM': 'Ministry of Energy and Mines',
-#                     'MCFD': 'Ministry of Children and Family Development',
-#                     'MOT': 'Ministry of Transportation and Infrastructure',
-#                     'MSDSI': 'Ministry of Social Development and Social Innovation',
-#                     'NGD' : 'Ministry of Natural Gas Development',
-#                     'PSSG': 'Public Safety and Solicitor General',
-#                     'TCA': 'Ministry of Jobs, Tourism and Skills Training'
-#                 }
-# 
-#     org_title = None
-#     sub_org_title = None
-# 
-#     if prefix == 'BCGOV':
-#         org_code = org_str.split(' ', 2)[1]
-#         org_title = org_titles[org_code]
-#         sub_org_index = len(org_code) + 7
-#         sub_org_title = org_str[sub_org_index:]
-#     elif prefix == 'CDNGOV':
-#         org_title = 'Government of Canada'
-#         sub_org_title =  org_str[7:]
-#     elif prefix == 'BCAGENCY':
-#         org_title = org_str[9:]
-#         if org_title and org_title.startswith('Agricultural Land Commission'):
-#             sub_org_title = org_title
-#             org_title = 'Ministry of Agriculture'
-#         elif org_title and org_title.startswith('Environmental Assessment Office'):
-#             sub_org_title = 'Environmental Assessment Office'
-#             org_title = 'Ministry of Environment'
-#         elif org_title and org_title.startswith('Elections British Columbia'):
-#             sub_org_title = 'Elections British Columbia'
-#             org_title = 'Ministry of Technology, Innovation and Citizens Services'
-#         elif org_title and org_title.startswith('Oil and Gas Commission') :
-#             sub_org_title = 'Oil and Gas Commission'
-#             org_title = 'Ministry of Natural Gas Development'
-#         else:
-#             sub_org_title = ''
-#     elif prefix == 'NONGOV' or prefix == 'MUNIC':
-#         org_title = org_str[prefix_len+1:]
-#         sub_org_title = ''
-#     elif prefix == 'OTHER':
-#         org_title = 'BC Government'
-#         sub_org_title = ''
-#     else :
-#         pass
-# 
-#     return (org_title, sub_org_title)
 
 
 def load_common_records() :
@@ -831,6 +800,7 @@ def load_common_records() :
 def execute_discovery_query(con):
     '''
     Fetches the discovery records from database
+                "SUBSTR(dat.xml_data.extract('//E10050/text()'),1,2000) object_name, " \
     '''
     edc_query = "SELECT dat.sv_2 Title, " \
                 "dat.xml_data.extract('//E9286/text()').getStringVal() Description, " \
@@ -866,7 +836,7 @@ def execute_discovery_query(con):
                 "to_char(to_date(dat.xml_data.extract('//E9260/text()').getStringVal(),'YYYY-MM-DD'), 'YYYY-MM-DD') DATE_MODIFIED, " \
                 "SUBSTR(dat.xml_data.extract('//E11282/text()').getStringVal(),1,3) License_data, " \
                 "dat.xml_data.extract('//E9350/text()').getStringVal() Resource_Storage_Description, " \
-                "dat.xml_data.extract('//E10050/text()').getStringVal() object_name, " \
+                "getObjectName(dat.record_uid) as object_name, " \
                 "SUBSTR(dat.xml_data.extract('//E9682/text()').getStringVal(),1,450) UNIQUE_METADATA_URL, " \
                 "to_number(dat.xml_data.extract('//E9438/text()').getStringVal()) Extent_North, " \
                 "to_number(dat.xml_data.extract('//E9436/text()').getStringVal()) Extent_South, " \
@@ -898,35 +868,12 @@ def execute_discovery_query(con):
     return data
 
 
-def import_discovery_records(con):
+def save_discovery_records(con, discovery_data_filename):
 
     #Required for email validation
     from validate_email import validate_email
     
     
-    '''
-    Check if the organization mapping file exists.
-    Otherwise exit.
-    '''
-    org_map_filename = './data/discovery_org_suborg_replacement.csv'
-    if not os.path.exists(org_map_filename) :
-        print 'Organization mapping file is not given.'
-        return
-
-    org_map = create_discovery_org_map(org_map_filename)
-    
-    #Get the list of available records
-    pkg_list = get_record_list()
-
-    #Get the number of discovery records have already been imported.
-    record_count_filename = './data/discovery_record_count.txt'
-    if not os.path.exists(record_count_filename):
-        previous_count = 0
-    else :
-        with open(record_count_filename, 'r') as record_count_file :
-            previous_count = int(record_count_file.read())
-    print 'Records from previous loads: ', previous_count
-
     #Create the dictionary for keywords replacement    
     #Read the keyword updates from csv file
     import csv
@@ -937,15 +884,14 @@ def import_discovery_records(con):
             key_dict[row[0]] = {'action' : row[1], 'new_keyword': row[2]}
 
     
-    index = 0
-    records_created = 0
 
-    (common_uids, common_titles) = load_common_records()
+    '''
+    Open a file to to store discovery data from database and store for import later.
+    
+    '''
 
-
-    #Create error file
-    error_file = open('./data/Discovery_errors.txt', 'a')
-
+    discovery_file = open(discovery_data_filename, 'w')
+    
     #Get the raw records from discovery database
     data = execute_discovery_query(con)
     
@@ -956,31 +902,10 @@ def import_discovery_records(con):
 #            print '-----------------<< Trying to import record with id :', result[14], ' >>-----------------------'
             edc_record = {}
 
-            if index < previous_count :
-                index += 1
-                continue
-
-            #Ignore records with null title
-            if not result[0] :
-                index += 1
-                continue
-            if result[14] and str(result[14]) in common_uids:
-                index += 1
-                continue
-
-            #Ignore all the records available in ODSI
-            if result[0] in common_titles:
-                index += 1
-                continue
-
             #---------------------------------------------------------------------<< Record state >>-----------------------------------------------------------------------
             state_convert_dict = {'Draft': 'DRAFT', 'Approve': 'PENDING PUBLISH', 'Published': 'PUBLISHED', 'ZPublished': 'ARCHIVED'}
             edc_record['edc_state'] = state_convert_dict.get(result[3])
 
-            # Ignore DRAFT records or Theme records (Records with Theme in title).
-            if edc_record.get('edc_state') == 'DRAFT' or '(Theme)' in result[0]:
-                index += 1
-                continue
 
             #---------------------------------------------------------------------<< Record Author >>----------------------------------------------------------------------
             username = result[46]
@@ -991,16 +916,10 @@ def import_discovery_records(con):
 
 
             #---------------------------------------------------------------<< Dataset name and Title >>-------------------------------------------------------------------
-            title = result[0].strip()
+            title = result[0]
 
-            #Remove (DEPRECATED) from the record title
-            if title.startswith('(DEPRECATED) ') :
-                title = title.replace('(DEPRECATED) ', '').strip()
-                edc_record['notes'] = 'DEPRECATED - The resource(s) that this record refers is obsolete and may be scheduled for retirement. Please see the Replacement Record reference in the Data Currency / Update section.'
-            else :
-                edc_record['notes'] = result[1] or ' '
+            edc_record['notes'] = result[1] or ' '
 
-            edc_record['name'] = get_record_name(pkg_list, title);
             edc_record['title'] = title
 
             #--------------------------------------------------------------------<< Record Purpose >>-----------------------------------------------------------------------
@@ -1015,21 +934,8 @@ def import_discovery_records(con):
             #----------------------------------------------------------------------<< Record type >>------------------------------------------------------------------------
             edc_record['type'] = 'Geographic'
 
-            #-----------------------------------------------------<< Records Organization and Sub-organization >>-----------------------------------------------------------
-            (org_title, sub_org_title) = get_organization(result[2], org_map)
-#            print 'Organization : ', org_title, '    Sub-organization:  ', sub_org_title
-            edc_record['org'] = edc_record['sub_org'] = None
             
-            if (org_title not in orgs_title_id_dic) or (sub_org_title not in orgs_title_id_dic) :
-#                print '***** Organization is not available in ODSI *****'
-                index += 1
-                continue
-            
-            edc_record['org'] = orgs_title_id_dic.get(org_title)
-                
-            edc_record['sub_org'] = orgs_title_id_dic.get(sub_org_title)
-                
-            edc_record['owner_org'] = edc_record.get('sub_org')
+            edc_record['org'] = result[2]
             
             #-------------------------------------------------------------------<< ISO topic category >>---------------------------------------------------------------------
             iso_topic_cat = (result[29] or 'unknown').split(',')
@@ -1058,6 +964,7 @@ def import_discovery_records(con):
                         keyword_list.append(new_keyword)
 
             edc_record['tags'] = [{'name' : remove_invalid_chars(keyword).strip()} for keyword in keyword_list if keyword and len(keyword) > 1]
+            edc_record['tag_string'] = result[5]
 
 
             #----------------------------------------------------------------------<< Record Status >>-----------------------------------------------------------------------
@@ -1085,7 +992,8 @@ def import_discovery_records(con):
             contact_len = min(len(contact_names), len(contact_emails), len(contact_orgs))
 
             for i in range(contact_len):
-                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record.get('org'), 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Display'})
+#                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record.get('org'), 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Display'})
+                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'role' : 'pointOfContact', 'private' : 'Display'})
 
             edc_record['contacts'] = contacts
 
@@ -1193,7 +1101,7 @@ def import_discovery_records(con):
             #----------------------------------------------------------------<< Resource name and format >>---------------------------------------------------------------
             resource_rec['name'] = result[0]
 
-            resource_rec['format'] = 'SHP'
+            resource_rec['format'] = 'Other'
 
             #---------------------------------------------------------------------<< Projection Name >>-------------------------------------------------------------------
             #Assigning projection name to the record
@@ -1302,38 +1210,241 @@ def import_discovery_records(con):
                         more_info.append({'link': more_info_link, 'delete': '0'})
 
             edc_record['more_info'] = more_info
+            
+            record_str = json.dumps(edc_record)
+            discovery_file.write(record_str + '\n')
 
-            (record_info, errors) = edc_package_create(edc_record)
-
-            if  record_info :
-                pkg_list.append(edc_record.get('name'))
-                records_created += 1
-                print '--------------------<< Record with uid %s is imported >>--------------------' % str(result[14])
-            else :
-                pprint.pprint(errors)
-
-                error_file.write('Error in importing record with UID : ' + str(result[14]) + '\n')
-                error_file.write('Record info :\n')
-                json.dump(edc_record, error_file)
-                error_file.write('\nError details :')
-                json.dump(errors, error_file)
-                error_file.write('\n\n------------------------------------------------------------------------------------------------------------------------------------\n\n')
-            index = index + 1
         except Exception, e:
             print str(e)
-            error_file.write('Exception in importing record with UID ' + str(result[14])) + '\n'
-            pass
+            print 'Exception in fetching record with UID ', str(result[14])
 
+    con.close()
+    
+    discovery_file.close()
+
+
+def import_discovery_records():
+
+    '''
+    Check if the organization mapping file exists.
+    Otherwise exit.
+    '''
+    org_map_filename = './data/discovery_org_suborg_replacement_mapping.csv'
+    if not os.path.exists(org_map_filename) :
+        print 'Organization mapping file is not given.'
+        return
+
+    org_map = create_discovery_org_map(org_map_filename)
+    
+    '''
+    Check if Discovery data file exist, otherwise fetch data from database and store it in a json file
+    '''    
+    discovery_data_filename = './data/discovery_data.json'
+    if not os.path.exists(discovery_data_filename):
+        con = get_connection('discovery')
+        save_discovery_records(con, discovery_data_filename)
+    
+ 
+    (common_uids, common_titles) = load_common_records()
+ 
+    
+    '''
+    ---------------------------------------------------------
+    Temporary : List of orgs not mapped
+    '''
+    
+    not_mapped_orgs = open('./data/orgs_notmapped.txt', 'w')
+
+    '''
+    ---------------------------------------------------------
+    '''
+    
+    not_mapped = []
+    
+    
+    '''
+    Read each record from file and load it into ckan database
+    '''
+    #Get the list of available records
+    pkg_list = get_record_list()
+
+    #Get the number of discovery records have already been imported.
+    record_count_filename = './data/discovery_record_count.txt'
+    if not os.path.exists(record_count_filename):
+        previous_count = 0
+    else :
+        with open(record_count_filename, 'r') as record_count_file :
+            previous_count = int(record_count_file.read())
+    print 'Records from previous loads: ', previous_count
+    
+    discovery_file = open(discovery_data_filename, 'r')
+
+    index = 0
+    
+    #Create/open error file
+    import_log_file = open('./data/Discovery_errors.txt', 'a')
+    
+    records_created = 0
+    
+    for record_line in discovery_file :
+        if index < previous_count :
+            index += 1
+            continue
+ 
+        edc_record = json.loads(record_line)
+         
+        import_log_file.write('Importing record with uid %s...\n' % edc_record.get('metastar_uid'))
+        print 'Importing record with uid %s...\n' % edc_record.get('metastar_uid')
+        
+        title = edc_record.get('title')
+        metastar_uid = edc_record.get('metastar_uid')
+         
+        #Ignore records with null title
+        if not title :
+            import_log_file.write('Record is not imported. No title is given for the record.\n')
+            print 'Record is not imported. No title is given for the record.\n'
+            import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
+            print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+            index += 1
+            continue
+         
+        title = title.strip()
+
+        if metastar_uid and metastar_uid in common_uids:
+            import_log_file.write('Record is not imported. It has been/will be imported from ODSI.\n')
+            print 'Record is not imported. It has been/will be imported from ODSI.\n'
+            import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
+            print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+            index += 1
+            continue
+ 
+            #Ignore all the records available in ODSI
+        if title in common_titles:
+            import_log_file.write('Record is not imported. It has been/will be imported from ODSI.\n')
+            print 'Record is not imported. It has been/will be imported from ODSI.\n'
+            import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
+            print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+            index += 1
+            continue
+ 
+         
+        # Ignore DRAFT, Pending Publiash and Theme records (Records with Theme in title).
+        if edc_record.get('edc_state') == 'DRAFT' or edc_record.get('edc_state') == 'PENDING PUBLISH':
+            import_log_file.write('Record is not imported. The record state is ' + edc_record.get('edc_state') + '.\n')
+            print 'Record is not imported. The record state is ' + edc_record.get('edc_state') + '.\n'
+            import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
+            print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+            index += 1
+            continue
+        
+        if '(Theme)' in title :
+            import_log_file.write('Record is not imported. This is a Theme record.\n')
+            print 'Record is not imported. This is a Theme record.\n'
+            import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
+            print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+            index += 1
+            continue            
+         
+        org_str = edc_record.get('org')
+
+        #-----------------------------------------------------<< Records Organization and Sub-organization >>-----------------------------------------------------------
+        (org_title, sub_org_title) = get_organization(org_str, org_map)
+             
+        '''
+        ---------------------------------------------------------
+        Temporary : List of orgs not mapped
+        '''
+        if org_str and not (org_title and sub_org_title) and (org_str not in not_mapped):
+            not_mapped.append(org_str)
+            not_mapped_orgs.write(org_str + '\n')
+        '''
+        ---------------------------------------------------------
+        '''
+ 
+        if (org_title not in orgs_title_id_dic) or (sub_org_title not in orgs_title_id_dic) :
+            import_log_file.write('Record is not imported. Unknown organization/sub-organization name.\n')
+            print 'Record is not imported. Unknown organization/sub-organization name.\n'
+            import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
+            print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+            index += 1
+            continue
+             
+        edc_record['org'] = orgs_title_id_dic.get(org_title)
+                 
+        edc_record['sub_org'] = orgs_title_id_dic.get(sub_org_title)
+                 
+        edc_record['owner_org'] = edc_record.get('sub_org')
+        
+        #Adding contact organization and branch
+        contacts = edc_record.get('contacts', [])
+        updated_contacts = []     
+        for contact in contacts :
+            contact['organization'] = edc_record.get('org')
+            contact['branch'] = edc_record.get('sub_org')
+            updated_contacts.append(contact)
+            
+        edc_record['contacts'] = updated_contacts
+         
+        #Remove (DEPRECATED) from the record title
+        if title.startswith('(DEPRECATED) ') :
+            edc_record['title'] = title.replace('(DEPRECATED) ', '').strip()
+            edc_record['notes'] = 'DEPRECATED - The resource(s) that this record refers is obsolete and may be scheduled for retirement. Please see the Replacement Record reference in the Data Currency / Update section.'
+ 
+#        pprint.pprint(edc_record)
+         
+        try :
+            record_uid = edc_record.get('metastar_uid')
+            edc_record['name'] = get_record_name(pkg_list, edc_record.get('title'));
+            
+            response_dict = edc_package_create(edc_record)
+ 
+            if  response_dict and response_dict.get('success') == True :
+                record_info = response_dict.get('result')
+                pkg_list.append(edc_record.get('name'))
+                records_created += 1
+                print 'Record with uid %s is imported.' % record_uid
+                import_log_file.write('Record with uid %s is imported.\n' % record_uid)
+            else :
+                import_log_file.write("Error in importing record with UID " + record_uid +  " via api call. Please see ckan's log file.\n")
+                print "Error in importing record with UID " + record_uid +  " via api call. Please see ckan's log file.\n"
+                if response_dict :
+                    error = response_dict.get('error')
+                    if error :
+                        pprint.pprint(error) 
+                        import_log_file.write('\nError details :')
+                        json.dump(error, import_log_file)
+                import_log_file.write('Record info :\n')
+                json.dump(edc_record, import_log_file)
+            index = index + 1
+        except Exception, e:
+            index = index + 1
+            print str(e)
+            import_log_file.write('Exception in importing record with UID ' + record_uid + '\n')
+            import_log_file.write(str(e) + '\n')
+            
+        import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
+        print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+         
+ 
     print "Total number of records : ", index
     print "Records created : ", records_created
-    con.close()
-    error_file.close()
-
+    import_log_file.close()
+     
+    '''
+    ---------------------------------------------------------
+    Temporary : List of orgs not mapped
+    '''
+    not_mapped_orgs.close()
+    '''
+    ---------------------------------------------------------
+    '''
+ 
     #Save the number of discovery records have been imported.
     with open('./data/discovery_record_count.txt', 'w') as record_count_file :
-        record_count_file.write(index)
+        record_count_file.write(str(index))
 
-
+            
+        
 def find_missing_orgs(con):
 #    projection_names_file = open('Records_with_UTM_projection.txt', 'w')
 
@@ -1393,13 +1504,13 @@ def import_data():
     data_source = sys.argv[1]
 #    data_source = raw_input("Data source (ODSI/Discovery): ")
     
-    con =  get_connection(data_source)
 
     try:
         if data_source.lower() == 'odsi' :
+            con =  get_connection('odsi')
             import_odc_records(con)
         elif data_source.lower() == 'discovery' :
-            import_discovery_records(con)
+            import_discovery_records()
 #            find_missing_orgs(con)
         else :
             print "A proper datasource must be given."

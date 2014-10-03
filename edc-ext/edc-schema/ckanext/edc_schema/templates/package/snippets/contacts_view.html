@@ -12,6 +12,7 @@
 {# For each contact in the list of contatcs, show the contact information if it is not a private contact #}
 {% for contact in contacts %}
 	{% set is_visible = (contact.private and contact.private != _('Private')) %}
+	{% set is_visible = (is_visible or userobj.sysadmin or is_editor ) %}
 	{% if is_visible %}
 		{% set org = h.edc_org_title(contact.organization) %}
         {% set branch = h.edc_org_title(contact.branch) %}

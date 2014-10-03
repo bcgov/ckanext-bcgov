@@ -240,7 +240,7 @@ Please review and act as required.'
             # Rather than call API for each user, let's just go through our entire list
             for user in users:
                 if user['name'] == member['name']:
-                    if 'email' in user:
+                    if 'email' in user and user['email'] != '':
                         email_address = user['email']
                         email_display_name = user['fullname'] or user['name']
                         send_email(email_display_name, email_address, email_dict)

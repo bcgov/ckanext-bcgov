@@ -1,4 +1,5 @@
 {% ckan_extends %}
+{% set record_type = record_type or  data.type %}
 
 {% block package_basic_fields_title %}
 	{% resource 'edc_resource/edc_dataset.js' %}
@@ -40,9 +41,6 @@
                     {% endblock %}
                 </div>
             {% endblock %}
-            {# set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': '', 'data-module-source': '/api/3/util/tag/autocomplete?incomplete=?'} #}
-            {% set tag_attrs = {'data-module': 'autocomplete', 'data-module-tags': 'http://localhost:5000/api/3/action/tag_list', 'data-module-source': 'http://localhost:5000/api/3/action/tag_list'} %}
-            {# form.input('tag_string', id='field-tags', label=_('Keywords'), placeholder=_('eg. economy, mental health, government'), value=data.tag_string, error=errors.tags, classes=['control-full'], attrs=tag_attrs) #}
 
     	    {% block edc_package_keywords %}
     		  {% snippet 'package/snippets/edc_keywords.html', data=data, user=userobj, errors=errors %}
@@ -87,6 +85,7 @@
         <input type="hidden" id="field-record_publish_date" name="record_publish_date" value = "{{ record_publish_date }}" />
         {% set record_archive_date = data.record_archive_date or null %}
         <input type="hidden" id="field-record_archive_date" name="record_archive_date" value = "{{ record_archive_date }}" />
+        <input type="hidden" id="field-type" name="type" value = "{{ data.type }}" />
     {% endblock %}
 
 <h3 class="module-sub-heading">Data Currency/Update</h3>

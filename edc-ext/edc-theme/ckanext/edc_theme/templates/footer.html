@@ -56,7 +56,17 @@
           </ul>
         </div>
         <div id="version">
-            DLVR: v.0.9.0_SNAPSHOT7
+            {% if h.get_environment_name() %}
+                {{ h.get_environment_name() }}:
+            {% endif %}
+
+            {% if h.get_major_version() %}
+                v{{ h.get_major_version() }}
+            {% endif %}
+
+            {% if h.get_minor_version() %}
+                _{{ h.get_minor_version() }}
+            {% endif %}
         </div>
     </div>
 </div>

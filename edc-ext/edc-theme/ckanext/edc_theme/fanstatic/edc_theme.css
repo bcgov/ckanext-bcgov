@@ -713,7 +713,8 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
   text-decoration: none;
 }
 
-#additional-information {
+#additional-information,
+#object-description {
   display: block;
   padding: 20px;
   background: #f6f6f6;
@@ -725,6 +726,18 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
 
 #additional-information h2:first-child {
   margin-top: 0;
+}
+
+#object-description .table.details .short-name {
+  width: 115px;
+}
+
+#object-description .table.details .data-type {
+  width: 105px;
+}
+
+#object-description .table.details .data-precision {
+  width: 75px;
 }
 
 section.tags {
@@ -1318,5 +1331,11 @@ input.search.tt-hint {
 
   #footer-navigation #media-links ul {
     margin: 10px 0;
+  }
+
+  #object-description .table.details .short-name,
+  #object-description .table.details .data-type,
+  #object-description .table.details .data-precision {
+    width: auto!important;
   }
 }

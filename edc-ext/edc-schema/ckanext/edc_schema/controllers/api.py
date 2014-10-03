@@ -286,6 +286,7 @@ class EDCApiController(ApiController):
         return_dict = {"help": help_str}
         try :
             pkg = get_action('package_show')(context, {'id' : pkg_id})
+            
             #add the top-level org to the organization
             #'organization, branch'
             orgs = get_all_orgs()
@@ -385,7 +386,17 @@ class EDCApiController(ApiController):
         return_dict['result'] = org_list
         return self._finish_ok(return_dict)
 
-
+    def __get_recently_changed_packages_activity_list(self, context, ver):
+        if c.userobj and c.userobj.sysadmin == True:
+            return super(EDCApiController, self).action('recently_changed_packages_activity_list', ver)
+        else:
+            return_dict = {}
+            return_dict['success'] = False
+            error_dict = {"mesage" : "Access denied." }
+            error_dict['__type'] = 'Authorization Error'
+            return_dict['error'] = error_dict
+            return self._finish(200, return_dict, content_type='json')
+             
     
     def action(self, logic_function, ver=None):
         import ckanext.edc_schema.logic.action as edc_action
@@ -430,6 +441,8 @@ class EDCApiController(ApiController):
         elif logic_function == 'current_package_list_with_resources' :
             return self.__get_package_list_with_resources(context, ver)
         elif logic_function == 'package_search':
-            return self.__package_search(context, ver)            
+            return self.__package_search(context, ver)
+        elif logic_function == 'recently_changed_packages_activity_list' :
+            return self.__get_recently_changed_packages_activity_list(context, ver)           
         else :
             return super(EDCApiController, self).action(logic_function, ver)

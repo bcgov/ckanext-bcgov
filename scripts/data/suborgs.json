@@ -1,0 +1,551 @@
+{
+	"organizations": [{
+		"ministry_of_health": [{
+			"health_protection": "Health Protection"
+		},
+		{
+			"british_columbia_health_authority": "British Columbia Health Authority"
+		},
+		{
+			"pharmaceutical_services_division": "Pharmaceutical Services Division"
+		},
+		{
+			"healthlinkbc": "HealthLinkBC"
+		},
+		{
+			"medical_services": "Medical Services"
+		},
+		{
+			"planning_and_innovation_division": "Planning and Innovation Division"
+		},
+		{
+			"british_columbia_vital_statistics_agency": "British Columbia Vital Statistics Agency"
+		},
+		{
+			"lab_diagnostic_blood_services": "Laboratory, Diagnostic and Blood Services"
+		}]
+	},
+	{
+		"ministry_of_education": [{
+			"analysis_and_reporting": "Analysis and Reporting"
+		},
+		{
+			"libraries_and_literacy": "Libraries and Literacy"
+		},
+		{
+			"governance_and_legislation": "Governance and Legislation"
+		}]
+	},
+	{
+		"ministry_of_advanced_education": [{
+			"advanced_education": "Advanced Education"
+		},
+		{
+			"post_secondary_audit_and_accountability": "Post Secondary Audit and Accountability"
+		}]
+	},
+	{
+		"ministry_of_community_sport_and_cultural_development": [{
+			"bc_arts_council": "BC Arts Council"
+		},
+		{
+			"community_gaming_grants": "Community Gaming Grants"
+		},
+		{
+			"local_government_infrastructure_and_finance": "Local Government Infrastructure and Finance"
+		},
+		{
+			"local_government_governance_and_structure": "Local Government Governance and Structure"
+		},
+		{
+			"bc_film_commission": "BC Film Commission"
+		},
+		{
+			"local_government_division": "Local Government Division"
+		}]
+	},
+	{
+		"worksafebc": [{
+			"business_information_and_analysis_statistical_services": "Business Information and Analysis Statistical Services"
+		}]
+	},
+	{
+		"ministry_of_justice": [{
+			"liquor_control_and_licensing": "Liquor Control and Licensing"
+		},
+		{
+			"emergency_management_of_bc": "Emergency Management BC"
+		},
+		{
+			"policing_and_security_programs": "Policing and Security Programs"
+		},
+		{
+			"office_of_the_superintendent_of_motor_vehicles": "Office of the Superintendent of Motor Vehicles"
+		},
+		{
+			"corrections": "Corrections"
+		},
+		{
+			"liquor_distribution": "Liquor Distribution"
+		},
+		{
+			"civil_forfeiture_office": "Civil Forfeiture Office"
+		},
+		{
+			"court_services": "Court Services"
+		},
+		{
+			"criminal_justice": "Criminal Justice"
+		},
+		{
+			"office_of_the_fire_commissioner": "Office of the Fire Commissioner"
+		}]
+	},
+	{
+		"ministry_of_transportation_and_infrastructure": [{
+			"rehabilitation_and_maintenance": "Rehabilitation and Maintenance"
+		},
+		{
+			"construction_and_maintenance": "Construction and Maintenance"
+		},
+		{
+			"business_management_services": "Business Management Services"
+		},
+		{
+			"commercial_vehicle_safety_and_enforcement": "Commercial Vehicle Safety and Enforcement"
+		},
+		{
+			"information_management": "Information Management"
+		},
+		{
+			"engineering": "Engineering"
+		}]
+	},
+	{
+		"ministry_of_finance": [{
+			"public_sector_employers_council_secretariat": "Public Sector Employers Council Secretariat"
+		},
+		{
+			"property_taxation": "Property Taxation"
+		},
+		{
+			"debt_management": "Debt Management"
+		},
+		{
+			"treasury_board_staff": "Treasury Board Staff"
+		},
+		{
+			"financial_reporting_and_advisory_services": "Financial Reporting and Advisory Services"
+		},
+		{
+			"gaming_policy_and_enforcement": "Gaming Policy and Enforcement"
+		}]
+	},
+	{
+		"ministry_of_energy_and_mines": [{
+			"bc_geological_survey": "BC Geological Survey"
+		},
+		{
+			"mineral_titles": "Mineral Titles"
+		},
+		{
+			"geoscience": "Geoscience"
+		},
+		{
+			"mines_and_mineral_resources": "Mines and Mineral Resources Division"
+		},
+		{
+			"offshore_oil_and_gas": "Offshore Oil and Gas"
+		}]
+	},
+	{
+		"ministry_of_children_and_family_development": [{
+			"integrated_quality_assurance": "Integrated Quality Assurance"
+		},
+		{
+			"information_management": "Information Management"
+		},
+		{
+			"provincial_interface_and_partnerships_team": "Provincial Interface and Partnerships Team"
+		}]
+	},
+	{
+		"ministry_of_natural_gas_development": [{
+			"petroleum_and_natural_gas_titles": "Petroleum and Natural Gas Titles"
+		},
+		{
+			"bc_housing": "BC Housing"
+		},
+		{
+			"geoscience": "Geoscience"
+		},
+		{
+			"tenure_and_geoscience": "Tenure and Geoscience"
+		}]
+	},
+	{
+		"ministry_of_international_trade": [{
+			"multiculturalism": "Multiculturalism"
+		}]
+	},
+	{
+		"ministry_of_social_development_and_social_innovation": [{
+			"employment_and_labour_market_services": "Employment and Labour Market Services"
+		},
+		{
+			"research": "Research"
+		},
+		{
+			"strategic_initiatives": "Strategic Initiatives"
+		}]
+	},
+	{
+		"ministry_of_forests_lands_and_natural_resource_operations": [{
+			"regional_operations_-_northeast": "Regional Operations - Northeast"
+		},
+		{
+			"archaeology": "Archaeology"
+		},
+		{
+			"forest_analysis_and_inventory": "Forest Analysis and Inventory"
+		},
+		{
+			"ecosystem_based_management": "Ecosystem Based Management"
+		},
+		{
+			"regional_operations_-_thompson_okanagan": "Regional Operations - Thompson Okanagan"
+		},
+		{
+			"regional_operations_-_south_coast": "Regional Operations - South Coast"
+		},
+		{
+			"regional_operations_-_west_coast": "Regional Operations - West Coast"
+		},
+		{
+			"corporate_initiatives_division": "Corporate Initiatives Division"
+		},
+		{
+			"forest_tenures": "Forest Tenures"
+		},
+		{
+			"resource_management_objectives": "Resource Management Objectives"
+		},
+		{
+			"range_invasive_plants_and_ecosystem_restoration": "Range, Invasive Plants and Ecosystem Restoration"
+		},
+		{
+			"tree_improvement": "Tree Improvement"
+		},
+		{
+			"water_management": "Water Management"
+		},
+		{
+			"recreation_sites_and_trails_bc": "Recreation Sites and Trails BC"
+		},
+		{
+			"resource_management_objectives_branch": "Resource Management Objectives"
+		},
+		{
+			"fish_wildlife_and_habitat_management": "Fish, Wildlife and Habitat Management"
+		},
+		{
+			"geobc": "GeoBC"
+		},
+		{
+			"resource_practices": "Resource Practices"
+		},
+		{
+			"land_tenures": "Land Tenures"
+		},
+		{
+			"wildfire_management": "Wildfire Management"
+		},
+		{
+			"regional_operations_-_cariboo": "Regional Operations - Cariboo"
+		},
+		{
+			"regional_operations_-_kootenay_boundary": "Regional Operations - Kootenay Boundary"
+		},
+		{
+			"crown_land_restoration": "Crown Land Restoration"
+		},
+		{
+			"first_nations_relations": "First Nations Relations"
+		},
+		{
+			"lng_crown_land_opportunities_and_restoration": "LNG, Crown Land Opportunities and Restoration"
+		},
+		{
+			"mountain_resorts": "Mountain Resorts"
+		},
+		{
+			"range": "Range"
+		},
+		{
+			"regional_operations_-_omineca": "Regional Operations - Omineca"
+		},
+		{
+			"regional_operations_-_skeena": "Regional Operations - Skeena"
+		},
+		{
+			"research_innovation_and_knowledge_management": "Research, Innovation and Knowledge Management"
+		},
+		{
+			"strategic_land_policy_and_legislation": "Strategic Land Policy and Legislation"
+		}]
+	},
+	{
+		"ministry_of_technology_innovation_and_citizens_services": [{
+			"bc_stats": "BC Stats"
+		},
+		{
+			"legislation_privacy_and_policy": "Legislation, Privacy and Policy"
+		},
+		{
+			"citizen_engagement": "Citizen Engagement"
+		},
+		{
+			"real_estate_policy_and_performance_management": "Real Estate Policy and Performance Management"
+		},
+		{
+			"enterprise_data_services": "Enterprise Data Services"
+		},
+		{
+			"information_access_operations": "Information Access Operations"
+		},
+		{
+			"provincial_identity_information_management_program": "Provincial Identity Information Management Program"
+		},
+		{
+			"accommodation_management": "Accommodation Management"
+		},
+		{
+			"corporate_online_services": "Corporate Online Services"
+		},
+		{
+			"employment_standards": "Employment Standards"
+		},
+		{
+			"facilities_management_services": "Facilities Management Services"
+		},
+		{
+			"procurement_services": "Procurement Services"
+		},
+		{
+			"strategic_partnerships_office": "Strategic Partnerships Office"	
+		}]
+	},
+	{
+		"ministry_of_aboriginal_relations_and_reconciliation": [{
+			"lands_and_resources": "Lands and Resources"
+		},
+		{
+			"intergovernmental_and_community_relations": "Intergovernmental and Community Relations"
+		},
+		{
+			"strategic_policy_and_planning": "Strategic Policy and Planning"
+		}]
+	},
+	{
+		"ministry_of_environment": [{
+			"environmental_standards": "Environmental Standards"
+		},
+		{
+			"water_protection_and_sustainability": "Water Protection and Sustainability"
+		},
+		{
+			"environmental_quality": "Environmental Quality"
+		},
+		{
+			"environmental_assessment_office": "Environmental Assessment Office"
+		},
+		{
+			"parks_planning_and_management": "Parks Planning and Management"
+		},
+		{
+			"climate_action_secretariat": "Climate Action Secretariat"
+		},
+		{
+			"knowledge_management": "Knowledge Management"
+		},
+		{
+			"ecosystems": "Ecosystems"
+		},
+		{
+			"fish_and_wildlife_compensation_program": "Fish and Wildlife Compensation Program"
+		},
+		{
+			"visitor_programs": "Visitor Programs"
+		},
+		{
+			"strategic_policy": "Strategic Policy"
+		},
+		{
+			"conservation_officer_service": "Conservation Officer Service"
+		},
+		{
+			"conservation_science_section": "Conservation Science Section"
+		},
+		{
+			"environmental_management": "Environmental Management"
+		},
+		{	
+			"environmental_protection_division": "Environmental Protection Division"
+		},
+		{
+			"water_stewardship": "Water Stewardship"
+		}]
+	},
+	{
+		"ministry_of_jobs_tourism_and_skills_training": [{
+			"policy_and_stakeholder_relations": "Policy and Stakeholder Relations"
+		},
+		{
+			"regulatory_reform": "Regulatory Reform"
+		},
+		{
+			"emarketing": "eMarketing"
+		},
+		{
+			"immigrant_integration": "Immigrant Integration"
+		},
+		{
+			"visitor_services": "Visitor Services"
+		},
+		{
+			"labour_market_programs": "Labour Market Programs"
+		},
+		{
+			"economic_initiatives_and_analysis": "Economic Initiatives and Analysis"
+		},
+		{
+			"economic_development_division": "Economic Development Division"
+		},
+		{
+			"regional_economic_policy_and_projects": "Regional Economic Policy and Projects"
+		},
+		{
+			"tourism": "Tourism"
+		}]
+	},
+	{
+		"bc_agency": [{
+			"agricultural_land_commission": "Agricultural Land Commission"
+		},
+		{
+			"bc_assessment_authority": "BC Assessment Authority"
+		},
+		{
+			"bc_hydro_and_power_authority": "BC Hydro and Power Authority"
+		},
+		{
+			"bc_land_title_survey_authority": "BC Land Title Survey Authority"
+		},
+		{
+			"destination_bc": "Destination BC"
+		},
+		{
+			"elections_bc": "Elections BC"
+		},
+		{
+			"interior_health_authority": "Interior Health Authority"
+		},
+		{
+			"oil_and_gas_commission": "Oil and Gas Commission"
+		},
+		{
+			"bc_public_service_agency": "BC Public Service Agency"
+		}]
+	},
+	{
+		"government_of_canada": [{
+			"canadian_wildlife_service": "Canadian Wildlife Service"
+		},
+		{
+			"environment_canada": "Environment Canada"
+		},
+		{
+			"fisheries_and_oceans_canada": "Fisheries and Oceans Canada"
+		},
+		{
+			"industry_canada": "Industry Canada"
+		},
+		{
+			"natural_resources_canada": "Natural Resources Canada"
+		},
+		{
+			"royal_canadian_mounted_police": "Royal Canadian Mounted Police"
+		},
+		{
+			"statistics_canada": "Statistics Canada"
+		}]
+	},
+	{
+		"ministry_of_agriculture": [{
+			"innovation_and_industry_development": "Innovation and Industry Development"
+		}]
+	},
+	{	
+		"municipality": [{
+			"city_of_abbotsford": "City of Abbotsford"
+		},
+		{
+			"city_of_north_vancouver": "City of North Vancouver"
+		},
+		{
+			"city_of_surrey": "City of Surrey"
+		},
+		{
+			"cowichan_valley_regional_district": "Cowichan Valley Regional District"
+		},
+		{
+			"fraser_valley_regional_district": "Fraser Valley Regional District"
+		},
+		{
+			"greater_vancouver_regional_district": "Greater Vancouver Regional District"
+		},
+		{
+			"regional_district_of_central_okanagan":"Regional District of Central Okanagan"
+		}]
+	},
+	{
+		"non_government": [{
+			"gis_innovations": "GIS Innovations" 
+		},
+		{
+			"geomatics_data_management": "Geomatics Data Management Inc."
+		},
+		{
+			"interfor": "INTERFOR"
+		},
+		{
+			"integrated_cadastral_information_society": "Integrated Cadastral Information Society"
+		},
+		{
+			"ltsa_bc_land_title_survey_authority": "LTSA BC Land Title Survey Authority"
+		},
+		{
+			"other": "Other"
+		},
+		{
+			"timberwest": "Timberwest"
+		},
+		{
+			"translink": "TransLink"
+		},
+		{
+			"vancouver_2010_integrated_security_unit": "Vancouver 2010 Integrated Security Unit"
+		},
+		{
+			"vancouver_olympic_organizing_committee": "Vancouver Olympic Organizing Committee"
+		},
+		{
+			"weyerhaeuser": "Weyerhaeuser"
+		}]
+	},
+	{
+		"office_of_the_premier_cabinet_office": [{
+			"intergovernmental_relations_secretariat": "Intergovernmental Relations Secretariat"
+		}]
+	}]
+}

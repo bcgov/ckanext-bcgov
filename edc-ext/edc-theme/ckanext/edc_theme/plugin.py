@@ -25,6 +25,19 @@ def get_fqdn():
 
     return value
 
+def get_environment_name():
+    ''' Return the value of the environment_name config setting '''
+    return config.get('edc.environment_name')
+
+def get_major_version():
+    ''' Return the value of the major_version config setting '''
+    return config.get('edc.major_version')
+
+def get_minor_version():
+    ''' Return the value of the minor_version config setting '''
+    return config.get('edc.minor_version')
+
+
 
 class EDCThemePlugin(plugins.SingletonPlugin):
     ''' Theme for EDC
@@ -59,4 +72,10 @@ class EDCThemePlugin(plugins.SingletonPlugin):
         # Template helper function names should begin with the name of the
         # extension they belong to, to avoid clashing with functions from
         # other extensions.
-        return {'get_eas_login_url': get_eas_login_url, 'get_fqdn': get_fqdn}
+        return {
+            'get_eas_login_url': get_eas_login_url,
+            'get_fqdn': get_fqdn,
+            'get_environment_name': get_environment_name,
+            'get_major_version': get_major_version,
+            'get_minor_version': get_minor_version
+        }

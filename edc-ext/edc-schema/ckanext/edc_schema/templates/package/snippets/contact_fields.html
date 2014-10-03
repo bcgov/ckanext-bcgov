@@ -12,19 +12,17 @@
 {% import "macros/form.html" as form %}
 {% set contacts = contacts or [] %}
 {% set organizations_available = h.edc_orgs() %}
-{% set (organizations,user_suborgs)  = h.get_user_toporgs(user.id) %}
+{# set (organizations,user_suborgs)  = h.get_user_toporgs(user.id) #}
 
 <script type="text/javascript">
 	var contacts_org_branches = [];
 	var i = 0;
-	{% for org in organizations %}
+	{% for org in organizations_available %}
 		contacts_org_branches.push({ id : "{{ org.id }}",
 							branches : []});
 
 		{% for branch in h.edc_org_branches(org.id) %}
-			{% if branch in user_suborgs %}
-				contacts_org_branches[i].branches.push({id : "{{ branch.id }}", title : "{{ branch.title }}"});
-			{% endif %}
+				contacts_org_branches[i].branches.push({id : "{{ branch.id }}", name : "{{ branch.title }}"});
 		{% endfor%}
 		i++;
 	{% endfor %}
@@ -41,7 +39,6 @@
 			{% set role_error = errors.contacts[loop.index0].role %}
 			{% set contact_error = email_error or name_error or org_error or rol_error %}
 		{% endif %}
-
 		<div id="contact_{{ loop.index0 }}" class="contact control-group">
 			<div class="contacts row-fluid">
 				<div class="span6">
@@ -76,7 +73,7 @@
 				   	<div class="control-group">
 				 		<label for="field-contacts-{{ loop.index0 }}-role" class="control-label"><span class="control-required">*</span> Role</label>
 				 		<div class="controls{{ " error" if role_error }}">
-						   	<select id="field-contacts-{{ loop.index0 }}-role" name="contacts__{{ loop.index0 }}__role" data-module="autocomplete" placeholder="Select a contact role">
+						   	<select id="field-contacts-{{ loop.index0 }}-role" name="contacts__{{ loop.index0 }}__role" data-module="autocomplete">
 							   	<option value="" disabled>Select a contact role</option>
 							   	{% for role in h.edc_tags(_("contact_roles")) %}
 							   		{% set selected_role = contact.role and contact.role == role %}
@@ -165,7 +162,7 @@
 						<label for="field-contacts-0-organization" class="control-label"><span class="control-required">*</span> Organization</label>
 						<div class="controls">
 						 	<select id="field-contacts-0-organization" name="contacts__0__organization" data-module="autocomplete" class="contact-org" data-placeholder="Select an organization" data-group="org">
-						 		<option value="" disabled>Select an organization</option>
+						 		<option value="" selected="selected" disabled>Select an organization</option>
 						 		{% for organization in organizations_available %}
 									<option value="{{ organization.id }}"> {{ organization.title }}
 									</option>
@@ -176,8 +173,8 @@
 					<div class="control-group">
 					   	<label for="field-contacts-0-role" class="control-label"><span class="control-required">*</span> Role</label>
 					   	<div class="controls">
-						   	<select id="field-contacts-0-role" name="contacts__0__role" data-module="autocomplete" data-placeholder="Select a contact role">
-							   	<option value="" disabled>Select a contact role</option>
+						   	<select id="field-contacts-0-role" name="contacts__0__role" data-module="autocomplete">
+							   	<option value="" selected="selected" disabled>Select a contact role</option>
 							   	{% for role in h.edc_tags(_("contact_roles")) %}
 							   		<option value="{{ role }}" >{{ role }}</option>
 							   	{% endfor %}
@@ -199,7 +196,7 @@
 						<label for="field-contacts-0-branch" class="control-label"><span class="control-required">*</span> Sub-Organization</label>
 						<div class="controls">
 						 	<select id="field-contacts-0-branch" name="contacts__0__branch" data-module="autocomplete" class="contact-sub-org" data-placeholder="Select a sub-organization" data-group="sub-org">
-						 		<option value="" disabled>Select a sub-organization</option>
+						 		<option value="" selected="selected" disabled>Select a sub-organization</option>
 						 	</select>
 						</div>
 					</div>
@@ -239,16 +236,10 @@
 						name: "{{ org.title }}"});
 		{% endfor %}
 
-		//Create the list of sub-organizations.
-		var sub_orgs = [];
-		{% for org in user_suborgs %}
-			sub_orgs.push({ id: "{{ org.id }}",
-						name: "{{ org.title }}"});
-		{% endfor %}
   </script>
 
 	<div id="addContact" align="center">
-		<a class="btn btn-primary"  onclick="add_contact(contact_roles, orgs, sub_orgs); return false;">
+		<a class="btn btn-primary"  onclick="add_contact(contact_roles, orgs, contacts_org_branches); return false;">
 			<i class="icon-plus-sign-alt"></i>
 			Add another contact
 		</a>

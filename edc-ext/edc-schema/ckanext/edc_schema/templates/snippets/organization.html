@@ -36,6 +36,11 @@ Example:
       {% else %}
         <p class="empty">{{ _('There is no description for this organization') }}</p>
       {% endif %}
+
+      {% if organization.url %}
+        <a href="{{ organization.url }}">Organization URL</a>
+      {% endif %}
+
       {% if show_nums %}
         <div class="nums">
           <dl>

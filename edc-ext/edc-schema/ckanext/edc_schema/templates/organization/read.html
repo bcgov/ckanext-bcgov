@@ -42,13 +42,6 @@
 
 
 {% block organization_facets %}
-  <div class="module module-narrow module-shallow">
-    <div class="module-content">
-      {% if c.group_dict.url %}
-        <a href="{{ c.group_dict.url }}">{{ c.group_dict.url }}</a>
-      {% endif %}
-    </div>
-  </div>
   {% for facet in c.facet_titles %}
   	{% if facet == 'resource_download_format' %}
   		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_format_label, name=facet, extras={'id':c.group_dict.id}) }}

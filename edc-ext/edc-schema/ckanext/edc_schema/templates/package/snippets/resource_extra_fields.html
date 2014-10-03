@@ -14,7 +14,7 @@
             {% set current_format = data.format %}
         {% endif %}   
       <select id="field-format" name="format" data-module="autocomplete">
-        <option value ="" {% if not selected_format %} selected="selected" {% endif %}>Format not specified</option>
+        <option value ="" {% if not selected_format %} selected="selected" {% endif %} disabled>Select a resource format</option>
             {% for resource_format in resource_format_list  %}
               {% set selected_format = (current_format and current_format == resource_format) %}
               <option value="{{ resource_format }}"
@@ -41,8 +41,8 @@
      		<div class="controls">
      			{% set resource_type_list = h.edc_tags(_('resource_type')) %}
      			{% set current_type = data.edc_resource_type %}
-				<select id="field-edc_resource_type" name="edc_resource_type" data-module="autocomplete" data-placeholder="Select a resource type">
-					<option value="" {% if not selected_type %} selected="selected" {% endif %}>Resource type is unknown</option>
+				<select id="field-edc_resource_type" name="edc_resource_type" data-module="autocomplete">
+					<option value="" {% if not selected_type %} selected="selected" {% endif %} disabled>Select a resource type</option>
       				{% for resource_type in resource_type_list %}
       					{% set selected_type = (current_type and current_type == resource_type) %}
       					<option value="{{ resource_type }}"
@@ -64,7 +64,7 @@
         {% set storage_location_list = h.edc_tags(_('resource_storage_location')) %}
         {% set current_storage_location = data.resource_storage_location %}
       <select id="field-resource_storage_location" name="resource_storage_location" data-module="autocomplete" onchange="javascript:check_storage_location();">
-        <option value="" {% if not selected_storage_location %} selected="selected" {% endif %}>Select a storage location</option>
+        <option value="" {% if not selected_storage_location %} selected="selected" {% endif %}  disabled>Select a storage location</option>
             {% for storage_location in storage_location_list %}
               {% set selected_storage_location = (current_storage_location and current_storage_location == storage_location) %}
               <option value="{{ storage_location }}"
@@ -86,7 +86,7 @@
      		{% set access_method_list = h.edc_tags(_('resource_storage_access_method')) %}
      		{% set current_access_method = data.resource_storage_access_method %}
 			<select id="field-resource_storage_access_method" name="resource_storage_access_method" data-module="autocomplete">
-				<option value="" {% if not selected_method %} selected="selected" {% endif %}>Unknown access method</option>
+				<option value="" {% if not selected_method %} selected="selected" {% endif %}  disabled>Select a resource storage access method</option>
       			{% for access_method in access_method_list %}
       				{% set selected_method = (current_access_method and current_access_method == access_method) %}
       				<option value="{{ access_method }}"
@@ -148,7 +148,7 @@
     			{% set projection_names_list = h.edc_tags(_('projection_name')) %}
     			{% set current_projection = data.projection_name %}
             	<select id="field-projection_name" name="projection_name" data-module="autocomplete" class="required">
-            		<option value ='' {% if not selected_projection %} selected="selected" {% endif %}>Select projection name</option>
+            		<option value ='' {% if not selected_projection %} selected="selected" {% endif %} disabled>Select a projection name</option>
                 	{% for projection in projection_names_list  %}
                 		{% set selected_projection = (current_projection and current_projection == projection) %}
                     	<option value="{{ projection }}"

@@ -151,6 +151,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     def _modify_package_schema(self, schema):
         cnvrt_to_tags = toolkit.get_converter('convert_to_tags')
         schema.update({
+                        'tag_string' : [not_empty],
                         'title' : [not_empty, check_dashes, check_duplicates, unicode],
                         'notes' : [not_empty, unicode],
                         'org' : [not_empty, convert_to_extras],
@@ -219,6 +220,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         cnvrt_from_tags = toolkit.get_converter('convert_from_tags')
         schema['tags']['__extras'].append(toolkit.get_converter('free_tags_only'))
         schema.update({
+#                        'tag_string' : [not_empty],
                         'title' : [not_empty, unicode],
                         'notes' : [not_empty, unicode],
                         'org' : [convert_from_extras, not_empty],

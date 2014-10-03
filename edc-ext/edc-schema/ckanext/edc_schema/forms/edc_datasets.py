@@ -62,7 +62,7 @@ def details_schema():
               'short_name' : [ignore_missing, convert_to_extras],
               'data_type' : [ignore_missing, convert_to_extras],
               'data_precision' : [ignore_missing, convert_to_extras],
-              'comments' : [ignore_missing, convert_to_extras]
+              'column_comments' : [ignore_missing, convert_to_extras]
               }
     return schema
 
@@ -101,6 +101,8 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'lineage_statement': [ignore_missing, convert_to_extras ],
                         'spatial' : [ignore_missing, convert_to_extras],
                         'object_name' : [ ignore_missing, convert_to_extras ],
+                        'object_short_name' : [ ignore_missing, convert_to_extras ],
+                        'object_table_comments' : [ ignore_missing, convert_to_extras ],
                         'imap_layer_key' : [ignore_missing, convert_to_extras],
                         'imap_display_name' : [ignore_missing, convert_to_extras],
                         'west_bound_longitude' : [ignore_missing, convert_to_extras],
@@ -153,7 +155,9 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'data_quality': [ convert_from_extras, ignore_missing ],
                         'lineage_statement': [ convert_from_extras, ignore_missing ],
                         'spatial' : [convert_from_extras, ignore_missing],
-                        'object_name' : [ convert_from_extras, ignore_missing],
+                        'object_name' : [convert_from_extras, ignore_missing],
+                        'object_short_name' : [convert_from_extras, ignore_missing],
+                        'object_table_comments' : [convert_from_extras, ignore_missing],
                         'imap_layer_key' : [convert_from_extras, ignore_missing],
                         'imap_display_name' : [convert_from_extras, ignore_missing],
                         'west_bound_longitude' : [convert_from_extras, ignore_missing],

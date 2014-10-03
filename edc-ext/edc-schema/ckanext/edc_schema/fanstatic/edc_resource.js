@@ -21,4 +21,15 @@ $(function() {
 			$(this).attr('disabled', 'disabled');
 		});
 	}
+
+	$(document).ready(function() {
+		setTimeout(function() {
+			$('.image-upload').find('.control-group').each(function() {
+				if($(this).hasClass('error')) {
+					$(this).show();
+					$('.image-upload .control-group:not(.error)').hide();
+				}
+			});
+		}, 500);
+	});
 });

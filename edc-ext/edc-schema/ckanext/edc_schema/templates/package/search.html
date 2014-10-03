@@ -4,6 +4,7 @@
 	{% set (admin_org, editor_org, mem_org) = h.get_user_role_orgs(c.userobj.id, c.userobj.sysadmin) %}
 {% endif %}
 
+
 {% block page_primary_action %}
   {% resource 'edc_resource/search.js' %}
 	{% if h.check_access('package_create') and (admin_org or editor_org or c.userobj.sysadmin == True) %}
@@ -43,7 +44,7 @@
 	%}
   {% resource 'edc_resource/typeahead.bundle.js' %}
   {% resource 'edc_resource/search.js' %}
-	{% snippet 'snippets/search_form.html', type='dataset', query=c.q, sorting=sorting, sorting_selected=c.sort_by_selected, count=c.page.item_count, facets=facets, show_empty=request.params, error=c.query_error %}
+	{% snippet 'snippets/search_form.html', type='dataset', query=c.q, sorting=sorting, sorting_selected=c.sort_by_selected, count=c.page.item_count, facets=facets, fields = c.fields, show_empty=request.params, error=c.query_error %}
 {% endblock %}
 
 {% block package_search_results_list %}

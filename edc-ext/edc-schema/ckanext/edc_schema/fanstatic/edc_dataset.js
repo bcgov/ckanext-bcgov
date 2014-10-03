@@ -59,7 +59,7 @@ function add_contact(roles, orgs, sub_orgs) {
 								<label for="field-contacts-' + numberOfContacts + '-organization" class="control-label"><span class="control-required">*</span> Organization</label> \
 								<div class="controls"> \
 								 	<select id="field-contacts-' + numberOfContacts + '-organization" name="contacts__' + numberOfContacts + '__organization" data-module="autocomplete" data-group="org" class="contact-org"> \
-								 	<option value="" selected="selected" >Select an organization</option>';
+								 	<option value="" selected="selected" disabled>Select an organization</option>';
 
 	var selected_org_id = $("#field-org").val()
 	for (var i = 0; i < orgs.length; i++) {
@@ -78,7 +78,7 @@ function add_contact(roles, orgs, sub_orgs) {
 					   	<label for="field-contacts-' + numberOfContacts + '-role" class="control-label"><span class="control-required">*</span> Role</label> \
 					   	<div class="controls"> \
 					   		<select id="field-contacts-' + numberOfContacts + '-role" name="contacts__' + numberOfContacts + '__role" data-module="autocomplete"> \
-						   	<option value="" selected="selected">Select a contact role</option>';
+					   		<option value="" selected="selected" disabled>Select a contact role</option>';
 
 	for (var i = 0; i < roles.length; i++) {
 		html += '							 	<option value="' + roles[i].id + '">' + roles[i].name + '</option>';
@@ -104,14 +104,22 @@ function add_contact(roles, orgs, sub_orgs) {
 				 			<select id="field-contacts-' + numberOfContacts + '-branch" name="contacts__' + numberOfContacts + '__branch" data-group="sub-org" data-module="autocomplete" class="contact-sub-org"> \
 				 				<option value="" selected="selected" >Select a sub-organization</option>';
 
-	var selected_sub_org_id = $("#field-sub_org").val();
-	console.log(selected_sub_org_id);
+	var selected_org_id = $("#field-org").val()
+	var branches = [];
 	for (var i = 0; i < sub_orgs.length; i++) {
-		if (sub_orgs[i].id == selected_sub_org_id) {
-			html += '							 	<option value="' + sub_orgs[i].id + '" selected="selected">' + sub_orgs[i].name + '</option>';
+		if (sub_orgs[i].id == selected_org_id) {
+			branches = sub_orgs[i].branches;
+			break;
+		}
+	}
+	
+	var selected_sub_org_id = $("#field-sub_org").val();
+	for (var i = 0; i < branches.length; i++) {
+		if (branches[i].id == selected_sub_org_id) {
+			html += '							 	<option value="' + branches[i].id + '" selected="selected">' + branches[i].name + '</option>';
 		}
 		else {
-			html += '							 	<option value="' + sub_orgs[i].id + '">' + sub_orgs[i].name + '</option>';
+			html += '							 	<option value="' + branches[i].id + '">' + branches[i].name + '</option>';
 		}
 	}
 
@@ -322,26 +330,29 @@ function select_branch(org_branches) {
 									width : "220px"
 								});
 
-	$('[data-group="org"]').val(org_id)
-	$('[data-group="org"]').select2();
-	$('[data-group="org"]').trigger('change');
-	$('[data-group="sub-org"]').val(sub_org_id);
+	$('[data-group="org"]').each( function() {
+		if (!$(this).val()) {
+			$(this).val(org_id)
+			$(this).select2();
+			$(this).trigger('change');
+		}
+	}); 
 }
 
 $(document).on('change', '.contact-org', function() {
 	var org_id = $(this).val();
 
 	var branches = [];
-	for (var i = 0; i < org_branches.length; i++) {
-		if (org_branches[i].id == org_id) {
-			branches = org_branches[i].branches;
+	for (var i = 0; i < contacts_org_branches.length; i++) {
+		if (contacts_org_branches[i].id == org_id) {
+			branches = contacts_org_branches[i].branches;
 			break;
 		}
 	}
 
 	var options = "<option></option>";
 	for (var i = 0; i < branches.length; i++) {
-		options += '<option value="' + branches[i].id + '">' + branches[i].title + '</option>';
+		options += '<option value="' + branches[i].id + '">' + branches[i].name + '</option>';
 	}
 
 	var container = $(this).closest('.control-group.contact');
@@ -349,7 +360,7 @@ $(document).on('change', '.contact-org', function() {
 
 	$("#field-contacts-" + id + "-branch").find('option').remove().end().append(options);
 	$("#field-contacts-" + id + "-branch").select2({
-									placeholder : "Select a branch",
+									placeholder : "Select a sub-organization",
 									width : "220px"
 								});
 
@@ -357,8 +368,14 @@ $(document).on('change', '.contact-org', function() {
 
 $('#field-sub_org').change(function() {
 	var val = $(this).val();
-	$('[data-group="sub-org"]').val(val);
-	$('[data-group="sub-org"]').select2();
+	console.log(val);
+	$('[data-group="sub-org"]').each( function() {
+		var org_id = $(this).attr('id').replace('branch', 'organization');
+		if (!$(this).val() && $('#'+ org_id).val() == $('#field-org').val() ) {
+			$(this).val(val);
+			$(this).select2();
+		}
+	}); 
 });
 
 
@@ -513,5 +530,11 @@ $(function() {
 
 	if (selected_org)
 		select_branch(org_branches);
+	
+/*	$('[data-group="contact-role"]').each( function() {
+  		$(this).select2('destroy');
+		$(this).select2({placeholder: "Select a contact role"});
+	}); */
 
+	
 });

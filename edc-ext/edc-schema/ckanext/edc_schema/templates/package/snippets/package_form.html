@@ -1,16 +1,16 @@
 {% import 'macros/form.html' as form %}
+
+{% set current_state = data.edc_state or _('Draft') %}
+{% set archived = current_state == "ARCHIVED" %}
 {% set action = c.form_action or '' %}
 {% set record_type = data.type or c.record_type %}
 {% set form_style = c.form_style or c.action %}
 {% set user = c.user %}
 {% set userobj = c.userobj %}
 
-
 {# This provides a full page that renders a form for adding a dataset. It can
 then itself be extended to add/remove blocks of functionality. #}
 
-{% set current_state = data.edc_state or _('Draft') %}
-{% set archived = current_state == "ARCHIVED" %}
 <form id="form-edc_dataset" class="dataset-form {% if archived %} archived {% endif %}" method="post" action="{{ action }}" data-module="basic-form" enctype="multipart/form-data">
 
   {% block stages %}

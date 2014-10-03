@@ -1,6 +1,6 @@
 import logging
 from ckan.controllers.user import UserController
-from ckan.common import OrderedDict,_, c, g, request
+from ckan.common import OrderedDict,_,g, request
 import ckan.lib.base as base
 import ckan.model as model
 import ckan.logic as logic
@@ -8,12 +8,15 @@ import ckan.lib.helpers as h
 from urllib import urlencode
 from ckan.logic import get_action, NotFound
 import ckan.lib.maintain as maintain
+import ckan.plugins.toolkit as toolkit
 
 import pprint 
 
 from pylons import config
 
 from ckanext.edc_schema.util.util import (get_user_orgs, get_user_toporgs)
+
+c = toolkit.c
 
 render = base.render
 abort = base.abort
@@ -222,5 +225,4 @@ class EDCUserController(UserController):
         
                
         return render('user/dashboard_organizations.html')
-    
-                
+                    

@@ -3,6 +3,7 @@ import sys
 import json
 import urllib2
 import urllib
+import pprint
 
 from base import (
                   create_org, 
@@ -13,12 +14,27 @@ from base import (
 
 def create_odsi_orgs():
     
-    import pprint
+    orgs_filename = './data/orgs.json'
+    suborgs_filename = './data/suborgs.json'
+    
+    if not os.path.exists(orgs_filename):
+        print 'File {0} does not exist'.format(orgs_filename)
+        sys.exit(1)
+    if not os.path.exists(suborgs_filename):
+        print 'File {0} does not exist'.format(suborgs_filename)
+        sys.exit(1)
+        
     
     #Get the json file for organization and sun-organizations (Ministry and branches)
-    orgs_dict = json.load(urllib2.urlopen('http://apps.gov.bc.ca/pub/odc/v2/orgs.json'))
-    suborgs_dict = json.load(urllib2.urlopen('http://apps.gov.bc.ca/pub/odc/v2/orgs/suborgs.json'))
+#    orgs_dict = json.load(urllib2.urlopen('http://apps.gov.bc.ca/pub/odc/v2/orgs.json'))
+#    suborgs_dict = json.load(urllib2.urlopen('http://apps.gov.bc.ca/pub/odc/v2/orgs/suborgs.json'))
     
+    with open(orgs_filename) as org_file:
+        orgs_dict = json.loads(org_file.read())
+
+    with open(suborgs_filename) as suborg_file:
+        suborgs_dict = json.loads(suborg_file.read())
+        
     #Take the list of organizations    
     orgs_list = orgs_dict['organizations']
     
