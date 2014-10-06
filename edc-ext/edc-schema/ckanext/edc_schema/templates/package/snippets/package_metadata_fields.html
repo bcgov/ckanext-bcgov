@@ -8,11 +8,14 @@
 {% if record_type=='Geographic' %}
 <h3 class="module-sub-heading">Preview Information</h3>
 <div class="control-list">
-{% set current_org = data.org %}
-{% set current_suborg = data.sub_org %}
-{% set user_orgs = h.get_user_orgs_id(user_id, role='admin') %}
+{% if userobj %}
+	{% set user_orgs =  userobj.get_group_ids('organization', 'admin') %}
+    {% set is_admin = (data.owner_org in user_orgs) or userobj.sysadmin %}
+{% else %}
+    {% set is_admin = False %}
+{% endif %}
 
-{% set is_admin = (current_org in user_orgs) or (current_suborg in user_orgs) %}
+{# set is_admin = (current_org in user_orgs) or (current_suborg in user_orgs) #}
 
 {% if is_admin %}
 	{{ form.input('layer_name',
