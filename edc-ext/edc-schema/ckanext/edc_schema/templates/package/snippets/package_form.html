@@ -81,7 +81,7 @@ then itself be extended to add/remove blocks of functionality. #}
 
   {% block form_actions_header %}
     <div class="form-actions-header">
-      <button class="btn btn-primary btn-sm" type="submit" name="save" id="save1" onclick="this.style.visibility = 'hidden';document.getElementById('save').style.visibility='hidden';">{% block save_button_text_header %}{{ _('Next: Add Data') }}{% endblock %}</button>
+      <button class="btn btn-primary btn-sm" type="submit" name="save" id="save1" onclick="this.style.visibility = 'hidden';document.getElementById('save1').style.visibility='hidden';">{% block save_button_text_header %}{{ _('Next: Add Data') }}{% endblock %}</button>
     </div>
   {% endblock %}
 
@@ -131,7 +131,7 @@ then itself be extended to add/remove blocks of functionality. #}
           {% endif %}
         {% endif %}
       {% endblock %}
-      <button class="btn btn-primary" type="submit" name="save" id="save2" onclick="this.style.visibility = 'hidden';document.getElementById('save').style.visibility='hidden';">{% block save_button_text %}{{ _('Next: Add Data') }}{% endblock %}</button>
+      <button class="btn btn-primary" type="submit" name="save" id="save2" onclick="this.style.visibility = 'hidden';document.getElementById('save2').style.visibility='hidden';">{% block save_button_text %}{{ _('Next: Add Data') }}{% endblock %}</button>
     </div>
   {% endblock %}
 
