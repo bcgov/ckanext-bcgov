@@ -17,4 +17,4 @@ auth-settings	edc.admin.key18. Create sysadmin users using paster command for
 	1) Log in as a sysadmin (doesn’t matter which, just need sysadmin privileges)
 	2) Go to that user’s dashboard (click the logged-in username in the main navigation)
 	3) Scroll down and find “API Key”.  Copy that key and use it as ckan.api_key  in .ini file
-b) copy the token.dat file in apps.bcgov/svn/edc/config/delivery/trunk/ckan to /etc/ckan/dlv/token.dat (required for ga-report extension)c) add the password for the google analytics account to dlv.ini: googleanalytics.password = 
+b) copy the token.dat file in apps.bcgov/svn/edc/config/delivery/trunk/ckan to /etc/ckan/dlv/token.dat (required for ga-report extension)c) install the db tables for ga-report extension. From the src/ckanext-ga-report directory run:    $ paster initdb --config=/path/to/ckan/config/filed) add the password for the google analytics account to dlv.ini: googleanalytics.password = 
