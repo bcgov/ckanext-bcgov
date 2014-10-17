@@ -23,7 +23,6 @@
           {% block facet_list_items %}
   			{% set selected_items = selected_items or h.get_facets_selected(name) %}
   			{% set unselected_items = unselected_items or h.get_facets_unselected(name) %}
-            unselected : {{ unselected_items }}
           	{% if selected_items or unselected_items %}
             	<nav>
                 	<ul class="{{ nav_class or 'unstyled nav nav-simple nav-facet' }}">
