@@ -55,10 +55,11 @@
   {# snippet "spatial/snippets/spatial_query.html" , default_extent="[[47.55, -139.9], [59.8, -119.6]]" #}
 
   {% for facet in c.facet_titles %}
+   {% set more_button = 'more-'+facet+'-button' %}
   	{% if facet == 'type' %}
-  		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_type_label, name=facet) }}
+  		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_type_label, name=facet, more_button = more_button) }}
   	{% else %}
-    	{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet) }}
+    	{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, more_button = more_button) }}
     {% endif %}
   {% endfor %}
 

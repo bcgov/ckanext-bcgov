@@ -61,7 +61,8 @@ class HierarchyForm(p.SingletonPlugin, DefaultOrganizationForm):
         
         #Add custom fileds to organization schema
         schema.update({
-                      'url': [ignore_missing, unicode, cnvrt_to_ext]
+                      'url': [ignore_missing, unicode, cnvrt_to_ext],
+                      'sector' : [ignore_missing, unicode, cnvrt_to_ext]
                       })
         
         return schema
@@ -76,7 +77,8 @@ class HierarchyForm(p.SingletonPlugin, DefaultOrganizationForm):
         
         #Add custom fileds to organization schema
         schema.update({
-                      'url' : [cnvrt_from_ext, ignore_missing, unicode]
+                      'url' : [cnvrt_from_ext, ignore_missing, unicode],
+                      'sector' : [cnvrt_from_ext, ignore_missing, unicode]
                       })
         return schema
 

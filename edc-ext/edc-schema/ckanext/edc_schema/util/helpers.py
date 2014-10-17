@@ -4,14 +4,18 @@ import ckan.lib.helpers
 import ckan.model as model
 import ckan.plugins.toolkit as toolkit
 import ckan.logic as logic
-from ckan.common import  c
+from ckan.common import  (c, request)
 from webhelpers.html import literal
+import json
+import urllib2
 
 NotFound = logic.NotFound
+get_action = logic.get_action
 snippet = ckan.lib.helpers.snippet
 url_for = ckan.lib.helpers.url_for
 log = logging.getLogger(__name__)
 
+from ckan.lib.helpers import unselected_facet_items
 
 def get_suborgs(org_id):
     '''
@@ -28,42 +32,21 @@ def get_suborgs(org_id):
     
     return suborgs
         
-
-def get_suborg_sectors(org, suborg):
-    import os
-    import json
-    import sys
+def get_suborg_sector(sub_org_id):
+    '''
+    Returns the sector that the sub_org with the input sub_org id belongs to.
+    '''
+    context = {'model': model, 'session':model.Session, 'user':c.user}
     
-    default_data_dir = os.path.dirname(os.path.abspath(__file__))
-    default_org_file =   default_data_dir + '/../../../data/orgs.json'
+    data_dict = {
+                 'id' : sub_org_id,
+                 'include_datasets' : False
+                 }
     
-    sectors = []
+    sub_org = get_action('organization_show')(context, data_dict)
+    pprint.pprint(sub_org)
+    return sub_org.get('sector')
     
-    org_file = default_org_file
-              
-    if not os.path.exists(org_file):
-        print 'File {0} does not exists'.format(org_file)
-        sys.exit(1)
-                                 
-    #Read the organizations json file
-    with open(org_file) as json_file:
-        orgs = json.loads(json_file.read())
-    
-    branches = []                  
-    #Create each organization and all of its branches if it is not in the list of available organizations
-    for org_item in orgs:
-        
-        if org_item['title'] == org:
-            branches = org_item['branches']
-            break
-    
-    if branches != [] :                                             
-        for branch in branches:
-            if branch['title'] == suborg and 'sectors' in branch :
-                sectors = branch["sectors"]
-                break
-    return sectors
-
 
 def get_user_dataset_num(userobj):
     from ckan.lib.base import model
@@ -232,3 +215,84 @@ def edc_gravatar(email_hash, size=100, default=None):
         class="gravatar" width="%s" height="%s" />'''
                    % (size, size, size)
                    )
+
+
+
+def get_facets_unselected(facet, limit=None):
+    '''Return the list of unselected facet items for the given facet, sorted
+    by count.
+
+    Returns the list of unselected facet contraints or facet items (e.g. tag
+    names like "russian" or "tolstoy") for the given search facet (e.g.
+    "tags"), sorted by facet item count (i.e. the number of search results that
+    match each facet item).
+
+    Reads the complete list of facet items for the given facet from
+    c.search_facets, and filters out the facet items that the user has already
+    selected.
+
+    Arguments:
+    facet -- the name of the facet to filter.
+    limit -- the max. number of facet items to return.
+    exclude_active -- only return unselected facets.
+
+    '''
+    if not c.search_facets or \
+            not c.search_facets.get(facet) or \
+            not c.search_facets.get(facet).get('items'):
+        return []
+    facets = []
+    for facet_item in c.search_facets.get(facet)['items']:
+        if not len(facet_item['name'].strip()):
+            continue
+        if not (facet, facet_item['name']) in request.params.items():
+            facets.append(dict(active=False, **facet_item))
+    facets = sorted(facets, key=lambda item: item['count'], reverse=True)
+    return facets
+
+def get_facets_selected(facet):
+    '''
+    Returns the list of selected facet items for the given facet, sorted
+    by count.
+    '''
+    if not c.search_facets or \
+            not c.search_facets.get(facet) or \
+            not c.search_facets.get(facet).get('items'):
+        return []
+    facets = []
+    for facet_item in c.search_facets.get(facet)['items']:
+        if not len(facet_item['name'].strip()):
+            continue
+        if (facet, facet_item['name']) in request.params.items():
+            facets.append(dict(active=False, **facet_item))
+    facets = sorted(facets, key=lambda item: item['count'], reverse=True)
+    return facets
+
+
+def get_sectors_list():
+    '''
+    Returns a list of sectors available in the file specified by sectors_file_url in ini file.
+    '''
+    from pylons import config
+    
+    sectors_url = config.get('sectors_file_url', None)
+    if sectors_url :
+        try:
+            response = urllib2.urlopen(sectors_url)
+            response_body = response.read()
+        except Exception, inst:
+            msg = "Couldn't access to sectors url %r: %s" % (sectors_url, inst)
+            raise Exception, msg
+        try:
+            sectors_data = json.loads(response_body)
+        except Exception, inst:
+            msg = "Couldn't read response from sectors %r: %s" % (response_body, inst)
+            raise Exception, inst
+        sectors_list = sectors_data.get('sectors', [])
+    else :
+        '''
+        Return the default sectors list
+        '''
+        sectors_list = ["Natural Resources", "Service", "Transportation", "Education", "Economy", "Social Services", "Health and Safety", "Justice", "Finance" ]
+    
+    return sectors_list

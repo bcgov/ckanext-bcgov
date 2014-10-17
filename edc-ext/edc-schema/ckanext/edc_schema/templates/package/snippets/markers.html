@@ -7,7 +7,7 @@
 
 {% if branch %}
     {% set branch_title = h.edc_org_title(branch) %}
-    {% set sectors = h.get_suborg_sectors(org_title, branch_title) %}
+    {% set sector = h.get_suborg_sector(branch) %}
 {% endif %}
 
 {% if iso_topic_cat and iso_topic_cat != [] %}
@@ -18,11 +18,9 @@
 
 <ul class="dataset-markers">
     <li class="marker dataset-type {{ type|lower }}"><a href="{{ h.url_for(controller='package', action='search', type=type) }}">{{ dataset_title }}</a></li>
-    {% if sectors %}
-        {% for sec in sectors %}
-            {% set sector_length = sec|truncate(marker_strlen+1, False, '')|length %}
-            <li class="marker dataset-sector {{ sec|lower|replace(' ', '-')|replace('.', '-') }}{% if sector_length >= marker_strlen or sector_length == 0 %} small{% endif %}"><a href="{{ h.url_for(controller='package', action='search', sector=sec) }}">{{ sec }}</a></li>
-        {% endfor %}
+    {% if sector %}
+    	{% set sector_length = sector|truncate(marker_strlen+1, False, '')|length %}
+    	<li class="marker dataset-sector {{ sector|lower|replace(' ', '-')|replace('.', '-') }}{% if sector_length >= marker_strlen or sector_length == 0 %} small{% endif %}"><a href="{{ h.url_for(controller='package', action='search', sector=sector) }}">{{ sector }}</a></li>
     {% endif %}
     {% if iso_topic_cat and type == 'Geographic' %}
     <li class="marker dataset-iso{% if iso_topic_title|length >= marker_strlen %} small{% endif %}"><a href="{{ h.url_for(controller='package', action='search', q='vocab_iso_topic_category:' + iso_topic_title )}}">{{ iso_topic_title }}</a></li>

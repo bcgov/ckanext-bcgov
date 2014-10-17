@@ -42,10 +42,11 @@ Example:
       {% endif %}
 
       {% if show_nums %}
+      {% set package_count = organization.get('package_count') or organization.get('packages', [])|length %} 
         <div class="nums">
           <dl>
             <dt>{{ _('Datasets') }}</dt>
-            <dd>{{ h.SI_number_span(organization.package_count) }}</dd>
+            <dd>{{ h.SI_number_span(package_count) }}</dd>
           </dl>
         </div>
       {% endif %}

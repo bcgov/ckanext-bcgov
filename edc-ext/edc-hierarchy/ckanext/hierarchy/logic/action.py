@@ -24,7 +24,7 @@ def group_tree(context, data_dict):
     model = _get_or_bust(context, 'model')
     group_type = data_dict.get('type', 'group')
     top_level_groups = data_dict['top_groups']
-    pkg_count = data_dict['pkg_count']
+    pkg_count = data_dict.get('pkg_count')
     return [_group_tree_branch(group, pkg_count, type=group_type) for group in top_level_groups]
 
     
@@ -44,7 +44,7 @@ def group_tree_section(context, data_dict):
     model = _get_or_bust(context, 'model')
     group = model.Group.get(group_name_or_id)
     
-    pkg_count = data_dict['pkg_count']
+    pkg_count = data_dict.get('pkg_count')
     
     if group is None:
         raise p.toolkit.ObjectNotFound

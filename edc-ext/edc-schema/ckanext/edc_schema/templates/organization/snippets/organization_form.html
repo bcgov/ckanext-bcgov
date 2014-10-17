@@ -2,6 +2,7 @@
 
   {% block basic_fields %}
     {% resource 'edc_resource/edc-image-upload.js' %}
+    {% resource 'edc_resource/edc_orgs.js' %}
     {% set attrs = {'data-module': 'slug-preview-target'} %}
     {{ form.input('title', label=_('Name'), id='field-name', placeholder=_('My Organization'), value=data.title, error=errors.title, classes=['control-full'], attrs=attrs) }}
 
@@ -21,6 +22,38 @@
     {% set is_url = data.image_url and data.image_url.startswith('http') %}
 
     {% snippet 'package/snippets/image_upload.html', record_type = record_type, data=data, errors=errors %}
+
+  <div class="control-group control-full">
+    <label class="control-label" for="field-parent">{{ _("Parent") }}</label>
+    <div class="controls">   
+      <select id="field-parent" name="groups__0__name" data-module="autocomplete" onchange="javascript:select_sector()">
+        {% set selected_parent = (data.get('groups') or [{'name': ''}])[0]['name'] %} {{ selected_parent }}
+      <option value="" {% if not selected_parent %} selected="selected" {% endif %}>{{ _('None - top level') }}</option>
+      {# for group in c.allowable_parent_groups #}
+      {% for group in h.edc_orgs() %}
+        <option value="{{ group.name }}" {% if group.name == selected_parent %}selected="selected"{% endif %}>{{ group.title }}</option>
+      {% endfor %}
+      </select>
+    </div>
+  </div>
+  
+  <div id="suborg_sector_box" class="control-group control-full" style="Disply:none">
+  	<label class="control-label" for="field-sector"> {{ _("Sector") }}</label>
+  	<div class="controls">
+  	{% set sectors = h.get_sectors_list() %}
+  	{% set current_sector = data.sector %}
+  	<select id="field-sector" name="sector" data-module="autocomplete">
+		<option value="" {% if not selected_sector %} selected="selected" {% endif %} disabled> Select a sector</option>
+      	{% for sector in sectors %}
+      		{% set selected_sector = (current_sector and current_sector.lower() == sector.lower()) %}
+      		<option value="{{ sector }}"
+      		{% if selected_sector %} selected="selected" {% endif %}>
+      			{{ sector }}
+      		</option>
+      	{% endfor %}
+  	</select>
+  	</div>
+  </div>
 
   {% endblock %}
 

@@ -134,22 +134,16 @@ def get_org_sector(key, data, errors, context):
     '''
     This validator gets the value of sector based on the given values for org and suborg fields.
     '''
-    from ckanext.edc_schema.plugin import get_organization_title
-    from ckanext.edc_schema.util.helpers import get_suborg_sectors
+    from ckanext.edc_schema.util.helpers import get_suborg_sector
     
     
     if key[0] != 'sector' :
         return
     
-    org_key = ('org',)
     sub_org_key = ('sub_org',)
-    if org_key in data and sub_org_key in data :
-        org_title = get_organization_title(data[org_key])
-        sub_org_title = get_organization_title(data[sub_org_key])
-        
-        sector = get_suborg_sectors(org_title, sub_org_title)
-        if sector != [] :
-            data[key] = sector[0]
+    if sub_org_key in data :
+        sector = get_suborg_sector(data[sub_org_key])
+        data[key] = sector
 
 
 def check_branch(key, data, errors, context):
@@ -243,3 +237,23 @@ def check_duplicates(key, data, errors, context):
             raise StopOnError
     except SearchError, se :
         return
+    
+def check_extension(key, data, errors, context):
+    import os
+    url_type_key = (key[0], key[1], 'url_type')
+    
+    url_type = data.get(url_type_key)
+    
+    if url_type != 'upload' :
+        return
+#    valid_formats = []
+    res_url = data.get(key)
+    if not res_url :
+        errors[key].appned('Resource file/url is missing')
+        raise StopOnError
+    if res_url :
+        res_format = os.path.splitext(res_url)[1]    
+        if not res_format :
+            errors[key].append('Unknown resource extension. Please provide a file with a valid extension')
+            raise StopOnError
+    

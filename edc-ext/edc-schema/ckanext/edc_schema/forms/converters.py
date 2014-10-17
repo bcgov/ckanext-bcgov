@@ -64,3 +64,9 @@ def convert_from_extras(key, data, errors, context):
 
 def convert_dates_form(data):
     return data
+
+def remove_whitespace(value, context):
+    if isinstance(value, basestring):
+        return value.strip()
+    return value
+

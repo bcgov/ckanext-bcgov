@@ -24,7 +24,7 @@ from ckanext.edc_schema.util.util import (get_edc_tags,
                                           get_all_orgs
                                           )
 
-from ckanext.edc_schema.util.helpers import (get_suborg_sectors,
+from ckanext.edc_schema.util.helpers import (get_suborg_sector,
                                              get_user_dataset_num,
                                              get_package_data,
                                              is_license_open,
@@ -32,7 +32,10 @@ from ckanext.edc_schema.util.helpers import (get_suborg_sectors,
                                              get_suborgs,
                                              edc_linked_gravatar,
                                              edc_gravatar,
-                                             record_is_viewable
+                                             record_is_viewable,
+                                             get_facets_selected,
+                                             get_facets_unselected,
+                                             get_sectors_list
                                              )
 
 abort = base.abort
@@ -136,12 +139,12 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "edc_type_label" : edc_type_label,
                 "edc_state_values" : get_state_values,
                 "edc_username": get_username,
-                "get_sector" : get_suborg_sectors,
+                "get_sector" : get_suborg_sector,
                 "get_user_orgs" : get_user_orgs,
                 "get_user_orgs_id" : get_user_orgs_id,
                 "get_user_toporgs": get_user_toporgs,
                 "check_user_member_of_org" : check_user_member_of_org,
-                "get_suborg_sectors" : get_suborg_sectors,
+                "get_suborg_sector" : get_suborg_sector,
                 "get_user_dataset_num" : get_user_dataset_num,
                 "get_edc_package" : get_package_data,
                 "is_license_open" : is_license_open,
@@ -152,7 +155,10 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "record_is_viewable": record_is_viewable,
                 "get_espg_id" : get_espg_id,
                 "get_user_role_orgs" : get_user_role_orgs,
-                "get_all_orgs" : get_all_orgs
+                "get_all_orgs" : get_all_orgs,
+                "get_facets_selected": get_facets_selected,
+                "get_facets_unselected" : get_facets_unselected,
+                "get_sectors_list": get_sectors_list
                 }
 
 
@@ -433,7 +439,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 fq = ''
             fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
 
-
+        print 'search query', q
+        print 'Filter query', fq
         search_params['fq'] = fq
 
         return search_params

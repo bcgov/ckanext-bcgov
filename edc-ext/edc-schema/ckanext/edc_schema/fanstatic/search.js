@@ -35,4 +35,25 @@
           source: engine.ttAdapter()
         });
     });
+
+    $(document).on('click', '.facet-expand-collapse', function() {
+    	var id = $(this).attr('id');
+    	var target_class = ".more-"+ id;
+    	if ($(this).hasClass("expanded")) {
+    		$(this).removeClass("expanded");
+    		$(target_class).each( function() {
+    			$(this).css("display", "none");
+    		}); 
+    	}
+    	else {
+    		$(this).addClass("expanded");
+    		$(target_class).each( function() {
+    			$(this).css("display", "block");
+    		}); 
+    	}
+    });
+    
+    
 })(jQuery);
+
+

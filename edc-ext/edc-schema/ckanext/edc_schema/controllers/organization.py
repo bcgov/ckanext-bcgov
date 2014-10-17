@@ -257,3 +257,30 @@ class EDCOrganizationController(OrganizationController):
             abort(404, _('Organization not found'))
         return self._render_template('group/confirm_delete.html')
 
+    def about(self, id):
+        c.group_dict = self._get_group_dict(id)
+        group_type = c.group_dict['type']
+         
+ 
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user or c.author, 'for_view': True,
+                   'with_private': False}
+ 
+        if c.userobj:
+            context['user_id'] = c.userobj.id
+            context['user_is_admin'] = c.userobj.sysadmin
+ 
+        #Search_result list contains all orgs matched with search criteria including orgs and suborgs.
+        data_dict = {'all_fields': True}
+        search_result = self._action('organization_list')(context, data_dict)
+         
+        org_pkg_count_dict = {}
+        for org in search_result :
+            org_pkg_count_dict[org['id']] = org['packages']
+             
+        c.org_pkg_count = org_pkg_count_dict
+         
+        c.group_dict['package_count'] = len(c.group_dict.get('packages', []))
+        self._setup_template_variables(context, {'id': id},
+                                       group_type=group_type)
+        return render(self._about_template(group_type))

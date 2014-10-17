@@ -5,8 +5,9 @@ from ckan.lib.navl.validators import (ignore_missing,
                                       not_empty
                                       )
 from converters import (convert_to_extras, 
-                        convert_from_extras)
-from validators import (valid_date, check_empty)
+                        convert_from_extras,
+                        remove_whitespace)
+from validators import (valid_date, check_empty, check_extension)
 from ckan.logic.validators import (url_validator,)
 
 import ckan.plugins.toolkit as toolkit
@@ -36,7 +37,8 @@ class EDC_ApplicationForm(edc_form.EDC_DatasetForm):
     
     def _update_application_schema(self, schema):
         schema['resources'].update({
-                                    'format':[ignore_missing]})
+                                    'url': [not_empty, unicode, remove_whitespace, check_extension],
+                                    'format':[ignore_missing, unicode]})
         return schema
         
     def create_package_schema(self):
@@ -52,7 +54,8 @@ class EDC_ApplicationForm(edc_form.EDC_DatasetForm):
     def show_package_schema(self):
         schema = super(EDC_ApplicationForm, self).show_package_schema()
         schema['resources'].update({
-                                    'format':[ignore_missing]})
+                                    'url': [not_empty, unicode, remove_whitespace, check_extension],
+                                    'format':[ignore_missing, unicode]})
         return schema
 
     
@@ -112,9 +115,11 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'table_comment' : [ignore_missing, convert_to_extras],
                         'details' : details_schema(),
                         'iso_topic_cat' : [not_empty, cnvrt_to_tags('iso_topic_category')],
+                        'iso_topic_string' : [ignore_missing, convert_to_extras],
                         'dates' : dates_to_db_schema()
                       })
         schema['resources'].update({
+                                    'url': [not_empty, unicode, remove_whitespace, check_extension],
                                     'resource_update_cycle' : [ not_empty, convert_to_extras ],
                                     'projection_name' : [not_empty, convert_to_extras],
                                     'format' : [not_empty, unicode],
@@ -167,9 +172,11 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'table_comment' : [convert_from_extras, ignore_missing],
                         'details' : [convert_from_extras, ignore_missing],
                         'iso_topic_cat' : [cnvrt_from_tags('iso_topic_category'), not_empty],
+                        'iso_topic_string' : [convert_from_extras, ignore_missing],
                         'dates' : [convert_from_extras, ignore_missing]
                         })
         schema['resources'].update({
+                                    'url': [not_empty, unicode, remove_whitespace, check_extension],
                                     'resource_update_cycle' : [ convert_from_extras, not_empty],
                                     'format' : [not_empty, unicode],
 #                                    'storage_format_description' : [convert_from_extras, not_empty],
@@ -213,10 +220,12 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
                         'south_bound_latitude' : [ignore_missing, convert_to_extras],
                         'north_bound_latitude' : [ignore_missing, convert_to_extras],
                         'iso_topic_cat' : [not_empty, cnvrt_to_tags('iso_topic_category')],
+                        'iso_topic_string' : [ignore_missing, convert_to_extras],
                         'dates' : dates_to_db_schema()
                      })
          
         schema['resources'].update({
+                                    'url': [not_empty, unicode, remove_whitespace, check_extension],
                                     'resource_update_cycle' : [ not_empty, convert_to_extras ],
                                     'format' : [not_empty, unicode],
 #                                    'storage_format_description' : [ not_empty, convert_to_extras ],
@@ -245,6 +254,7 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
         cnvrt_from_tags = toolkit.get_converter('convert_from_tags')
         schema = super(EDC_NonGeoSpatialForm, self).show_package_schema()
         schema.update( {
+                        'url': [not_empty, unicode],
                         'purpose': [ convert_from_extras,ignore_missing ],
                         'data_quality': [ convert_from_extras, ignore_missing ],
                         'lineage_statement': [ convert_from_extras, ignore_missing ],
@@ -254,9 +264,11 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
                         'south_bound_latitude' : [convert_from_extras, ignore_missing],
                         'north_bound_latitude' : [convert_from_extras, ignore_missing],
                         'iso_topic_cat' : [cnvrt_from_tags('iso_topic_category'), not_empty],
+                        'iso_topic_string' : [convert_from_extras, ignore_missing],
                         'dates' : [convert_from_extras, ignore_missing]
                          })
         schema['resources'].update({
+                                    'url': [not_empty, unicode, remove_whitespace, check_extension],
                                     'resource_update_cycle' : [ convert_from_extras, not_empty],
                                     'format' : [not_empty, unicode],
 #                                    'storage_format_description' : [convert_from_extras, not_empty],
@@ -289,6 +301,7 @@ class EDC_WebServiceForm(edc_form.EDC_DatasetForm):
         
     def _update_webservice_schema(self, schema):
         schema['resources'].update({
+                                    'url': [not_empty, unicode, remove_whitespace, check_extension],
                                     'format' : [not_empty, unicode]
                                     })
         return schema
@@ -306,6 +319,7 @@ class EDC_WebServiceForm(edc_form.EDC_DatasetForm):
     def show_package_schema(self):
         schema = super(EDC_WebServiceForm, self).show_package_schema()
         schema['resources'].update({
+                                    'url': [not_empty, unicode, remove_whitespace, check_extension],
                                     'format' : [not_empty, unicode]
                                     })
         return schema

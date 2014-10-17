@@ -1285,6 +1285,31 @@ input.search.tt-hint {
   }
 }
 
+
+.facet-expand-collapse {
+	text-align : center;
+	font-size : 12px;
+	display : block;
+	text-decoration : none;
+	margin-top : 10px;
+}
+
+.facet-expand-collapse.expanded .collapser {
+	display: block;
+}
+
+.facet-expand-collapse .collapser {
+	display: none;
+}
+
+.facet-expand-collapse.expanded .expander {
+	display: none;
+}
+
+.facet-expand-collapse .expander {
+	display: block;
+}
+
 /* Phone only */
 @media (max-width: 768px) {
 
