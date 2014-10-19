@@ -1,0 +1,53 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip="">
+
+  <xi:include href="../ga_util.html" />
+
+  <py:def function="page_title">Downloads</py:def>
+
+  <py:def path="sidebar">
+    ${ga_sidebar(download_link=h.url_for(controller='ckanext.ga_report.controller:GaReport',action='csv_downloads',month=c.month or 'all'))}
+  </py:def>
+
+  <py:def function="page_heading">Downloads ${usage_nav('Downloads')}</py:def>
+  <div py:match="content">
+
+    <div class="boxed">
+
+      <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='downloads')}" method="get">
+          <div class="controls">
+
+          ${month_selector(c.month, c.months, c.day)}
+
+           <input class="btn button btn-primary" type='submit' value="Update"/>
+          </div>
+       </form>
+
+       <py:if test="c.downloads">
+         ${downloads_table(c.downloads)}
+       </py:if>
+       <py:if test="not c.downloads">
+         <h4>No data</h4>
+         <p>There is no download data available for this month</p>
+       </py:if>
+     </div>
+  </div>
+
+  <xi:include href="../../layout.html" />
+
+  <py:def function="optional_footer">
+    <script type='text/javascript'>
+        $('.dropdown-toggle').dropdown();
+        $('.nav-tabs li a').click(function (e) {
+          e.preventDefault();
+          $(this).tab('show');
+        })
+        alert(window.location.hash);
+    </script>
+  </py:def>
+</html>
+
+
+

@@ -1,0 +1,71 @@
+.table-condensed td.sparkline-cell {
+  padding: 1px 0 0 0;
+  width: 108px;
+  text-align: center;
+  /* Hack to hide the momentary flash of text 
+   * before sparklines are fully rendered */
+  font-size: 1px;
+  color: transparent;
+  overflow: hidden;
+}
+.rickshaw_chart_container {
+  position: relative;
+  height: 350px;
+  margin: 0 auto 20px auto;
+}
+.rickshaw_chart {
+  position: absolute;
+  left: 40px;
+  width: 500px;
+  top: 0;
+  bottom: 0;
+}
+.rickshaw_legend {
+  background: transparent;
+  width: 100%;
+  padding-top: 4px;
+}
+.rickshaw_y_axis {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+}
+.rickshaw_legend .label {
+  background: transparent !important;
+  color: #000000 !important;
+  font-weight: normal !important;
+}
+.rickshaw_legend .instructions {
+  color: #000;
+  margin-bottom: 6px;
+}
+
+.rickshaw_legend .line .action {
+  display: none;
+}
+.rickshaw_legend .line .swatch {
+  display: block;
+  float: left;
+}
+.rickshaw_legend .line .label {
+  display: block;
+  white-space: normal;
+  float: left;
+  width: 200px;
+}
+.rickshaw_legend .line .label:hover {
+  text-decoration: underline;
+}
+
+.ga-reports-table .td-numeric {
+  text-align: center;
+}
+.ga-reports-heading {
+  padding-right: 10px;
+  margin-top: 4px;
+  float: left;
+}
+.tab-content {
+  padding-top: 12px;
+}
