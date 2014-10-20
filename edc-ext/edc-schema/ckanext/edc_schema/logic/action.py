@@ -127,7 +127,7 @@ def edc_package_update_bcgw(context, input_data_dict):
     4) Call get_action(package_update) to update the package
     '''
     from ckan.lib.search import SearchError
-    pprint.pprint('*********  edc_package_update_bcgw')
+#    pprint.pprint('*********  edc_package_update_bcgw')
     update = {}
     # first, do the search
     q = 'object_name:' + input_data_dict.get("object_name")
@@ -137,7 +137,7 @@ def edc_package_update_bcgw(context, input_data_dict):
     sort = 'metadata_modified desc'
 
     try :
-        pprint.pprint('*********  trying search')
+#        pprint.pprint('*********  trying search')
         data_dict = {
                      'q' : q,
                      'fq' : fq,
@@ -148,17 +148,17 @@ def edc_package_update_bcgw(context, input_data_dict):
 
         #Use package_search to filter the list
         query = get_action('package_search')(context, data_dict)
-        pprint.pprint(query)
-        pprint.pprint('********* search ok')
+#        pprint.pprint(query)
+#        pprint.pprint('********* search ok')
     except SearchError, se :
-        pprint.pprint('*********  search error!')
+#        pprint.pprint('*********  search error!')
         print 'Search error', str(se)
         raise SearchError(str(se))
 
     #check the search results - there can be only 1!!
     the_count = query['count']
     if the_count != 1: 
-        pprint.pprint('*********  search error 2')
+#        pprint.pprint('*********  search error 2')
         #raise SearchError('Search returned 0 or more than 1 item')
         return_dict = {}
         return_dict['results'] = query
@@ -166,13 +166,13 @@ def edc_package_update_bcgw(context, input_data_dict):
         return_dict['error'] = True
         #pprint.pprint(return_dict)
         return return_dict
-    pprint.pprint('*********  trying results')
+#    pprint.pprint('*********  trying results')
     results = query['results']
     results[0]['details'] = input_data_dict.get("details")
 #     pprint.pprint('*********  DETAILS:')
 #     pprint.pprint(results[0]['details'])
     try :
-        pprint.pprint('*********  trying update')
+#        pprint.pprint('*********  trying update')
         
         #need the right data package
         package_dict = get_action('package_show')(context, {'id': results[0]['id']})
@@ -187,7 +187,7 @@ def edc_package_update_bcgw(context, input_data_dict):
         #pprint.pprint('*********  package after update')
         #pprint.pprint(update)
     except Exception, ue:
-        pprint.pprint('*********  update error')
+#        pprint.pprint('*********  update error')
         raise Exception(str(ue))
 
     response_dict = {}

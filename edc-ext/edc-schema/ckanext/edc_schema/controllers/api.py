@@ -401,8 +401,8 @@ class EDCApiController(ApiController):
     def action(self, logic_function, ver=None):
         import ckanext.edc_schema.logic.action as edc_action
         
-        pprint.pprint('***** logic_function:')
-        pprint.pprint(logic_function)
+#        pprint.pprint('***** logic_function:')
+#        pprint.pprint(logic_function)
         #ToDo :
         #Create a list of logic_functions that need to be restricted to anonymous users
         restricted_functions = [

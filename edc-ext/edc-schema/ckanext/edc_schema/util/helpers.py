@@ -44,7 +44,7 @@ def get_suborg_sector(sub_org_id):
                  }
     
     sub_org = get_action('organization_show')(context, data_dict)
-    pprint.pprint(sub_org)
+#    pprint.pprint(sub_org)
     return sub_org.get('sector')
     
 

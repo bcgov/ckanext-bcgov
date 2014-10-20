@@ -439,8 +439,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 fq = ''
             fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
 
-        print 'search query', q
-        print 'Filter query', fq
+#        print 'search query', q
+#        print 'Filter query', fq
         search_params['fq'] = fq
 
         return search_params
