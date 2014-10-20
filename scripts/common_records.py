@@ -231,6 +231,28 @@ def add_discovery_data():
             date_type = date_type_dict[date_type]
             dates.append({'type': date_type, 'date': rec_date, 'delete': '0'})
                 
+        #---------------------------------------------------------------------<< Record Contacts >>----------------------------------------------------------------------
+        from validate_email import validate_email
+        
+        contact_names = []
+        contact_emails = []
+        if record_data[7]:
+            contact_names = record_data[7].split(',')
+        if record_data[8]:
+            contact_emails = record_data[8].split(',')
+        #Validate emails
+        contact_emails = [contact_email if (contact_email and validate_email(contact_email)) else 'data@gov.bc.ca' for contact_email in contact_emails]
+
+        contact_names = [contact_name if contact_name else 'DataBC'  for contact_name in contact_names]
+        # Adding dataset contacts
+        contacts = []
+
+        contact_len = min(len(contact_names), len(contact_emails))
+
+        for i in range(contact_len):
+            contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'role' : 'pointOfContact', 'private' : 'Display'})
+
+
 
         data_dict = {
                      'purpose' : purpose,
@@ -260,7 +282,8 @@ def add_discovery_data():
                      'metadata_standard_version' : metadata_standard_version,
                      'date_modified' : date_modified,
                      'date_created' : date_created,
-                     'dates' : dates
+                     'dates' : dates,
+                     'contacts' : contacts
                      }
         discovery_data[str(record_uid)] = data_dict
 

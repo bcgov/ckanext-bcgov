@@ -217,7 +217,7 @@ def execute_odsi_query(con):
                 "AND DBC_CS.CREATOR_SECTOR_ID=DBC_SO.CREATOR_SECTOR_ID " + \
                 "AND DBC_DC_MIN.RESOURCE_SET_ID(+)=DBC_RS.RESOURCE_SET_ID " + \
                 "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "  #+ \
-#                "AND DBC_RS.RESOURCE_SET_ID = 175964 "
+#                "AND DBC_RS.RESOURCE_SET_ID = 179706 "
 #                "AND DBC_RT.RESOURCE_TYPE_NAME ='Geospatial Dataset'" #+ \
 
 
@@ -397,13 +397,13 @@ def import_odc_records(con):
                 continue                
 
             #----------------------------------------------------------------------< Dataset Keywords >----------------------------------------------------------------------
+            keyword_list = []
             if result[4]:
                 # Extract the keywords(tags) names and add the list of tags to the record.
-                keywords = result[4].split(',')
+                keywords = result[4].split(',') 
                 keywords = [keyword.strip() for keyword in keywords]
 
                 #Making the new keywords list from the keyword replacement file.
-                keyword_list = []
                 for keyword in keywords :
                     if keyword in key_dict :
                         action_key_dict = key_dict.get(keyword)
@@ -415,14 +415,13 @@ def import_odc_records(con):
                     if new_keyword :
                         keyword_list.append(new_keyword)
 
-                edc_record['tags'] = [{'name' : remove_invalid_chars(keyword).strip()} for keyword in keyword_list if keyword and len(keyword) > 1]
-                edc_record['tag_string'] = result[4]
-
-
+            if keyword_list == [] :
+                keyword_list = ['missing kw']
+            edc_record['tags'] = [{'name' : remove_invalid_chars(keyword).strip()} for keyword in keyword_list if keyword and len(keyword) > 1]
+            edc_record['tag_string'] = ', '.join(keyword_list)
 
             #-----------------------------------------------------------------< Dataset dates >-------------------------------------------------------------------
-            
-            
+                        
             if result[18] :
                 edc_record['record_create_date'] = result[18]
 
@@ -445,9 +444,9 @@ def import_odc_records(con):
             if result[20] and validate_email(result[20]) :
                 contact_email = result[20]
             else:
-                contact_email = 'databc@gov.bc.ca'
+                contact_email = 'data@gov.bc.ca'
 
-            contact_name = result[19] or 'DataBC Operations'
+            contact_name = result[19] or 'DataBC'
             contacts = []
             contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Private'})
 
@@ -493,7 +492,11 @@ def import_odc_records(con):
             Update record data if it is available in discovery.
             '''
             if result[22] and discovery_record :
-                edc_record['resource_status'] = discovery_record.get('resource_status')
+                resource_status = discovery_record.get('resource_status', 'onGoing')
+                edc_record['resource_status'] = resource_status
+                
+                if resource_status.lower() == 'obsolete' :
+                    edc_record['replacement_record'] = 'http://catalogue.data.gov.bc.ca'
 
                 edc_record['security_class'] = discovery_record.get('security_class')
 
@@ -541,7 +544,16 @@ def import_odc_records(con):
                 edc_record['record_create_date'] = discovery_record.get('date_created')
                 
                 edc_record['dates'] = discovery_record.get('dates')
-
+                
+                edc_record['metastar_uid'] = str(result[22])
+                
+                #Adding organization and sub-organization to discovery contacts
+                discovery_contacts = discovery_record.get('contacts')
+                
+                for contact in discovery_contacts :
+                    contact['organization'] = org
+                    contact['branch'] = edc_record.get('sub_org')
+                edc_record['contacts'] = discovery_contacts
             else :
 
             #-----------------------------------------------------------------< Dataset resource status >----------------------------------------------------------
@@ -722,7 +734,7 @@ def import_odc_records(con):
                         pprint.pprint(error) 
                         import_log_file.write('\nError details :')
                         json.dump(error, import_log_file)
-                import_log_file.write('Record info :\n')
+                import_log_file.write('\nRecord info :\n')
                 json.dump(edc_record, import_log_file)
 
             index = index + 1
@@ -732,6 +744,7 @@ def import_odc_records(con):
             print str(e)
             import_log_file.write('Exception in importing record with UID %s.\n' % odsi_uid_str)
             import_log_file.write(str(e) + '\n')
+            pass
         import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
         print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
 
@@ -760,8 +773,9 @@ def create_discovery_org_map(org_map_filename):
         reader = csv.reader(open(org_map_filename, 'r'), skipinitialspace=True)
         for row in reader:
             i += 1
-            org_map[row[0]] = {'org' : row[1], 'sub_org': row[2]}
-            print str(i).rjust(4), ' ------> ', row[0].ljust(85), ' ', row[1].ljust(70), ' ', row[2].ljust(50)
+            if row[0] :
+                org_map[row[0]] = {'org' : row[1], 'sub_org': row[2]}
+                print str(i).rjust(4), ' ------> ', row[0].ljust(85), ' ', row[1].ljust(70), ' ', row[2].ljust(50)
     except csv.Error, e:
         sys.exit('file %s, line %d: %s' % (org_map_filename, reader.line_num, e))
     
@@ -859,7 +873,8 @@ def execute_discovery_query(con):
                 "metastar.bat_states st " \
                 "WHERE dat.state_uid IN (164,166,168,172) " \
                 "AND usr.user_uid = dat.user_uid " \
-                "AND st.state_uid = dat.state_uid "
+                "AND st.state_uid = dat.state_uid " #\
+#                "AND RECORD_UID = 52878"
 #                /* state is Draft, Approve, Published or ZPublished */
     cur = con.cursor()
 
@@ -945,13 +960,13 @@ def save_discovery_records(con, discovery_data_filename):
             #-------------------------------------------------------------------------<< Keywords >>-------------------------------------------------------------------------
             # Extract the keywords(tags) names and add the list of tags to the record.
             keywords = []
+            keyword_list = []
             if result[5] :
                 # Extract the keywords(tags) names and add the list of tags to the record.
                 keywords = result[5].split(',')
                 keywords = [keyword.strip() for keyword in keywords]
 
                 #Making the new keywords list from the keyword replacement file.
-                keyword_list = []
                 for keyword in keywords :
                     if keyword in key_dict :
                         action_key_dict = key_dict.get(keyword)
@@ -962,14 +977,19 @@ def save_discovery_records(con, discovery_data_filename):
 
                     if new_keyword :
                         keyword_list.append(new_keyword)
-
+            
+            if keyword_list == [] :
+                keyword_list = ['missing kw']
             edc_record['tags'] = [{'name' : remove_invalid_chars(keyword).strip()} for keyword in keyword_list if keyword and len(keyword) > 1]
-            edc_record['tag_string'] = result[5]
+            edc_record['tag_string'] = ', '.join(keyword_list)
 
 
             #----------------------------------------------------------------------<< Record Status >>-----------------------------------------------------------------------
             resource_status = result[6] or 'onGoing'
             edc_record['resource_status'] = resource_status
+            
+            if resource_status.lower() == 'obsolete' :
+                edc_record['replacement_record'] = 'http://catalogue.data.gov.bc.ca'
 
             #---------------------------------------------------------------------<< Record Contacts >>----------------------------------------------------------------------
             contact_names = []
@@ -983,17 +1003,17 @@ def save_discovery_records(con, discovery_data_filename):
                 contact_orgs = result[9].split(',')
 
             #Validate emails
-            contact_emails = [contact_email if (contact_email and validate_email(contact_email)) else 'databc@gov.bc.ca' for contact_email in contact_emails]
+            contact_emails = [contact_email if (contact_email and validate_email(contact_email)) else 'data@gov.bc.ca' for contact_email in contact_emails]
 
-            contact_names = [contact_name if contact_name else 'DataBC Operations'  for contact_name in contact_names]
+            contact_names = [contact_name if contact_name else 'DataBC'  for contact_name in contact_names]
             # Adding dataset contacts
             contacts = []
 
             contact_len = min(len(contact_names), len(contact_emails), len(contact_orgs))
 
             for i in range(contact_len):
-#                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record.get('org'), 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Display'})
-                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'role' : 'pointOfContact', 'private' : 'Display'})
+                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record.get('org'), 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Display'})
+#                contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'role' : 'pointOfContact', 'private' : 'Display'})
 
             edc_record['contacts'] = contacts
 
@@ -1229,7 +1249,7 @@ def import_discovery_records():
     Check if the organization mapping file exists.
     Otherwise exit.
     '''
-    org_map_filename = './data/discovery_org_suborg_replacement_mapping.csv'
+    org_map_filename = './data/org_suborg_sector_mapping_forEDC.csv'
     if not os.path.exists(org_map_filename) :
         print 'Organization mapping file is not given.'
         return
@@ -1421,7 +1441,7 @@ def import_discovery_records():
             print str(e)
             import_log_file.write('Exception in importing record with UID ' + record_uid + '\n')
             import_log_file.write(str(e) + '\n')
-            
+            pass
         import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
         print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
          
