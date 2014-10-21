@@ -199,6 +199,8 @@ def execute_odsi_query(con):
                 ",DBC_RS.CONTACT_EMAIL " + \
                 ",DBC_RS.RESOURCE_STATE " + \
                 ",DBC_RS.DISCOVERY_UID DISCOVERY_ID " + \
+                 ",DBC_DC.DISPLAY_NAME " + \
+                ",DBC_DC.DISPLAY_EMAIL " + \
                 "FROM APP_DATABC.DBC_RESOURCE_SETS DBC_RS " + \
                 ",APP_DATABC.DBC_CREATOR_ORGANIZATIONS DBC_CO " + \
                 ",APP_DATABC.DBC_CREATOR_SECTORS DBC_CS " + \
@@ -441,15 +443,21 @@ def import_odc_records(con):
                 edc_record['dates'] = dates
             
             #-----------------------------------------------------------------< Dataset Contacts >----------------------------------------------------------------
+            contacts = []
             if result[20] and validate_email(result[20]) :
                 contact_email = result[20]
+            contact_name = result[19] 
+            
+            if contact_email :
+                contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Private'})
+
+            if result[24] and validate_email(result[24]) :
+                display_email = result[24]
             else:
-                contact_email = 'data@gov.bc.ca'
+                display_email = 'data@gov.bc.ca'
 
-            contact_name = result[19] or 'DataBC'
-            contacts = []
-            contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Private'})
-
+            display_name = result[23] or 'DataBC'
+            contacts.append({'name': display_name, 'email': display_email, 'delete': '0', 'organization': org, 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Display'})
             edc_record['contacts'] = contacts
 
             odsi_uid_str = ''
