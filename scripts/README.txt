@@ -29,6 +29,17 @@ Note : For database connection provide value either for SID or for service_name.
 
 1) Activate the virtual environment.
 
-2) To run a script simply use python script-filename.py
+2) To run a script simply use python script-filename.py 
 
 For example, to create vocabularies run : python create_vocabs.py
+
+3) To import data run
+python data_import.py data_source_name
+Note: data_source_name is either odsi or discovery
+
+Note a: Only the following files in data folder are required by scripts. For a fresh data load remove all other files from this folder.
+keywords_replacement.csv
+org_suborg_sector_mapping_forEDC.csv
+edc-vocabs.json
+
+
