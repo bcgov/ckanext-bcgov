@@ -192,7 +192,7 @@ def import_users():
          
         user_dict = {
                      'name' : user_name,
-                     'email' : 'databc@gov.bc.ca',
+                     'email' : 'data@gov.bc.ca',
                      'password' : 'test1234'
                      }
         if not user :
