@@ -99,83 +99,6 @@ class EDCApiController(ApiController):
         return fq
 
 
-    def __package_search(self, context, ver):
-        '''
-        Searches for packages satisfying a given search criteria.
-        '''
-        from ckan.lib.search import SearchError
-
-        help_str = "Searches for packages satisfying a given search criteria.\n" + \
-                    "This action accepts solr search query parameters (details below), and\n    " + \
-                    "returns a dictionary of results, including dictized datasets that match\n    " + \
-                    "the search criteria and a search count\n\n" +\
-                    "**Solr Parameters:**\n\n    This action accepts a *subset* of solr's search query parameters:\n\n\n    " + \
-                    ":param q: the solr query.  Optional.  Default: ``\"*:*\"``\n    :type q: string\n    " + \
-                    ":param sort: sorting of the search results.  Optional.  Default:\n        ``'relevance asc, metadata_modified desc'``.  " + \
-                    "As per the solr\n        documentation, this is a comma-separated string of field names and\n        " +\
-                    "sort-orderings.\n    :type sort: string\n    " + \
-                    ":param rows: the number of matching rows to return.\n    :type rows: int\n    " + \
-                    ":param start: the offset in the complete result for where the set of\n        " + \
-                    "returned datasets should begin.\n    :type start: int\n\n    " + \
-                    "**Results:**\n\n    The result of this action is a dict with the following keys:\n\n    " + \
-                    ":rtype: A dictionary with the following keys\n    " + \
-                    ":param count: the number of results found.  Note, this is the total number\n        " + \
-                    "of results found, not the total number of results returned (which is\n        " + \
-                    "affected by limit and row parameters used in the input).\n    :type count: int\n    " + \
-                    ":param results: ordered list of datasets matching the query, where the\n        " + \
-                    "ordering defined by the sort parameter used in the query.\n    " + \
-                    ":type results: list of dictized datasets."
-
-        return_dict = {"help": help_str}
-
-        #Compute the filter query depending on the user name.
-#        fq =  self.__get_search_filter()
-
-        #Get request parameters (search query, number of records to be returned and the starting package)
-        q = request.params.get('q', '')
-        fq =  request.params.get('fq', '')
-
-
-        try:
-            limit = int(request.params.get('rows', default_limit))
-        except ValueError:
-            limit = default_limit
-
-        try:
-            offset = int(request.params.get('start', default_offset))
-        except ValueError:
-            offset = 0
-
-        sort = request.params.get('sort', 'metadata_modified desc')
-
-        try :
-            data_dict = {
-                         'q' : q,
-                         'fq' : fq,
-                         'start' : offset,
-                         'rows' : limit,
-                         'sort' : sort
-                        }
-
-            #Use package_search to filter the list
-            query = get_action('package_search')(context, data_dict)
-
-        except SearchError, se :
-            print 'Search error', str(se)
-            return self._finish_bad_request()
-
-
-        response_dict = {}
-        response_dict['count'] = query['count']
-        response_dict['sort'] = query['sort']
-        response_dict['results'] = query['results']
-
-        return_dict['success'] = True
-        return_dict['result'] = response_dict
-        return self._finish_ok(return_dict)
-
-
-
     def __get_package_list(self, context, ver=None):
         '''
         Returns a list of site packages depending on the user.
@@ -440,8 +363,6 @@ class EDCApiController(ApiController):
             return self.__get_package_list(context, ver)
         elif logic_function == 'current_package_list_with_resources' :
             return self.__get_package_list_with_resources(context, ver)
-        elif logic_function == 'package_search':
-            return self.__package_search(context, ver)
         elif logic_function == 'recently_changed_packages_activity_list' :
             return self.__get_recently_changed_packages_activity_list(context, ver)           
         else :
