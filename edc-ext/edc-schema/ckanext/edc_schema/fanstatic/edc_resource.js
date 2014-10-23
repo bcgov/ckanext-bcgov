@@ -14,8 +14,12 @@ $('#field-image-upload').change(function() {
 	var file = $('#field-image-upload')[0].files[0]
 	if(file){
 		var filename = file.name
-		filename = filename.substring(0, filename.lastIndexOf('.'));
-	  $("#field-name").val(filename);
+		extension_index = filename.lastIndexOf('.');
+		if (extension_index > 0) {
+			filename = filename.substring(0, filename.lastIndexOf('.'));
+		}
+		
+	    $("#field-name").val(filename);
 	}
 	
 });
