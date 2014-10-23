@@ -1,0 +1,5 @@
+{
+	"site_url"  : "http://cad.data.gov.bc.ca",
+	"api_key"   : “XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX”,
+	"user_list" : [“test_user_id”]
+}

@@ -13,7 +13,8 @@ import_users.py : Importing users from ODSI.
 save_users.py : Saving current users in a file.
 load_users.py : Importing saved users from the saved file.
 save_orgs.py : Saving current organizations and their users into a file.
-load_orgs.py : Importing saved organizations from the saved file. 
+load_orgs.py : Importing saved organizations from the saved file.
+remove_user_access.py : Removes a list of users give by an input json file from all organizations. 
 
 ##################################################################################################
 Note: to permanently remove the records you need to run the purge command in edc_schema extension:
@@ -42,4 +43,9 @@ keywords_replacement.csv
 org_suborg_sector_mapping_forEDC.csv
 edc-vocabs.json
 
+4) Removing user access
 
+Create a data file containing the list of users to be removed. The file also should contain the site url and a sysadmin api key.
+An example json file named “users_to_be_removed.json” is provided at data folder.
+
+To remove users access : python remove_user_access.py <<path to input json file>>
