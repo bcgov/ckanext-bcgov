@@ -9,6 +9,16 @@ function check_storage_location() {
 	}
 }
 
+$('#field-image-upload').change(function() {
+	
+	var file = $('#field-image-upload')[0].files[0]
+	if(file){
+		var filename = file.name
+		filename = filename.substring(0, filename.lastIndexOf('.'));
+	  $("#field-name").val(filename);
+	}
+	
+});
 
 $(function() {
 	check_storage_location();
