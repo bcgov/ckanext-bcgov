@@ -1,0 +1,9 @@
+{% ckan_extends %}
+
+{% block activity_stream %}
+
+	{% resource 'edc_resource/edc_activity.js' %}
+	
+	{{ super() }}
+	
+{% endblock %}
