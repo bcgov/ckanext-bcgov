@@ -208,18 +208,18 @@ class EDCUserController(UserController):
         
         data_dict = {'user_obj': c.userobj}
         self._setup_template_variables(context, data_dict)
-        
-        #Search_result list contains all orgs matched with search criteria including orgs and suborgs.
-        search_dict = {'all_fields': True}
-        search_result = get_action('organization_list')(context, search_dict)
-        
         (user_orgs, usr_suborgs) = get_user_toporgs(c.userobj.id) 
         
-        org_pkg_count_dict = {}
-        for org in search_result :
-            org_pkg_count_dict[org['id']] = org['packages']
-                    
-        c.org_pkg_count = org_pkg_count_dict
+        facets = OrderedDict()
+
+        facets['organization'] = _('Organizations')
+
+        data_dict = {
+                'facet.field': facets.keys(),
+        }
+
+        query = get_action('package_search')(context, data_dict)
+        c.org_pkg_count = query['facets'].get('organization')
         c.top_orgs_items = user_orgs
         c.suborgs_items = usr_suborgs
         

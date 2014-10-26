@@ -482,7 +482,7 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
 
 .dataset-markers {
   list-style-type: none;
-  margin: 0 -25px 0 25px;
+  margin: 0 -25px 0 0px;
   padding: 0;
   float: right;
 }
@@ -639,6 +639,12 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
 
 .dataset-list .dataset-markers {
   margin-right: -25px;
+  margin-left: 10px;
+}
+
+.dataset-marker-type-icon {
+  float: right;
+  margin-left: 25px;
 }
 
 .dataset-resources {

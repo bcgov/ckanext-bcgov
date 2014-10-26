@@ -43,17 +43,22 @@
     		$(this).removeClass("expanded");
     		$(target_class).each( function() {
     			$(this).css("display", "none");
-    		}); 
+    		});
     	}
     	else {
     		$(this).addClass("expanded");
     		$(target_class).each( function() {
     			$(this).css("display", "block");
-    		}); 
+    		});
     	}
     });
-    
-    
+
+    $(document).on('typeahead:selected', function(e, suggestion, dataset) {
+      var name = suggestion.name;
+      window.location.href = window.location.protocol+"//"+window.location.host + '/dataset/' + name;
+    });
+
+
 })(jQuery);
 
 

@@ -34,11 +34,7 @@ class EDCOrganizationController(OrganizationController):
                    'user': c.user or c.author, 'for_view': True,
                    'with_private': False}
 
-        q = c.q = request.params.get('q', '')
-        data_dict = {'all_fields': True, 'q': q}
-        sort_by = c.sort_by_selected = request.params.get('sort')
-        if sort_by:
-            data_dict['sort'] = sort_by
+        data_dict = {'all_fields': False}
         try:
             self._check_access('site_read', context)
         except NotAuthorized:
@@ -50,32 +46,25 @@ class EDCOrganizationController(OrganizationController):
             context['user_id'] = c.userobj.id
             context['user_is_admin'] = c.userobj.sysadmin
 
-        #Search_result list contains all orgs matched with search criteria including orgs and suborgs.
         search_result = self._action('organization_list')(context, data_dict)
         
         org_model = context['model']
         
         #Get the list of all groups of type "organization" that have no parents.             
         top_level_orgs = org_model.Group.get_top_level_groups(type="organization")
-        top_results = [org for org in top_level_orgs if org.id in [found_org['id'] for found_org in search_result] ]
-        org_pkg_count_dict = {}
-        for org in search_result :
-            org_pkg_count_dict[org['id']] = org['packages']
-            
-        c.org_pkg_count = org_pkg_count_dict
-        #The results list is used by ckan when the hierarchy extension in not added
-        results = [org for org in search_result if org['id'] in [top_org.id for top_org in top_level_orgs]]
+        top_results = [org for org in top_level_orgs if org.name in search_result ]
         
-                
-        c.page = h.Page(
-            collection=results,
-            page=request.params.get('page', 1),
-            url=h.pager_url,
-            items_per_page=21,
-        )
+        facets = OrderedDict()
+
+        facets['organization'] = _('Organizations')
+
+        data_dict = {
+                'facet.field': facets.keys(),
+        }
+
+        query = get_action('package_search')(context, data_dict)
+        c.org_pkg_count = query['facets'].get('organization')
         
-        #Add the top level orgs found to the context variables list to be used by orgs hierarchy extension
-        c.page.items = results
         c.top_orgs_items = top_results
         return render('organization/index.html')
         

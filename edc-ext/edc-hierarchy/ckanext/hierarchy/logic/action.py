@@ -8,7 +8,6 @@ import ckan.model as model
 import ckan.plugins.toolkit as toolkit
 from ckan.common import  c
 from ckanext.hierarchy.model import GroupTreeNode
-from ckanext.edc_schema.util.helpers import org_record_is_viewable 
 
 
 log = logging.getLogger(__name__)
@@ -28,8 +27,6 @@ def group_tree(context, data_dict):
     return [_group_tree_branch(group, pkg_count, type=group_type) for group in top_level_groups]
 
     
-    #    return [_group_tree_branch(group, type=group_type)
-#            for group in model.Group.get_top_level_groups(type=group_type)]
 
 
 @logic.side_effect_free
@@ -40,6 +37,7 @@ def group_tree_section(context, data_dict):
     :param id: the id or name of the group to inclue in the tree
     :returns: the top GroupTreeNode of the tree section
     '''
+
     group_name_or_id = _get_or_bust(data_dict, 'id')
     model = _get_or_bust(context, 'model')
     group = model.Group.get(group_name_or_id)
@@ -62,21 +60,6 @@ def group_tree_section(context, data_dict):
 
 
 
-def count_user_packages(group_id):
-    '''Counts the number of packages a user has access to in an organization
-    '''
-    count = 0
-    
-    group_packages = toolkit.get_action('group_package_show')(data_dict={'id': group_id})
-    
-    for package in group_packages:
-        
-        if org_record_is_viewable( package, c.userobj):
-            count += 1
-
-    return count
-    
-    
 def _group_tree_branch(root_group, pkg_count, highlight_group_name=None, type='group'):
     '''Returns a branch of the group tree hierarchy, rooted in the given group.
 
@@ -86,14 +69,11 @@ def _group_tree_branch(root_group, pkg_count, highlight_group_name=None, type='g
     '''
     import pprint
     nodes = {}  # group_id: GroupTreeNode()
-
+    
     #Calculate package count for root orgs
-    root_count = pkg_count[root_group.id]
-    #root_count = count_user_packages(root_group.id)
+    root_count = pkg_count.get(root_group.name, 0)
     for group_id, group_name, group_title, parent_id in root_group.get_children_group_hierarchy(type=type):
-        if group_id in pkg_count :
-            root_count += pkg_count[group_id]
-            #root_count = count_user_packages(group_id)
+        root_count += pkg_count.get(group_name, 0)
              
     root_node = nodes[root_group.id] = GroupTreeNode(
         {'id': root_group.id,
@@ -106,14 +86,7 @@ def _group_tree_branch(root_group, pkg_count, highlight_group_name=None, type='g
         highlight_group_name = None
     for group_id, group_name, group_title, parent_id in \
             root_group.get_children_group_hierarchy(type=type):
-        if group_id in pkg_count :
-            pkg_num = pkg_count[group_id]
-            #pkg_num = count_user_packages(group_id)
-            #pprint.pprint(pkg_num)
-        else :
-            pkg_num = 0
-
-        #        pkg_num = pkg_count[group_id]
+        pkg_num = pkg_count.get(group_name, 0)
         node = GroupTreeNode({'id': group_id,
                              'pkg_num': str(pkg_num),
                               'name': group_name,

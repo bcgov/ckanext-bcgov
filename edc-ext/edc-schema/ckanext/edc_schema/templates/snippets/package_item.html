@@ -27,6 +27,7 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
 #}
 
 {% block package_item %}
+  {{ icon_type }}
   <li class="{{ item_class or "dataset-item" }}">
     {% block content %}
       <div class="dataset-content">
@@ -38,6 +39,11 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
               <li class="marker dataset-sector {{ package.sector|lower|replace(' ', '-')|replace('.', '-')  }}{% if sector_length >= marker_strlen or sector_length == 0 %} small{% endif %}"><a href="{{ h.url_for(controller='package', action='search', sector=package.sector) }}">{{ package.sector }}</a></li>
             </ul>
           {% endif %}
+          {% set package_type = package.type|lower %}
+          {% set icon_type = package_type|replace('geographic', 'globe')|replace('dataset', 'table')|replace('webservice', 'code')|replace('application', 'globe') %}
+          <div class="dataset-marker-type-icon">
+            <i class="icon icon-2x icon-{{ icon_type }}"></i>
+          </div>
         {% endblock %}
 
 		{# Check if the user is a member of the package orgs #}
