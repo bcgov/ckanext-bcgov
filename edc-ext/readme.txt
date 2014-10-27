@@ -78,10 +78,30 @@ CITZEDC-406	When faceted search is selected and the sort order is changed, the f
 
 PREFERENCES:
 auth-settings	edc.url
-auth-settings	edc.admin.key21. Create sysadmin users using paster command for Greg Lawrence and Daniel Edler:paster --plugin=ckan sysadmin add <user_name > -c /path/to/ckan/config/file3) Special Instructionsa) adding the ckan.api_key:
+auth-settings	edc.admin.key21. Create sysadmin users using paster command for Greg Lawrence and Daniel Edler:paster --plugin=ckan sysadmin add <user_name > -c /path/to/ckan/config/file3) gq-report installation and data load :
 
-	1) Log in as a sysadmin (doesn’t matter which, just need sysadmin privileges)
-	2) Go to that user’s dashboard (click the logged-in username in the main navigation)
-	3) Scroll down and find “API Key”.  Copy that key and use it as ckan.api_key  in .ini file
-b) copy the token.dat file in apps.bcgov/svn/edc/config/delivery/trunk/ckan to /etc/ckan/dlv/token.dat (required for ga-report extension)c) install the db tables for ga-report extension. From the src/ckanext-ga-report directory run:    $ paster initdb --config=/path/to/ckan/config/filed) add the password for the google analytics account to dlv.ini: googleanalytics.password = 
-e) copy the edc_sectors.json file in apps.bcgov/svn/edc/config/delivery/trunk/ckan to /etc/ckan/dlv/edc_sectors.jsone) add the url to sectors json file to dlv.ini after ckan.api_key : sectors_file_url = file:///etc/ckan/dlv/edc_sectors.json
+   a) Copy the token.dat file in apps.bcgov/svn/edc/config/delivery/trunk/ckan to /etc/ckan/dlv/token.dat (required for ga-report extension)
+   b) install the db tables for ga-report extension. From the src/ckanext-ga-report directory run (The virtual env must be activated):    	$ paster initdb --config=/path/to/ckan/config/file
+	Note : in case of gflags error install or update python-gflags first in your virtual env:
+        $ pip —upgrade python-gflags
+
+   c) Add google analytics configuration to the ini file :
+		##Google Analytics settings
+	googleanalytics.id = UA-7579094-2
+	googleanalytics.account = DataBC Web Statistics
+	googleanalytics.username = greg.lawrance@gov.bc.ca
+	googleanalytics.password = 
+	googleanalytics_resource_prefix = /downloads/
+	googleanalytics.domain = auto
+	googleanalytics.track_events = true
+	googleanalytics.token.filepath = /etc/ckan/dlv/token.dat
+	ga-report.period = monthly
+	ga-report.bounce_url = /
+
+   d) Add the password for the google analytics account to dlv.ini: googleanalytics.password = 
+   e) Load analytics data :
+   	$ paster loadanalytics latest --config=/path/to/ckan/config/file
+
+	Note : To load analytics data regularly this command must be added as a corn job
+
+
