@@ -43,7 +43,7 @@ CONTENT_TYPES = {
 }
 
 #By default package_list will return only the last 10 modified records
-default_limit = 10
+default_limit = 10000000000
 default_offset = 0
 
 class EDCApiController(ApiController):
@@ -107,11 +107,11 @@ class EDCApiController(ApiController):
         '''
         from ckan.lib.search import SearchError
 
-        help_str = "Returns a list of the names of top 10 most viewed datasets (packages).\n\n    " + \
+        help_str = "Return a list of the names of the site's datasets (packages).\n\n    " + \
                     ":param limit: if given, the list of datasets will be broken into pages of\n" + \
                     "        at most ``limit`` datasets per page and only one page will be returned\n" + \
                     "        at a time (optional)\n    :type limit: int\n    :param offset: when ``limit`` " + \
-                    "is given, the offset to start\n        returning packages from\n    :type offset: int\n\n" + \
+                    "is given, the offset to start returning packages from\n    :type offset: int\n\n" + \
                     "    :rtype: list of strings\n\n    "
 
         return_dict = {"help": help_str}
@@ -121,7 +121,6 @@ class EDCApiController(ApiController):
             limit = int(request.params.get('limit', default_limit))
         except ValueError:
             limit = default_limit
-
         try:
             offset = int(request.params.get('offset', default_offset))
         except ValueError:
@@ -135,13 +134,12 @@ class EDCApiController(ApiController):
                          'rows' : limit,
                          'sort' : 'views_total desc'
                         }
-
             #Use package_search to filter the list
             query = get_action('package_search')(context, data_dict)
         except SearchError, se :
             print 'Search error', str(se)
             return self._finish_bad_request()
-
+        
         result = []
         for pkg in query['results']:
             result.append(pkg['name'])
