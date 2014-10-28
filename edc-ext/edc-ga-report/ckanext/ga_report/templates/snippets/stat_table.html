@@ -1,0 +1,14 @@
+
+<table class="ga-reports-table table table-condensed table-bordered table-striped">
+    <tr>
+        <th>Name</th>
+        <th class="td-numeric">% {{ title }}</th>
+    </tr>
+    {% for name, value in items %}
+    <tr>
+        <td>{{ name }}</td>
+        <td class="td-numeric">{{ value }}</td>
+    </tr>
+    {% endfor %}
+ </table>
+

@@ -1,0 +1,19 @@
+
+
+<table class="ga-reports-table table table-condensed table-bordered table-striped">
+    <tr>
+        <th>Name</th>
+        {% if with_source %} 
+        <th>Source</th>
+        {% endif %}
+        <th>Visits</th>
+    </tr>
+    {% for name, url, source, count in items %}
+    	<tr>
+        	<td><a href="{{ url }}">{{ name }}</a></td>
+        	<td py:if="with_source">{{ source }}</td>
+        	<td class="td-numeric">{{ count }}</td>
+    	</tr>
+    {% endfor %}
+ </table>
+

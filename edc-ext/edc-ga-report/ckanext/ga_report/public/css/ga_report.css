@@ -69,3 +69,12 @@
 .tab-content {
   padding-top: 12px;
 }
+
+.container {
+	max-width : 1170px;
+}
+
+.row {
+	padding-top : 5px;
+	margin : 0px;
+}

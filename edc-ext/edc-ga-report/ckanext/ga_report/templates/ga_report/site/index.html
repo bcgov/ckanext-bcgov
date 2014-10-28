@@ -1,13 +1,7 @@
-<html xmlns:py="http://genshi.edgewall.org/"
-  xmlns:i18n="http://genshi.edgewall.org/i18n"
-  xmlns:xi="http://www.w3.org/2001/XInclude"
-  py:strip="">
+{% extends "page.html" %}
 
-  <xi:include href="../ga_util.html" />
-
-  <py:def function="page_title">Site usage</py:def>
-
-  <py:def function="optional_head">
+{% block styles %}
+  {{ super() }}
     <link rel="stylesheet" type="text/css" href="/scripts/vendor/rickshaw.min.css"/>
     <link rel="stylesheet" type="text/css" href="/css/ga_report.css?1"/>
 <!-- 
@@ -24,20 +18,23 @@
     <script type="text/javascript" src="/scripts/vendor/d3.v2.js"></script>
     <script type="text/javascript" src="/scripts/vendor/d3.layout.min.js"></script>
     <script type="text/javascript" src="/scripts/vendor/rickshaw.min.js"></script>
-  </py:def>
+{% endblock %}
 
- <py:match path="breadcrumbs">
+{%- block subtitle %}Site usage{% endblock -%}
+
+{% block breadcrumb_content %}
     <li><a href="/data/site-usage">Site Analytics</a></li>
     <li><a href="/data/site-usage">Site-wide</a></li>
-  </py:match>
+    
+{% endblock %}
 
-  <div py:match="content">
+{% block primary_content %}
     <div class="row">
+    <!--  
       <div class="col-sm-7 col-md-8 col-lg-9">
-        <py:with vars="download_link=h.url_for(controller='ckanext.ga_report.controller:GaReport',action='csv',month=c.month or 'all')">
-          <a class="btn button btn-primary btn-sm pull-right" href="${download_link}"><i class="icon-download"></i>&nbsp; Download as CSV</a>
-        </py:with>
-        <h1>Site Usage</h1>
+      	{% set download_link=h.url_for(controller='ckanext.ga_report.controller:GaReport',action='csv',month=c.month or 'all') %}
+      	<a class="btn button btn-primary btn-sm pull-right" href="{{ download_link }}"><i class="icon-download"></i>&nbsp; Download as CSV</a>
+      	<h3>Site Usage</h3>
       </div>
       <div class="col-sm-5 col-md-4 col-lg-3">
         <div class="panel panel-default">
@@ -51,6 +48,7 @@
         </div>
       </div>
     </div>
+    -->
 
     <div class="row" style="background: #fff;">
       <div class="col-md-4">
@@ -97,7 +95,7 @@
               <div class="tab-pane active" id="totals">
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
-                     ${month_selector(c.month, c.months, c.day)}
+                     {% snippet 'snippets/month_selector.html', current_moth=c.month, months=c.months, day=c.day %}
                    </form>
                    <table class="ga-reports-table table table-condensed table-bordered table-striped">
                      <tr>
@@ -105,120 +103,107 @@
                        <th class="td-numeric">Value</th>
                        <th>History</th>
                      </tr>
-                      <py:for each="name, value, graph in c.global_totals">
+                     {% for name, value, graph in c.global_totals %}
                           <tr>
-                              <td>${name}</td>
-                              <td class="td-numeric">${value}</td>
+                              <td>{{ name }}</td>
+                              <td class="td-numeric">{{ value }}</td>
                               <td class="sparkline-cell">
-                                <span class="sparkline" sparkTooltips="${','.join([x for x,y in graph])}">
-                                  ${','.join([y for x,y in graph])}
+                                <span class="sparkline" sparkTooltips="{{ h.get_graph_x(graph) }}">
+                                  {{ h.get_graph_y(graph) }}
                                 </span>
                               </td>
                           </tr>
-                      </py:for>
+                     {% endfor %}
                      </table>
               </div>
                <div class="tab-pane" id="browsers_versions">
-                   ${rickshaw_graph(c.browser_versions_graph,'browser-versions',mode='stack')}
+                     {% snippet 'snippets/rickshaw_graph.html', items_json=c.browser_versions_graph, id='browser_versions', mode='stack', colorscheme='munin' %}
                    <hr/>
                    <p>Note: Where a browser has a large number of versions, these have been grouped together.</p>
-                   <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
+                   <form class="form-inline" action="{{ h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index') }}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
-                     ${month_selector(c.month, c.months, c.day)}
+                     {% snippet 'snippets/month_selector.html', current_moth=c.month, months=c.months, day=c.day %}
                    </form>
                 <hr/>
-                   ${stat_table(c.browser_versions)}
+                     {% snippet 'snippets/stat_table.html', items=c.browser_versions, title='Views' %}
                </div>
                <div class="tab-pane" id="browsers_names">
-                   ${rickshaw_graph(c.browsers_graph,'browsers',mode='stack')}
+                     {% snippet 'snippets/rickshaw_graph.html', items_json=c.browsers_graph, id='browsers', mode='stack', colorscheme='munin' %}
                    <hr/>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
-                     ${month_selector(c.month, c.months, c.day)}
+                     {% snippet 'snippets/month_selector.html', current_moth=c.month, months=c.months, day=c.day %}
                    </form>
                 <hr/>
-                   ${stat_table(c.browsers)}
+                     {% snippet 'snippets/stat_table.html', items=c.browsers, title='Views' %}
                </div>
                <div class="tab-pane" id="os">
-                   ${rickshaw_graph(c.os_graph,'os',mode='stack')}
+                     {% snippet 'snippets/rickshaw_graph.html', items_json=c.os_graph, id='os', mode='stack', colorscheme='munin' %}
                    <hr/>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
-                     ${month_selector(c.month, c.months, c.day)}
+                     {% snippet 'snippets/month_selector.html', current_moth=c.month, months=c.months, day=c.day %}
                    </form>
                 <hr/>
-                   ${stat_table(c.os)}
+                     {% snippet 'snippets/stat_table.html', items=c.os, title='Views' %}
                </div>
                <div class="tab-pane" id="os_versions">
-                   ${rickshaw_graph(c.os_versions_graph,'os_versions',mode='stack')}
+                     {% snippet 'snippets/rickshaw_graph.html', items_json=c.os_versions_graph, id='os_versions', mode='stack', colorscheme='munin' %}
                    <hr/>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
-                     ${month_selector(c.month, c.months, c.day)}
+                     {% snippet 'snippets/month_selector.html', current_moth=c.month, months=c.months, day=c.day %}
                    </form>
                 <hr/>
-                   ${stat_table(c.os_versions)}
+                     {% snippet 'snippets/stat_table.html', items=c.os_versions, title='Views' %}
                </div>
               <div class="tab-pane" id="social_referrals_totals">
                   <p>Number of visits that were referred from social networks</p>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
-                     ${month_selector(c.month, c.months, c.day)}
+                     {% snippet 'snippets/month_selector.html', current_moth=c.month, months=c.months, day=c.day %}
                    </form>
-                  ${social_table(c.social_referrer_totals)}
+                   {% snippet 'snippets/social_table.html', items=c.social_referrer_totals, with_source=False %}
               </div>
               <div class="tab-pane" id="social_networks">
-                   ${rickshaw_graph(c.social_networks_graph, 'social_networks',mode='stack')}
+                     {% snippet 'snippets/rickshaw_graph.html', items_json=c.social_networks_graph, id='social_networks', mode='stack', colorscheme='munin' %}
                    <hr/>
                   <p>Percentage of visits that were referred from these social networks</p>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
-                     ${month_selector(c.month, c.months, c.day)}
+                     {% snippet 'snippets/month_selector.html', current_moth=c.month, months=c.months, day=c.day %}
                    </form>
                 <hr/>
-                   ${stat_table(c.social_networks, 'Visits')}
+                     {% snippet 'snippets/stat_table.html', items=c.social_networks, title='Visits' %}
               </div>
               <div class="tab-pane" id="languages">
-                   ${rickshaw_graph(c.languages_graph,'languages',mode='stack')}
+                     {% snippet 'snippets/rickshaw_graph.html', items_json=c.languages_graph, id='languages', mode='stack', colorscheme='munin' %}
                    <hr/>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
-                     ${month_selector(c.month, c.months, c.day)}
+                     {% snippet 'snippets/month_selector.html', current_moth=c.month, months=c.months, day=c.day %}
                    </form>
                 <hr/>
-                   ${stat_table(c.languages)}
+                     {% snippet 'snippets/stat_table.html', items=c.languages, title='Views' %}
               </div>
               <div class="tab-pane" id="country">
-                   ${rickshaw_graph(c.country_graph,'country',mode='stack')}
+                     {% snippet 'snippets/rickshaw_graph.html', items_json=c.country_graph, id='country', mode='stack', colorscheme='munin' %}
                    <hr/>
                    <form class="form-inline" action="${h.url_for(controller='ckanext.ga_report.controller:GaReport',action='index')}" method="get">
                      <h4 class="ga-reports-heading">Show stats table for:</h4>
-                     ${month_selector(c.month, c.months, c.day)}
+                     {% snippet 'snippets/month_selector.html', current_moth=c.month, months=c.months, day=c.day %}
                    </form>
                 <hr/>
-                   ${stat_table(c.country)}
+                     {% snippet 'snippets/stat_table.html', items=c.country, title='Views' %}
               </div>
              </div>
            </div>
        </div>
       </div>
     </div>
-
-  </div>
-
-
-  <py:def function="optional_footer">
-    <script type="text/javascript">
-      $(function() {
-        CKAN.GA_Reports.bind_sparklines();
-        CKAN.GA_Reports.bind_sidebar();
-        CKAN.GA_Reports.bind_month_selector();
-      });
-    </script>
-  </py:def>
-
-  <xi:include href="../../layout.html" />
-</html>
+    {% resource 'ga_report/ga_index.js' %}
+{% endblock %}
 
 
-
+{% block secondary %}
+{% endblock %}

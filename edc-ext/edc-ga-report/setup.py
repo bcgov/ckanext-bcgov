@@ -4,7 +4,7 @@ import sys, os
 version = '0.1'
 
 setup(
-	name='edc-ga-report',
+	name='ckanext-ga-report',
 	version=version,
 	description="GA reporting for CKAN",
 	long_description="""\

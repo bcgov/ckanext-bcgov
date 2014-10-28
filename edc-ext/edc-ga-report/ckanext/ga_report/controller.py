@@ -412,6 +412,8 @@ class GaDatasetReport(BaseController):
         return render('ga_report/publisher/read.html')
 
 def _to_rickshaw(data, percentageMode=False):
+    import pprint
+#    pprint.pprint(data)
     if data==[]:
         return data
     # x-axis is every month in c.months. Note that data might not exist
@@ -421,12 +423,13 @@ def _to_rickshaw(data, percentageMode=False):
     x_axis = x_axis[:-1] # Remove latest month
     totals = {}
     for series in data:
-        series['data'] = []
+        series["data"] = []
         for x_string in x_axis:
             x = _get_unix_epoch( x_string )
-            y = series['raw'].get(x_string,0)
-            series['data'].append({'x':x,'y':y})
+            y = series["raw"].get(x_string,0)
+            series["data"].append({"x":x,"y":y})
             totals[x] = totals.get(x,0)+y
+    pprint.pprint(series)
     if not percentageMode:
         return data
     # Turn all data into percentages
@@ -435,11 +438,11 @@ def _to_rickshaw(data, percentageMode=False):
     raw_data = data
     data = []
     for series in raw_data:
-        for point in series['data']:
-            percentage = (100*float(point['y'])) / totals[point['x']]
+        for point in series["data"]:
+            percentage = (100*float(point["y"])) / totals[point["x"]]
             if not (series in data) and percentage>THRESHOLD:
                 data.append(series)
-            point['y'] = percentage
+            point["y"] = percentage
     others = [ x for x in raw_data if not (x in data) ]
     if len(others):
         data_other = []
@@ -447,11 +450,11 @@ def _to_rickshaw(data, percentageMode=False):
             x = _get_unix_epoch(x_axis[i])
             y = 0
             for series in others:
-                y += series['data'][i]['y']
-            data_other.append({'x':x,'y':y})
+                y += series["data"][i]["y"]
+            data_other.append({"x":x,"y":y})
         data.append({
-            'name':'Other',
-            'data': data_other
+            "name":"Other",
+            "data": data_other
             })
     return data
 

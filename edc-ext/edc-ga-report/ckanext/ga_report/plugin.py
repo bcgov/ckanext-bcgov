@@ -6,7 +6,9 @@ from ckan.plugins import implements, toolkit
 from ckanext.ga_report.helpers import (most_popular_datasets,
                                        popular_datasets,
                                        single_popular_dataset,
-                                       month_option_title)
+                                       month_option_title,
+                                       get_graph_x,
+                                       get_graph_y)
 
 log = logging.getLogger('ckanext.ga-report')
 
@@ -18,7 +20,8 @@ class GAReportPlugin(p.SingletonPlugin):
     def update_config(self, config):
         toolkit.add_template_directory(config, 'templates')
         toolkit.add_public_directory(config, 'public')
-
+        toolkit.add_resource('fanstatic', 'ga_report')
+        
     def get_helpers(self):
         """
         A dictionary of extra helpers that will be available to provide
@@ -29,7 +32,9 @@ class GAReportPlugin(p.SingletonPlugin):
             'popular_datasets': popular_datasets,
             'most_popular_datasets': most_popular_datasets,
             'single_popular_dataset': single_popular_dataset,
-            'month_option_title': month_option_title
+            'month_option_title': month_option_title,
+            'get_graph_x': get_graph_x,
+            'get_graph_y': get_graph_y
         }
 
     def after_map(self, map):
