@@ -115,4 +115,8 @@ auth-settings	edc.admin.key21. Create sysadmin users using paster command for
 
 	Note : To load analytics data regularly this command must be added as a corn job
 
-
+4) Page-view tracking corn job :
+	Add the following commands as a corn job to update the page-view tracking information.
+	55 * * * * /path-to-ckan-bin/paster --plugin=ckan update -c /path-to-ini-file && /path-to-ckan-bin/paster --plugin=ckan search-index rebuild -r -c /path-to-ini-file
+
+	Note: This updates the information every 55 minutes. Rebuilding the search index could be expensive and you may need to change the page-view refreshing schedule. 
