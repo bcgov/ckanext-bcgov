@@ -61,7 +61,7 @@ class DownloadAnalytics(object):
 
 
     def for_date(self, for_date):
-        assert isinstance(since_date, datetime.datetime)
+        assert isinstance(for_date, datetime.datetime)
         periods = [] # (period_name, period_complete_day, start_date, end_date)
         if self.period == 'monthly':
             first_of_the_months_until_now = []
@@ -179,7 +179,8 @@ class DownloadAnalytics(object):
         data = collections.defaultdict(list)
         rows = results.get('rows',[])
         for row in rows:
-            url = _normalize_url('http:/' + row[0])
+            #url = _normalize_url('http:/' + row[0])
+            url = row[0]
             data[url].append( (row[1], int(row[2]),) )
         ga_model.update_social(period_name, data)
 
@@ -215,12 +216,16 @@ class DownloadAnalytics(object):
         log.info(self.profile_id)
         log.info(results)
         log.info(self.profile_id)
+        
         packages = []
         log.info("There are %d results" % results['totalResults'])
         for entry in results.get('rows'):
             (loc,pageviews,visits) = entry
-            url = _normalize_url('http:/' + loc) # strips off domain e.g. www.data.gov.uk or data.gov.uk
+            
+            #url = _normalize_url('http:/' + loc) # strips off domain e.g. www.data.gov.uk or data.gov.uk
+            url = loc 
 
+            
             if not url.startswith('/dataset/') and not url.startswith('/organization/'):
                 # filter out strays like:
                 # /data/user/login?came_from=http://data.gov.uk/dataset/os-code-point-open

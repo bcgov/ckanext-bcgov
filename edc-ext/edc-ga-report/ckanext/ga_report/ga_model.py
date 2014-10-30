@@ -114,7 +114,8 @@ def _normalize_url(url):
     >>> normalize_url('http://data.gov.uk/dataset/weekly_fuel_prices')
     '/dataset/weekly_fuel_prices'
     '''
-    return '/' + '/'.join(url.split('/')[3:])
+    #return '/' + '/'.join(url.split('/')[3:])
+    return url
 
 
 def _get_package_and_publisher(url):
@@ -130,7 +131,7 @@ def _get_package_and_publisher(url):
                 return dataset_ref,publisher_groups[0].name
         return dataset_ref, None
     else:
-        publisher_match = re.match('/publisher/([^/]+)(/.*)?', url)
+        publisher_match = re.match('/organization/([^/]+)(/.*)?', url)
         if publisher_match:
             return None, publisher_match.groups()[0]
     return None, None

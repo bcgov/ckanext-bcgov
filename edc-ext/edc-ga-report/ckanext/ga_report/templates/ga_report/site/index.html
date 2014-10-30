@@ -29,6 +29,14 @@
 {% endblock %}
 
 {% block primary_content %}
+	<div class="row">
+      <div class="ga-header">
+      	{% set download_link=h.url_for(controller='ckanext.ga_report.controller:GaReport',action='csv',month=c.month or 'all') %}
+      	<a class="btn button btn-primary btn-sm pull-right" href="{{ download_link }}"><i class="icon-download"></i>&nbsp; Download as CSV</a>
+      	<h3>Site Usage</h3>
+      </div>
+    </div>
+    <hr class="ga-report-divider" />
     <div class="row">
     <!--  
       <div class="col-sm-7 col-md-8 col-lg-9">

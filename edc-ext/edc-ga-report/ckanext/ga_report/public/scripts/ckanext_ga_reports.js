@@ -23,7 +23,6 @@ CKAN.GA_Reports.render_rickshaw = function( css_name, data, mode, colorscheme ) 
     }
     var myLegend = $('<div id="legend_'+css_name+'"/>').appendTo(graphLegends);
 
-    console.log("Testing graph legends");
     var palette = new Rickshaw.Color.Palette( { scheme: colorscheme } );
     $.each(data, function(i, object) {
         object['color'] = palette.color();
@@ -66,7 +65,6 @@ CKAN.GA_Reports.bind_sparklines = function() {
    * Sparkline graphs should be drawn.
    * Note that they cannot be drawn sooner.
    */
-  console.log("Testing");
   var created = false;
   $('a[href="#totals"]').on(
     'shown', 
@@ -114,6 +112,7 @@ CKAN.GA_Reports.bind_sidebar = function() {
       $('#graph-legend-container > *').hide();
       $('#graph-legend-container .instructions').show();
       $(legend_name).show();
+      $("#graph-legend-container").show();
     }
   );
   /* The first tab might already have been shown */

@@ -244,7 +244,7 @@ class GaDatasetReport(BaseController):
         '''
         c.month = month if not month == 'all' else ''
         response.headers['Content-Type'] = "text/csv; charset=utf-8"
-        response.headers['Content-Disposition'] = str('attachment; filename=publishers_%s.csv' % (month,))
+        response.headers['Content-Disposition'] = str('attachment; filename=organizations_%s.csv' % (month,))
 
         writer = csv.writer(response)
         writer.writerow(["Publisher Title", "Publisher Name", "Views", "Visits", "Period Name"])
@@ -269,7 +269,7 @@ class GaDatasetReport(BaseController):
         if id != 'all':
             c.publisher = model.Group.get(id)
             if not c.publisher:
-                abort(404, 'A publisher with that name could not be found')
+                abort(404, 'An organization with that name could not be found')
 
         packages = self._get_packages(publisher=c.publisher, month=c.month)
         response.headers['Content-Type'] = "text/csv; charset=utf-8"
@@ -359,6 +359,8 @@ class GaDatasetReport(BaseController):
         Lists the most popular datasets for a publisher (or across all publishers)
         '''
         count = 20
+        
+        print 'ID : ', id
 
         c.publishers = _get_publishers()
 
@@ -366,7 +368,7 @@ class GaDatasetReport(BaseController):
         if id and id != 'all':
             c.publisher = model.Group.get(id)
             if not c.publisher:
-                abort(404, 'A publisher with that name could not be found')
+                abort(404, 'An organization with that name could not be found')
             c.publisher_name = c.publisher.name
         c.top_packages = [] # package, dataset_views in c.top_packages
 
@@ -384,7 +386,7 @@ class GaDatasetReport(BaseController):
         month = c.month or 'All'
         c.publisher_page_views = 0
         q = model.Session.query(GA_Url).\
-            filter(GA_Url.url=='/publisher/%s' % c.publisher_name)
+            filter(GA_Url.url=='/organization/%s' % c.publisher_name)
         entry = q.filter(GA_Url.period_name==c.month).first()
         c.publisher_page_views = entry.pageviews if entry else 0
 
@@ -425,6 +427,7 @@ def _to_rickshaw(data, percentageMode=False):
     for series in data:
         series["data"] = []
         for x_string in x_axis:
+            print "x_string   ", x_string
             x = _get_unix_epoch( x_string )
             y = series["raw"].get(x_string,0)
             series["data"].append({"x":x,"y":y})
