@@ -251,7 +251,7 @@ class DownloadAnalytics(object):
             log.info('Downloading analytics for %s' % f.split('_')[1])
             getattr(self, f)(start_date, end_date, period_name, period_complete_day)
 
-    def _get_results(result_data, f):
+    def _get_results(self, result_data, f):
         data = {}
         for result in result_data:
             key = f(result)
@@ -285,7 +285,7 @@ class DownloadAnalytics(object):
 
             return json.loads(r.content)
         except Exception, e:
-              log.exception(e)
+            log.exception(e)
 
         return dict(url=[])
 
@@ -342,6 +342,7 @@ class DownloadAnalytics(object):
         # Bounces from / or another configurable page.
         path = '/%s%s' % (config.get('googleanalytics.account'),
                           config.get('ga-report.bounce_url', '/'))
+#        path = '/'
 
         try:
             # Because of issues of invalid responses, we are going to make these requests
@@ -654,6 +655,9 @@ class DownloadAnalytics(object):
 
 
         result_data = results.get('rows')
+        
+        if not result_data : return
+        
         data = {}
         for result in result_data:
             data[result[0]] = data.get(result[0], 0) + int(result[2])
