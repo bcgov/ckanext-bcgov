@@ -252,7 +252,11 @@ def package_update(context, data_dict):
     data_dict['resources'] = data_dict.get('resources', old_data.get('resources'))
     
     #Set the value of iso_topic_string for solr search
+    #In order this to work, the iso_topic_cat must always be given as a list 
     iso_topic_cat = data_dict.get('iso_topic_cat', [])
+    if isinstance(iso_topic_cat, basestring):  
+        iso_topic_cat = [iso_topic_cat]  
+          
     data_dict['iso_topic_string'] = ', '.join(iso_topic_cat)
     
     #Set the package last modified date

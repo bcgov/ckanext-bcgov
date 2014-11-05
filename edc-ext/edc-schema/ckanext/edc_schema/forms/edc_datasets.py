@@ -148,6 +148,7 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
     def show_package_schema(self):
         cnvrt_from_tags = toolkit.get_converter('convert_from_tags')
         schema = super(EDC_GeoSpatialForm, self).show_package_schema()
+        schema['tags']['__extras'].append(toolkit.get_converter('free_tags_only'))
         schema.update( {
                         'purpose': [ convert_from_extras,ignore_missing ],
                         'layer_name' : [convert_from_extras, ignore_missing],
@@ -253,6 +254,7 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
     def show_package_schema(self):
         cnvrt_from_tags = toolkit.get_converter('convert_from_tags')
         schema = super(EDC_NonGeoSpatialForm, self).show_package_schema()
+        schema['tags']['__extras'].append(toolkit.get_converter('free_tags_only'))
         schema.update( {
                         'url': [not_empty, unicode],
                         'purpose': [ convert_from_extras,ignore_missing ],

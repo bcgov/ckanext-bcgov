@@ -9,7 +9,7 @@ from base import (site_url, api_key)
 
 print "Updating records ..."
 try:
-    request = urllib2.Request(site_url + '/api/3/action/package_list?limit=100000')
+    request = urllib2.Request(site_url + '/api/3/action/package_list?limit=1000000')
     request.add_header('Authorization', api_key)
     response = urllib2.urlopen(request)
     assert response.code == 200
