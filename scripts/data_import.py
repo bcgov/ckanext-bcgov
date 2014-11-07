@@ -219,8 +219,8 @@ def execute_odsi_query(con):
                 "AND DBC_CS.CREATOR_SECTOR_ID=DBC_SO.CREATOR_SECTOR_ID " + \
                 "AND DBC_DC_MIN.RESOURCE_SET_ID(+)=DBC_RS.RESOURCE_SET_ID " + \
                 "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "  #+ \
-#                "AND DBC_RS.RESOURCE_SET_ID = 179706 "
 #                "AND DBC_RT.RESOURCE_TYPE_NAME ='Geospatial Dataset'" #+ \
+#                "AND DBC_RS.RESOURCE_SET_ID = 179706 "
 
 
     cur = con.cursor()
@@ -229,7 +229,7 @@ def execute_odsi_query(con):
 
     return data
 
-def import_odc_records(con):
+def import_odsi_records(con):
 
     from validate_email import validate_email
     
@@ -434,7 +434,7 @@ def import_odc_records(con):
                 #Adding record publish date
                 edc_record['record_publish_date'] = result[17]
 
-            #elif edc_record['edc_state'] == 'Published' :
+            #elif edc_record['edc_state'] == 'PUBLISHED' :
                 #edc_record['record_publish_date'] = str(datetime.date.today())
                 
             if edc_record.get('type') == 'Geographic' or edc_record.get('type') == 'Dataset':
@@ -588,7 +588,11 @@ def import_odc_records(con):
                 edc_record['metadata_standard_name'] = 'North American Profile of ISO 19115-1:2014 - Geographic information - Metadata (NAP-Metadata)'
 
                 edc_record['metadata_standard_version'] = 'n/a'
-
+                
+            #Adding iso_topic_string by joining the list of iso-topic categories     
+            edc_record['iso_topic_string'] = ', '.join(edc_record.get('iso_topic_cat',[]))
+            
+            
             record_id = result[0]
 
             resource_data = None
@@ -926,7 +930,7 @@ def save_discovery_records(con, discovery_data_filename):
             edc_record = {}
 
             #---------------------------------------------------------------------<< Record state >>-----------------------------------------------------------------------
-            state_convert_dict = {'Draft': 'DRAFT', 'Approve': 'PENDING PUBLISH', 'Published': 'PUBLISHED', 'ZPublished': 'ARCHIVED'}
+            state_convert_dict = {'Draft': 'DRAFT', 'Approve': 'PENDING PUBLISH', 'Published': 'PUBLISHED', 'ZPublished': 'PUBLISHED'}
             edc_record['edc_state'] = state_convert_dict.get(result[3])
 
 
@@ -962,8 +966,7 @@ def save_discovery_records(con, discovery_data_filename):
             
             #-------------------------------------------------------------------<< ISO topic category >>---------------------------------------------------------------------
             iso_topic_cat = (result[29] or 'unknown').split(',')
-            if edc_record.get('type') == 'Geographic' or edc_record.get('type') == 'Dataset':
-                edc_record['iso_topic_cat'] = iso_topic_cat
+            edc_record['iso_topic_cat'] = iso_topic_cat
 
             #-------------------------------------------------------------------------<< Keywords >>-------------------------------------------------------------------------
             # Extract the keywords(tags) names and add the list of tags to the record.
@@ -1084,7 +1087,7 @@ def save_discovery_records(con, discovery_data_filename):
                 edc_record['record_create_date'] = result[30]
 
             #Add the publish date for records with publish state.
-            if edc_record.get('edc_state') == 'Published' :
+            if edc_record.get('edc_state') == 'PUBLISHED' :
                 edc_record['record_publish_date'] = str(datetime.date.today())
 
             if result[50] :
@@ -1403,6 +1406,9 @@ def import_discovery_records():
                  
         edc_record['owner_org'] = edc_record.get('sub_org')
         
+        #Adding iso_topic_string by joining the list of iso-topic categories     
+        edc_record['iso_topic_string'] = ', '.join(edc_record.get('iso_topic_cat',[]))
+        
         #Adding contact organization and branch
         contacts = edc_record.get('contacts', [])
         updated_contacts = []     
@@ -1536,7 +1542,7 @@ def import_data():
     try:
         if data_source.lower() == 'odsi' :
             con =  get_connection('odsi')
-            import_odc_records(con)
+            import_odsi_records(con)
         elif data_source.lower() == 'discovery' :
             import_discovery_records()
 #            find_missing_orgs(con)

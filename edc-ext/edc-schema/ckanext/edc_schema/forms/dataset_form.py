@@ -179,7 +179,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                         'odsi_uid' : [ignore_missing, convert_to_extras],
                         'metastar_uid' : [ignore_missing, convert_to_extras],
                         'feature_types' : feature_type_schema(),
-                        'edc_state' : [ignore_missing, convert_to_extras],
+                        'edc_state' : [not_empty, convert_to_extras],
 #                        'url' : [url_validator, not_empty],
                         'license_id' : [not_empty],
                         'more_info' : more_info_schema(),

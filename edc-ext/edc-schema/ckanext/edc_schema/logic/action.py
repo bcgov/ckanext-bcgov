@@ -44,7 +44,7 @@ def edc_package_update(context, input_data_dict):
     '''
     from ckan.lib.search import SearchError
 
-    pprint.pprint(input_data_dict)
+    #pprint.pprint(input_data_dict)
     # first, do the search
     q = 'object_name:' + input_data_dict.get("object_name")
     fq = ''
@@ -66,7 +66,7 @@ def edc_package_update(context, input_data_dict):
 
     except SearchError, se :
         print 'Search error', str(se)
-        pprint.pprint('Search error!')
+        #pprint.pprint('Search error!')
         raise SearchError(str(se))
 
     #check the search results - there can be only 1!!

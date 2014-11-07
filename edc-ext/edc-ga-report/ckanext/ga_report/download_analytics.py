@@ -444,6 +444,9 @@ class DownloadAnalytics(object):
             results = dict(url=[])
 
         result_data = results.get('rows')
+        import pprint
+        print "Download data: "
+        pprint.pprint(result_data)
         if not result_data:
             # We may not have data for this time period, so we need to bail
             # early.

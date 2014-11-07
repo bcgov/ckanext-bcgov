@@ -356,6 +356,11 @@ def get_common_records():
     common_records_uid = []
 
     for result in data:
+        
+        #Check if the status of the record is draft :
+        edc_state = result[21] or 'DRAFT'
+        
+        if edc_state == 'DRAFT' : continue
 
         # If this is record exists in discovery add it to the list
         if result[9] or result[22]:

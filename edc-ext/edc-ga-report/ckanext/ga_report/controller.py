@@ -360,8 +360,6 @@ class GaDatasetReport(BaseController):
         '''
         count = 20
         
-        print 'ID : ', id
-
         c.publishers = _get_publishers()
 
         id = request.params.get('publisher', id)
@@ -414,8 +412,6 @@ class GaDatasetReport(BaseController):
         return render('ga_report/publisher/read.html')
 
 def _to_rickshaw(data, percentageMode=False):
-    import pprint
-#    pprint.pprint(data)
     if data==[]:
         return data
     # x-axis is every month in c.months. Note that data might not exist
@@ -427,12 +423,10 @@ def _to_rickshaw(data, percentageMode=False):
     for series in data:
         series["data"] = []
         for x_string in x_axis:
-            print "x_string   ", x_string
             x = _get_unix_epoch( x_string )
             y = series["raw"].get(x_string,0)
             series["data"].append({"x":x,"y":y})
             totals[x] = totals.get(x,0)+y
-    pprint.pprint(series)
     if not percentageMode:
         return data
     # Turn all data into percentages
