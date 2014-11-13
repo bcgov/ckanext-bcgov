@@ -17,3 +17,9 @@
 #instruction => https://github.com/ckan/ckanext-disqus/blob/release-v2.0/README.rst
 #wget url: https://github.com/ckan/ckanext-disqus/archive/release-v2.0.zip
 #git url:  https://github.com/ckan/ckanext-disqus.git
+
+##ckanext-googleanalytics
+#version stable
+#instruction => https://github.com/ckan/ckanext-googleanalytics/blob/stable/README.rst
+#wget url: https://github.com/ckan/ckanext-googleanalytics/archive/stable.zip
+#git url:  https://github.com/ckan/ckanext-googleanalytics.git
