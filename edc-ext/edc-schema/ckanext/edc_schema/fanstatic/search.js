@@ -52,13 +52,20 @@
     		});
     	}
     });
-
+    
     $(document).on('typeahead:selected', function(e, suggestion, dataset) {
       var name = suggestion.name;
       window.location.href = window.location.protocol+"//"+window.location.host + '/dataset/' + name;
     });
-
-
+    
+    $("#btn-search-submit").on('click', function(){    
+    	var search_query = $("#field-search-query").val();
+    	
+    	if (search_query) {
+    		$('#field-order-by').val('score desc, record_publish_date desc');
+    	}
+    });
+    
 })(jQuery);
 
 
