@@ -42,7 +42,7 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
           {% set package_type = package.type|lower %}
           {% set icon_type = package_type|replace('geographic', 'globe')|replace('dataset', 'table')|replace('webservice', 'code')|replace('application', 'cogs') %}
           <div class="dataset-marker-type-icon">
-            <i class="icon icon-2x icon-{{ icon_type }}"></i>
+            <a href="{{ h.url_for(controller='package', action='search', type=package.type) }}"><i class="icon icon-2x icon-{{ icon_type }}"></i></a>
           </div>
         {% endblock %}
 
