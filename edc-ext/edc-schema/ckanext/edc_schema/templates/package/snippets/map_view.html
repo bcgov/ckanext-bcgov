@@ -34,10 +34,10 @@
         <h4>Dataset Extent</h4>
         <table class="table extent-table">
           <tr>
-            <td>Latitude: </td> <td>{{ pkg.south_bound_latitude }}&deg; to {{ pkg.north_bound_latitude }}&deg;</td>
+            <td>Latitude: </td> <td>{{ '%0.1f' % pkg.south_bound_latitude|float }}&deg; to {{ '%0.1f' % pkg.north_bound_latitude|float }}&deg;</td>
           </tr>
           <tr>
-            <td>Longitude: </td><td>{{ pkg.west_bound_longitude }}&deg; to {{ pkg.east_bound_longitude }}&deg;</td>
+            <td>Longitude: </td><td>{{ '%0.1f' % pkg.west_bound_longitude|float }}&deg; to {{ '%0.1f' % pkg.east_bound_longitude|float }}&deg;</td>
           </tr>
         </table>
       </div>
