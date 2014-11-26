@@ -178,11 +178,22 @@ def edc_package_update_bcgw(context, input_data_dict):
         package_dict = get_action('package_show')(context, {'id': results[0]['id']})
         #pprint.pprint('*********  package before update')
         #pprint.pprint(package_dict)
-        package_dict['details'] = input_data_dict.get("details")
-        package_dict['object_short_name'] = input_data_dict.get("object_short_name")
-        package_dict['object_table_comments'] = input_data_dict.get("object_table_comments")
-        if (package_dict['edc_state'] != 'ARCHIVED'):
-            update = get_action('package_update')(context, package_dict)
+        
+        #Check if input_data has been modified and is not the same as package data
+        data_changed = True
+        current_details = package_dict.get('details')
+        curent_obj_short_name = package_dict.get('object_short_name')
+        current_obj_table_comments = package_dict.get('object_table_comments')
+        
+        if current_details and curent_obj_short_name and current_obj_table_comments :
+            if current_details == input_data_dict.get("details") and curent_obj_short_name == input_data_dict.get("object_short_name") and current_obj_table_comments == input_data_dict.get("object_table_comments") :
+                data_changed == False
+        if data_changed :
+            package_dict['details'] = input_data_dict.get("details")
+            package_dict['object_short_name'] = input_data_dict.get("object_short_name")
+            package_dict['object_table_comments'] = input_data_dict.get("object_table_comments")
+            if (package_dict['edc_state'] != 'ARCHIVED'):
+                update = get_action('package_update')(context, package_dict)
         
         #pprint.pprint('*********  package after update')
         #pprint.pprint(update)
