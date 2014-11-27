@@ -1157,7 +1157,7 @@ def save_discovery_records(con, discovery_data_filename):
             is_bcgw_record = False
             if storage_location and 'LRDW' in storage_location :
                 #storage_location = "BCGW Data Store"
-                resource_rec['resource_storage_location'] = 'resource_storage_location'
+                resource_rec['resource_storage_location'] = storage_location
                 is_bcgw_record = True
             else :
                 resource_rec['resource_storage_location'] = 'External'
