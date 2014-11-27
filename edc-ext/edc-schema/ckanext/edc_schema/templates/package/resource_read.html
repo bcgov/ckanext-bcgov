@@ -30,7 +30,7 @@
             {% endif %}
             {% if res.url %}
               <li>
-                <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}" onclick="var that=this;_gaq.push(['_trackEvent','resource','download','{{ res.url }}',0,true]);setTimeout(function(){location.href=that.href;},200);return false;">
+                <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}" onclick="var that=this;ga('send','event', 'resource','download','{{ res.url }}');setTimeout(function(){location.href=that.href;},200);return false;">
                   {% if res.resource_type in ('listing', 'service') %}
                     <i class="icon-eye-open"></i> {{ _('View') }}
                   {% elif  res.resource_type == 'api' %}
