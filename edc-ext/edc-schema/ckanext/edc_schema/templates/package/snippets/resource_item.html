@@ -6,7 +6,7 @@
 
 <li class="resource-item" data-id="{{ res.id }}">
   {% block resource_item_title %}
-  <a class="heading" href="{{ res.url }}" title="{{ res.name or res.description }}" onclick="var that=this;_gaq.push(['_trackEvent','resource','download','{{ res.url }}',0,true]);setTimeout(function(){location.href=that.href;},200);return false;">
+  <a class="heading" href="{{ res.url }}" title="{{ res.name or res.description }}" onclick="var that=this;ga('send','event', 'resource','download','{{ res.url }}');setTimeout(function(){location.href=that.href;},200);return false;">
     {{ h.resource_display_name(res) | truncate(50) }}<span class="format-label" property="dc:format" data-format="{{ res.format.lower() or 'data' }}">{{ res.format }}</span>
     {{ h.popular('views', res.tracking_summary.total, min=10) }}
   </a>
