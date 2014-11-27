@@ -43,7 +43,7 @@ CONTENT_TYPES = {
 }
 
 #By default package_list will return only the last 10 modified records
-default_limit = 10000000000
+default_limit = 100000000
 default_offset = 0
 
 class EDCApiController(ApiController):
@@ -317,7 +317,18 @@ class EDCApiController(ApiController):
             error_dict['__type'] = 'Authorization Error'
             return_dict['error'] = error_dict
             return self._finish(200, return_dict, content_type='json')
-             
+
+    def __get_vocabulary_list(self, context, ver):
+        if c.userobj and c.userobj.sysadmin == True:
+            return super(EDCApiController, self).action('vocabulary_list', ver)
+        else :
+            return_dict = {}
+            return_dict['success'] = False
+            error_dict = {"mesage" : "Access denied." }
+            error_dict['__type'] = 'Authorization Error'
+            return_dict['error'] = error_dict
+            return self._finish(200, return_dict, content_type='json')
+        
     
     def action(self, logic_function, ver=None):
         import ckanext.edc_schema.logic.action as edc_action
@@ -362,6 +373,8 @@ class EDCApiController(ApiController):
         elif logic_function == 'current_package_list_with_resources' :
             return self.__get_package_list_with_resources(context, ver)
         elif logic_function == 'recently_changed_packages_activity_list' :
-            return self.__get_recently_changed_packages_activity_list(context, ver)           
+            return self.__get_recently_changed_packages_activity_list(context, ver) 
+        elif logic_function == 'vocabulary_list' :
+            return self.__get_vocabulary_list(context, ver)          
         else :
             return super(EDCApiController, self).action(logic_function, ver)
