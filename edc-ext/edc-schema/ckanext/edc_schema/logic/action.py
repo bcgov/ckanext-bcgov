@@ -187,7 +187,7 @@ def edc_package_update_bcgw(context, input_data_dict):
         
         if current_details and curent_obj_short_name and current_obj_table_comments :
             if current_details == input_data_dict.get("details") and curent_obj_short_name == input_data_dict.get("object_short_name") and current_obj_table_comments == input_data_dict.get("object_table_comments") :
-                data_changed == False
+                data_changed = False
         if data_changed :
             package_dict['details'] = input_data_dict.get("details")
             package_dict['object_short_name'] = input_data_dict.get("object_short_name")
