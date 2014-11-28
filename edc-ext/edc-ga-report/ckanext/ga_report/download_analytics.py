@@ -16,7 +16,7 @@ log = logging.getLogger('ckanext.ga-report')
 FORMAT_MONTH = '%Y-%m'
 MIN_VIEWS = 50
 MIN_VISITS = 20
-MIN_DOWNLOADS = 10
+MIN_DOWNLOADS = 1
 
 class DownloadAnalytics(object):
     '''Downloads and stores analytics info'''
