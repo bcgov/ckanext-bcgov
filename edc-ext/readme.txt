@@ -1,10 +1,12 @@
 ########################################################################### EDC/CKAN v.0.9.0_0009## This document constitutes the delivery instructions for ## K.Mamakani, HighwayThreeSolutions, Dec. 02, 2014##########################################################################1) List of changes:
    Key	                                        Summary
 --------------------------------------------------------------------------------------------------------
-CITZEDC-483	Metastar EDC_METADATA table has some invalid column mappings
-CITZEDC-515	Format Dataset Extent Values to 1 decimal place
-CITZEDC-271	User access to site analytics / usage - views and download statistics
+CITZEDC-523	Error on add resource page causes loss of context for resource
+CITZEDC-520	Modify MPCM query to create iMapBC links from datasets
 CITZEDC-517	Restrict Vocabulary List Response api to sysadmin users only
+CITZEDC-515	Format Dataset Extent Values to 1 decimal place
+CITZEDC-483	Metastar EDC_METADATA table has some invalid column mappings
+CITZEDC-271	User access to site analytics / usage - views and download statistics
 CITZEDC-223	Update order by select list on dataset search page
 2) Installation Instructions:1.	Activate virtual env$ . /usr/lib/ckan/default/bin/activate2.	Clean and initialize database$ cd /usr/lib/ckan/default/src/ckan$ paster db clean -c /etc/ckan/default/development.ini$ paster db init -c /etc/ckan/default/development.ini3.	Setup postgis database(Jira ticket 190)•	switch to root user$ su•	Make sure that the following line in  is commented out:DROP TABLE spatial_ref_sys;$ su - postgres•	Uninstall postgis database objects :$ psql -d ckan_default -f /usr/pgsql-9.2/share/contrib/postgis-2.1/uninstall_postgis.sql•	install postgis database :$ psql -d ckan_default -f /usr/pgsql-9.2/share/contrib/postgis-2.1/postgis.sql$ psql -d ckan_default -f /usr/pgsql-9.2/share/contrib/postgis-2.1/spatial_ref_sys.sql•	Alter postgis tables :$ psql$ postgres=# \c ckan_default$ ckan_default=#  ALTER TABLE spatial_ref_sys OWNER TO ckan_default;$ ckan_default=#  ALTER TABLE geometry_columns OWNER TO ckan_default;$ ckan_default=#  \q•	Check if postgis database setup is done properly :$ psql -d ckan_default -c "SELECT postgis_full_version()"	4.	back to virtual environment$ exit$ exit 5.	Create sysadmin account(s)$ paster  sysadmin add <username> -c /etc/ckan/default/development.ini6.	Update config file (if there are any changes)
 	Note: Add admin api key to the ini file as ckan.api_key 7.	 Fetch source code changes from SVN8.	Install plugins and restart apacheFor each extension cd to extension’s  root folder and run$ Python setup.py9. Copy the edc_sectors.json file in apps.bcgov/svn/edc/config/delivery/trunk/ckan to /etc/ckan/dlv/edc_sectors.json
