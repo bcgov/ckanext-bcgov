@@ -1,6 +1,6 @@
 {% import 'macros/form.html' as form %}
 
-{% set current_state = data.edc_state or _('Draft') %}
+{% set current_state = data.edc_state or _('DRAFT') %}
 {% set archived = current_state == "ARCHIVED" %}
 {% set action = c.form_action or '' %}
 {% set record_type = data.type or c.record_type %}

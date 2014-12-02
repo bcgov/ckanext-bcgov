@@ -118,18 +118,6 @@ def get_username(id):
         #No vocabulary exist with the given vocabulary id.
         return None
 
-def check_user_member_of_org(user_id, org_id):
-    orgs = get_user_orgs(user_id)
-
-
-    member_orgs = [org.id for org in orgs if org.id == org_id]
-
-    if member_orgs :
-        return True
-
-    return False
-
-
 def get_user_toporgs(user_id, role=None):
     '''
     Returns the list of orgs that the given user belongs to and has the given role('admin', 'member', 'editor', ...)

@@ -69,4 +69,3 @@ def remove_whitespace(value, context):
     if isinstance(value, basestring):
         return value.strip()
     return value
-

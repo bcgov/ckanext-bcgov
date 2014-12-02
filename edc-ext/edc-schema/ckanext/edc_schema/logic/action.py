@@ -29,7 +29,7 @@ _validate = lib.navl.dictization_functions.validate
 ValidationError = logic.ValidationError
 _get_action = logic.get_action
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('ckanext.edc_schema')
 
 _or_ = sqlalchemy.or_
 
@@ -66,6 +66,7 @@ def edc_package_update(context, input_data_dict):
 
     except SearchError, se :
         print 'Search error', str(se)
+        log.error('Search error : %s', str(se))
         #pprint.pprint('Search error!')
         raise SearchError(str(se))
 
@@ -232,6 +233,7 @@ def package_update(context, data_dict):
 
     '''
     
+    
     model = context['model']
     user = context['user']
     name_or_id = data_dict.get("id") or data_dict['name']
@@ -245,7 +247,6 @@ def package_update(context, data_dict):
 
     old_data = get_action('package_show')(context, {'id': pkg.id})
     
-        
     '''
     Constructing the tag_string from the given tags.
     There must be at least one tag, otherwise the tag_string will be empty and a validation error 
@@ -261,6 +262,7 @@ def package_update(context, data_dict):
             data_dict[key] = value
             
     data_dict['resources'] = data_dict.get('resources', old_data.get('resources'))
+    
     
     #Set the value of iso_topic_string for solr search
     #In order this to work, the iso_topic_cat must always be given as a list 

@@ -10,8 +10,6 @@ import ckan.lib.search as search
 import ckan.model as model
 import ckan.lib.maintain as maintain
 
-import pprint
-
 from ckanext.edc_schema.util.helpers import get_suborgs
 
 render = base.render
@@ -25,7 +23,7 @@ get_action = logic.get_action
 tuplize_dict = logic.tuplize_dict
 clean_dict = logic.clean_dict
 parse_params = logic.parse_params
-log = logging.getLogger(__name__)
+log = logging.getLogger('ckanext.edc_schema')
 
 class EDCOrganizationController(OrganizationController):
     
@@ -99,7 +97,7 @@ class EDCOrganizationController(OrganizationController):
         # most search operations should reset the page counter:
         params_nopage = [(k, v) for k, v in request.params.items()
                          if k != 'page']
-        #sort_by = request.params.get('sort', 'name asc')
+        
         sort_by = request.params.get('sort', None)
         
         def search_url(params):

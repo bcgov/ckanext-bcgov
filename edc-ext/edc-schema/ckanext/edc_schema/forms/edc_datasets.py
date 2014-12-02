@@ -12,6 +12,7 @@ from ckan.logic.validators import (url_validator,)
 
 import ckan.plugins.toolkit as toolkit
 
+import ckan.logic.converters as converters
 
 def dates_to_db_schema():
     schema = {

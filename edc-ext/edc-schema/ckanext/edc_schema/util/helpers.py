@@ -8,12 +8,17 @@ from ckan.common import  (c, request)
 from webhelpers.html import literal
 import json
 import urllib2
+import ckan.lib.base as base
 
 NotFound = logic.NotFound
 get_action = logic.get_action
 snippet = ckan.lib.helpers.snippet
 url_for = ckan.lib.helpers.url_for
-log = logging.getLogger(__name__)
+
+log = logging.getLogger('ckanext.edc_schema')
+
+abort = base.abort
+
 
 from ckan.lib.helpers import unselected_facet_items
 
@@ -44,7 +49,6 @@ def get_suborg_sector(sub_org_id):
                  }
     
     sub_org = get_action('organization_show')(context, data_dict)
-#    pprint.pprint(sub_org)
     return sub_org.get('sector')
     
 
@@ -89,38 +93,12 @@ def get_user_dataset_num(userobj):
 def get_index(seq, attr, value):
     return next(index for (index, d) in enumerate(seq) if d[attr] == value)
                     
-def org_record_is_viewable(package, userobj):
-    '''
-    Checks if the user can view the given record
-    '''
-    
-    from ckanext.edc_schema.util.util import get_user_orgs
-    
-    #Sysadmin can view all records
-    if userobj and userobj.sysadmin == True :
-        return True
-        
-    extras = package['extras']
-    
-    state_index = get_index(extras, "key", "edc_state") 
-    visibility_index = get_index(extras, "key", "metadata_visibility") 
-    state = package['extras'][state_index]['value']
-    visibility = package['extras'][visibility_index]['value']
-        
-    #Anonymous user (visitor) can only view published public records
-    published_state = ['PUBLISHED', 'PENDING ARCHIVE']
-
-    if visibility == 'Public' and state in published_state:
-        return True
-    if userobj  :
-        user_orgs = [org.id for org in get_user_orgs(userobj.id) ]
-        if package['owner_org'] in user_orgs:
-            return True
-    return False  
-
 def record_is_viewable(pkg_dict, userobj):
     '''
-    Checks if the user can view the given record
+    Checks if the user is authorized to view the dataset.
+    Public users can only see published or pending archive records and only if the metadata-visibility is public.
+    Government users who are not admins or editors can only see the published or pending  archive records.
+    Editors and admins can see all the records of their organizations in addition to what government users can see.
     '''
     
     from ckanext.edc_schema.util.util import get_user_orgs
@@ -158,6 +136,9 @@ def get_package_data(pkg_id):
     return pkg_data
 
 def get_license_data(license_id):
+    '''
+    Returns the license information for the given license id.
+    '''
     context = {'model': model, 'session': model.Session,
                'user': c.user, 'auth_user_obj': c.userobj}    
     license_list = []
@@ -175,7 +156,9 @@ def get_license_data(license_id):
     return None    
 
 def is_license_open(license_id):
-    
+    '''
+    Checks if the license with given id is an open license.
+    '''
     edc_license = get_license_data(license_id)
     
     if edc_license and edc_license['is_open'] == True :
@@ -185,6 +168,10 @@ def is_license_open(license_id):
     return False
             
 def get_record_type_label(rec_type):
+    '''
+    Used by search template as the label-function to show the proper dataset type.
+    It maps the stored dataset type value to the more readable dataset type.
+    '''
     type_dict = { 'Dataset' : 'Dataset', 'Geographic' : 'Geographic Dataset', 'Application' : 'Application', 'WebService' : 'Web Service / API'}
     
     if rec_type in type_dict : 
@@ -217,15 +204,9 @@ def edc_gravatar(email_hash, size=100, default=None):
                    )
 
 
-
 def get_facets_unselected(facet, limit=None):
     '''Return the list of unselected facet items for the given facet, sorted
     by count.
-
-    Returns the list of unselected facet contraints or facet items (e.g. tag
-    names like "russian" or "tolstoy") for the given search facet (e.g.
-    "tags"), sorted by facet item count (i.e. the number of search results that
-    match each facet item).
 
     Reads the complete list of facet items for the given facet from
     c.search_facets, and filters out the facet items that the user has already
@@ -272,9 +253,12 @@ def get_facets_selected(facet):
 def get_sectors_list():
     '''
     Returns a list of sectors available in the file specified by sectors_file_url in ini file.
+    The list of sectors are used when creating or editing a sub-organization 
+    in order to assign a new sector to the sub-organization.
     '''
     from pylons import config
     
+    #Get the url for the sectors file.
     sectors_url = config.get('sectors_file_url', None)
     if sectors_url :
         try:
@@ -287,6 +271,7 @@ def get_sectors_list():
             sectors_data = json.loads(response_body)
         except Exception, inst:
             msg = "Couldn't read response from sectors %r: %s" % (response_body, inst)
+            log.error("Couldn't read response from sectors %r: %s" % (response_body, inst))
             raise Exception, inst
         sectors_list = sectors_data.get('sectors', [])
     else :
@@ -296,3 +281,55 @@ def get_sectors_list():
         sectors_list = ["Natural Resources", "Service", "Transportation", "Education", "Economy", "Social Services", "Health and Safety", "Justice", "Finance" ]
     
     return sectors_list
+
+
+def get_dataset_type(id):
+    '''
+    Returns the dataset type for the dataset with given package id
+    '''
+    context = {'model': model, 'session': model.Session,
+               'user': c.user or c.author, 'auth_user_obj': c.userobj}
+    try:
+        pkg_dict = get_action('package_show')(context, {'id': id})
+        return pkg_dict['type']
+    except NotFound:
+        abort(404, _('The dataset {id} could not be found.').format(id=id))
+
+
+def get_organizations():
+    '''
+    Returns the list of top-level organizations (Organizations that don't have any parent organizations).  
+    '''
+    context = {'model': model, 'session': model.Session,
+               'user': c.user or c.author, 'auth_user_obj': c.userobj}
+    org_model = context['model']
+    #Get the list of all groups of type "organization" that have no parents.
+    top_level_orgs = org_model.Group.get_top_level_groups(type="organization")
+
+    return top_level_orgs
+
+def get_organization_title(org_id):
+    '''
+    Returns the title of an organization with the given organization id.
+    '''
+    context = {'model': model, 'session': model.Session,
+               'user': c.user or c.author, 'auth_user_obj': c.userobj}
+
+    try:
+        orgs = get_action('organization_list')(context, {'all_fields': True})
+    except NotFound:
+        orgs = []
+    for org in orgs:
+
+        if org['id'] == org_id:
+            return org['title']
+    return None
+
+
+def get_espg_id(espg_string):
+    import re
+    a = re.compile("_([0-9]+)")
+    espg_id = a.findall(espg_string)
+    return espg_id[0]
+
+

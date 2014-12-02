@@ -6,13 +6,9 @@ import ckan.model as model
 import ckan.logic as logic
 import ckan.lib.helpers as h
 from urllib import urlencode
-from ckan.logic import get_action, NotFound
+from ckan.logic import get_action
 import ckan.lib.maintain as maintain
 import ckan.plugins.toolkit as toolkit
-
-import pprint 
-
-from pylons import config
 
 from ckanext.edc_schema.util.util import (get_user_orgs, get_user_toporgs)
 
@@ -26,7 +22,7 @@ check_access = logic.check_access
 NotAuthorized = logic.NotAuthorized
 render = base.render
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('ckanext.edc_schema')
 
 
 def _encode_params(params):
@@ -37,10 +33,7 @@ def _encode_params(params):
 class EDCUserController(UserController):
             
     def dashboard_unpublished(self):
-#         context = {'for_view': True, 'user': c.user or c.author,
-#                    'auth_user_obj': c.userobj}
-#         data_dict = {'user_obj': c.userobj}
-#        
+        
         user_id = c.userobj.id
         fq = ' +edc_state:("DRAFT" OR "PENDING PUBLISH" OR "REJECTED")'
             #Get the list of organizations that this user is the admin
@@ -90,7 +83,7 @@ class EDCUserController(UserController):
         except ValueError, e:
             abort(400, ('"page" parameter must be an integer'))
             
-        limit = 100
+        limit = 10000000
 
         # most search operations should reset the page counter:
         params_nopage = [(k, v) for k, v in request.params.items()
@@ -212,6 +205,7 @@ class EDCUserController(UserController):
         
         facets = OrderedDict()
 
+        #Add the organization facet to get the number of records for each organization
         facets['organization'] = _('Organizations')
 
         data_dict = {

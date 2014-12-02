@@ -249,7 +249,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                         'odsi_uid' : [convert_from_extras, ignore_missing],
                         'metastar_uid' : [convert_from_extras, ignore_missing],
                         'feature_types' : [convert_from_extras, ignore_missing],
-                        'edc_state' : [convert_from_extras, ignore_missing],
+                        'edc_state' : [convert_from_extras, not_empty],
 #                        'url' : [url_validator, not_empty],
                         'license_id' : [not_empty],
                         'image_url' : [convert_from_extras, ignore_missing],
