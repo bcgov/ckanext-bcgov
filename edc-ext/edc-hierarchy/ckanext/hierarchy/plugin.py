@@ -29,8 +29,9 @@ class HierarchyDisplay(p.SingletonPlugin):
                 }
 
 
-import ckan.logic.converters as converters
+#import ckan.logic.converters as converters
 
+import ckanext.edc_schema.forms.converters as converters
 cnvrt_to_ext = converters.convert_to_extras;
 cnvrt_from_ext = converters.convert_from_extras;
 from ckan.lib.navl.validators import (ignore_missing)
@@ -47,7 +48,7 @@ class HierarchyForm(p.SingletonPlugin, DefaultOrganizationForm):
     
     
     '''
-        Customizing organization shema
+        Customizing organization schema
         Author : Khalegh Mamakani
     '''
     def form_to_db_schema_options(self, options):
@@ -59,7 +60,7 @@ class HierarchyForm(p.SingletonPlugin, DefaultOrganizationForm):
             from ckan.logic.schema import group_form_schema
             schema = group_form_schema()
         
-        #Add custom fileds to organization schema
+        #Add custom fields to organization schema
         schema.update({
                       'url': [ignore_missing, unicode, cnvrt_to_ext],
                       'sector' : [ignore_missing, unicode, cnvrt_to_ext]
