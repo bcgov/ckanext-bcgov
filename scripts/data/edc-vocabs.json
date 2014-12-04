@@ -23,7 +23,7 @@
     	"tags" : [
                 "atom",
                 "cded",
- 		"csv",
+ 				"csv",
                 "e00",
                 "fgdb",
                 "geojson",
@@ -41,7 +41,7 @@
                 "xlsx",
                 "xml",
                 "zip",
-                “tsv”,
+                "tsv",
                 "other"
     			]
     },

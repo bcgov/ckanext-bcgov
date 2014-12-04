@@ -7,7 +7,8 @@ import urllib
 from base import (default_vocab_file,
                   create_vocab,
                   create_tag,
-                  site_url)
+                  site_url,
+                  api_key)
 
 def create_vocabs(vocab_file=None):
         
@@ -24,6 +25,7 @@ def create_vocabs(vocab_file=None):
         
     try:
         request = urllib2.Request(site_url + '/api/3/action/vocabulary_list')
+        request.add_header('Authorization', api_key)
         response = urllib2.urlopen(request)
         assert response.code == 200
             
@@ -36,8 +38,8 @@ def create_vocabs(vocab_file=None):
         
     available_vocab_names = [vocab['name'] for vocab in available_vocabs]
         #for each vocabulary defined in json file
+    
     for vocab_item in vocabs :
-            
         vocab_name = vocab_item['name']
         vocab_tags = vocab_item['tags']
             #check if the vocabulary exists :
@@ -49,6 +51,7 @@ def create_vocabs(vocab_file=None):
             data_string = urllib.quote(json.dumps({'id': vocab_name}))
             try:
                 request = urllib2.Request(site_url + '/api/3/action/vocabulary_show')
+                request.add_header('Authorization', api_key)
                 response = urllib2.urlopen(request, data_string)
                 assert response.code == 200
             
