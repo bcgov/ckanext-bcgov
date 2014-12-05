@@ -28,6 +28,8 @@ admin_user = import_properties.get('admin_user', 'admin')
 site_url = import_properties.get('site_url', 'http://localhost:5000')
 api_key = import_properties.get('api_key')
 
+null_res_url = import_properties.get('null_res_url')
+
 orgs_title_id_dic = get_organizations_dict()
 users_name_id_map = get_users_dict()
 
@@ -219,8 +221,8 @@ def execute_odsi_query(con):
                 "AND DBC_CS.CREATOR_SECTOR_ID=DBC_SO.CREATOR_SECTOR_ID " + \
                 "AND DBC_DC_MIN.RESOURCE_SET_ID(+)=DBC_RS.RESOURCE_SET_ID " + \
                 "AND DBC_DC.DISPLAY_CONTACT_ID(+)=DBC_DC_MIN.DISPLAY_CONTACT_ID "  #+ \
-#                "AND DBC_RT.RESOURCE_TYPE_NAME ='Geospatial Dataset'" #+ \
-#                "AND DBC_RS.RESOURCE_SET_ID = 179706 "
+#                "AND DBC_RS.RESOURCE_SET_ID = 179524 " #+ \
+#                "AND DBC_RT.RESOURCE_TYPE_NAME ='Geospatial Dataset'" 
 
 
     cur = con.cursor()
@@ -604,7 +606,12 @@ def import_odsi_records(con):
                 resource_rec = {}
                 # Setting resource url to RESOURCE_ACCESS_URL from ODC
                 resource_url = resource[3]
-                resource_rec['url'] = resource_url
+                
+                if resource_url :
+                    resource_url = resource_url.strip()
+                
+                if resource_url and resource_url.lower() == 'http://' :
+                    resource_url = None
 
                 resource_name = ''
                 # Setting resource name to PRODUCT_TYPE_NAME frrom ODC
@@ -659,25 +666,27 @@ def import_odsi_records(con):
 
             #----------------------------------------------------------< Resource storage access method >--------------------------------------------------------------------
                     resource_storage_access_method = resource[5] or 'Direct Access'
+                    
+                    #If resource_url is null then set resource access method to indirect
+                    if not resource_url :
+                        resource_storage_access_method = 'Indirect Access'
+                        
                     resource_rec['resource_storage_access_method'] = resource_storage_access_method.strip()
 
             #----------------------------------------------------------< Resource storage Location >--------------------------------------------------------------------
                     #Check the resourec url and set the resource storage location based on that :
-                    res_url = resource[3]
-                    if res_url :
-                        if res_url.startswith('http://pub.data.gov.bc.ca/datasets') :
+                    resource_rec['resource_storage_location'] = 'External'
+                    if resource_url :
+                        if resource_url.startswith('http://pub.data.gov.bc.ca/datasets') :
                             resource_rec['resource_storage_location'] = 'pub.data.gov.bc.ca'
-                        elif res_url.startswith('https://apps.gov.bc.ca/pub/dwds') :
+                        elif resource_url.startswith('https://apps.gov.bc.ca/pub/dwds') :
                             resource_rec['resource_storage_location'] = 'BCGW Data Store'
-                        else :
-                            resource_rec['resource_storage_location'] = 'External'
-
 
             #----------------------------------------------------------< Resource Projection Name >--------------------------------------------------------------------
                     if edc_record.get('type') == 'Geographic':
                         projection_name = 'EPSG_4326 - WGS84 - World Geodetic System 1984'
                         resource_rec['projection_name'] = projection_name
-
+                
 
             #-------------------------------------------------------------< Resource Update Cycle >--------------------------------------------------------------------
                 # Set record's resource update cycle
@@ -721,6 +730,13 @@ def import_odsi_records(con):
                     resource_rec['data_collection_start_date'] = discovery_record.get('data_collection_start_date')
                     resource_rec['data_collection_end_date'] = discovery_record.get('data_collection_end_date')
 
+                
+                '''
+                Set the resource url.
+                If the resource url is null then it should reference the FAQ notices page indicated in import.ini
+                '''
+                resource_rec['url'] = resource_url or null_res_url
+                
                 # Add the current resource record to the list of dataset resources
                 resources.append(resource_rec)
 
@@ -886,10 +902,11 @@ def execute_discovery_query(con):
                 "WHERE dat.state_uid IN (164,166,168,172) " \
                 "AND usr.user_uid = dat.user_uid " \
                 "AND st.state_uid = dat.state_uid " #\
-#                "AND RECORD_UID = 52878"
+#                "AND RECORD_UID = 57721"
 #                /* state is Draft, Approve, Published or ZPublished */
     cur = con.cursor()
 
+    print 'Fetching records .....'
     data = cur.execute(edc_query)
 
     return data
@@ -1169,7 +1186,7 @@ def save_discovery_records(con, discovery_data_filename):
 
             #-------------------------------------------------------------------------<< Resource URL >>------------------------------------------------------------------
             #Create resource_url for record
-            resource_url = ' '
+            resource_url = None
             if is_bcgw_record :
                 product_type_id_dic = {'Feature Type': '0', 'Theme' : '1', 'Packaged Product' : '2'}
                 product_type = result[40]
@@ -1179,6 +1196,16 @@ def save_discovery_records(con, discovery_data_filename):
                 if product_id and product_type_id:
                     resource_url = 'https://apps.gov.bc.ca/pub/dwds/addProductsFromExternalApplication.do?productTypeId={0}&productId={1}'.format(product_type_id, product_id)
 
+            
+            '''
+            Set the resource url.
+            If the resource url is null then it should reference the FAQ notices page indicated in import.ini
+            '''
+            if not resource_url :
+                resource_rec['resource_storage_access_method'] = 'Indirect Access'
+                resource_rec['resource_storage_location'] = 'External'
+                resource_url = null_res_url
+                                
             resource_rec['url'] = resource_url
 
             resource_rec['data_collection_start_date'] = result[16]
@@ -1267,14 +1294,15 @@ def import_discovery_records():
 
     org_map = create_discovery_org_map(org_map_filename)
     
+    
     '''
     Check if Discovery data file exist, otherwise fetch data from database and store it in a json file
     '''    
     discovery_data_filename = './data/discovery_data.json'
     if not os.path.exists(discovery_data_filename):
+        print 'Connecting to database.'
         con = get_connection('discovery')
         save_discovery_records(con, discovery_data_filename)
-    
  
     (common_uids, common_titles) = load_common_records()
  
