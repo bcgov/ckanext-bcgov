@@ -1,4 +1,4 @@
-########################################################################### EDC/CKAN v.0.9.0_0009## This document constitutes the delivery instructions for ## K.Mamakani, HighwayThreeSolutions, Dec. 02, 2014##########################################################################1) List of changes:
+########################################################################### EDC/CKAN dev.rev.0.9.0_0009# DataBC release version 1.0.0## This document constitutes the delivery instructions for ## K.Mamakani, HighwayThreeSolutions, Dec. 02, 2014##########################################################################1) List of changes:
    Key	                                        Summary
 --------------------------------------------------------------------------------------------------------
 CITZEDC-523	Error on add resource page causes loss of context for resource
@@ -20,8 +20,8 @@ CITZEDC-223	Update order by select list on dataset search page
 13.     Add the url to sectors json file to dlv.ini after ckan.api_key : sectors_file_url = file:///etc/ckan/dlv/edc_sectors.json
 
 14.	Add the major and minor version numbers to ini file as follow :
-	edc.major_version = DLVR
-	edc.minor_version = .0.9.0_SNAPSHOT9
+	edc.major_version = DLV
+	edc.minor_version = .1.0.0_SNAPSHOT	    edc.major_version = TST	edc.minor_version = .1.0.0_RC		edc.major_version = PRD	edc.minor_version = .1.0.0
 
 15.     Update the default admin user email address to datacat@gov.bc.ca16.	Create  vocabs	cd ckanext-edc-schema/ckanext/edc_schema/commands	$ python create_vocabs.py• 	Note: The following data files in ckanext-edc-schema/ckanext/edc_schema/commands/data is required :
 	edc-vocabs.json
