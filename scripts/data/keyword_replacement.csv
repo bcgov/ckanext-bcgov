@@ -1,8 +1,7 @@
 old_keyword,action,new_keyword
 0,remove,
-100 Mile House Forest District,remove,
 12,remove,
-1st day of month,remove,
+50,remove,
 2003,remove,
 2004,remove,
 2005,remove,
@@ -14,162 +13,42 @@ old_keyword,action,new_keyword
 2011,remove,
 2012,remove,
 2014,remove,
+100 Mile,replace,100 Mile House
+100 Mile house,replace,100 Mile House
+100 Mile House Forest District,remove,
+100 Mile House Forest District boundary,replace,101 Mile House
+1st day of month,remove,
+200 Year Event,replace,200 year event
 25000 dollars or more,remove,
-50,remove,
-amch,remove,
-applications of math,remove,
-atfc_rca,remove,
-atuaa_rca,remove,
-Band,remove,
-bc,remove,
-BC,remove,
-BC Macro-reaches 50K,remove,
-BECdb,remove,
-bed and breakfast,remove,
-Benchmark,remove,
-Beverage Alcohol,remove,
-birth certificate death certificate,remove,
-bonjour,remove,
-British,remove,
-British Columbia,remove,
-British Columbia BC,remove,
-Canadian Hydrographic Service charts,remove,
-Canadian Hydrographic Service LWM SP,remove,
-car_upt,remove,
-CHS High Water Mark,remove,
-CHS Low Water Mark,remove,
-CHS Low Water Mark Shorezone spatial layer,remove,
-cuising,remove,
-cultural,remove,
-dan,remove,
-DataBC,remove,
-DRA Digital Road Atlas DPAR,remove,
-DRA Digital Road Atlas MFAR,remove,
-DRA PAR Digital Road Atlas M-PAR,remove,
-East,remove,
-etc,remove,
-facilities and IT,remove,
-FCODE,remove,
-F-CODE,remove,
-fear of crime,remove,
-firgroup,remove,
-first time in grade 12,remove,
-Fish Recce Survey,remove,
-FISS_LAKE_SURVEYS_SVW,remove,
-fnpc_rca,remove,
-F_OWN,remove,
-frshore,remove,
-FSHB3199987,remove,
-FSHB3199987_1,remove,
-fsh_dist,remove,
-GR,remove,
-grade 10,remove,
-Grade 10,remove,
-grade 11,remove,
-grade 12,remove,
-Grade 12,remove,
-grade 12 students,remove,
-Grade 3,remove,
-grade 3 - 4,remove,
-grade 3-4,remove,
-grade 4,remove,
-Grade 4,remove,
-grade7,remove,
-grade 7,remove,
-Grade 7,remove,
-grads,remove,
-graduate in year,remove,
-ha,remove,
-hb,remove,
-hello,remove,
-HLP_SA,remove,
-https,remove,
-individuals appointed to public service by order in council,remove,
-individuals appointed under Public Service Act,remove,
-KEYWORDS,remove,
-K-file,remove,
-Labour Labor,remove,
-labour market job employment occupation forecast,remove,
-ldgr_rca,remove,
-linv_dmc,remove,
-lslim_r5,remove,
-lswr_r5,remove,
-Lung Disease from External Agents,remove,
-lwlim_r5,remove,
-metatag,remove,
-Ministry of Agriculture,remove,
-Ministry of Energy Mines and Petroleum,remove,
-Ministry of Environment,remove,
-Ministry of Forest,remove,
-Ministry of Tourism,remove,
-Ministry of Transportation,remove,
-Moose_1400,remove,
-non,remove,
-non-BC,remove,
-Non-Recurrence of Child Neglect and-or Abuse,remove,
-NRS Regional Subregional Boundaries,remove,
-ohotography index orthophoto,remove,
-oklrmp,remove,
-Other,remove,
-pflb_rca,remove,
-qcap_r5,remove,
-qsnw_rca,remove,
-qsoi_bc,remove,
-Rockies,remove,
-six year completion,remove,
-six year dogwood completion,remove,
-snowmobile areas within mountain caribou,remove,
-soi boundaries,remove,
-soscp_bndry,remove,
-state of environmental,remove,
-statusBC Corrections,remove,
-strm_bufs,remove,
-tdsc_rca,remove,
-Ten-year,remove,
-test,remove,
-Test,remove,
-TEST,remove,
-Tested,remove,
-testee,remove,
-tester,remove,
-Testy,remove,
-tgbh_dmc,remove,
-tgbn_rca,remove,
-tgen_rca,remove,
-The Count,remove,
-Third,remove,
-top ten,remove,
-tourism feature areas,remove,
-tourism features,remove,
-tourism use areas,remove,
-tscl_rca,remove,
-tser,remove,
-tser_dch,remove,
-tser_dho,remove,
-tser_dmh,remove,
-tser_dqu,remove,
-tser_dwl,remove,
-ttsm_rca,remove,
-twet_rca,remove,
-twet_rca_bufs,remove,
-veg_comp,remove,
-visitors to bc,remove,
-WHSE_WILDLIFE_MANAGEMENT.WCP_WILDLIFE_HABITAT_AREA_POLY,remove,
 Abatement Fire Risk,replace,abatement fire risk
 ABE,replace,adult basic education
 Aboriginal,replace,aboriginal
 Aboriginal Harvesting,replace,aboriginal harvesting
+Aboriginal lands,replace,aboriginal lands
 Aboriginal Relations,replace,aboriginal relations
-Access,replace,access
+Access Categories,replace,access categories
+ACCESS CATS,replace,access cats
+ACCESS FULL,replace,access full
+Access Management Area,replace,access management area
+ACCESS MGT,replace,access mgt
+Access Road,replace,access road
 Access Routes,replace,access routes
-Accommodation,replace,accomodation
-accomocations,replace,accomodation
+Access Strategies,replace,access strategies
+Accommodation,replace,accommodation
+accomocations,replace,accommodation
 Accounting,replace,accounting
-acommodation,replace,accomodation
+Acid Generation,replace,acid generation
+Acid Rock Drainage,replace,acid rock drainage
+Acid Water,replace,acid water
+Acidic Water Geochemistry,replace,acidic water geochemistry
+acommodation,replace,accommodation
+Acquisition,replace,acquisition
 Active Samples,replace,active sample
 activities,replace,activity
 addresses,replace,address
-Administrative boundaries,replace,administrative boundary
+Administrative Boundaries,replace,administrative boundaries
+Administrative Boundaries 1 1 Million,replace,administrative boundaries
+Administrative Boundaries 1 1m,replace,administrative boundaries
 Administrative Boundary,replace,administrative boundary
 Administrative Divisions,replace,administrative division
 Administrative Forest Boundaries,replace,administrative forest boundary
@@ -177,95 +56,194 @@ Administrative water boundaries,replace,administrative water boundary
 admissions,replace,admission
 admissions BC,replace,admission
 Adult Custody,replace,adult custody
+Advanced Argillic Alteration,replace,advanced argillic alteration
 Advanced Education,replace,advanced education
 Adventure Tourism,replace,adventure tourism
+Advisory Report,replace,advisory report
+Aerial Video survey NC,replace,aerial video survey
+Aerial Video Survey WCVI,replace,aerial video survey
+Agate,replace,agate
+Age Dating,replace,age dating
 Agency,replace,agency
+Aggregate,replace,aggregate
 Aging Out,replace,aging out
+Agreement Areas,replace,agreement areas
+Agreements,replace,agreements
+Agricultural,replace,agricultural
 Agriculture,replace,agriculture
 Agriculture Capability,replace,agriculture capability
+agriculture land reserve,replace,Agricultural Land Reserve
+Air,replace,air
 Air Photo,replace,air photo
+Air Photos,replace,air photos
 Air Quality,replace,air quality
+Aircraft,replace,aircraft
+Airfields,replace,airfield
+Airport,replace,airport
+Airports and heliports,replace,airports and heliports
+Ajax Quartz Monzonite,replace,ajax quartz monzonite
+alaska,replace,Alaska
+alberta,replace,Alberta
 ALC,replace,Agricultural Land Commission
 Alcids,replace,alcid
 alcoholic,replace,alcohol
 Alcohol-Related,replace,alcohol-related
 alexmack,replace,Alexander Mackenzie
+Alienated Lands,replace,alienated lands
+Alkalic Porphyry,replace,alkalic porphyry
+Alkaline,replace,alkaline
 Allocation,replace,allocation
+Alluvium,replace,alluvium
+Alpine Ski,replace,alpine ski
 alr,replace,ALR
+Alteration,replace,alteration
 Alzheimers Disease,replace,Alzheimer's disease
+AM Radio,replace,AM radio
+Amber,replace,amber
+amch,remove,
 Amendment,replace,amendment
+Amphibian,replace,amphibian
 Amyotrophic Lateral Sclerosis and Multiple Sclerosis,replace,amyotrophic lateral sclerosis and multiple sclerosis
+Anadromous,replace,anadromous
 Analysis,replace,analysis
+and Petroleum Resources,replace,Petroleum Resources
+and services,replace,services
+Annotation,replace,annotation
 Annual Coal Production,replace,annual coal production
 Annual Coal Values,replace,annual coal value
 Annual Metal Production,replace,annual metal production
 Annual Production,replace,annual production
+Annual Review,replace,annual review
 Annual Values,replace,annual value
+Anomalous Mercury Bearing Stream,replace,anomalous mercury bearing stream
+Anomaly,replace,anomaly
+Anomaly Definition,replace,anomaly definition
+Anomaly Discrimination,replace,anomaly discrimination
+aoa,replace,AOA
 Appeal,replace,appeal
 appeals,replace,appeal
 appearances,replace,appearance
 applications,replace,application
 Applications,replace,application
+applications of math,remove,
+Applied Geochemistry,replace,applied geochemistry
+Appraisal,replace,appraisal
+Approved Study Areas,replace,approved study areas
 Aquaculture,replace,aquaculture
+Aquatic Classification,replace,aquatic classification
 Aquatic Reports,replace,aquatic report
 Aquifer,replace,aquifer
 aquifers,replace,aquifer
 Aquifers,replace,aquifer
+Arability,replace,arability
+Arc Volcanism,replace,arc volcanism
+Archaeological,replace,archaeological
+Archaeological sites,replace,archaeological sites
 Archaeology,replace,archaeology
 Archaeology Borden Grid,replace,archaeology borden grid
 Architecture,replace,architecture
+Archival,replace,archival
+Archive,replace,archive
+ARCHIVED,replace,archived
+Archived,replace,archived
+Arcproj,replace,arcproj
 Area,replace,area
 Area Responsibility,replace,area responsibility
+Area Significance,replace,area significance
 Area Summary,replace,area summary
+Areas,replace,areas
 Arrow-Boundary Forest District,replace,Arrow Boundary Forest District
+Arrows,replace,arrows
+Art School,replace,art school
 arts,replace,art
 Arts,replace,art
-Art School,replace,art school
+Arts and Crafts Events,replace,arts and crafts events
 Asbestos,replace,asbestos
+Aspect,replace,aspect
 Assessed value,replace,assessed value
 Assessment,replace,assessment
+Assessment Reports,replace,assessment reports
 Assets,replace,asset
 associate degrees,replace,associate degree
 Association,replace,association
 Assumption,replace,assumption
 Asthma,replace,asthma
-Atlas,replace,atlas
+astr r5,remove,
 At Risk,replace,at risk
+atfc_rca,remove,
+Atlas,replace,atlas
 At-risk Ecosystems,replace,at-risk ecosystem
 At-risk Species,replace,at-risk species
 Attraction,replace,attraction
 attractions,replace,attraction
+atuaa_rca,remove,
 Auks,replace,auk
 authorizations,replace,authorization
 Authorized,replace,authorized
+Auto and Transportation Events,replace,auto and transportation events
+Avalanche,replace,avalanche
 awards,replace,award
+B C,remove,
 baby names,replace,baby name
+Badgers,replace,badger
 Balances,replace,balance
 Bald Eagles,replace,bald eagle
+Band,remove,
+Bank Protection,replace,bank protection
 Barite,replace,barite
 Bark beetles,replace,bark beetle
 barriers,replace,barrier
 Base,replace,base 
+Base Map,replace,base map
+Base map,replace,base map
+Base Mapping,replace,base mapping
+Base Maps,replace,base maps
+Base Metal,replace,base metal
+Base Metals,replace,base metals
 Basemaps,replace,basemap
+Basins,replace,basins
+Bat,replace,bat
+BATH SURVEY MAP SHEETS SVW,replace,bathymetric survey map
+BATHYMETRIC,replace,bathymetric
+Bathymetric Maps,replace,bathymetric maps
 Bathymetric Surveys,replace,bathymetry
 bays,replace,bay
+bc,remove,
+BC Historical Fish Distribution 50K Points,replace,BC Historical Fish Distribution
+BC Historical Fish Distribution 50K Zones,replace,BC Historical Fish Distribution
+BC Macro-reaches 50K,remove,
 BCAC,replace,BC Arts Council
+bcal,replace,BCAL
 BCHYDRO,replace,BC Hydro
+Beach,replace,beach
 Bear,replace,bear
 bec,replace,BEC
+BECdb,remove,
+bed and breakfast,remove,
+Bedrock Geology,replace,bedrock geology
+Bedrock geology,replace,bedrock geology
+Bedrock Geology Assay,replace,bedrock geology assay
 Beer,replace,beer
+Benchmark,remove,
 beneficiaries,replace,beneficiary
 benefits,replace,benefit
 Benefits,replace,benefit
 Benthic,replace,benthic
+Beverage Alcohol,remove,
 BGCdb,replace,BGCDB
+Big eared Bats,replace,Big eared bats
 Big game,replace,big game
+Big Trees,replace,big tree
 bighorm sheep,replace,bighorn sheep
 bighorn,replace,bighorn sheep
-Big Trees,replace,big tree
+Biocontrol,replace,biocontrol
+Biocontrol Agent,replace,biocontrol agent
 Biodiversity Corridor,replace,biodiversity corridor
+Biogeochemistry,replace,biogeochemistry
 Biogeoclimatic,replace,biogeoclimatic
 Biogeoclimatic Ecosystem Classification,replace,biogeoclimatic ecosystem classification
+Biological Control Agent,replace,biological control agent
+Biological Insect Control,replace,biological insect control
 Biology,replace,biology
 Biophysical Habitat,replace,biophysical habitat
 Bio-Physical Shorezone CHS High Water Mark,replace,HWM
@@ -275,216 +253,397 @@ Bioslide points,replace,bioslide point
 Bioslides,replace,bioslide
 Bioterrain,replace,bioterrain
 Bioterrain Mapping,replace,bioterrain mapping
+Birch,replace,birch
 Bird Colonies,replace,bird colony
 Birds,replace,bird
 Birds-of-Prey,replace,bird of prey
+birth certificate death certificate,remove,
+Black Bears,replace,black bear
 Black Oystercatchers,replace,black oystercatcher
 Block,replace,block
 Blood,replace,blood
 Blue Book,replace,blue book
+Blue listed,replace,blue listed
 boards of education,replace,board of education
+bonjour,remove,
 Borden Grid,replace,borden grid
+Borehole Logging,replace,borehole logging
 Borrowing,replace,borrowing
-boundaries,replace,boundary
-Boundaries,replace,boundary
-Boundary,replace,boundary
-Boundary Forest District,replace,boundary forest district
-Boundary TSA,replace,boundary TSA
+BOUNDARIES,replace,boundaries
+branches,replace,branch
 Breeding,replace,breeding
 Breeding Bird Inventory,replace,breeding bird inventory
 Bridge,replace,bridge
 Bridge Management Information System,replace,bridge management information system
 Bridge Structure Road,replace,bridge structure road
+Britiish Columbia,replace,British Columbia
+British,remove,
+British Columbia,remove,
 British Columbia Arts Council,replace,BC Arts Council
+British Columbia BC,remove,
+British Columbia BC,replace,British Columbia
+British Columbia place,replace,British Columbia Place
 Broad Ecosystem Inventory,replace,broad ecosystem inventory
 Brushing,replace,brushing
 Budget,replace,budget
 Building,replace,building
+Building Stone,replace,building stone
 buildings,replace,building
+Built up Areas,replace,built up areas
 Bull Kelp,replace,bull kelp
+Bylaw,replace,bylaw
 cabins,replace,cabin
+Cadastral,replace,cadastral
+Cadastre,replace,cadastre
 california,replace,California
+Camp Sites,replace,Camp Site
 camps,replace,camp
-camp sites,replace,campsite
+Canadian Hydrographic Service charts,remove,
+Canadian Hydrographic Service charts Shorezone,remove,
 Canadian Hydrographic Service HWM,replace,HWM
 Canadian Hydrographic Service LWM,replace,LWM
+Canadian Hydrographic Service LWM SP,remove,
 Capability,replace,capability
+Capable,replace,capable
 Capital,replace,capital
 Capture Zone,replace,capture zone
+car_upt,remove,
 Carbon,replace,carbon
+Carbonate Alteration,replace,carbonate alteration
 Care Plan,replace,care plan
-Cariboo,replace,cariboo
 caribou,replace,cariboo
 Caribou,replace,cariboo
 Caribou Critical Habitat,replace,caribou critical habitat
 Caribou Habitat,replace,caribou habitat
+Caribou High Elevation,replace,caribou high elevation
+Caribou High Elevation Winter Range,replace,caribou high elevation winter range
+Caribou WHA,replace,caribou WHA
+Caribou Winter Range,replace,caribou winter range
+Carnivora,replace,carnivora
 cases,replace,case
+Catchment Basin,replace,catchment basin
 Cattleguards,replace,cattleguard
+cclup,replace,CCLUP
 ccof,replace,CCOF
+ccz,replace,CCZ
+cdc,replace,CDC
+cdms,replace,CDMS
 Cedar,replace,cedar
 Cement,replace,cement
+Census,replace,census
 Central,replace,central
+Central Coast,replace,central coast
+Central Gneiss Complex,replace,central gneiss complex
+Central Vancouver Island,replace,central vancouver island
 Cerebral and Other Vascular,replace,cerebral and other vascular
 certificates,replace,certificate
 Cesarean Section,replace,cesarean section
 cgc,replace,CGC
+Chalcopyrite,replace,chalcopyrite
 Change,replace,change
 Changes,replace,change
 channels,replace,channel
+Char,replace,char
 Characteristic,replace,characteristic
 Charges,replace,charge
+Chemical Treatment,replace,chemical treatment
 Chemistry,replace,chemistry
+Child,replace,child
 Child Care Spaces,replace,child care space
+Child daycare services,replace,child daycare services
 Children with Adoption Plans,replace,children with adoption plan
+Chipmunk,replace,chipmunk
+Chipmunks,replace,chipmunk
+CHS High Water Mark,remove,
+CHS Low Water Mark,remove,
+CHS Low Water Mark Shorezone spatial layer,remove,
 Church,replace,church
 ciders,replace,cider
+Cities,replace,cities
+CITY,replace,City
 civil suits,replace,civil suit
 claim costs,replace,claim cost
 claims,replace,claim cost
 Clam Beds,replace,clam bed
 Clams,replace,clam  
+class a,replace,Class A
 Clay Products,replace,clay product
+Clean Energy,replace,clean energy
+clearwater,replace,Clearwater
+clearwater district,replace,Clearwater District
+cli,replace,CLI
 client movements,replace,client movement
+clients,replace ,client
 Climate,replace,climate
 Climate Action,replace,climate action
 Climate Capability,replace,climate capability
 Climate Change,replace,climate change
 Climate Stations,replace,climate station
 Closed Heli-Skiing,replace,closed heli-skiing
+Closure,replace,closure
+Clusters,replace,clusters
 Coal,replace,coal
 Coal Claims,replace,coal claim
-Coalfields,replace,coal field
+Coal Geology,replace,coal geology
+Coal Measures,replace,coal measures
+Coal Rank,replace,coal rank
 Coal Shipments,replace,coal shipment
 Coal Tenures,replace,coal tenure
 Coal Titles,replace,coal title
+Coalbed Methane,replace,coalbed methane
+Coalfields,replace,coal field
 Coast,replace,coast
+Coast Belt,replace,coast belt
 Coastal BC,replace,coastal
 coastal British Columbia,replace,coastal
+Coastal Plan,replace,coastal plan
+Coastal Planning,replace,coastal planning
+Coastal Videas,replace,coastal videas
+Coastal videos,replace,coastal videos
+Coastline,replace,coastline
+Coastlines,replace,coastlines
+Cobalt,replace,cobalt
 Collected,replace,collected
 colllections,replace,collection
+Colluvium,replace,colluvium
 Colonies,replace,colony
 Colorectal,replace,colorectal
 Commercial Harvesting,replace,commercial harvesting
 Commercial Recreation,replace,commerical recreation
+Commodities,replace,commodities
+Common Opal,replace,common opal
+Communication Site Polygon,replace,communication site polygon
 communications,replace,communication
 Community,replace,community
 Community Centre,replace,community centre
 Community College,replace,community college
+Community Connections,replace,community connection
+Community or Seasonal Events,replace,community or seasonal events
 community programs,replace,community program
 Community supervision,replace,community supervision
 Community watersheds,replace,community watershed
 Community Watersheds,replace,community watershed
 companies,replace,company
 Compensation,replace,compensation
+Compilation,replace,compilation
 completed cases,replace,completed case
+Computer Database,replace,computer database
+Computers,replace,computers
 concluded,replace,conclude
 conditions,replace,condition
 Conductive,replace,conductive
 Congenital,replace,congenital
+Coniferous Forests,replace,coniferous forests
+Conseil anti douleur,replace,conseil anti douleur
 Conservancies,replace,conservancy
 Conservation,replace,conservation
 Conservation Areas,replace,conservation area
 Conservation Data Centre,replace,conservation data centre
 conservation lands,replace,conservation land
+Conservation Properties,replace,conservation properties
 Conservation Study Areas,replace,conservation study area
+Consolidated,replace,consolidated
 Consolidated Revenue Fund,replace,consolidated revenue fund
+Consult,replace,consult
+Consultation,replace,consultation
 Consumption,replace,consumption
+Consumptive,replace,consumptive
+Contact Metamorphism,replace,contact metamorphism
 contacts,replace,contact
+Containment Area,replace,containment area
+Contaminated,replace,contaminated
+Contaminated Sites,replace,contaminated sites
 Contingencies,replace,contingency
+Contours,replace,contours
+Contributing,replace,contributing
+Contributing Class,replace,contributing class
 Cooking Classes,replace,cooking class
 coolers,replace,cooler
 Copper,replace,copper
+Copper Gold,replace,copper gold
+Copper Gold Silver,replace,copper gold silver
+Copper Molybdenum,replace,copper molybdenum
+Copper Molybdenum Porphyry,replace,copper molybdenum porphyry
+Copper Silver,replace,copper silver
+Copper Silver Molybdenum,replace,copper silver molybdenum
+Copper Zinc Silver,replace,copper zinc silver
+Copper Zinc Silver Lead Gold,replace,copper zinc silver lead gold
+Core French,replace,core french
+Core Sampling,replace,core sampling
 Cormorants,replace,cormorant
 Corporate Watershed,replace,corporate watershed
 Corporate Watershed Base,replace,corporate watershed base
+Correlations,replace,correlations
+Cortex Data,replace,cortex data
 Cost,replace,cost
+Cost Estimates,replace,cost estimates
+Cost Sharing,replace,cost sharing
 costs,replace,cost
+Cottonwood,replace,cottonwood
 counts,replace,count
+County,replace,county
 courses,replace,course
 court convictions,replace,court conviction
-courts,replace,court
 Court Services,replace,court services
+courts,replace,court
+Coyote,replace,coyote
+Crane,replace,crane
 Credit,replace,credit
+cri,replace,CRI
 criminal Provincial,replace,criminal provincial
+crown grant,replace,Crown grant
 Cruise,replace,cruise
+Cry Lake Map Area,replace,Cry Lake map area
+Crystalline Flake,replace,crystalline flake
+Cu Fe Skarn,replace,cu fe skarn
+cuising,remove,
+cultural,remove,
+Cultural,replace,cultural
 Cultural Development,replace,cultural development
+Cultural sites,replace,cultural sites
+Culturally,replace,culturally
 Culture,replace,culture
+Culture Capability,replace,culture capability
 Culvert,replace,culvert
 Culverts,replace,culvert
-Cutblock,replace,cutblock
+Cut block polygon,replace,cut block polygon
 Cut Permit,replace,cut permit
+Cut Permit Polygons,replace,cut permit polygons
+Cutblock,replace,cutblock
 Dabbling Ducks,replace,dabbling duck
-Damage,replace,damage
 Dam Impacts,replace,dam impact
-Dams,replace,dam
 Dam Unit,replace,dam unit
+Damage,replace,damage
+Dams,replace,dam
+dan,remove,
+Dance or Theatre Events,replace,dance or theatre events
+Dancing Grounds,replace,dancing grounds
+dar,replace,DAR
 dashboards,replace,dashboard
 Dashboards,replace,dashboard
+Data Analysis,replace,data analysis
+Data Collection,replace,data collection
+Data Compilation,replace,data compilation
+Data Retrieval,replace,data retrieval
+Database,replace,database
+DataBC,remove,
+Dave Minty,remove,
+dbo,replace,DBO
+dcb,replace,DCB
+dcl strmcls00,replace,DCL
 Death,replace,death
+Debris Flows,replace,debris flows
 Debt,replace,debt
+Deciduous,replace,deciduous
+Deciduous Trees,replace,deciduous trees
+Deer,replace,deer
 Deficit,replace,deficit
 defoliators,replace,defoliator
+Deformation,replace,deformation
 delegated agencies,replace,delegated agency
-demographics,replace,demographic
+Demography,replace,demography
+Deposit Age,replace,deposit age
+Deposit Modelling,replace,deposit modelling
+Deprecated,replace,deprecated
 Deputy Ministers,replace,Deputy Minister
 Describing Terrestrial Ecosystems,replace,describing terrestrial ecosystems
 Design,replace,design
 Designated Areas,replace,designated area
 Development,replace,development
+Development Projects,replace,development projects
 developmental,replace,development
+Devitrification,replace,devitrification
+dgo,replace,DGO
 Diabetes,replace,diabetes
+Diagnostic Facilities,replace,diagnostic facilities
+Diesel,replace,diesel
 Dietitian,replace,dietician
 Digital Data,replace,digital data
+Digital Elevation,replace,digital elevation
+Digital Elevation Model,replace,digital elevation model
 Dikes,replace,dike
 Diking Authority,replace,diking authority
+din,replace,DIN
 diplomas,replace,diploma
 Diplomatic Representation,replace,diplomatic representation
 Directory,replace,directory
+Disaster,replace,disaster
+Disaster Response,replace,disaster response
 disclosed,replace,disclose
 discovery,replace,discover
 Discovery,replace,discover
 discovery tool,replace,discover
 Diseases,replace,disease
+Dissemination,replace,dissemination
 Distribution,replace,distribution
 District,replace,district
 district awards,replace,district award
+district scholarships,replace,district scholarship
 districts,replace,district
 Districts,replace,district
-district scholarships,replace,district scholarship
 Disturbance,replace,disturbance
 disturbances,replace,disturbance
+Dithizone Test,replace,dithizone test
+DIVIDING,replace,dividing
 Diving Ducks,replace,diving duck
 divisions,replace,division
+dka lake 99,replace,DKA
+dkl,replace,DKL
+dli recsites,replace,DLI
+dlitrail,replace,DLI
+dme recsites,replace,DME
+dmetrail,replace,DME
+dminty,remove,
 Doctors,replace,doctor
 documents,replace,document
 Domestic Water,replace,domestic water
 double-line stream classification,replace,double line stream classification
-Downloads,replace,download
 download statistics,replace,download statistic
-Drainage,replace,drainage
+Downloads,replace,download
+DRA Digital Road Atlas DPAR,remove,
+DRA Digital Road Atlas MFAR,remove,
+DRA PAR Digital Road Atlas M-PAR,remove,
 Drainage Appliance,replace,drainage appliance
 Drastic,replace,drastic
 Drawings,replace,drawing
+dre,replace,DRE
+Drift Exploration,replace,drift exploration
+Drill Hole Tests,replace,drill hole tests
+Drilling,replace,drilling
 Drinking Water,replace,drinking water
 driving,replace,drive
 Drowning,replace,drowning
 Ducks,replace,duck
+Ductile Thrusting,replace,ductile thrusting
+Dust,replace,dust
+Duty,replace,duty
 dwellings,replace,dwelling
+Dyke,replace,dyke
+Dyke Stations,replace,dyke stations
 Dykes,replace,dike
 Dysrhythmic,replace,dysrhythmic
 Eagles,replace,eagle
 Early Childhood Care Services,replace,early childhood care service
+Early French Immersion,replace,early French immersion
 Earning,replace,earning
 earnings,replace,earning
+East,remove,
 East Kootenays,replace,East Kootenay
+Echo Sounding,replace,echo sounding
+Eco Unit,replace,eco unit
 Ecodivisions,replace,ecodivision
 Ecodomains,replace,ecodomain
+Ecological Aquatic Units,replace,ecological aquatic units
 Ecological Classification,replace,ecological classification
+Ecological Drainage Units,replace,ecological drainage units
 Ecological Land Classification,replace,ecological land classification
+ecological reserve,replace,ecological reserves
 Ecological Reserves,replace,ecological reserve
 Ecology,replace,ecology
 Economic,replace,economic
 Economic Development,replace,economic development
+Economic Geology,replace,economic geology
+Economy,replace,economy
 Ecoprovince,replace,ecoprovince
 Ecoregions,replace,ecoregion
 Ecosections,replace,ecosection
@@ -498,27 +657,47 @@ Education,replace,education
 educators,replace,educator
 Eelgrass,replace,eelgrass
 Effluent Absorption,replace,effluent absorption
+egsa tourism,remove,
 Elderly Gravida,replace,elderly gravida
+Electoral boundaries,replace,electoral boundaries
+Electric,replace,electric
+Electricity,replace,electricity
+Electromagnetics,replace,electromagnetics
+Elementary,replace,elementary
+Elementary Jr Second,replace,Elementary Junior Secondary
 elementary parents,replace,elementary parent
-elementary schools,replace,elementary school
+elementary school,replace,elementary schools
+Elementary schools,replace,elementary schools
+Elevation,replace,elevation
+ELK,replace,elk
+Elk,replace,elk
 Elk Connectivity Corridors,replace,elk connectivity corridor
 Elk Corridors,replace,elk corridor
 emails,replace,email
+Emergency,replace,emergency
 Emergency Management,replace,emergency management
 Emergency Planning,replace,emergency planning
-Emissions,replace,emission
+Emergency Response,replace,emergency response
+emissions,replace,emmision
 Emphysema,replace,emphysema
 employees,replace,employee
 Employment,replace,employment
 Employment and Income Assistance,replace,employment and income assistance
+Employment and Labour Market,replace,employment and labour market
 employment outcomes,replace,employment outcome
 Employment Program of British Columbia,replace,employment program of British Columbia
 employment programs,replace,employment program  
 Employment Services,replace,employment service
 empr,replace,EMPR
 Endangered,replace,endangered
-english,replace,English
+Energy,replace,energy
+energy and mines,replace,Energy and Mines
+Energy Potential,replace,energy potential
+Energy Resources,replace,energy resources
+Engineering,replace,engineering
+Engineering Geology,replace,engineering geology
 english as a second language,replace,English as a second language
+English Language,replace,English language
 English Language Service for Adults,replace,English language service for adults
 English Language Services for Adults,replace,English language service for adults
 english literature,replace,English literature
@@ -527,48 +706,82 @@ enrolment by course,replace,enrollment by course
 entitlements,replace,entitlement
 Environment,replace,environment
 Environmental Assessment,replace,environmental assessment
+Environmental Geochemistry,replace,environmental geochemistry
 environmental indicators,replace,environmental indicator
 Environmental Monitoring,replace,environmental monitoring
+Environmental Protection,replace,environmental protection
 Environmental Reporting,replace,environmental reporting
 Environmental Sensitivity,replace,environmental sensitivity
 environmental trends,replace,environmental trend
+ep,replace,EP
+Epigenetic Massive Sulphide,replace,epigenetic massive sulphide
+Epithermal,replace,epithermal
+Epithermal Veins,replace,epithermal veins
 Equity,replace,equity
+Ermine,replace,ermine
 Erosion,replace,erosion
 Estimate,replace,estimate
 Estimates,replace,estimate
+Estuaries,replace,estuaries
+Estuary,replace,estuary
+etc,remove,
 Eulachons,replace,euchalon
 events,replace,event
 examinations,replace,examination
 exams,replace,exam 
 Exchange,replace,exchange
+Exclusions,replace,exclusion
 Executive Compensation,replace,executive compensation
 Exemption,replace,exemption
 Expenditure,replace,expenditure
 expenditures,replace,expenditure
 Expenditures,replace,expenditure
+Expense,replace ,expense
 Exploration,replace,exploration
+Exploration Geochemistry,replace,exploration geochemistry
+Exploration Programs,replace,exploration programs
+Exploration Results,replace,exploration results
+Exploratory,replace,exploratory
 Export,replace,export
 External Recoveries,replace,external recovery
 Extraction Points,replace,extraction point
-facilities,replace,facility
+Extraction Sites,replace,extraction sites
+F_OWN,remove,
+Facilities,replace,facilities
+facilities and IT,remove,
 Factors,replace,factor
 Falls,replace,fall
 families,replace,family
 Family Child Care,replace,family child care
+Farm,replace,farm
+Farm Land,replace,farm land
+Farmers Markets Events,replace,farmers markets events
+Farming,replace,farming
 fatalities,replace,fatality
 Faults,replace,fault
+fc1,replace,FC1
+fcfd,replace,FCFD
+FCODE,remove,
+F-CODE,remove,
+fdp,replace,FDP
+fear of crime,remove,
 Feature Catalogue,replace,feature catalogue
 Feature Code,replace,feature code
-Federal,replace,federal
+Federal Government Land,replace,federal government land
+Fee Simple,replace,fee simple
 Feeding,replace,feeding
 Fee-for-Service,replace,fee for service
 Female Breast,replace,female breast
 Female Reproductive,replace,female reproductive
+FEN,replace,FEN
 Fences,replace,fence
 ferries,replace,ferry
+Ferry transportation,replace,ferry transportation
 Fertilization,replace,fertilization
 festivals,replace,festival
-Fields,replace,field
+Fieldwork,replace,fieldwork
+File Geodatabase,replace,file geodatabase
+Fill,replace,fill
 Financial,replace,financial
 Financial Equity,replace,financial equity
 Financial Services,replace,financial services
@@ -577,64 +790,114 @@ Finfish,replace,finfish
 Finfish Farms,replace,finfish farm
 Finfish Hatcheries,replace,finfish hatchery
 Finfish Suitability,replace,finfish suitability
-Fire,replace,fire
 fire locations,replace,fire location
 Fire Locations,replace,fire location
 Fire perimeters,replace,fire perimeter
 fire points,replace,fire point
 fire polygons,replace,fire polygon
-fires,replace,fire
 fire suppression zones,replace,fire suppression zone
+fires,replace,fire
+fires 2004,replace,fires
+firgroup,remove,
+First,replace,first
+First Naiton Claims,replace,First Nation claims
 first nations,replace,first nation
 First Nations,replace,first nation
 First Nations Initiatives,replace,first nation initiative
 first nations studies,replace,first nation study
+first time in grade 12,remove,
 Fish,replace,fish
-Fish and Wildlife Compensation Program,replace,fish and wildlife compensation program
-Fish and Wildlife Recreation and Allocation,replace,fish and wildlife recreation and allocation
+fish and wildlife compensation program,replace,fish and wildlife
+fish and wildlife recreation and allocation,replace,fish and wildlife
+Fish Collection Permit Data,replace,fish collection permit data
 Fish Count,replace,fish count
 Fish Distribution,replace,fish distribution
-Fisheries Sensitive Watersheds,replace,fisheries sensitive watershed
+Fish Farms,replace,fish farms
 Fish Habitat,replace,fish habitat
-Fish Habitat Distribution,replace,fish habitat distribution
+Fish Inventory,replace,fish inventory
 fish locations,replace,fish location
 fish observations,replace,fish observation
 fish occurrences,replace,fish occurrence
+Fish Potential Watersheds,replace,fish potential watersheds
 Fish Presence,replace,fish presence
 Fish Processing,replace,fish processing
 fish ranges,replace,fish range
+Fish Recce Survey,remove,
 Fish Reconnaisance Survey,replace,fish reconnaissance survey
+Fish Sampling,replace,fish sampling
 Fish Surveys,replace,fish survey
+Fisheries Sensitive Watersheds,replace,fisheries sensitive watershed
+FISS_LAKE_SURVEYS_SVW,remove,
 fixed-rate,replace,fixed rate
+Flammulated Owl,replace,flammulated owl
+Flight Lines,replace,flight lines
+Flightlines,replace,flightlines
 floating-rate,replace,floating rate
+Flood,replace,flood
+Flood Box,replace,flood box
+Flood Control,replace,flood control
+Flood Dykes,replace,flood dykes
+Flood Plain,replace,flood plain
+Flood Profile Points,replace,flood profile points
+Flood Protection Works,replace,flood protection works
+Floodplain,replace,floodplain
+Floodplain Mapping,replace,floodplain mapping
+Fluid Inclusion,replace,fluid inclusion
+FM Radio,replace,FM radio
+fn birch,replace,birch
+fnpc_rca,remove,
+Foliation,replace,foliation
+Food,replace,food
+Food or Wine Events,replace,food or wine events
 Food Processing,replace,food processing
+Footprint,replace,footprint
+Footprint Habitat Mapping,replace,footprint habitat mapping
+Forage,replace,forage
 Forecast,replace,forecast
 foreshore plants,replace,foreshore plant
 Forest,replace,forest
+Forest and Range Agreement,replace,forest and range agreement
 Forest Cover,replace,forest cover
 Forest Cover Polygon,replace,forest  cover polygon
+Forest Data,replace,forest data
+forest development plans,replace,forest development plan
 Forest districts,replace,forest district
+Forest Ecosystem Network,replace,forest ecosystem network
 forest fire perimeters,replace,forest fire perimeter
 forest fires,replace,forest fire  
 Forest Health,replace,forest health
+Forest Health Factor,replace,forest health factor
+Forest Kerr Area,replace,forest Kerr Area
+Forest Licence,replace,forest licence
 Forest regions,replace,forest region
+Forest Tenure,replace,forest tenure
 Forestry,replace,forestry
 Forests,replace,forest
-Forest Stewardship Plans,replace,forest stewardship plan
-Forest Tenure,replace,forest tenure
+Foresty,replace,foresty
 forms,replace,form
+forrds,remove,
+Fort Nelson Foest District,replace,Fort Nelson Forest District
 foundation skills,replace,foundation skill
 Francophone,replace,francophone
+fraser lowland,replace,Fraser Lowland
+fraser river,replace,Fraser River
+frbc,replace,FRBC
 Freedom of Information,replace,freedom of information
-french,replace,French
 french immersion,replace,French immersion
+Fresh Water Atlas,replace,freshwater atlas
 Freshwater,replace,freshwater
 Freshwater Altas,replace,freshwater atlas
 Freshwater Atlas,replace,freshwater atlas
-Fresh Water Atlas,replace,freshwater atlas
+Freshwater Classification,replace,freshwater classification
 Fressh Water Atlas,replace,freshwater atlas
+Frog,replace,frog
+frogs,replace,frogs
 Front Counter BC,replace,FrontCounter BC
+frshore,remove,
 fsa,replace,FSA
+fsh_dist,remove,
+FSHB3199987,remove,
+FSHB3199987_1,remove,
 FTEs,replace,FTE
 Fuel Hazard Assessment,replace,fuel hazard assessment
 full-time equivalent,replace,full time equivalent
@@ -642,119 +905,240 @@ Full-time Equivalent,replace,full time equivalent
 Fulmars,replace,fulmar
 Function,replace,function
 Funding,replace,funding
+g2g,remove,
+Galena Lead,replace,galena lead
+Galena Lead Isotopes,replace,galena lead isotopes
+Garnet,replace,garnet
 Gas,replace,gas
+Gasoline,replace,gasoline
 Gazetteer,replace,gazetteer
+Geese,replace,geese
 Gemstones,replace,gemstone
 General,replace,general
 general requests,replace,general request
+Geochemical Associations,replace,geochemical associations
 Geochemistry,replace,geochemistry
+Geochronology,replace,geochronology
+Geochronology Neodymium Isotopes,replace,geochronology neodymium isotopes
+Geochronometry,replace,geochronometry
+Geodatabase,replace,geodatabase
 Geodetic Control,replace,geodetic control
 Geoenvironmental Mapping,replace,geoenvironmental mapping
+Geoenvironmental Ore Deposit Model,replace,geoenvironmental ore deposit model
 geographical names,replace,geographical name
+Geography Mapping,replace,geography mapping
+Geologic Mapping,replace,geologic mapping
+Geologic Setting,replace,geologic setting
 Geological Formation,replace,geological formation
+Geological Hazards,replace,geological hazards
 Geology,replace,geology
 Geomorphology,replace,geomorphology
+Geophysics,replace,geophysics
 Geoscientific Maps,replace,geoscientific map
 Geospatial,replace,geospatial
 Geothermal,replace,geothermal
+Geothermal Energy,replace,geothermal energy
 Geothermal Tenure,replace,geothermal tenure
 german,replace,German
 Gerogia Basin,replace,Georgia Basin
 Giant Kelp,replace,giant kelp
+gif,replace,GIF
 girls,replace,girl
 Glacial Drift,replace,glacial drift
+Glaciations,replace,glaciations
+Goal 2 proposed protected areas,replace,goal 2 proposed protected areas
+goal2,replace,goal 2
+Goat,replace,GOAT
+goat,replace,GOAT
+Goat Habitat,replace,goat habitat
+Goat Sightings,replace,goat sightings
+Goat sightings,replace,goat sightings
+goat winter habitat in parks cariboo,replace,goat winter habitat
+Goats,replace,goats
 Gold,replace,gold
+Gold Copper Molybdenum,replace,gold copper molybdenum
+Gold Silver,replace,gold silver
+Gold Silver Copper,replace,gold silver copper
+Gold Silver Lead Zinc,replace,gold silver lead zinc
+Gold Silver Mercury Arsenic,replace,gold silver mercury arsenic
+Golf Courses,replace,golf courses
+Goshawk,replace,goshawk
+Goshawk Nests,replace,goshawk nests
 Government,replace,government
+Government Decision,replace,government decision
+Government offices,replace,government offices
 Government transfers,replace,government transfer
 Government Transfers,replace,government transfer
+gps,replace,GPS
+GR,remove,
+grade 10,remove,
+grade 11,remove,
+grade 12,remove,
+grade 12 students,remove,
+Grade 3,remove,
+grade 3 - 4,remove,
+grade 3-4,remove,
+grade 4,remove,
+grade 7,remove,
+grade7,remove,
+grades,replace,grade
+grads,remove,
+graduate in year,remove,
 Grant,replace,grant
 grants,replace,grant
 Grants,replace,grant
+Granulite Facies,replace,granulite facies
 Graphics  and Printing,replace,graphics and printing
+Graphite,replace,graphite
 Grassland,replace,grassland
+Gravity Measurements,replace,gravity measurements
+Gray Wolf,replace,gray wolf
 Grazing Tenure,replace,grazing tenure
 Grazing Tenures,replace,grazing tenure
 Great Blue Herons,replace,great blue heron
 Greater,replace,greater
 Grebes,replace,grebe
+Green Zone,replace,green zone
+Grey Jay,replace,grey jay
 Grid,replace,grid
 Grid Block,replace,grid block
 Grids,replace,grid
 Grizzly,replace,grizzly
+Grizzly Bear,replace,grizzly bear
+grizzly bear habitat,replace,grizzly bear
+Grizzly Bears,replace,grizzly bear
+ground water quality chemistry,replace,groundwater quality chemistry
 Groundwater,replace,groundwater
 groundwater levels,replace,groundwater level
 groundwater observation wells,replace,groundwater observation well
-ground water quality chemistry,replace,groundwater quality chemistry
 Groundwater Reports,replace,groundwater report
 Group,replace,group
 Group Child Care,replace,group child care
+Grouse,replace,grouse
 Growth,replace,growth
 Growth and Yield,replace,growth and yield
 Growth and Yield Sample,replace,growth and yield sample
 Guardrail,replace,guardrail
+Guide,replace,guide
 Guide Outfitter,replace,guide outfitter
 Gulf islands,replace,Gulf Islands
+Gulls,replace,gulls
 Gypsum,replace,gypsum
+ha,remove,
 Habitat,replace,habitat
+Habitat Compensation Sites,replace,habitat compensation sites
 habitat features,replace,habitat feature
+Habitat Mapping,replace,habitat mapping
+Habitat Suitability,replace,habitat suitability
 habitat zones,replace,habitat zone
 Hair Styling,replace,hair styling
 Harbour Seals,replace,harbour seal
+Hardwoods,replace,hardwood
 Harvest,replace,harvest
 Harvesting,replace,harvest
 Hatcheries,replace,hatchery
 Haulouts,replace,haulout
 Haycutting Tenure,replace,haycutting tenure
 Haycutting Tenures,replace,haycutting tenure
+Hazards,replace,hazard
+hb,remove,
 Headcount,replace,headcount
 Health,replace,health
 Health Care Professionals,replace,health care professional
+Health practitioners,replace,health practitioners
 Health Services,replace,health services
 Healthy Living,replace,healthy living
 Heart Failure,replace,heart failure
+Heat,replace,heat
+Heating,replace,heating
 heatlh data,replace,health data
+Heavy,replace,heavy
 hectares,replace,hectare
+Heights of Land,replace,height of land
 Heli-Skiing,replace,heli-skiing
+hello,remove,
 Hemlock,replace,hemlock
+Herbicide,replace,herbicide
 heritage trails,replace,heritage trail
+Heron,replace,heron
+Heron Colonies,replace,heron colonies
+Heron colonies,replace,heron colonies
+Heron Nest Locations,replace,heron nest locations
+Herptile,replace,herptile
 Herring,replace,herring
-high schools,replace,high school
+hfp,replace,HFP
+High Alumina Amphibolite,replace,high alumina amphibolite
+High Elevation Range,replace,high elevation range
+High Elevation Winter,replace,High Elevation Winter Range
 Highway Profile,replace,highway profile
 Highway Reference Point,replace,highway reference point
 highways,replace,highway
+Hiking,replace,hiking
+Hiking capability,replace,hiking capability
+Hillshade,replace,hillshade
+Historic,replace,historic
 historical trails,replace,historical trail
+HLP_SA,remove,
+HoL,replace,height of land
 Holding Areas,replace,holding area
 Holistic Nutritionist,replace,holistic nutritionist
 Home,replace,home
+Home or Garden Events,replace,home or garden events
 Homicide,replace,homicide
 Horsefly,replace,horsefly
-Horsefly Forest District,replace,horsefly forest district
 Hospital,replace,hospital
 Hospitality,replace,hospitality
+Hot Springs,replace,hot springs
 households,replace,household
+https,remove,
 Hunting,replace,hunting
 Hunting opportunity,replace,hunting opportunity
 hwy,replace,HWY
+HYDRO,replace,hydro
+Hydro,replace,hydro
 Hydrocarbons Pools,replace,hydrocarbon pool
+Hydroelectric Impacts,replace,hydroelectric impacts
+Hydrogeochemistry,replace,hydrogeochemistry
 Hydrogeology,replace,hydrogeology
-Hydrology,replace,hydrology
+HYDROGRAPHY,replace,hydrography
 Hydrometric,replace,hydrometric
+Hydrothermal,replace,hydrothermal
+Hydrothermal Alteration,replace,hydrothermal alteration
+Hydrothermal Deposits,replace,hydrothermal deposits
 Hypertension,replace,hypertension
+Hypsography,replace,hypsography
+Ice,replace,ice
+Ice Flow History,replace,ice flow history
 idmi,replace,IDMI
+ILK SITE,replace,ILK site
+ILK STAND,replace,ILK stand
 Imagery,replace,imagery
+Immigrants Services,replace,immigrants services
+Impact,replace,impact
+Impacts,replace,impacts
+Important Habitat,replace,important habitat
 Imposed,replace,imposed
-Incidental Observations,replace,incidental observation
 incident locations,replace,incident location
 Incident Management,replace,incident management
+Incidental Observations,replace,incidental observation
+Inclusion,replace,inclusion
+Inclusions,replace,inclusions
 Income,replace,income
 Income Assistance,replace,income assistance
 Incorporation date,replace,incorporation date
 independent schools,replace,independent school
 Index,replace,index
+Index system,replace,index system
+Indian reserve,replace,Indian Reserve
+Indian Reserves,replace,Indian Reserve
 Indicator,replace,indicator
 individuals,replace,individual
+individuals appointed to public service by order in council,remove,
+individuals appointed under Public Service Act,remove,
+Industrial and coal deposits,replace,industrial and coal deposits
 Industrial Minerals,replace,industrial mineral
 Industry,replace,industry
+Inel Deposit,replace,inel deposit
 Infant Deaths,replace,infant death
 infants,replace,infant  
 Influenza,replace,influenza
@@ -767,61 +1151,108 @@ Insect,replace,insect
 Insurance,replace,insurance
 intakes,replace,intake
 Interest,replace,interest
+Interest Areas,replace,interest areas
 interest rates,replace,interest rate
+interests,replace,interest areas
 Interior,replace,interior
+Intermontane Belt,replace,intermontane belt
 Internal Recoveries,replace,internal recovery
 Interpretive Forest,replace,interpretive forest
 Intrinsic Vulnerability,replace,intrinsic vulnerability
+Intrusion Related Mineralization,replace,intrusion related mineralization
+Intrusions,replace,intrusion
+Invasive Alien Plants,replace,invasive alien plants
+Invasive Plants,replace,invasive plants
 Inventory,replace,inventory
+Inventory Ground Sample,replace,inventory ground sample
 inventory units,replace,inventory unit
 investigations,replace,investigation
 Investment,replace,investment
 Ischemic,replace,ischemic
+Island Intrusions,replace,island intrusions
 isolines,replace,isoline
+Isotope,replace,isotope
+Isotropic Relationships,replace,isotropic relationships
 Jade,replace,jade
 japanese,replace,Japanese
-Jobs,replace,job
+Japanese Scallop,replace,Japanese scallop
 job seekers,replace,job seeker
+jpg,remove,
 Judge,replace,judge
 Justice,replace,justice
 k-12 schools,replace,k-12 school
-kamloops,replace,Kamloops
+kamloops district,replace,Kamloops District
+kamloops TSA,replace,Kamloops TSA
+Karst,replace,karst
+Karst Potential Mapping,replace,karst potential mapping
+Kayak,replace,kayak
 Kelp Beds,replace,kelp bed
+Key Ecosystem,replace,key ecosystem
+KEYWORDS,remove,
+K-file,remove,
+Kindergarten schools,replace,kindergarten schools
 kml,replace,KML
+Knowledge Based Systems,replace,knowledge based systems
+known fish distribution point,replace,known fish distribution
 Known Fish Distribution Points,replace,known fish distribution point
+known fish distribution zone,replace,known fish distribution
 Known Fish Distribution Zones,replace,known fish distribution zone
 kokanee,replace,Kokanee
 Labor,replace,labour
 laboratories,replace,laboratory
 laboratory,replace,laboratory 
 Labour,replace,labour
+Labour Labor,remove,
+labour market job employment occupation forecast,remove,
 labs,replace,lab
-lakes,replace,lake
-Lakeshore Management Zones,replace,lakeshore management zone
+Lake classifications,replace,lake classifications
+Lake Depth Maps,replace,lake depth maps
+Lake Depths,replace,lake depths
+lake management buffers,replace,lake management buffer
+Lake Management Zones,replace,lake management zones
+Lake Sediment Analysis,replace,lake sediment analysis
+Lake Sediment Geochemistry,replace,lake sediment geochemistry
+Lake Sediment Sampling,replace,lake sediment sampling
 Lake Survey,replace,lake survey
+Lake Survey Maps,replace,lake survey maps
+Lake Water Geochemistry,replace,lake water geochemistry
+Lakes Classification,replace,lakes classification
+Lakeshore Management Zones,replace,lakeshore management zone
 Land,replace,land
+Land Acquisition,replace,land acquisition
+Land and Resource Management Plans,replace,Land and Resource Management Plan
+Land Claim settlement Area,replace,land claim settlement area
+Land Claim Stlmnt area,replace,land claim settlement area
 Land Cover,replace,land cover
-Landform,replace,landform
 land forms,replace,landform
 Land Management,replace,land management
-Landmark Kilometre Inventory,replace,landmark kilometre inventory
-Landmarks,replace,landmark  
+LAND MASS,replace,land mass
 Land Officer,replace,land officer
 Land Ownership,replace,land ownership
 Land Plats,replace,land plat
-Landsat,replace,landsat
-Landscape Unit,replace,landscape unit
-Landscape Units of British Columbia,replace,landscape units of British Columbia
-Landslides,replace,landslide
 Land Status,replace,land status
-Land Use,replace,land use
-Landuse Plan,replace,land use plan
+Land Statusing,replace,land statusing
+Land Use Maps,replace,land use maps
 Land Use Plan,replace,land use plan
-Land Use Plans,replace,land use plan
-large mammals,replace,large mammal
+Land Use Planning,replace,land use planning
+Landcover,replace,landcover
+Landform,replace,landform
+Landforms,replace,landforms
+Landmark Kilometre Inventory,replace,landmark kilometre inventory
+Landmarks,replace,landmark  
+Landsat,replace,landsat
+Landscape,replace,landscape
+Landscape Unit,replace,landscape unit
+Landslides,replace,landslide
 Larvae,replace,larvae
+Late French Immersion,replace,late French Immersion
+LATITUDE,replace,latitude
 Lawyer,replace,lawyer
+ldgr_rca,remove,
 Lead,replace,lead
+Lead Fingerprint,replace,lead fingerprint
+Lead Isotopes,replace,lead isotopes
+Legal,replace,legal
 Legal Name,replace,legal name
 Legal Objectives,replace,legal objective
 Legal Planning Objectives,replace,legal planning objective
@@ -829,42 +1260,86 @@ Legislation,replace,legislation
 LEH Zones,replace,LEH zone
 LEH Zones Polygon,replace,LEH zones polygon
 Levees,replace,levee
+lgwr dmc,remove,
 Liabilities,replace,liability
 Liability,replace,liability
 libraries,replace,library
+Licensee,replace,licensee
 Licenses,replace,license
+Licensing,replace,licensing
+Light,replace,light
+lillooet,replace,lillooet
 Lime,replace,lime
+Limestone,replace,limestone
 Limited Entry Hunt,replace,limited entry hunt
 Limits,replace,limit
+Line of Sight,replace,line of sight
 Linear Safety Feature,replace,linear safety feature
 Lines,replace,line
+linv_dmc,remove,
 Liquor,replace,liquor
 Liquor Control,replace,liquor control
+Lithogeochemistry,replace,lithogeochemistry
+Lithology,replace,lithology
+lithology,replace,lithology
+Lithostratigraphy,replace,lithostratigraphy
 Livebirth,replace,live birth
 Liver Disease,replace,liver disease
+Livestock,replace,livestock
+lk bufs,replace,lake buffer
+Llithostratigraphy,replace,llithostratigraphy
 lmzs,replace,LMZS
+Local Correlation,replace,local correlation
 Local Government,replace,local government
 locations,replace,location
+Lode gold Deposits,replace,lode gold deposits
+Log Handling,replace,log handling
+Log Storage,replace,log storage
+Logging,replace,logging
+LONGITUDE,replace,longitude
 Long-Term,replace,long-term
 Loons,replace,loon
+Lot,replace,lot
 Low Birthweight,replace,low birthweight
+lowermainland,replace,Lower Mainland
+lrmp,replace,LRMP
+lslim_r5,remove,
+lswr_r5,remove,
+lu,replace,LU
 Lumber,replace,lumber
 Lung,replace,lung
+Lung Disease from External Agents,remove,
+lup,replace,LUP
+lup data,replace,LUP data
+lwbc,replace,LWBC
+lwlim_r5,remove,
 Lymph,replace,lymph
+m rata,replace,M RATA
 Macrocystis,replace,macrocystis
 Macro-reaches,replace,macro-reach
 Magnesitic Dolomite,replace,magnesitic dolomite
+Magnetic Profiling,replace,magnetic profiling
+Magnetometry,replace,magnetometry
 Maintenance Class,replace,maintenance class
+Major Mineral Deposits,replace,major mineral deposits
 Major Project,replace,major project
 Major Project Inventory,replace,major project inventory
 major rivers,replace,major river
 Major Watersheds,replace,major watershed
+Mammal,replace,mammal
+Mamu,replace,MAMU
+mamu,replace,MAMU
+MAMU Suitability,replace,MAMU suitability
+Man made Features,replace,man made features
+man made waterbodies,replace,man made waterbodies
+Managed Licence Poly,replace,managed licence poly
 Management,replace,management
 management areas,replace,management area
 Management Initiatives,replace,management initiative
 management trails,replace,management trail
 management zones,replace,management zone
 mandarin chinese,replace,Mandarin Chinese
+Manilla Clams,replace,Manilla clams
 manual snow courses,replace,manual snow course
 Map Notation,replace,map notation
 Mapping,replace,mapping
@@ -875,128 +1350,334 @@ Mapsheet Grid,replace,mapsheet grid
 Marbled Murrelets,replace,marbled murrelet
 Marine,replace,marine
 Marine Birds,replace,marine bird
+Marine Boundary,replace,marine boundary
+Marine Boundary Options,replace,marine boundary options
 Marine Ecosections,replace,marine ecosection
 Marine Ecounits,replace,marine ecounit
+Marine Events,replace,marine events
 Marine Flora,replace,marine flora
+Marine Geology,replace,marine geology
 marine mammals,replace,marine mammal
 marine Mammals,replace,marine mammal
+Marine parks,replace,marine parks
 Marine Plant,replace,marine plant
+Marine Protected Areas,replace,marine protected areas
 Marriage,replace,marriage
+Marsh Buffer,replace,marsh buffer
+Marten Capabiltiy,replace,marten capabiltiy
 Massage Shiatsu,replace,massage shiatsu
+Massage Therapie,replace,massage therapie
 Massage Therapist,replace,massage therapist
+Massage therapy,replace,massage therapy
+Massive Sulphide,replace,massive sulphide
+Massive Sulphides,replace,massive sulphide
 maturities,replace,maturity
 mcfd,replace,MCFD
-mcfd region,replace,MCFD region
 mdwr,replace,MDWR
+Me,remove,
 Measures,replace,measure
+Mechanical Treatment,replace,mechanical treatment
 Medias and Communication,replace,media and communication
 Medical,replace,medical
 Medical Benefits,replace,medical benefits
+men,remove,
+Ment,remove,
+Merged,replace,merged
 Mesh,replace,mesh
+Meso Carnivors,replace,meso carnivors
+Mesothermal,replace,mesothermal
+Mesothermal Gold,replace,mesothermal gold
+Mesothermal Vein,replace,mesothermal vein
 meta data,replace,metadata
+Metal Deposits,replace,metal deposits
 Metal Shipments,replace,metal shipment
 Metal Values,replace,metal value
+Metal Zoning,replace,metal zoning
+Metallic,replace,metallic
+Metallic Minerals,replace,metallic minerals
+Metallogenesis,replace,metallogenesis
+Metallogeny,replace,metallogeny
+metatag,remove,
 Meteorological,replace,meteorological
 meter,replace,metre
 Methane,replace,methane
+metres Geodetic,replace,metres geodetic
+Metropolitan,replace,metropolitan
+mid coast,replace,Mid Coast
+Mid Coast British Columbia,replace,Mid Coast
+Middle and junior high schools,replace,middle and junior high schools
 middle schools,replace,middle school
-minerals,replace,mineral
+Migration,replace,migration
+MILE,replace,mile
+Military Reserves,replace,military reserves
+Mine Geology,replace,mine geology
+Mine Production,replace,mine production
+Mineral and Coal,replace,mineral and coal
+Mineral Assessment Tract,replace,mineral assessment tract
+Mineral Claims,replace,mineral claim
+Mineral Database,replace,mineral database
+Mineral Deposit,replace,mineral deposits
+Mineral Deposits,replace,mineral deposits
+Mineral Exploration,replace,mineral exploration
+Mineral Inventory,replace,mineral inventory
+Mineral Locations,replace,mineral locations
+Mineral Occurences,replace,mineral occurrences
+Mineral Occurrence,replace,mineral occurrence
+Mineral Occurrences,replace,mineral occurrences
+Mineral occurrences,replace,mineral occurrences
+Mineral Potential,replace,mineral potential
+Mineral Properties Examination,replace,mineral properties examination
+Mineral Property Examination,replace,mineral properties examination
+Mineral Resource Assessment,replace,mineral resource assessment
+Mineral Resources,replace,mineral resources
+Mineral Taxation,replace,mineral taxation
+Mineral Tenures,replace,mineral tenure
 mineral titles,replace,mineral title
 Mineral Titles,replace,mineral title
+Mineralization,replace,mineralization
+Mineralogy,replace,mineralogy
+minerals,replace,mineral
 Mines,replace,mine
+MINFILE Reserves and Resources Inventory,replace,MINFILE
 Mining,replace,mining
+Mining History,replace,mining history
 Ministers,replace,Minister
 ministry,replace,Minister
+Ministry of Agriculture,remove,
+Ministry of Energy Mines and Petroleum,remove,
+Ministry of Environment,remove,
+Ministry of Forest,remove,
+Ministry of Tourism,remove,
+Ministry of Transportation,remove,
+Mixed,replace,mixed
+MK lines,replace,MK
+Mobile,replace,mobile
+Modiified,replace,modified
+moe,replace,MOE
+mof,replace,MOF
 Molybdenum,replace,molybdenum
+Molybdenum Deposits,replace,molybdenum deposits
+Monitoring,replace,monitoring
 Moose,replace,moose
-mot,replace,MOT
+Moose Management Unit,replace,moose management unit
+Moose_1400,remove,
+Morning,replace,morning
 MoT Assets,replace,MOT asset
 MOT Assets,replace,MOT asset
 MoT Inventory,replace,MOT inventory
 MOT Inventory,replace,MOT inventory
 Motor Vehicle,replace,motor vehicle
 Motor Vehicle Accidents,replace,motor vehicle accident
+Mouintain Goat,replace,mountain goat
 Moulting,replace,moulting
 Mounatin Caribou,replace,mountain caribou
 Mount,replace,mount 
 Mountain Caribou,replace,mountain caribou
+Mountain Goat,replace,mountain goat
+Mountain Pine Beetle,replace,mountain pine beetle
 Mountain Pine Beetle Salvage Area,replace,mountain pine beetle salvage area
+Mountains with established skiing and snowboarding facilities,replace,skiing and snowboarding facilities
 movements,replace,movement
 Moves While in Care,replace,moves while in care
+Mtn Goat,replace,mountain goat
+Mud Flats,replace,mud flats
+Mule Deer,replace,mule deer
+Multi Element,replace,multi element
+Multi level mixed schools between K 12,replace,multi level mixed schools between k 12
+Multi media surveys,replace,multi media surveys
+Multi purpose recreation activities,replace,multi purpose recreation activities
+Multivariate Data,replace,multivariate data
 Municipal,replace,municipal
+Municipal Boundaries,replace,municipal boundaries
+Municipal Police,replace,municipal police
 Municipalities,replace,municipality
 Municipality,replace,municipality
+Music,replace,music
 Muskwa Access,replace,Muskwa access
 Muskwa Kechika,replace,Muskwa-Kechika
+Muster Point,replace,Muster
+Muster Site,replace,Muster
+Nation,replace,nation
+NATIONAL PARKS,replace,national parks
+National Parks,replace,national parks
+National parks,replace,national parks
+Nations,replace,nation
+natl atlas,replace,national atlas
+Natural Acid Rock Drainage,replace,natural acid rock drainage
 Natural Gas,replace,natural gas
 Natural Range Barriers,replace,natural range barrier
 Natural Resource,replace,natural resource
 Natural Resource Operations,replace,natural resource operation
 natural resources,replace,natural resource
+Nature or Animals Events,replace,nature or animals events
+Navigation,replace,navigation
+Near Shore Mineral Resources,replace,near shore mineral resources
 Neighbourhood,replace,neighbourhood
+Neotectonics,replace,neotectonics
 Nereocystis,replace,nereocystis
 Nesting,replace,nesting
 Nests,replace,nest
 Net Debt,replace,net debt
 Net Financial Assets,replace,net financial assets
+Network,replace,network
 new buildings,replace,new building
 new cases,replace,new case
+non,remove,
+Non Farm Use,replace,non farm use
+non productive,replace,non-productive
+Non Replaceable Forest License,replace,non replaceable forest license
+non-BC,remove,
 Non-Financial,replace,nonfinancial
 non-legal,replace,nonlegal
 Nonmalignant,replace,nonmalignant
-non productive,replace,non-productive
+Non-Recurrence of Child Neglect and-or Abuse,remove,
 North,replace,north
+north coast,replace,North Coast
+northeast,replace,Northeast
 Northern,replace,northern
+northern caribou,replace,Northern Caribou
 Northern Fur,replace,northern fur
+Northern Goshawk,replace,northern goshawk
 Notional,replace,notional
+Noxious Weeds,replace,noxious weeds
+NRS Regional Subregional Boundaries,remove,
 Nursing Home,replace,nursing home
+Obsolete,replace,obsolete
 obstacles,replace,obstacle
 obstructions,replace,obstruction
 occupations,replace,occupation
 occurrences,replace,occurrence
 Oceanography,replace,oceanography
 odsi,replace,ODSI
+offences,replace,offence
+ogma,replace,OGMA
+ohotography index orthophoto,remove,
 Oil,replace,oil
+Oil and Gas,replace,oil and gas
 Oil and Gas Tenure,replace,oil and gas tenure
+Oil spill,replace,oil spill
 okanagan,replace,Okanagan
+oklrmp,remove,
+old growth management area,replace,Old Growth Management Area
+Old Growth Management Areas,replace,Old Growth Management Area
+Old growth management areas,replace,Old Growth Management Area
+old growth management areas,replace,Old Growth Management Area
+one,remove,
+online,remove,
 Open Government,replace,open government
 Open Information,replace,open information
-Opening,replace,opening
 Open Snowmobile Areas,replace,snowmobile area
+Opening,replace,opening
+Operability,replace,operability
 Operating,replace,operating
 Operating Costs,replace,operating cost
 operating grants,replace,operating grant
+Operating Mines,replace,operating mines
 Operations,replace,operation
-opportunities,replace,opportunity
+Opportunities,replace,opportunities
 Opportunity,replace,opportunity
 Optician,replace,optician
+OPTION 1,replace,Option 1
+Optometrie,replace,optometry
 Optometrist,replace,optometrist
+Optometry,replace,optometry
+Orchards,replace,orchards
 orders,replace,order
 organizations,replace,organization
 Ornithology,replace,ornithology
 ortho photo,replace,orthophoto
+osp,replace,OSP
+Other,remove,
 Other Expenses,replace,other expense
 Other External Causes,replace,other external cause
+Other Fish Species,replace,other fish species
 Other G.I.,replace,other G.I.
 Other Infectious Disease,replace,other infectious disease
 Other Malignancy,replace,other malignancy
 Other Respiratory,replace,other respiratory
-outcomes,replace,outcomes
 Out of Home Placement,replace,out of home placement
+outcomes,replace,outcomes
 overpayments,replace,overpayment
+Overview,replace,overview
 Overwintering,replace,overwintering
+Owl Sightings,replace,owl sightings
 Owner,replace,owner
+Owner and Operator,replace,owner and operator
 Ownership,replace,ownership
+p0005223,remove,
+p0005266,remove,
+p0005270,remove,
+p0105279,remove,
+p0105334,remove,
+p0105356,remove,
+p0205392,remove,
+p0205393,remove,
+p0205448,remove,
+p0205459,remove,
+p0205461,remove,
+p0205467,remove,
+p0205473,remove,
+p0205474,remove,
+p0305483,remove,
+p0305485,remove,
+p0305486,remove,
+p0305491,remove,
+p0305497,remove,
+p0305500,remove,
+p0305501,remove,
+p0305502,remove,
+p0305506,remove,
+p0305509,remove,
+p0305510,remove,
+p0305511,remove,
+p0305513,remove,
+p0305519,remove,
+p0305521,remove,
+p0305525,remove,
+p0305528,remove,
+p0305533,remove,
+p0305536,remove,
+p0305540,remove,
+p0305543,remove,
+p0305544,remove,
+p0405548,remove,
+p0405550,remove,
+p0405551,remove,
+p0405554,remove,
+p0405558,remove,
+p0405561,remove,
+p0405562,remove,
+p0405564,remove,
+p0405565,remove,
+p05,remove,
+p05 0051,remove,
+p0505569,remove,
+p0505570,remove,
+p0505571,remove,
+p0505574,remove,
+p0505586,remove,
+p0505587,remove,
+p0505593,remove,
+p0605599,remove,
+pa,remove,
+PA MARCH14E,remove,
 Pacific White Sided,replace,pacific white-sided dolphin
 Pain management,replace,pain management
-parcels,replace,parcel
+Paleozoic,replace,paleozoic
+Panels,replace,panels
+Paragenesis,replace,paragenesis
 Parent Material,replace,parent material
 Park,replace,park
 Parkinsons Disease,replace,Parkinson's disease
-Parks,replace,park
 Parks and Protected Areas,replace,parks and protected area
 Partition,replace,partition
+pas,replace,PAS
+Past Production,replace,past production
 Pastures,replace,pasture
+Patch Analysis,replace,patch analysis
+Patch Assessment,replace,patch assessment
+Path,replace,path
+Paths,replace,path
 Patient,replace,patient
 Patients,replace,patient
 payees,replace,payee
@@ -1005,6 +1686,11 @@ Payments,replace,payment
 Peace,replace,peace
 Pelagic,replace,pelagic
 Pelagic Birds,replace,pelagic bird
+PEM 20,replace,PEM
+PEM 20K,replace,PEM
+PEM 50,replace,PEM
+PEM 50K,replace,PEM
+Perlite,replace,perlite
 Permanent Sample Plot,replace,permanent sample plot
 Permit,replace,permit
 permits,replace,permit
@@ -1014,7 +1700,12 @@ Pest,replace,pest
 Pest Infestation,replace,pest infestation
 Pests,replace,pest
 Petrels,replace,petrel
+Petrochemistry,replace,petrochemistry
+Petrography,replace,petrography
 Petroleum,replace,petroleum
+Petroleum Tenure,replace,petroleum tenure
+Petrology,replace,petrology
+pflb_rca,remove,
 pharmacies,replace,pharmacy
 phones,replace,phone
 Physical,replace,physical
@@ -1022,98 +1713,184 @@ Physical Equity,replace,physical equity
 Physicians,replace,physician
 Physiography,replace,physiography
 Physiotherapist,replace,physiotherapist
+Physiotherapy,replace,physiotherapy
 Pilot,replace,pilot
 Pine Beetle,replace,pine beetle
-pipelines,replace,pipeline
-place names,replace,place name
+pinegroup,replace,pine group
+pir,replace,PIR
+Pits,replace,pit
+Place Names,replace,place names
+Place names,replace,place names
+Placer,replace,placer
 Plan,replace,plan
+PLANIMETRY,replace,planimetry
 Planning,replace,planning
+Planning Areas,replace,planning areas
+Planning Boundaries,replace,planning boundaries
+Planning Cell,replace,planning cell
+Planning Cells,replace,planning cells
+Planning File,replace,planning file
 Plans,replace,plan
+Plant Communities,replace,plant communities
 Planting,replace,planting
 Plat,replace,plat
 Plats,replace,plat
+Plot Points,replace,plot points
 Pneumonia,replace,pneumonia
+pod,replace,POD
 Point of Diversion,replace,point of diversion
 Points of Diversion,replace,point of diversion
 Poisoning,replace,poisoning
 Police,replace,police
-polygons,replace,polygon
+Police jurisdictions,replace,police jurisdictions
+Polygons,replace,polygons
+Polymetallic Sulphides,replace,polymetallic sulphides
 Pool,replace,pool
 Pools,replace,pool
-Population,replace,population
+Poplar,replace,poplar
+Populated Places,replace,populated places
 Population Counts,replace,population count
+Porphyry,replace,porphyry
+Porphyry Copper,replace,porphyry copper
+Porphyry Copper Gold,replace,porphyry copper gold
+Porphyry Cu,replace,porphyry copper
+Poryphyry Copper,replace,poryphyry copper
 Post-secondary,replace,post-secondary
+Potassic Alteration,replace,potassic alteration
+Potential Highway,replace,potential highway
+Potential Log Handling,replace,potential log handling
 Powell,replace,Powell
+Power Transmission,replace,power transmission
 Practitioners,replace,practitioner
+Precious Metals,replace,precious metals
+Precious Opal,replace,precious opal
+Precipitation Gauge,replace,precipitation gauge
 Predictive Ecosystem Mapping,replace,predictive ecosystem mapping
 pre-K,replace,pre-k
-pre-school,replace,preschool
+Preliminary Evaluation,replace,preliminary evaluation
+Preliminary Geology,replace,preliminary geology
+Premier Porphyry,replace,premier porphyry
 Preschool,replace,preschool
+pre-school,replace,preschool
 Preschool and Group Child Care,replace,preschool and group child care
 Preterm,replace,preterm
+Prevention,replace,prevention
 Price,replace,price
 Priority Habitat,replace,priority habitat
+Private,replace,private
+Probability Plots,replace,probability plots
 Program,replace,program
 programs,replace,program
 Project,replace,project
+Project Areas,replace,project areas
 Promotional Artifacts,replace,promotional artifact
 Properties,replace,property
 Property,replace,property
+Property rights,replace,property rights
+Proposed Roads,replace,proposed roads
+Proposed Roads Final,replace,proposed roads
 prosecutions,replace,prosecution
 Prostate,replace,prostate
-Protected Areas,replace,protected area
+Protected Area Strategy,replace,protected area strategy
+Protected Areas Strategy,replace,protected area strategy
 Protected River,replace,protected river
+Protection Areas,replace,protection areas
 Protection Reports,replace,protection report
+prov alb,remove,
+Provenance,replace,provenance
+Province,replace,province
 Province of BC,replace,Province of British Columbia
-Provincial,replace,provincial
+Provincial Digital Road Atlas,replace,provincial digital road atlas
+Provincial Heritage Register,replace,provincial heritage register
+Provincial Parks,replace,provincial parks
+Provincial police boundaries,replace,provincial police boundaries
 Pruning,replace,pruning
+PSP Tile,replace,PSP tile
 Psychologist,replace,psychologist
+Psychotherapie,replace,psychotherapy
+Ptarmigan Zone,replace,ptarmigan zone
+pub,replace,public
 public accounts,replace,public account
+Public Buildings,replace,public buildings
 Public Safety,replace,public safety
 public schools,replace,public school
 Pulmonary Fibrosis,replace,pulmonary fibrosis
 Pulpwood,replace,pulpwood
 Pumice,replace,pumice
+Pumpstation,replace,pumpstation
 punjabi,replace,Punjabi
+Pyrite,replace,pyrite
+Pyritization,replace,pyritization
+Pyrophylite,replace,pyrophylite
+Pyroxenite,replace,pyroxenite
+qcap_r5,remove,
+qsnw_rca,remove,
+qsoi_bc,remove,
+Quarries,replace,quarries
 Quarter,replace,quarter
+Quarternary Stratigraphy,replace,quarternary stratigraphy
 Quartz,replace,quartz
+Quartz Stockwork,replace,quartz stockwork
+Quartz Vein,replace,quartz vein
+Quartz Veins,replace,quartz vein
+Quaternary,replace,quaternary
+Quaternary Geology,replace,quaternary geology
 Quaternary Material,replace,quaternary material
 Quaternary Sediment,replace,quaternary sediment
+Quatsino Sound Projec,replace,Quatsino Sound Project
+r1,remove,
+RA,remove,
+RAAD Remote Access to Archaeological Data IMF application,replace,RAAD
+Racehorse Showings,replace,racehorse showings
 Radiation Oncology,replace,radiation oncology
+Radio,replace,radio
+Radio Collars,replace,radio collars
+Radio on,replace,radio on
+Radio Towers,replace,radio towers
 rafting areas,replace,rafting area
+Rail stations,replace,rail stations
 Railroad Crossing,replace,railroad crossing
-railways,replace,railway
 Range,replace,range
 Range Administrative Areas,replace,range administrative area
 Range Developments,replace,range development
 Range Improvements,replace,range improvement
 Range Infrastructure,replace,range infrastructure
-Rangeland,replace,rangeland
-Rangeland Management,replace,rangeland management
 Range Pastures,replace,range pasture
+Range Polygon,replace,range polygon
+Range Program,replace,range program
 Range Tenure,replace,range tenure
 Range Tenures,replace,range tenure
 Range Units,replace,range unit
+Rangeland,replace,rangeland
+Rangeland Management,replace,rangeland management
 Raptors,replace,raptor
 Rare,replace,rare
+Raster,replace,raster
 Rate,replace,rate
 Rates,replace,rate
+re establish access to habitat,replace,reestablish access to habitat
 Reach Breaks,replace,reach break
 Real,replace,real
 Real Estate,replace,real estate
+Rec,replace,rec
+Rec Closure,replace,rec closure
+Rec Points,replace,rec points
+Recent Mineral Exploration,replace,recent mineral exploration
 Recharge Zone,replace,recharge zone
 recipe pairings,replace,recipe pairing
+Reconnaisance,replace,reconnaisance
 Reconnaissance Photography,replace,reconnaissance photography
 Recovery Area,replace,recovery area
 Recreation,replace,recreation
-Recreational Harvesting,replace,recreational harvesting
 Recreation Areas,replace,recreational area
-Recreation Polygon,replace,recreation polygon
-Recreation Reserve,replace,recreation reserve
-Recreation Site,replace,recreation site
-recreation trails,replace,recreation trail
+Recreation Sports Events,replace,recreation sports events
+Red list,replace,red list
+Red Listed Species,replace,red listed species
+Red tailed Chipmunk,replace,red tailed chipmunk
 Red Tape,replace,red tape
-references,replace,reference
+Redesign Advantages,replace,redesign advantages
+Redesign Objectives,replace,redesign objectives
+Referral and Permitting process,replace,referral and permitting process
 Reforestation,replace,reforestation
 Refreshment Beverage,replace,refreshment
 refugees,replace,refugee
@@ -1123,56 +1900,101 @@ Regional,replace,regional
 Regional Boundaries,replace,regional boundary
 Regional District,replace,regional district
 Regional Geochemical Survey,replace,regional geochemical survey
+Regional Geochemical Survey Program,replace,regional geochemical survey program
+Regional Geology,replace,regional geology
+Regional Mapping,replace,regional mapping
+Regional Stream Sediment Survey,replace,regional stream sediment survey
+Regionally Significant,replace,regionally significant
+Regionally Significant Fish Species,replace,regionally significant fish species
 Regions,replace,regions
 Registered Clinical Counselor,replace,registered clinical counselor
 Registered Occupational Therapist,replace,registered occupational therapist
 Registered Social Worker,replace,registered social worker
 registrations,replace,registration
+Registry,replace,registry
 Regulations,replace,regulation
 Regulatory Reform,replace,regulatory reform
 reimbrsement,replace,reimbursement
+Relative Timber Value,replace,relative timber value
 releases,replace,release
 Remote imagery,replace,remote imagery
+Remote Sensing,replace,remote sensing
 renovations,replace,renovation
+Repeater,replace,repeater
+repha,remove,
 Report,replace,report
-Reports,replace,report
 Report to Crown Council,replace,report to crown council
+Representative Hectares,replace,representative hectares
 Request Permission,replace,request permission
+Research,replace,research
 reserves,replace,reserve
 Reserves,replace,reserve
 Resevoir,replace,reservoir
 residents,replace,resident
+Resort Development,replace,resort development
+Resource,replace,resource
+Resource development zones,replace,resource development zones
+Resource Management,replace,resource management
 Resource Management Units,replace,resource management unit
+Resource Management Zones,replace,resource management zones
+Resource Opportunities,replace,resource opportunities
+Resources,replace,resource
+resources,replace,resource
 Respite Services,replace,respite services
 Rest Area,replace,rest area
 Restaurant,replace,restaurant
 Restaurant and Catering Services,replace,restaurant and catering service
+Restaurants,replace,restaurants
+Resultant,replace,resultant
+Resultant File,replace,resultant file
 Results by Area,replace,results by area
 Retail,replace,retail
+Retail stores,replace,retail stores
 Retaining Wall,replace,retaining wall
+Retired,replace,retired
+Retrograde Skarn,replace,retrograde skarn
 Revenue,replace,revenue
 reviews,replace,review
 Rheumatic,replace,rheumatic
+Rhyolite,replace,rhyolite
+Rhyolitic Tuffaceous,replace,rhyolitic tuffaceous
+right of ways,replace,right of way
 Riparian,replace,riparian
-River,replace,river
+Rivers and Streams,replace,rivers and streams
+rmz,replace,RMZ
+RMZ DEC00,replace,RMZ
+Road,replace,road
+Road Density Model,replace,road density model
 Road Features Inventory,replace,road features inventory
-Roads,replace,roads
+Road Lines,replace,road lines
+Road network,replace,road network
 Road Structure,replace,road structure
 Road Surface Type,replace,road surface type
+ROADS,replace,road
+roads,replace,road
+Rock Properties,replace,rock properties
+Rockies,remove,
 rocks,replace,rock
+Rocks to Riches,replace,rocks to riches
+rocky mountain,replace,Rocky Mountains
 Rocky mountain ridged mussel,replace,rocky mountain
-routes,replace,route
-Routes,replace,route
+Rog,remove,
+Rugged Terrain,replace,rugged terrain
 Safety,replace,safety
-Safety Feature,replace,safety feature
+Salamander,replace,salamander
+salamanders,replace,salamander
 Salaries,replace,salary
 Salary,replace,salary
 Sales,replace,sales
 Salmon,replace,salmon
 Salmon Hatcheries,replace,salmon hatchery
+Salmon Species,replace,salmon species
 Saltwater Finfish,replace,saltwater finfish
 Saltwater Fish,replace,saltwater fish
 Sample Tile,replace,sample tile
+Sampling Sites,replace,sampling sites
+Sand and Gravel,replace,sand and gravel
+Sand Hill Crane,replace,Sand Hill crane
 satellite camps,replace,satellite camp
 scholarship awards,replace,scholarship award
 scholarships,replace,scholarship  
@@ -1185,72 +2007,140 @@ school programs,replace,school program
 schools,replace,school
 Schools,replace,school
 Science,replace,science
-Seabirds,replace,seabirds
+Screening,replace,screening
+Seabird,replace,seabird
+seabirds,replace,seabird
 Sealions,replace,sealion
 seals,replace,seal 
+Search Routines,replace,search routines
+Secondary,replace,secondary
 secondary schools,replace,secondary school
 Section,replace,section
 Sections,replace,section
+SEDIMENT BASINS,replace,sediment basins
+Sediment Sampling,replace,sediment sampling
+Sedimentary Rocks,replace,sedimentary rocks
 Sedimentation,replace,sedimentation
 Seed,replace,seed
+Seedlot,replace,seedlot
 Seeds,replace,seed
+Seismic Profiles,replace,seismic profiles
+Seismic Reflection,replace,seismic reflection
 Select Seed,replace,select seed
+Seneca Deposit,replace,seneca deposit
 senior managers,replace,senior manager
+Senior Secondary,replace,senior secondary
 seniors,replace,senior  
 Sensitive,replace,sensitive
 Sensitive Area,replace,sensitive area
+Sensitive Data,replace,sensitive data
+Sensitive Ecosystem Inventory,replace,sensitive ecosystem inventory
 Sensitive Ecosystems,replace,sensitive ecosystem
 Sensitive Ecosystems Inventory,replace,sensitive ecosystems inventory
+Sensitive Habitat,replace,sensitive habitat
+Sensitive Site,replace,sensitive site
 Sensitive Stream,replace,sensitive stream
 Sensitivities,replace,sensitivity
 Sensitivity,replace,sensitivity
-Seral Stage,replace,seral stage
+Seral Stage Analysis,replace,seral stage analysis
 Service,replace,service
 Service Directory,replace,service directory
+service points,replace,service point
 services,replace,service
 Services,replace,service
+Settlement area,replace,settlement area
+Settlement Information and Support,replace,settlement information and support
+Settlement Services providers,replace,settlement services providers
+Shade,replace,shade
+Sharp Tailed Grouse,replace,sharp tailed grouse
+Shear Hosted Vein,replace,shear hosted vein
+Shear Vein,replace,shear vein
 Shearwaters,replace,shearwater
 Sheep,replace,sheep
 Shellfish,replace,shellfish
-Shorebirds,replace,shorebird
+Shellfish Capability,replace,shellfish capability
 Shore Spawning,replace,shore spawning
+Shorebirds,replace,shorebird
 Shorezone,replace,shorezone
 Short-Term,replace,short-term
 Shrub-steppe,replace,shrub-steppe
+Sightseeing and tour operators,replace,sightseeing and tour operators
+SIGN,replace,sign
 Sign Bridge,replace,sign bridge
+Silica Alteration,replace,silica alteration
+Silica Undersaturated,replace,silica undersaturated
 Silver,replace,silver
+Silver Gold Copper,replace,silver gold copper
+Silver Lead Copper Gold,replace,silver lead copper gold
+Silver Lead Zinc Barium Strontium Copper Gold,replace,silver lead zinc barium strontium copper gold
 Silviculture,replace,silviculture
 Silviculture Systems,replace,silviculture system
 Silviculture Treatments,replace,silviculture treatment
+Sinkhole,replace,sinkhole
+SITE,replace,site
+Site,replace,site
+Site Index,replace,site index
+Site Locations,replace,site locations
 Site Preparation,replace,site preparation
-sites,replace,site  
 Site Series,replace,site series
+Sites,replace,site
+six year completion,remove,
+six year dogwood completion,remove,
+Skarn,replace,skarn
+Ski Hill,replace,ski hill
+Ski Hills in British Columbia,replace,ski hill
 skill levels,replace,skill level
+Slashing,replace,slashing
 Slope,replace,slope
 Slope Stability,replace,slope stability
 Small Business,replace,small business
+Small Mammal,replace,small mammal
+Small Mammals,replace,small mammal
+Smoke,replace,smoke
+Smokehouse,replace,smokehouse
+Snip,replace,snip
+Snow,replace,snow
+Snow Stations,replace,snow stations
+snow surveys,replace,snow survey
 Snowmobile,replace,snowmobile
-snow pack,replace,snowpack
+snowmobile areas within mountain caribou,remove,
 Snowshed,replace,snowshed
 Soapstone,replace,soapstone
+Social,replace,social
 Social Development,replace,social development
+Social housing,replace,social housing
 Social Innovation,replace,social innovation
+Social Services,replace,social services
 soe,replace,SOE
+soi boundaries,remove,
 Soil,replace,soil
 Soil Capability,replace,soil capability
 Soil Classification,replace,soil classification
+Soil Erosion,replace,soil erosion
+Soil Geochemistry,replace,soil geochemistry
+Soil Suitability,replace,soil suitability
 Soils,replace,soil
 Soils Terrain and Ecosystems,replace,soils terrain and ecosystem
-Soil Suitability,replace,soil suitability
 Solicitor General,replace,solicitor general
+soscp_bndry,remove,
 Source,replace,source
-Southeast BC,replace,southeast BC
+South Ainslie watershed,replace,South Ainslie Watershed
+south coast,replace,South Coast
+South eastern BC,replace,Southeastern BC
+South Inner Coast Shorezone videos,replace,South Inner Coast Shorezone
+South Vancouver Island Shorezone videos,replace,South Vancouver Island Shorezone
 Southern,replace,southern
+southern BC,replace,Southern BC
+southern interior region,replace,Southern Interior Region
 Spacing,replace,spacing
 spanish,replace,Spanish
+Spatial Analysis Projects,replace,spatial analysis projects
 Spawning,replace,spawning
-Specialists,replace,specialist
+Spawning Sites,replace,spawning sites
+Special Fish Management,replace,special fish management
 Special Lane,replace,special lane
+Special Management Zones,replace,special management zones
+Specialists,replace,specialist
 specials,replace,special
 Species,replace,species
 Species at risk,replace,species at risk
@@ -1259,87 +2149,158 @@ Species Distribution Modeling,replace,species distribution modeling
 Species Inventory,replace,species inventory
 Specified Areas,replace,specified area
 Specified Areas for ungulate species,replace,specified areas for ungulate species
+Spectrum Claims,replace,spectrum claims
 Speech Therapist,replace,speech therapist
 Spending,replace,spending
+Sphalerite,replace,sphalerite
 Spirits,replace,spirits
+SPONGE,replace,sponge
 Sport,replace,sport
+Sport Fish,replace,sport fish
+Sport Fishing,replace,sport fishing
+Sportfish,replace,sport fish
 sports,replace,sport
 Springs,replace,spring
+Sr Wet,remove,
+srmp,replace,SRMP
+sry,remove,
 Staging,replace,staging
+Stand Structure,replace,stand structure
 Standard Objects of Expense,replace,standard objects of expense
 Standards Units,replace,standards unit
+State,replace,state
+state of environmental,remove,
 Statement,replace,statement
 Statement of Changes,replace,statement of change
 Statement of Intent,replace,statement of intent
 Station,replace,station
 statistical summaries,replace,statistical summary
 Statistics,replace,statistics
+STATISTICS CANADA,replace,Statistics Canada
+statusBC Corrections,remove,
+Staurolite,replace,staurolite
 staus,replace,status
 Stellar,replace,stellar
 Stillbirth,replace,stillbirth
-Stocking Standards,replace,stocking standard
 Stock Range,replace,stock range
+Stocked Lakes,replace,stocked lakes
+Stocking Standards,replace,stocking standard
+Storage,replace,storage
 Storm Sewer,replace,storm sewer
+Stratabound Sulphides,replace,stratabound sulphides
 Strategic Land and Resource Plans,replace,strategic land and resource plan
 Strategic land resource plan,replace,strategic land and resource plan
+Stratigraphy,replace,stratigraphy
+Stream Buffer,replace,stream buffer
+Stream Classification,replace,stream classification
+stream directions,replace,stream direction
 Stream Discharge,replace,stream discharge
-streamflow,replace,stream flow
 Stream Flow,replace,stream flow
 Stream Gradients,replace,stream gradient
+stream guages,replace,stream guage
 stream management buffers,replace,stream management buffer
+Stream Sample sites,replace,stream sample sites
+Stream Sediment,replace,stream sediment
+Stream Sediment Geochemistry,replace,stream sediment geochemistry
+Stream Sediment Sampling,replace,stream sediment sampling
+Stream Sediments,replace,stream sediments
+Stream Sensitivity,replace,stream sensitivity
+Stream Water Geochemistry,replace,stream water geochemistry
+Stream Water Sampling,replace,stream water sampling
+streamflow,replace,stream flow
 streams,replace,stream
 Streams,replace,stream
+strm_bufs,remove,
 strong start centres,replace,strong start centre
+Strong Start Program,replace,strong start program
+Strontium Isotopes,replace,strontium isotopes
+Structural,replace,structural
+Structural Geology,replace,structural geology
 Structural stage,replace,structural stage
+Structure,replace,structure
+Structures,replace,structure
 student outcomes surveys,replace,student outcome survey
 students,replace,student
 Study Areas,replace,study area
 Study Boundary,replace,study boundary
+Sturgeon,replace,sturgeon
+Sub Basins,replace,sub basins
+Subdivision,replace,subdivision
+Subdivision Applications,replace,subdivision applications
+Subdivisions,replace,subdivisions
 Substrate,replace,substrate
 Suicide,replace,suicide
 Suitability,replace,suitability
+Sulphide Weathering,replace,sulphide weathering
+Sulphides,replace,sulphides
 Sulphur,replace,sulphur
+Sulphurets Area,replace,sulphurets area
+Sulphurets Map Area,replace,sulphurets map area
 summaries,replace,summary
 Summary Statement of Financial Position,replace,summary statement of financial position
 summer lake surveys,replace,summer lake survey
+Sun,remove,
 Sunshine,replace,sunshine
+sunshine coast,replace,Sunshine Coast
 Supplement,replace,supplement
 suppliers,replace,supplier
 Support,replace,support
 Supreme,replace,supreme
 Surface,replace,surface
+Surface Geology,replace,surface geology
 Surface Water,replace,surface water
 Surficial Geology,replace,surficial geology
 surgeries,replace,surgery
 Surplus,replace,surplus
+Surprise Showings,replace,surprise showings
+surrey,replace,Surrey
 Survey,replace,survey
 Survey Areas,replace,survey area
 Survey Monuments,replace,survey monument
-Surveys,replace,survey
+Survey Observations,replace,survey observations
 Survey Summary,replace,survey summary
-Sustainable Resource Management Plan,replace,sustainable resource management plan
+Surveys,replace,survey
+Sustainable,replace,sustainable
 swamps,replace,swamp
+swans,replace,swan
+Syenite,replace,syenite
 Table,replace,table
 Talc,replace,talc
 Tanatalis,replace,tantalis
 Tantalis,replace,tantalis
+taseko watershed,replace,Taseko watershed
+taste magazine,replace,Taste magazine
+Tats Sulphide,replace,tats sulphide
 Tax,replace,tax
 Tax Burden,replace,tax burden
+Tax Rates,replace,tax rates
 Taxes,replace,taxes
 Taxes and Charges on a Representative House,replace,taxes and charges on a representative house
-Tax Rates,replace,tax rates
+tdsc_rca,remove,
 teachers,replace,teacher
 Technical School,replace,technical school
 Technoloy,replace,technology
+Tectonic Evolution,replace,tectonic evolution
+Ted Burns,remove,
 Teenage Mother,replace,teenage mother
 Telemetry,replace,telemetry
 Telemetry Observations,replace,telemetry observation
+Television,replace,television
+TEM 20,replace,TEM
+TEM 20K,replace,TEM
+TEM 50,replace,TEM
+TEM 50K,replace,TEM
+TEM greater than 20,replace,TEM
+TEM GT 20K,replace,TEM
+TEM Less than 20K,replace,TEM
+TEN LANDUSE,replace,land use tenure
 Tenure,replace,tenure
 Tenure Area,replace,tenure area
 Tenure Areas,replace,tenure area
 tenures,replace,tenure
 Tenures,replace,tenure
 Tenures and Applications,replace,tenures and applications
+Ten-year,remove,
 terms,replace,term
 Terrain,replace,terrain
 Terrain and Ecosystems,replace,terrain and ecosystems
@@ -1352,71 +2313,181 @@ Terrain Stability,replace,terrain stability
 Terrain Stability Mapping,replace,terrain stability mapping
 Terrestrial Ecosystem Information,replace,terrestrial ecosystem mapping
 Terrestrial Ecosystem Mapping,replace,terrestrial ecosystem mapping
+Terrestrial Mammal,replace,terrestrial mammal
+Terrestrial Mammals,replace,terrestrial mammal
 Terrestrial Reports,replace,terrestrial report
+TERRITORIAL,replace,territorial
+Tertiary,replace,tertiary
+test,remove,
+Tested,remove,
+testee,remove,
+tester,remove,
+Testy,remove,
+TFL 39,replace,tfl
+TFL 39 submission,replace,tfl
+tfl14,replace,tfl
+TFL39,replace,tfl
+tgbh_dmc,remove,
+tgbn_rca,remove,
+tgen_rca,remove,
 The Arts,replace,art
+The Count,remove,
+Thermal,replace,thermal
+Thermobarometry,replace,thermobarometry
+Third,remove,
+thlb,replace,THLB
+THLB TV1,replace,THLB
+THLB TV2,replace,THLB
 Threatened,replace,threatened
 Threatened Ecosystems,replace,threatened ecosystems
 tickets,replace,ticket
+Till Geochemistry,replace,till geochemistry
+Timber Habitat Analysis,replace,timber habitat analysis
+Timber Harvesting,replace,timber harvesting
+Timber Harvesting Landbase,replace,timber harvesting landbase
 Timber Licence,replace,timber licence
+Timber Supply Areas,replace,timber supply areas
+Timber Supply Review,replace,timber supply review
+Timber Supply Review 2,replace,timber supply review
+Titanite,replace,titanite
 titles,replace,title
 Titles,replace,title
 toddlers,replace,toddler
-topographic,replace,topographic
+top ten,remove,
 Topographic Maps,replace,topographic map
+Topography,replace,topography
 Total Taxes and Charges,replace,total taxes and charges
 Tourism,replace,tourism
 tourism activities,replace,tourism activity
-tourism facilities,replace,tourism facility
+Tourism Facilities,replace,tourism facilities
+tourism feature areas,remove,
+tourism features,remove,
+Tourism Opportunity Studies,replace,tourism opportunity studies
+Tourism Opportunity Study,replace,tourism opportunity study
 Tourism Sites,replace,tourism site
 Tourism use,replace,tourism use
+tourism use areas,remove,
+Tourist accommodations,replace,tourist accommodations
 tours,replace,tour 
+Town,replace,town
 Townships,replace,township
+Tract,replace,tract
 Trade School,replace,trade school
+Traditional,replace,traditional
+Traditional Territories,replace,traditional territories
+Traditional Territory,replace,traditional territory
+Traditional Use Study,replace,traditional use study
+Trail Management Agreements,replace,trail management agreements
 trails,replace,trail
 Trails,replace,trail
 Training and Enterprise Support,replace,training and enterprise support
 transfers,replace,transfer
 Transfers,replace,transfer
 Transit,replace,transit 
+Transit and ground passenger transportation,replace,transit and ground passenger transportation
 Transition,replace,transition
 transitions,replace,transition
 Translation,replace,translation
-Transportation,replace,transportation
 Trap Line,replace,trapline
-Traplines,replace,trapline
 Travel,replace,travel
-Trees,replace,trees
+Treaty,replace,treaty
+Treaty Land,replace,treaty land
+Treaty Related Land,replace,treaty related land
+Tree,replace,tree
+Tree Farm License boundaries,replace,tree farm license boundaries
 Tree Species,replace,tree species
+Trees,replace,trees
+trim,replace,TRIM
+Trophy,replace,trophy
+Trout,replace,trout
+Truck,replace,truck
+tsa,replace,TSA
+TSA 15,replace,TSA
+TSA FDP RDS,replace,TSA
+Tsa latl,replace,TSA
+Tsa latl Smokehouse,replace,TSA
+tscl_rca,remove,
+tser,remove,
+tser_dch,remove,
+tser_dho,remove,
+tser_dmh,remove,
+tser_dqu,remove,
+tser_dwl,remove,
+TSR submission,replace,TSR
+TSR2,replace,TSR
+TSR2 Resultant,replace,TSR
 Tsunami,replace,tsunami
+ttsm_rca,remove,
 Tunnel,replace,tunnel
+turtles,replace,turtle
+twet_rca,remove,
+twet_rca_bufs,remove,
+Twin Zone,replace,twin zone
+U Pb Geochronology,replace,u pb geochronology
+U Pb Geochronometry,replace,u pb geochronometry
+U Pb Zircon Geochronology,replace,u pb zircon geochronology
 uat,replace,UAT
+Undeveloped Watersheds,replace,undeveloped watersheds
+Ungulate,replace,ungulate
 Ungulate Winter Range,replace,ungulate winter range
+Ungulates,replace,ungulate
 Unintentional Injuries,replace,unintentional injury
 Units,replace,unit
 Universities,replace,university
 University,replace,university
 Unspecified,replace,unspecified
 Update,replace,update
-utilities,replace,utility
+Upstream,replace,upstream
+Uranium,replace,uranium
+Uranium Lead,replace,uranium lead
+Uranium Lead Geochronology,replace,uranium lead geochronology
+US,replace,USA
+usa,replace,USA
+USA pacific north west,replace,USA Pacific Northwest
+Utilities,replace,utilities
 uwr,replace,UWR
 Valley,replace,valley
 Value,replace,value
 Valvular,replace,valvular
+vancouver island,replace,Vancouver Island
+Vanouver Island Marmot,replace,Vancouver Island marmot
 VEG,replace,veg
 Veg Cover,replace,vegetation cover
+veg_comp,remove,
 Vegetation,replace,vegetation
 Vegetation Cover,replace,vegetation cover
+Vegetation Resource Inventory,replace,vegetation resource inventory
+Vegetation Resources Inventory,replace,vegetation resource inventory
+Vegetative Screening,replace,vegetative screening
 vehicles,replace,vehicle
+Vein Deposit,replace,vein deposit
+Vermiculite,replace,vermiculite
 vertebrates,replace,vertebrate
 Vertical Aerial Photography,replace,vertical aerial photography
-viewpoints,replace,viewpoint
+Vessel,replace,vessel
+vhf,replace,VHF
+Village,replace,village
+Vineyards,replace,vineyards
 violations,replace,violation
 visible minorities,replace,visible minority
+Visitor Centres,replace,visitor centre
 visitor stats,replace,visitor statistics
+visitors to bc,remove,
+Visual Arrows,replace,visual arrows
+Visual Lakes,replace,visual lakes
+Visual Quality,replace,visual quality
 Visual Resource Management,replace,visual resource management
 Visual Resources,replace,visual resources
+Visual Screening,replace,visual screening
+Visual Viewpoints,replace,visual viewpoints
 Vital Statistics,replace,vital statistics
+Vitrinite Reflectance,replace,vitrinite reflectance
 Vocational School,replace,vocational school
+Volcanic Centres,replace,volcanic centres
+Volcanic Stratigraphy,replace,volcanic stratigraphy
+Volcanogenic,replace,volcanogenic
+Volcanogenic Massive Sulphides,replace,volcanogenic massive sulphides
+vqo,replace,VQO
 Vulnerability,replace,vulnerable
 Wages,replace,wage
 Waste,replace,waste
@@ -1424,7 +2495,6 @@ Water,replace,water
 Water Allocation Restrictions,replace,water allocation restriction
 Water Chemistry,replace,water chemistry
 Water Districts,replace,water district
-Waterfowl,replace,waterfowl
 Water Licence Works,replace,water licence work
 Water Licencing,replace,water licensing
 Water Licensing,replace,water licensing
@@ -1444,21 +2514,30 @@ Water Resource Management,replace,water resource management
 Water Responsibility,replace,water responsibility
 Water Restrictions,replace,water restriction
 Water Rights,replace,water rights
+Water Stewardship,replace,water stewardship
+Water Stewardship Division,replace,water stewardship division
+Water Tenures,replace,water tenure
+Water tenures,replace,water tenure
+Waterfowl,replace,waterfowl
 Watershed,replace,watershed
 Watershed Atlas,replace,watershed atlas
 Watershed Dictionary,replace,watershed dictionary
 Watersheds,replace,watershed
-Water Stewardship Division,replace,water stewardship division
 Waterwells,replace,well
+wcc,replace,WCC
 Web,replace,web
 Web and Social Media,replace,web and social media
 Web-service,replace,web service
-weeds,replace,weed
 wells,replace,well
 Wells,replace,well
+West Kootenays,replace,West Kootenay
+Westcentral British Columbia,replace,West Central British Columbia
 Wetland,replace,wetland
+Wetland Riparian,replace,wetland riparian
 wetlands,replace,wetland
 Wetlands,replace,wetland
+WHA submission,replace,WHA
+WHSE_WILDLIFE_MANAGEMENT.WCP_WILDLIFE_HABITAT_AREA_POLY,remove,
 Wildfire,replace,wildfire
 Wildife,replace,wildlife
 Wildlife,replace,wildlife
@@ -1466,27 +2545,44 @@ wildlife features,replace,wildlife feature
 Wildlife Habitat,replace,wildlife habitat
 Wildlife Habitat Areas,replace,wildlife habitat area
 Wildlife Habitat Ratings,replace,wildlife habitat rating
+Wildlife Habitat Units,replace,wildlife habitat units
 Wildlife inventory,replace,wildlife inventory
 Wildlife Inventory,replace,wildlife inventory
+Wildlife Management,replace,wildlife management
 Wildlife Management Areas,replace,wildlife management area
 Wildlife Modeling,replace,wildlife modeling
 Wildlife Observation,replace,wildlife observation
-wildlife observations,replace,wildlife observation
 Wildlife potential,replace,wildlife potential
 Wildlife Reserves,replace,wildlife reserve
 Wildlife Species Inventory,replace,wildlife species inventory
 wildlife surveys,replace,wildlife surveys
 Wildlife Telemetry Observations,replace,wildlife telemetry observation
 Wildlife Tree Retention,replace,wildlife tree retention
+Wildlilfe Reserves,replace,wildlife reserves
+Wildllife,replace,wildlife
 Wine,replace,wine
+Winter,replace,winter
 Winter Range,replace,winter range
 winter ranges,replace,winter range
+wld,remove,
 wms,replace,WMS
+Wollastonite,replace,wollastonite
+Wood,replace,wood
 Woodland Caribou,replace,woodland caribou
+Woodpecker,replace,woodpecker
+Work Done,replace,work done
+wrestore,remove,
+wrp,replace,WRP
+wsa,replace,WSA
+wst,replace,WST
+Yellow Badger,replace,yellow badger
+Yellow pine Chipmunk,replace,yellow pine chipmunk
 Yoga,replace,yoga
 Zeolites,replace,zeolite
 Zinc,replace,zinc
+Zircon,replace,zircon
+Zircons,replace,zircon
+ZN Pb Ag Ba Exhalite Deposit,replace,zn pb ag ba exhalite deposit
+ZONE,replace,zone
 Zostera japonica,replace,zostera japonica
 Zostera marina,replace,zostera marina
-clients,replace ,client
-Expense,replace ,expense
