@@ -1,5 +1,6 @@
 /*
- * Obtained and adapted from  https://github.com/datagovuk/ckanext-dgu
+ * Copied and adapted from  https://github.com/datagovuk/ckanext-dgu 
+ * by Open Government Licence (OGL) http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
  */
  
 

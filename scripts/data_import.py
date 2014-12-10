@@ -1022,13 +1022,17 @@ def save_discovery_records(con, discovery_data_filename):
             #---------------------------------------------------------------------<< Record Contacts >>----------------------------------------------------------------------
             contact_names = []
             contact_emails = []
-            contact_orgs = []
+#            contact_orgs = []
             if result[7]:
                 contact_names = result[7].split(',')
+            else :
+                contact_names = ['DataBC']
             if result[8]:
                 contact_emails = result[8].split(',')
-            if result[9]:
-                contact_orgs = result[9].split(',')
+            else :
+                contact_emails = ['data@gov.bc.ca']
+#             if result[9]:
+#                 contact_orgs = result[9].split(',')
 
             #Validate emails
             contact_emails = [contact_email if (contact_email and validate_email(contact_email)) else 'data@gov.bc.ca' for contact_email in contact_emails]
@@ -1037,7 +1041,7 @@ def save_discovery_records(con, discovery_data_filename):
             # Adding dataset contacts
             contacts = []
 
-            contact_len = min(len(contact_names), len(contact_emails), len(contact_orgs))
+            contact_len = min(len(contact_names), len(contact_emails))
 
             for i in range(contact_len):
                 contacts.append({'name': contact_names[i], 'email': contact_emails[i], 'delete': '0', 'organization': edc_record.get('org'), 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Display'})
