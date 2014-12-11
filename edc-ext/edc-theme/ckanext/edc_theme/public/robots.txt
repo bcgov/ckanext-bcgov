@@ -1,2 +1,10 @@
-User-agent: *
+User-agent: BCGovSearch # directed to BC government search robots 
+Allow: /
+Disallow: /api
+Disallow: /tag
+Disallow: /user
+Disallow: /dataset/activity
+Disallow: /group
+Disallow: /organization
+User-agent: * # directed to all robots other than BCGov Search
 Disallow: /
