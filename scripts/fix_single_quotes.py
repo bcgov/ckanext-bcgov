@@ -35,6 +35,7 @@ for record in records :
         description = pkg_dict.get('notes')
         
         if not '&apos;' in description :
+            print 'Nothing needs to be fixed in %s .' %(pkg_id)
             continue
         
         pkg_dict['notes'] = description.replace('&apos;', "'")
@@ -52,6 +53,7 @@ for record in records :
             print '.'
             count += 1
         except Exception:
+            'Exception raised when updating record with name %s ' %(pkg_id)
             pass
 
 print count, ' records were updated.'        
