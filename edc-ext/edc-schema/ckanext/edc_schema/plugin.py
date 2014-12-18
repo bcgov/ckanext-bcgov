@@ -97,7 +97,9 @@ class SchemaPlugin(plugins.SingletonPlugin):
         site_map_controller = 'ckanext.edc_schema.controllers.site_map:GsaSitemapController'
         api_controller = 'ckanext.edc_schema.controllers.api:EDCApiController'
 
-        map.redirect('/', '/dataset')
+#        map.redirect('/', '/dataset')
+        map.connect('package_index', '/', controller=package_controller, action='index')
+
         map.connect('/dataset/add', controller=package_controller, action='typeSelect')
 
         with SubMapper(map, controller=package_controller) as m:

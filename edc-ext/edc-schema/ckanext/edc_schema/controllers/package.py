@@ -260,6 +260,13 @@ class EDCPackageController(PackageController):
         except NotFound:
             c.dataset_types = []
 
+    def index(self):
+        
+        if not c.user :
+            redirect(h.url_for('/dataset?download_audience=Public'))
+        else :
+            redirect(h.url_for('/dataset'))
+
     def typeSelect(self, data=None, errors=None, error_summary=None):
         '''
         Enables dataste type selection when creating a new dataset

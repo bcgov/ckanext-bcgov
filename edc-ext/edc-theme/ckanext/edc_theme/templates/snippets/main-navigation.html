@@ -8,7 +8,6 @@
           <li class="active"><a href="{{ h.url('/dataset') }}" class="logo" title="{{ g.site_title }} Home">Data Catalogue</a></li>
           <li><a href="{{ h.get_fqdn() }}/dbc/geographic/index.page">Geographic Services</a></li>
           <li><a href="http://blog.data.gov.bc.ca/">Blog</a></li>
-		  <li><a href="http://developer.gov.bc.ca/">Developers</a></li>
           <li><a href="{{ h.get_fqdn() }}/forms/dbc/contact/index.html">Contact</a></li>
       </ul>
       <div class="account-container">
@@ -79,7 +78,7 @@
       <h2></h2>
       <ul>
           {{ h.build_nav_main(
-                ('search', _('Datasets')),
+                ('package_index', _('Datasets')),
                 ('organizations_index', _('Organizations')),
                 ('group_index', _('Groups'))
             ) }}
