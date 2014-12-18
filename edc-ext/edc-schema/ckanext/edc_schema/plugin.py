@@ -275,12 +275,12 @@ class SchemaPlugin(plugins.SingletonPlugin):
         from collections import OrderedDict
         facet_dict = OrderedDict()
         #Add dataset types and organization sectors to the facet list
-        facet_dict['download_audience'] = _('Download permission')
         facet_dict['license_id'] = _('License')
         facet_dict['sector'] = _('Sectors')
         facet_dict['type'] = _('Dataset types')
         facet_dict['res_format'] = _('Format')
         facet_dict['organization'] = _('Organizations')
+        facet_dict['download_audience'] = _('Download permission')
 
         if c.userobj and c.userobj.sysadmin:
             facet_dict['edc_state'] = _('States')
