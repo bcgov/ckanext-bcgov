@@ -75,14 +75,112 @@
     				classes=['control-medium']) }}
 
 
-	<input id="field-spatial" name="spatial" type="hidden" value='{"type":"Point","coordinates":[-123.35,48.43]}'/>
 </div>
 {% endif %}
 
-{% block data_quality_info %}
+{% block geographic_extent %}
 
+	{% if record_type=='Geographic' %}	
+		<h3 class="module-sub-heading">Geographic extent</h3>
+		<div class="control-list form-horizontal">
+			<div class="row-fluid">
+				<div class="span5">
+					{% if errors.north_bound_latitude %}
+						{% set north_latitude = data.north_bound_latitude %}
+						{% set north_latitude_error = errors.north_bound_latitude %}
+					{% else %}
+						{% set north_latitude =  data.north_bound_latitude or '60.0' %}
+						{% set north_latitude = '%0.1f' % north_latitude|float %}
+					{% endif %}
+					<div class="control-group control-medium">
+						<label class="control-label" for="field-north_bound_latitude">North</label>
+						<div class="controls">
+							<input id="field-north_bound_latitude"
+									type="text"
+									name="north_bound_latitude"
+									value= "{{ north_latitude }}" />
+								{% if north_latitude_error and north_latitude_error is iterable %}
+								   	 <span class="group-error error-block">{{ north_latitude_error|join(', ') }}</span>
+								{% endif %}
+						</div>
+					</div>
+				</div>
+				<div class="span5">
+					{% if errors.south_bound_latitude %}
+						{% set south_latitude = data.south_bound_latitude %}
+						{% set south_latitude_error = errors.south_bound_latitude %}
+					{% else %}
+						{% set south_latitude =  data.south_bound_latitude or '48.0' %}
+						{% set south_latitude = '%0.1f' % south_latitude|float %}
+					{% endif %}
+					<div class="control-group control-medium">
+						<label class="control-label" for="field-south_bound_latitude">South</label>
+						<div class="controls">
+							<input id="field-south_bound_latitude"
+									type="text"
+									name="south_bound_latitude"
+									value= "{{ south_latitude }}" />
+								{% if south_latitude_error and south_latitude_error is iterable %}
+								   	 <span class="group-error error-block">{{ south_latitude_error|join(', ') }}</span>
+								{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span5">
+					{% if errors.east_bound_longitude %}
+						{% set east_longitude = data.east_bound_longitude %}
+						{% set east_longitude_error = errors.east_bound_longitude %}
+					{% else %}
+						{% set east_longitude =  data.east_bound_longitude or '-113.5' %}
+						{% set east_longitude = '%0.1f' % east_longitude|float %}
+					{% endif %}
+					<div class="control-group control-medium">
+						<label class="control-label" for="field-east_bound_longitude">East</label>
+						<div class="controls">
+							<input id="field-east_bound_longitude"
+									type="text"
+									name="east_bound_longitude"
+									value= "{{ east_longitude }}" />
+								{% if east_longitude_error and east_longitude_error is iterable %}
+								   	 <span class="group-error error-block">{{ east_longitude_error|join(', ') }}</span>
+								{% endif %}
+						</div>
+					</div>
+				</div>
+				<div class="span5">
+					{% if errors.west_bound_longitude %}
+						{% set west_longitude = data.west_bound_longitude %}
+						{% set west_longitude_error = errors.west_bound_longitude %}
+					{% else %}
+						{% set west_longitude =  data.west_bound_longitude or '-139.5' %}					
+						{% set west_longitude = '%0.1f' % west_longitude|float %}
+					{% endif %}
+					<div class="control-group control-medium">
+						<label class="control-label" for="field-west_bound_longitude">West</label>
+						<div class="controls">
+							<input id="field-west_bound_longitude"
+									type="text"
+									name="west_bound_longitude"
+									value= "{{ west_longitude }}" />
+								{% if west_longitude_error and west_longitude_error is iterable %}
+								   	 <span class="group-error error-block">{{ west_longitude_error|join(', ') }}</span>
+								{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		<input id="field-spatial" name="spatial" type="hidden" value='{"type": "Polygon", "coordinates": [[[{{west_longitude}}, {{south_latitude}}], [{{west_longitude}}, {{north_latitude}}], [{{east_longitude}}, {{north_latitude}}], [{{east_longitude}}, {{south_latitude}}], [{{west_longitude}}, {{south_latitude}}]]]}'/>
+		</div>
+	{% endif %}
+	
+{% endblock %}
+
+{% block data_quality_info %}
 	{% if record_type=='Geographic' or record_type == 'Dataset' %}
-	<h2 class="module-heading">Data Quality information</h2>
+	
+	<h3 class="module-sub-heading">Data Quality information</h2>
 		<div class="control-list">
       	{{ form.markdown('data_quality',
       					id='field-data_quality',
@@ -112,36 +210,5 @@
 {% endblock %}
 
 
-
-{#
-  {% block package_metadata_fields_url %}
-    {{ form.input('url', label=_('Source'), id='field-url', placeholder=_('http://example.com/dataset.json'), value=data.url, error=errors.url, classes=['control-medium']) }}
-  {% endblock %}
-
-  {% block package_metadata_fields_version %}
-    {{ form.input('version', label=_('Version'), id='field-version', placeholder=_('1.0'), value=data.version, error=errors.version, classes=['control-medium']) }}
-  {% endblock %}
-
-  {% block package_metadata_author %}
-    {{ form.input('author', label=_('Author'), id='field-author', placeholder=_('Joe Bloggs'), value=data.author, error=errors.author, classes=['control-medium']) }}
-
-    {{ form.input('author_email', label=_('Author Email'), id='field-author-email', placeholder=_('joe@example.com'), value=data.author_email, error=errors.author_email, classes=['control-medium']) }}
-  {% endblock %}
-
-  {% block package_metadata_fields_maintainer %}
-    {{ form.input('maintainer', label=_('Maintainer'), id='field-maintainer', placeholder=_('Joe Bloggs'), value=data.maintainer, error=errors.maintainer, classes=['control-medium']) }}
-
-    {{ form.input('maintainer_email', label=_('Maintainer Email'), id='field-maintainer-email', placeholder=_('joe@example.com'), value=data.maintainer_email, error=errors.maintainer_email, classes=['control-medium']) }}
-  {% endblock %}
-
-  {% block package_metadata_fields_custom %}
-    {% block custom_fields %}
-      {% snippet 'snippets/custom_form_fields.html', extras=data.extras, errors=errors, limit=3 %}
-    {% endblock %}
-  {% endblock %}
-
-  {% block dataset_fields %}
-  {% endblock %}
-#}
 
 {% endblock %}

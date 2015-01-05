@@ -1,7 +1,5 @@
 import re
 
-import pprint
-
 import ckan.lib.navl.dictization_functions as df
 from ckan.common import _
 
@@ -13,16 +11,58 @@ from ckan.lib.navl.validators import ignore_missing
 
 from ckan.logic.validators import url_validator
 
-#+--------------------------------------------------------------------+
-#|   This method checks if the field with given key has some value.   |
-#|   The field belongs to a record of related fields with a delete    |
-#|   field. If the value of delete field is 0 then record is active   |
-#|   and should be validated. If the value of delete field is 1, it   |
-#|   means that the record has been deleted and it won't be validated |
-#|   Validation takes place only the record has not been deleted in   |
-#|   form by user.                                                    |
-#+--------------------------------------------------------------------+
-def check_empty(key, data, errors, context):
+import logging
+
+log = logging.getLogger('ckanext.edc_schema')
+
+def float_validator(key, data, errors, content):
+    value = data.get(key, 0.0)
+    
+    if isinstance(value, int) :
+        return float(value)
+    
+    if isinstance(value, float):
+        return value
+    try:
+        if value.strip() == '':
+            return None
+        return float(value)
+    except (AttributeError, ValueError), e:
+        return None
+
+
+def latitude_validator(key, data, errors, context):
+    '''
+    Checks if the given latitude value is a valid positive float number.
+    '''
+        
+    value = float_validator(key, data, errors, context)
+        
+    if not value or value < 0.0 :
+        errors[key].append("A positive float value must be given.")
+        raise StopOnError
+    
+def longitude_validator(key, data, errors, context):
+    '''
+    Checks if the given longitude value is a valid negative float number.
+    '''
+    
+    value = float_validator(key, data, errors, context)
+    
+    if not value or value > 0.0 :
+        errors[key].append("A negative float value must be given.")
+        raise StopOnError
+
+def check_empty(key, data, errors, context):    
+    '''
+    This method checks if the field with given key has some value.   
+    The field belongs to a record of related fields with a delete    
+    field. If the value of delete field is 0 then record is active   
+    and should be validated. If the value of delete field is 1, it   
+    means that the record has been deleted and it won't be validated 
+    Validation takes place only the record has not been deleted in   
+    form by user.                                                    
+    '''
     #Construct the delete key
     delete_key = (key[0], key[1], 'delete')
 
@@ -33,7 +73,6 @@ def check_empty(key, data, errors, context):
     if (delete_value == '0'):
         value = data.get(key)
         if not value or value is missing:
-#           errKey = key[0] + '__' + str(key[1]) + '__' + key[2];
             errors[key].append(_('Missing value'))
             raise StopOnError
 
@@ -67,10 +106,10 @@ def valid_email(key, data, errors, context):
     errors[key].append(_('Invalid email address'))
 
 
-#+--------------------------------------------------------------------+
-#|                   Check if the url provided is valid.              |
-#+--------------------------------------------------------------------+
 def valid_url(key, data, errors, context):
+    '''
+     Checks if the url provided is valid.
+    '''
     from urlparse import urlparse
 
     url = data[key]
@@ -102,13 +141,10 @@ def valid_date(key, data, errors, context):
         errors[key].append('Invalid date format/value')
     pass
 
-#+------------------------------------------------------------------------------------+
-#|                                                                                    |
-#| This method checks the value of fields that are depended on resource_status.       |
-#|                                                                                    |
-#+------------------------------------------------------------------------------------+
-
 def check_resource_status(key, data, errors, context):
+    '''
+    This method checks the value of fields that are depended on resource_status.
+    '''
     #Get the current value of resource status
     resource_status_key = (_('resource_status'),)
     if resource_status_key in data :

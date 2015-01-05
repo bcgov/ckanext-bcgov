@@ -69,11 +69,13 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
               {{ h.link_to(h.truncate(title, truncate_title), h.url_for(controller='package', action='read', id=package.name)) }}
             {% endblock %}
             {{ h.popular('recent views', package.tracking_summary.total, min=10) if package.tracking_summary }}
+            {% if package.org and package.sub_org %}
             {% block heading_orgs %}
               <div class="dataset-heading-orgs">
-              {% snippet 'package/snippets/org_view.html', org=orgs[package.org], branch=orgs[package.sub_org] %}
+              {# snippet 'package/snippets/org_view.html', org=orgs[package.org], branch=orgs[package.sub_org] #}
               </div>
             {% endblock %}
+            {% endif %}
             {% block heading_meta %}
               {% if package.get('state', '').startswith('draft') %}
                 <span class="label label-info">{{ _('Draft') }}</span>

@@ -44,7 +44,6 @@ def edc_package_update(context, input_data_dict):
     '''
     from ckan.lib.search import SearchError
 
-    #pprint.pprint(input_data_dict)
     # first, do the search
     q = 'object_name:' + input_data_dict.get("object_name")
     fq = ''
@@ -128,7 +127,6 @@ def edc_package_update_bcgw(context, input_data_dict):
     4) Call get_action(package_update) to update the package
     '''
     from ckan.lib.search import SearchError
-#    pprint.pprint('*********  edc_package_update_bcgw')
     update = {}
     # first, do the search
     q = 'object_name:' + input_data_dict.get("object_name")
@@ -138,7 +136,6 @@ def edc_package_update_bcgw(context, input_data_dict):
     sort = 'metadata_modified desc'
 
     try :
-#        pprint.pprint('*********  trying search')
         data_dict = {
                      'q' : q,
                      'fq' : fq,
@@ -149,46 +146,41 @@ def edc_package_update_bcgw(context, input_data_dict):
 
         #Use package_search to filter the list
         query = get_action('package_search')(context, data_dict)
-#        pprint.pprint(query)
-#        pprint.pprint('********* search ok')
     except SearchError, se :
-#        pprint.pprint('*********  search error!')
         print 'Search error', str(se)
         raise SearchError(str(se))
 
     #check the search results - there can be only 1!!
     the_count = query['count']
     if the_count != 1: 
-#        pprint.pprint('*********  search error 2')
         #raise SearchError('Search returned 0 or more than 1 item')
         return_dict = {}
         return_dict['results'] = query
         return_dict['success'] = False
         return_dict['error'] = True
-        #pprint.pprint(return_dict)
         return return_dict
-#    pprint.pprint('*********  trying results')
     results = query['results']
     results[0]['details'] = input_data_dict.get("details")
-#     pprint.pprint('*********  DETAILS:')
-#     pprint.pprint(results[0]['details'])
     try :
-#        pprint.pprint('*********  trying update')
         
         #need the right data package
         package_dict = get_action('package_show')(context, {'id': results[0]['id']})
-        #pprint.pprint('*********  package before update')
-        #pprint.pprint(package_dict)
         
         #Check if input_data has been modified and is not the same as package data
-        data_changed = True
+        data_changed = False
         current_details = package_dict.get('details')
         curent_obj_short_name = package_dict.get('object_short_name')
         current_obj_table_comments = package_dict.get('object_table_comments')
         
-        if current_details and curent_obj_short_name and current_obj_table_comments :
-            if current_details == input_data_dict.get("details") and curent_obj_short_name == input_data_dict.get("object_short_name") and current_obj_table_comments == input_data_dict.get("object_table_comments") :
-                data_changed = False
+        if current_details != input_data_dict.get("details") :
+            data_changed = True
+        
+        if curent_obj_short_name != input_data_dict.get("object_short_name") :
+            data_changed = True
+            
+        if current_obj_table_comments != input_data_dict.get("object_table_comments") :
+            data_changed = True
+        
         if data_changed :
             package_dict['details'] = input_data_dict.get("details")
             package_dict['object_short_name'] = input_data_dict.get("object_short_name")
@@ -196,16 +188,11 @@ def edc_package_update_bcgw(context, input_data_dict):
             if (package_dict['edc_state'] != 'ARCHIVED'):
                 update = get_action('package_update')(context, package_dict)
         
-        #pprint.pprint('*********  package after update')
-        #pprint.pprint(update)
     except Exception, ue:
-#        pprint.pprint('*********  update error')
         raise Exception(str(ue))
 
     response_dict = {}
     response_dict['results'] = update
-    #pprint.pprint('response dict:')
-    #pprint.pprint(response_dict)
     return response_dict
 
 
@@ -510,9 +497,7 @@ def package_autocomplete(context, data_dict):
     :rtype: list of dictionaries
 
     '''
-    model = context['model']
-
-
+    
     _check_access('package_autocomplete', context, data_dict)
 
     limit = data_dict.get('limit', 10)

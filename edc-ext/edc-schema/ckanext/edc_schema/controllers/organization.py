@@ -215,34 +215,34 @@ class EDCOrganizationController(OrganizationController):
             group_type=group_type)
 
 
-    def delete(self, id):
-        '''
-        Deletes an organization.
-        ToDo: Do we need to delete all organization members and records?
-        '''
-        
-        if 'cancel' in request.params:
-            self._redirect_to(controller='organization', action='edit', id=id)
-
-        context = {'model': model, 'session': model.Session,
-                   'user': c.user or c.author}
-
-        try:
-            self._check_access('organization_purge', context, {'id': id})
-        except NotAuthorized:
-            abort(401, _('Unauthorized to delete organization %s') % '')
-
-        try:
-            if request.method == 'POST':
-                self._action('organization_purge')(context, {'id': id})
-                h.flash_notice(_('Organization has been deleted.'))
-                self._redirect_to(controller='organization', action='index')
-            c.group_dict = self._action('organization_show')(context, {'id': id})
-        except NotAuthorized:
-            abort(401, _('Unauthorized to delete organization %s') % '')
-        except NotFound:
-            abort(404, _('Organization not found'))
-        return self._render_template('group/confirm_delete.html')
+#     def delete(self, id):
+#         '''
+#         Deletes an organization.
+#         ToDo: Do we need to delete all organization members and records?
+#         '''
+#         
+#         if 'cancel' in request.params:
+#             self._redirect_to(controller='organization', action='edit', id=id)
+# 
+#         context = {'model': model, 'session': model.Session,
+#                    'user': c.user or c.author}
+# 
+#         try:
+#             self._check_access('organization_purge', context, {'id': id})
+#         except NotAuthorized:
+#             abort(401, _('Unauthorized to delete organization %s') % '')
+# 
+#         try:
+#             if request.method == 'POST':
+#                 self._action('organization_purge')(context, {'id': id})
+#                 h.flash_notice(_('Organization has been deleted.'))
+#                 self._redirect_to(controller='organization', action='index')
+#             c.group_dict = self._action('organization_show')(context, {'id': id})
+#         except NotAuthorized:
+#             abort(401, _('Unauthorized to delete organization %s') % '')
+#         except NotFound:
+#             abort(404, _('Organization not found'))
+#         return self._render_template('group/confirm_delete.html')
 
     def about(self, id):
         c.group_dict = self._get_group_dict(id)

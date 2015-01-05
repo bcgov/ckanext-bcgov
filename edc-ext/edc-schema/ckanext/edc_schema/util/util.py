@@ -21,8 +21,9 @@ api_key = config.get('ckan.api_key')
 
 
 def edc_package_create(edc_record):
-
-
+    '''
+    Creates a dataset. Used in package controller to duplicate a dataset.
+    '''
     data_string = urllib.quote(json.dumps(edc_record))
 
     pkg_dict = None
@@ -33,9 +34,7 @@ def edc_package_create(edc_record):
         response = urllib2.urlopen(request, data_string)
         assert response.code == 200
 
-        # Use the json module to load CKAN's response into a dictionary.
         response_dict = json.loads(response.read())
-#        pprint.pprint(response_dict)
         if response_dict['success'] == True :
             pkg_dict = response_dict['result']
         else:
@@ -65,7 +64,7 @@ def add_admin(member, site_url, api_key):
         response = urllib2.urlopen(request, data_string)
         assert response.code == 200
 
-		# Use the json module to load CKAN's response into a dictionary.
+        # Use the json module to load CKAN's response into a dictionary.
         response_dict = json.loads(response.read())
         if response_dict['success'] == True :
             member_dict = response_dict
@@ -77,6 +76,9 @@ def add_admin(member, site_url, api_key):
     return (member_dict, errors)
 
 def get_edc_tags(vocab_id):
+    '''
+    Returns the list of tags for a given vocabulary.
+    '''
     tags = []
     try:
         tags = toolkit.get_action('tag_list')(
@@ -96,11 +98,9 @@ def get_org_name(org_id):
         response = urllib2.urlopen(request, data_string)
         assert response.code == 200
 
-        # Use the json module to load CKAN's response into a dictionary.
         response_dict = json.loads(response.read())
         assert response_dict['success'] is True
 
-        # package_create returns the created package as its result.
         org_dict = response_dict['result']
     except:
         org_dict = []
@@ -111,11 +111,13 @@ def get_org_name(org_id):
 
 
 def get_username(id):
+    '''
+    Returns the user name for the given id.
+    '''
     try:
         user = toolkit.get_action('user_show')(data_dict={'id': id})
         return user['name']
     except toolkit.ObjectNotFound:
-        #No vocabulary exist with the given vocabulary id.
         return None
 
 def get_user_toporgs(user_id, role=None):
@@ -130,7 +132,6 @@ def get_user_toporgs(user_id, role=None):
     sub_orgs = []
 
     #Get the list of all first level organizations.
-#    all_orgs = [org.id for org in org_model.Group.get_top_level_groups(type="organization")]
     all_orgs = org_model.Group.get_top_level_groups(type="organization")
 
 
@@ -185,7 +186,6 @@ def get_user_orgs(user_id, role=None):
     org_model = context['model']
 
     #Get the list of all first level organizations.
-#    all_orgs = [org.id for org in org_model.Group.get_top_level_groups(type="organization")]
     all_orgs = org_model.Group.get_top_level_groups(type="organization")
 
 
@@ -278,7 +278,9 @@ def get_user_orgs_id(user_id, role=None):
     return [org.id for org in user_orgs]
 
 def get_organization_branches(org_id):
-    
+    '''
+    Get the list of branches for the organization with the given id.
+    '''    
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
     org_model = context['model']
@@ -291,7 +293,9 @@ def get_organization_branches(org_id):
     return branches
     
 def get_parent_orgs(org_id):
-    
+    '''
+    returns the parent organization(s) of the organization with the given id.
+    '''
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
     org_model = context['model']
@@ -304,14 +308,13 @@ def get_parent_orgs(org_id):
     return parents    
     
 
-
 def get_org_admins(org_id):
     '''
     Returns the list of admins of the given organization
     '''
     try:
         member_dict = {'id': org_id, 'object_type': 'user', 'capacity': 'admin'}
-            #Get the list of id's of all admins of the organization
+        #Get the list of id's of all admins of the organization
         members = [member[0] for member in toolkit.get_action('member_list')(data_dict=member_dict)]
     except toolkit.ObjectNotFound:
         members = []
@@ -324,7 +327,7 @@ def get_org_users(org_id, role=None):
     '''
     try:
         member_dict = {'id': org_id, 'object_type': 'user', 'capacity': role}
-            #Get the list of id's of all admins of the organization
+        #Get the list of id's of all admins of the organization
         members = [member[0] for member in toolkit.get_action('member_list')(data_dict=member_dict)]
     except toolkit.ObjectNotFound:
         members = []
@@ -347,7 +350,6 @@ def edc_state_activity_create(user_name, edc_record, old_state):
         response = urllib2.urlopen(request, data_string)
         assert response.code == 200
 
-        # Use the json module to load CKAN's response into a dictionary.
         response_dict = json.loads(response.read())
         assert response_dict['success'] is True
         activity_result = response_dict['result']
@@ -357,7 +359,6 @@ def edc_state_activity_create(user_name, edc_record, old_state):
     return True
 
 
-#Getting the proper values for the possible states of a dataset
 def get_state_values(userobj, pkg):
     '''
     This methods creates a list of possible values for the state of given dataset
@@ -377,7 +378,6 @@ def get_state_values(userobj, pkg):
 
 
     #Get the list of admins of the dataset
-
     member_data = {
                    'id' : org_id,
                    'object_type' : 'user',
@@ -390,10 +390,6 @@ def get_state_values(userobj, pkg):
         admins = []
 
     current_state = pkg['edc_state']
-    author_id = pkg['author']
-
-    #If the current state is 'Draft' or 'Rejected' and user is org_admin or the author of dataset
-    #then possible states are ('Draft', 'Pending Publish')
 
     if current_state == 'DRAFT':
         states = ['DRAFT', 'PENDING PUBLISH']
@@ -423,7 +419,9 @@ def get_state_values(userobj, pkg):
     return states
 
 def get_user_list():
-
+    '''
+    Returns the list of available users.
+    '''
     request = urllib2.Request(site_url + '/api/3/action/user_list')
     request.add_header('Authorization', api_key)
 
@@ -431,7 +429,6 @@ def get_user_list():
         response = urllib2.urlopen(request)
         assert response.code == 200
 
-        # Use the json module to load CKAN's response into a dictionary.
         response_dict = json.loads(response.read())
         assert response_dict['success'] is True
         user_list = response_dict['result']
@@ -439,10 +436,11 @@ def get_user_list():
         return []
     return user_list
 
-# Returns all user orgs as a dictionary with the id as the key
-# and the value is a touple of (name, title)
 def get_all_orgs():
-
+    '''
+    Returns all user orgs as a dictionary with the id as the key
+    and the value is a tuple of (name, title)
+    '''
     orgs_dict = {}
 
     data_string = urllib.quote(json.dumps({'all_fields': True}))

@@ -140,7 +140,7 @@ def send_email(user_display_name, user_email, email_dict):
 def check_record_state(old_state, new_data, pkg_id):
 
     '''
-    Checks if the dataset state has been changed during the update and 
+    Checks if the dataset state has been changed during the update and
     informs the users involving in package management.
     '''
 
@@ -152,7 +152,6 @@ def check_record_state(old_state, new_data, pkg_id):
     #If dataset's state has not been changed do nothing
     if old_state == new_state:
         return
-
     # --------------------------------------- Emails on dataset update ---------------------------------------
 
     # Do not send emails for "DRAFT" datasets
@@ -234,11 +233,20 @@ Please review and act as required.'
                 if user['name'] == member['name']:
                     if 'email' in user and user['email'] != '':
                         email_address = user['email']
+                        print email_address
                         email_display_name = user['fullname'] or user['name']
                         send_email(email_display_name, email_address, email_dict)
 
     # ------------------------------------ END Emails on dataset update --------------------------------------
 
+def _encode_params(params):
+    return [(k, v.encode('utf-8') if isinstance(v, basestring) else str(v))
+            for k, v in params]
+
+
+def url_with_params(url, params):
+    params = _encode_params(params)
+    return url + u'?' + urlencode(params)
 
 class EDCPackageController(PackageController):
 
@@ -261,11 +269,15 @@ class EDCPackageController(PackageController):
             c.dataset_types = []
 
     def index(self):
-        
+
+        url = h.url_for(controller='package', action='search')
+        params = [(k, v) for k, v in request.params.items()]
+
         if not c.user :
-            redirect(h.url_for('/dataset?download_audience=Public'))
+            params.append(('download_audience', 'Public'))
+            redirect(url_with_params(url, params))
         else :
-            redirect(h.url_for('/dataset'))
+            redirect(url_with_params(url, params))
 
     def typeSelect(self, data=None, errors=None, error_summary=None):
         '''
@@ -331,7 +343,7 @@ class EDCPackageController(PackageController):
         It is used to get the previous dataset state and compare it with the current state
         to see if the state has been changed.
         '''
-        
+
         c.form_style = 'edit'
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj,
@@ -483,9 +495,9 @@ class EDCPackageController(PackageController):
         except NotFound:
             abort(404, _('Resource not found'))
         c.pkg_dict = pkg_dict
-        
+
         c.resource = resource_dict
-        
+
         # set the form action
         c.form_action = h.url_for(controller='package',
                                   action='resource_edit',
@@ -496,7 +508,7 @@ class EDCPackageController(PackageController):
 
         errors = errors or {}
         error_summary = error_summary or {}
-        
+
         '''
         ------------------------------------------------------------------------------------------
         If there are errors, then check if user has uploaded the resource.
@@ -521,7 +533,7 @@ class EDCPackageController(PackageController):
         '''
         ------------------------------------------------------------------------------------------
         '''
-        
+
         vars = {'data': data, 'errors': errors,
                 'error_summary': error_summary, 'action': 'new'}
         return render('package/resource_edit.html', extra_vars=vars)
@@ -548,11 +560,11 @@ class EDCPackageController(PackageController):
                 if resource_not_found :
                     data['url'] = ''
                     data['url_type'] = ''
-        
+
         result = super(EDCPackageController, self).new_resource(id, data, errors, error_summary)
-        
+
         return result
-    
+
 
     def resource_delete(self, id, resource_id):
 

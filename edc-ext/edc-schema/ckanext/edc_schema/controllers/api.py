@@ -3,30 +3,25 @@ from ckan.controllers.api import ApiController
 import os.path
 import logging
 import cgi
-import datetime
 import glob
 import urllib
 import pprint
 import json
 
-from webob.multidict import UnicodeMultiDict
 from paste.util.multidict import MultiDict
 
 import ckan.model as model
 import ckan.lib.dictization.model_dictize as model_dictize
 
 import ckan.logic as logic
-import ckan.lib.base as base
-import ckan.lib.helpers as h
-import ckan.lib.search as search
 import ckan.lib.navl.dictization_functions
-import ckan.lib.jsonp as jsonp
-import ckan.lib.munge as munge
 
 from ckan.common import _, c, request, response
-from ckanext.edc_schema.util.util import (get_all_orgs, get_organization_branches, get_parent_orgs)
+from ckanext.edc_schema.util.util import (get_all_orgs, 
+                                          get_organization_branches, 
+                                          get_parent_orgs)
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('ckanext.edc_schema')
 
 # shortcuts
 get_action = logic.get_action
@@ -42,7 +37,7 @@ CONTENT_TYPES = {
     'json': 'application/json;charset=utf-8',
 }
 
-#By default package_list will return only the last 10 modified records
+#By default package_list returns only the last 10 modified records
 default_limit = 100000000
 default_offset = 0
 
@@ -81,19 +76,18 @@ class EDCApiController(ApiController):
             fq += ''
         else :
             if user_name != 'visitor':
-                    #fq += ' (+(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
                 fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
 
-                    #IDIR users can also see private records of their organizations
+                #IDIR users can also see private records of their organizations
                 user_id = c.userobj.id
-                    #Get the list of orgs that the user is an admin or editor of
+                #Get the list of orgs that the user is an admin or editor of
                 user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
                 user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
                 if user_orgs != []:
                     fq += ' OR ' + 'owner_org:(' + ' OR '.join(user_orgs) + ')'
                 fq += ')'
-                #Public user can only view public and published records
             else:
+                #Public user can only view public and published records
                 fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
 
         return fq
@@ -219,7 +213,6 @@ class EDCApiController(ApiController):
 
             from ckanext.edc_schema.util.helpers import record_is_viewable
 
-            username = c.user or 'visitor'
             if not record_is_viewable(pkg, c.userobj) :
                 return_dict['success'] = False
                 return_dict['error'] = {'__type': 'Authorization Error', 'message': _('Access denied')}
@@ -330,21 +323,7 @@ class EDCApiController(ApiController):
             return self._finish(200, return_dict, content_type='json')
         
     
-    def action(self, logic_function, ver=None):
-        import ckanext.edc_schema.logic.action as edc_action
-        
-#        pprint.pprint('***** logic_function:')
-#        pprint.pprint(logic_function)
-        #ToDo :
-        #Create a list of logic_functions that need to be restricted to anonymous users
-        restricted_functions = [
-                                'package_list',
-                                'package_show',
-                                'package_search',
-                                'package_autocomplete',
-                                'current_package_list_with_resources'
-                                ]
-
+    def action(self, logic_function, ver=None):        
         #Need to apply the restriction rules to each one of the restricted functions.
         #Check if the logic function is known
         try:
@@ -353,9 +332,8 @@ class EDCApiController(ApiController):
             return self._finish_bad_request(_('Action name not known: %s') % logic_function)
 
         try:
-			side_effect_free = getattr(function, 'side_effect_free', False)
-			request_data = self._get_request_data(try_url_params=
-													  side_effect_free)
+            side_effect_free = getattr(function, 'side_effect_free', False)
+            request_data = self._get_request_data(try_url_params=side_effect_free)
         except ValueError, inst:
             log.error('Bad request data: %s' % inst)
             return self._finish_bad_request(
@@ -365,7 +343,6 @@ class EDCApiController(ApiController):
         context = {'model': model, 'session': model.Session, 'user': c.user,
                    'api_version': ver, 'auth_user_obj': c.userobj}
 
-        #Check if the logic function is package_list then return the proper list of packages
         if logic_function == 'package_show':
             return self.__package_show(context, request_data['id'])
         elif logic_function == 'package_list':

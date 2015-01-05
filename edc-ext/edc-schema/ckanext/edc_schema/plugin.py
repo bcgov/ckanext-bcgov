@@ -188,6 +188,9 @@ class SchemaPlugin(plugins.SingletonPlugin):
         m.connect('/action/organization_list_related', action='organization_list_related', conditions=GET_POST)
         m.connect('/action/{logic_function}', action='action', conditions=GET_POST)
 
+        map.connect('/admin/trash', controller='admin', action='trash')
+        map.connect('ckanadmin_trash', '/admin/trash', controller='admin',
+                action='trash', ckan_icon='trash')
 
         return map
 
@@ -294,5 +297,4 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 'edc_package_update_bcgw' : edc_action.edc_package_update_bcgw,
                 'package_update' : edc_action.package_update,
                 'package_autocomplete' : edc_action.package_autocomplete }
-        
-        
+
