@@ -1,14 +1,13 @@
-########################################################################### DataBC release version 1.0.1## This document constitutes the delivery instructions for ## K.Mamakani, HighwayThreeSolutions, Jan. 5, 2015##########################################################################1) List of changes:
+########################################################################### DataBC release version 1.0.2## This document constitutes the delivery instructions for ## K.Mamakani, HighwayThreeSolutions, Jan. 5, 2015##########################################################################1) List of changes:
    Key	                                        Summary
 --------------------------------------------------------------------------------------------------------
 CITZEDC-537	No fields are provided for the entry of geographic extent of a dataset
 CITZEDC-533	Server error generated when trying to view trashcan ../ckan-admin/trash as sysadmin
 CITZEDC-476	Some data dictionary content fails to import into ckan (invalid characters?)
-CITZEDC-543	Add download permission facet to all page templates
 2) Installation Instructions:1.	Activate virtual env	$ . /usr/lib/ckan/default/bin/activate2.	Update config file (if there are any changes)
 	a.	Add admin api key to the ini file as ckan.api_key 	b.	Add the major and minor version numbers to ini file as follow :
 		edc.major_version = DLV
-		edc.minor_version = 1.0.0_0001	    		edc.major_version = TST		edc.minor_version = 1.0.0_0001			edc.major_version = PRD		edc.minor_version = 1.0.0_0001
+		edc.minor_version = 1.0.2	    		edc.major_version = TST		edc.minor_version = 1.0.2			edc.major_version = PRD		edc.minor_version = 1.0.2
 	c. Add the following two line to ini file to the search setting section if they don’t exist.
 		search.facets.limit = 500
 		search.facets.default = 20
