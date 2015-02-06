@@ -127,6 +127,15 @@ def edc_package_update_bcgw(context, input_data_dict):
     4) Call get_action(package_update) to update the package
     '''
     from ckan.lib.search import SearchError
+    
+    '''
+    Fixed unicode characters decoding problem. 
+    '''
+    import json
+    input_dict_str = json.dumps(input_data_dict, ensure_ascii=False)
+    
+    input_data_dict = json.loads(input_dict_str, encoding="cp1252")    
+    
     update = {}
     # first, do the search
     q = 'object_name:' + input_data_dict.get("object_name")

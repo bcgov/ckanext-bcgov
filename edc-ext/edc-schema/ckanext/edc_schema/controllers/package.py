@@ -150,7 +150,7 @@ def check_record_state(old_state, new_data, pkg_id):
     new_state = new_data['edc_state']
 
     #If dataset's state has not been changed do nothing
-    if old_state == new_state:
+    if (not old_state) or (old_state == '') or (old_state == new_state):
         return
     # --------------------------------------- Emails on dataset update ---------------------------------------
 
@@ -233,7 +233,6 @@ Please review and act as required.'
                 if user['name'] == member['name']:
                     if 'email' in user and user['email'] != '':
                         email_address = user['email']
-                        print email_address
                         email_display_name = user['fullname'] or user['name']
                         send_email(email_display_name, email_address, email_dict)
 
@@ -350,7 +349,7 @@ class EDCPackageController(PackageController):
                    'save': 'save' in request.params}
         old_data = None
 
-        if not context['save'] :
+        if not context['save'] or data :
             old_data = get_action('package_show')(context, {'id': id})
             EDCPackageController.old_state = old_data['edc_state']
 
@@ -653,6 +652,16 @@ class EDCPackageController(PackageController):
 
         del data_dict['revision_id']
         del data_dict['revision_timestamp']
+
+        # Create the tag_string if needed
+        '''
+        Constructing the tag_string from the given tags.
+        There must be at least one tag, otherwise the tag_string will be empty and a validation error
+        will be raised.
+        '''
+        if not data_dict.get('tag_string'):
+            data_dict['tag_string'] = ', '.join(
+                    h.dict_list_reduce(data_dict.get('tags', {}), 'name'))
 
 
         #To do - Image upload issues : Use a single copy for the original and duplicate record
