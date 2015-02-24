@@ -215,6 +215,78 @@ class EDCOrganizationController(OrganizationController):
             group_type=group_type)
 
 
+    def member_new(self, id):
+        
+        import ckan.lib.navl.dictization_functions as dict_fns
+        import ckan.new_authz as new_authz
+        
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user or c.author}
+
+        errors = {}
+        try:
+            group_type = 'organization'
+            c.roles = self._action('member_roles_list')(context, {'group_type': group_type})
+            if request.method == 'POST':
+                data_dict = clean_dict(dict_fns.unflatten(
+                    tuplize_dict(parse_params(request.params))))
+                data_dict['id'] = id
+                
+                idir_account = data_dict.get('idir')
+                if idir_account:
+                    
+                    '''
+                    Check if the account has only alphanumeric characters
+                    '''
+                    import re
+
+                    name_match = re.compile('[a-z0-9_\-]*$')
+                    if not name_match.match(idir_account) :
+                        c.group_dict = self._action('organization_show')(context, {'id' : data_dict['id']})
+                        errors['idir'] = _('must be purely lower case alphanumeric (ascii) characters and these symbols: -_')
+                        
+                        vars = {'data': data_dict, 'errors': errors}
+                        return render('organization/member_new.html', extra_vars=vars)
+                    
+                    try:
+                        user_dict = get_action('user_show')(context, {'id': idir_account.lower(), 'include_datasets': False})
+                    except NotFound:
+                        user_dict = {}
+                    
+                    if not user_dict :
+                        user_data_dict = {
+                                          'name': idir_account.lower(),
+                                          'email': 'data@gov.bc.ca',
+                                          'password' : 't35tu53r'
+                        }
+                        del data_dict['idir']
+                        
+                        user_dict = self._action('user_create')(context,
+                            user_data_dict)
+                     
+                    data_dict['username'] = user_dict['name']
+                    data_dict['role'] = data_dict.get('role', 'editor')
+ 
+                c.group_dict = self._action('group_member_create')(context, data_dict)
+                self._redirect_to(controller='group', action='members', id=id)
+            else:
+                user = request.params.get('user')
+                if user:
+                    c.user_dict = get_action('user_show')(context, {'id': user})
+                    c.user_role = new_authz.users_role_for_group_or_org(id, user) or 'member'
+                else:
+                    c.user_role = 'member'
+                c.group_dict = self._action('group_show')(context, {'id': id})
+        except NotAuthorized:
+            abort(401, _('Unauthorized to add member to group %s') % '')
+        except NotFound:
+            abort(404, _('Group not found'))
+        except ValidationError, e:
+            h.flash_error(e.error_summary)
+        return render('organization/member_new.html', extra_vars={'errors': errors})
+
+
+
 #     def delete(self, id):
 #         '''
 #         Deletes an organization.

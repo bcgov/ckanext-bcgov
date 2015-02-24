@@ -39,13 +39,14 @@ class EDCUserController(UserController):
             #Get the list of organizations that this user is the admin
         if not c.userobj.sysadmin :            
             user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
-            user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]        
-            fq += '+owner_org:(' + ' OR '.join(user_orgs) + ')'
+            user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]  
+            if len(user_orgs) > 0 :      
+                fq += ' +owner_org:(' + ' OR '.join(user_orgs) + ')'
         self._user_datasets('dashboard_unpublished', c.userobj.id, fq)
         return render('user/dashboard_unpublished.html')
     
     def dashboard_datasets(self):
-        fq = '+author:("%s")' % (c.userobj.id)
+        fq = ' +author:("%s")' % (c.userobj.id)
         self._user_datasets('dashboard_datasets', c.userobj.id, fq)
         return render('user/dashboard_datasets.html')
     

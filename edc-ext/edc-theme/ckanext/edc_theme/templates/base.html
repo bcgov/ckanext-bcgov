@@ -109,10 +109,14 @@
 	function CheckIdleTime() {
 		_idleSecondsCounter++;
 		var oPanel = document.getElementById("SecondsUntilExpire");
+		var user = "{{ c.user }}";
 		if (oPanel)
 			oPanel.innerHTML = (IDLE_TIMEOUT - _idleSecondsCounter) + "";
-		if (_idleSecondsCounter >= IDLE_TIMEOUT) {
+		//Fixed repeated logout bug (Khalegh Mamakani)
+		//Redirect to logout page only if the idle time is expired and the user has already logged in.
+		if (user && _idleSecondsCounter >= IDLE_TIMEOUT) {    
 			//alert("Time expired!");
+			_idleSecondsCounter = 0;   //Fixed by Khalegh Mamakani; Reset the idle seconds counter
 			document.cookie = 'ckan=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 			document.location.href = "/user/_logout";
 		}

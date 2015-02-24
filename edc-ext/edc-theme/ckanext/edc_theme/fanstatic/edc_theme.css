@@ -1399,3 +1399,31 @@ input.search.tt-hint {
     right: 0;
   }
 }
+
+.trash-form {
+	padding-top : 0;
+	padding-bottom : 20px;
+	margin-top : 5px;
+	margin-bottom : 20px;
+	border-top : 0;
+	border-bottom : 1px solid #e5e5e5;
+}
+
+.add-member-or {
+	float: left;
+	margin-top: 25px;
+	margin-bottom: 0px; 
+	width: 7%;
+	text-align: center; 
+	text-transform: uppercase;
+	color: #999999;
+	font-weight: bold;
+}
+
+.member-controls {
+	margin-top : 5px;
+}
+
+.member-controls input[type="text"] {
+	margin-bottom : 0px;
+}
