@@ -31,7 +31,9 @@ from ckanext.edc_schema.util.helpers import (get_suborg_sector,
                                              get_dataset_type,
                                              get_organizations,
                                              get_organization_title,
-                                             get_espg_id
+                                             get_espg_id,
+                                             get_org_title,
+                                             get_edc_org
                                              )
 
 
@@ -77,7 +79,9 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "get_all_orgs" : get_all_orgs,
                 "get_facets_selected": get_facets_selected,
                 "get_facets_unselected" : get_facets_unselected,
-                "get_sectors_list": get_sectors_list
+                "get_sectors_list": get_sectors_list,
+                "get_org_title" : get_org_title,
+                "get_edc_org" : get_edc_org
                 }
 
 
@@ -104,7 +108,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
         with SubMapper(map, controller=package_controller) as m:
             m.connect('add dataset', '/dataset/new', action='new')
-            m.connect('dataset_edit', '/dataset/edit/{id}', action='edc_edit',ckan_icon='edit')
+            #m.connect('dataset_edit', '/dataset/edit/{id}', action='edc_edit',ckan_icon='edit')
             m.connect('search', '/dataset', action='search', highlight_actions='index search')
             m.connect('dataset_read', '/dataset/{id}', action='read', ckan_icon='sitemap')
             m.connect('duplicate', '/dataset/duplicate/{id}', action='duplicate')
@@ -289,7 +293,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
             facet_dict['edc_state'] = _('States')
 
         return facet_dict
-
 
     def get_actions(self):
         import ckanext.edc_schema.logic.action as edc_action

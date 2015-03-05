@@ -68,6 +68,7 @@ class EDCOrganizationController(OrganizationController):
         
     def _read(self, id, limit):
         ''' This is common code used by both read and bulk_process'''
+        
         group_type = self._get_group_type(id.split('@')[0])
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author,
@@ -111,14 +112,14 @@ class EDCOrganizationController(OrganizationController):
                                         action='read',
                                         id=id)
             else:
-                url = self._url_for(controller='group', action='read', id=id)
+                url = self._url_for(controller='organization', action='read', id=id)
             params = [(k, v.encode('utf-8') if isinstance(v, basestring)
                        else str(v)) for k, v in params]
             return url + u'?' + urlencode(params)
 
         def drill_down_url(**by):
             return h.add_url_param(alternative_url=None,
-                                   controller='group', action='read',
+                                   controller='organization', action='read',
                                    extras=dict(id=c.group_dict.get('name')),
                                    new_params=by)
 
@@ -126,7 +127,7 @@ class EDCOrganizationController(OrganizationController):
 
         def remove_field(key, value=None, replace=None):
             return h.remove_url_param(key, value=value, replace=replace,
-                                      controller='group', action='read',
+                                      controller='organization', action='read',
                                       extras=dict(id=c.group_dict.get('name')))
 
         c.remove_field = remove_field
@@ -139,12 +140,17 @@ class EDCOrganizationController(OrganizationController):
         try:
             c.fields = []
             search_extras = {}
+            c.fields_grouped = {}
             for (param, value) in request.params.items():
                 if not param in ['q', 'page', 'sort'] \
                         and len(value) and not param.startswith('_'):
                     if not param.startswith('ext_'):
                         c.fields.append((param, value))
                         q += ' %s: "%s"' % (param, value)
+                        if param not in c.fields_grouped:
+                            c.fields_grouped[param] = [value]
+                        else:
+                            c.fields_grouped[param].append(value)
                     else:
                         search_extras[param] = value
 
@@ -161,7 +167,9 @@ class EDCOrganizationController(OrganizationController):
             default_facet_titles = {'organization': _('Organizations'),
                                     'edc_state': _('States'),
                                     'tags': _('Tags'),
-                                    'res_format': _('Formats')
+                                    'res_format': _('Formats'),
+                                    'license_id': _('Licenses'),
+                                    'type' : _('Dataset types')
                                     }
 
 

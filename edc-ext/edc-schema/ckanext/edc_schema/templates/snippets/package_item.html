@@ -42,8 +42,15 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
           {% set package_type = package.type|lower %}
           {% set icon_type = package_type|replace('geographic', 'globe')|replace('dataset', 'table')|replace('webservice', 'code')|replace('application', 'cogs') %}
           {% set title_text = package_type|replace('geographic', 'Geographic Datasets')|replace('dataset', 'Datasets')|replace('webservice', 'APIs')|replace('application', 'Applications') %}
+          {% if org_id or user_id %}
+          	{% set href = h.add_url_param(new_params={'type': package.type}, extras={'id' : org_id }) %}
+          {% else %}                   
+          	{% set href = h.add_url_param(new_params={'type': package.type}) %}
+          {% endif %}
           <div class="dataset-marker-type-icon">
-            <a href="{{ h.url_for(controller='package', action='search', type=package.type) }}" title="{{ title_text }}"><i class="icon icon-2x icon-{{ icon_type }}"></i></a>
+         
+            {# <a href="{{ h.url_for(controller='package', action='search', type=package.type) }}" title="{{ title_text }}"><i class="icon icon-2x icon-{{ icon_type }}"></i></a> #}
+            <a href="{{ href }}" title="{{ title_text }}"><i class="icon icon-2x icon-{{ icon_type }}"></i></a>
           </div>
         {% endblock %}
 
@@ -72,7 +79,12 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
             {% if package.org and package.sub_org %}
             {% block heading_orgs %}
               <div class="dataset-heading-orgs">
-              {# snippet 'package/snippets/org_view.html', org=orgs[package.org], branch=orgs[package.sub_org] #}
+              {# 
+                  	{% set org = h.get_edc_org(package.org) %}
+    				{% set branch = h.get_edc_org(package.sub_org) %}
+              
+              #}
+              {# snippet 'package/snippets/org_view.html', org=org, branch=branch #}
               </div>
             {% endblock %}
             {% endif %}

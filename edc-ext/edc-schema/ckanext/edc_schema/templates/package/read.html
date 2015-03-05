@@ -71,8 +71,9 @@
 
     {# Displaying Organization and Branch names #}
     {% block package_org %}
-        {% set orgs = h.get_all_orgs() %}
-        Published by the {% snippet 'package/snippets/org_view.html', org=orgs[pkg.org], branch=orgs[pkg.sub_org] %}
+    	{% set org = h.get_edc_org(pkg.org) %}
+    	{% set branch = h.get_edc_org(pkg.sub_org) %}
+        Published by the {% snippet 'package/snippets/org_view.html', org=org, branch=branch %}
     {% endblock %}
     {% block package_license %}
       <br/>

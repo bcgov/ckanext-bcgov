@@ -34,6 +34,7 @@ import logging
 import uuid
 import paste.deploy.converters
 
+from ckan.lib.mailer import MailerException
 
 from pylons import config
 
@@ -252,7 +253,7 @@ class EDCPackageController(PackageController):
 
     #Adding extra functionality to the Package Controller.
 
-    old_state = ''
+#    old_state = ''
 
     def _setup_template_variables(self, context, data_dict, package_type=None):
         PackageController._setup_template_variables(self, context, data_dict, package_type)
@@ -261,9 +262,9 @@ class EDCPackageController(PackageController):
             dataset_types = get_action('tag_list')(context,
                                                      {'vocabulary_id': EDC_DATASET_TYPE_VOCAB})
             c.dataset_types = [tag for tag in dataset_types]
-            for key, value in data_dict.iteritems() :
-                if key == 'state' :
-                    c.old_state = data_dict['state']
+#             for key, value in data_dict.iteritems() :
+#                 if key == 'state' :
+#                     c.old_state = data_dict['state']
         except NotFound:
             c.dataset_types = []
 
@@ -335,49 +336,49 @@ class EDCPackageController(PackageController):
         else:
             redirect(toolkit.url_for(form_urls[dataset_type]))
 
+# 
+#     def edc_edit(self, id, data=None, errors=None, error_summary=None):
+#         '''
+#         Gets the latest package data saved before applying package update.
+#         It is used to get the previous dataset state and compare it with the current state
+#         to see if the state has been changed.
+#         '''
+# 
+#         c.form_style = 'edit'
+#         context = {'model': model, 'session': model.Session,
+#                    'user': c.user or c.author, 'auth_user_obj': c.userobj,
+#                    'save': 'save' in request.params}
+#         old_data = None
+# 
+#         if not context['save'] or data :
+#             old_data = get_action('package_show')(context, {'id': id})
+#             EDCPackageController.old_state = old_data['edc_state']
+# 
+#         result = super(EDCPackageController, self).edit(id, data, errors, error_summary)
+# 
+#         return result
 
-    def edc_edit(self, id, data=None, errors=None, error_summary=None):
-        '''
-        Gets the latest package data saved before applying package update.
-        It is used to get the previous dataset state and compare it with the current state
-        to see if the state has been changed.
-        '''
-
-        c.form_style = 'edit'
-        context = {'model': model, 'session': model.Session,
-                   'user': c.user or c.author, 'auth_user_obj': c.userobj,
-                   'save': 'save' in request.params}
-        old_data = None
-
-        if not context['save'] or data :
-            old_data = get_action('package_show')(context, {'id': id})
-            EDCPackageController.old_state = old_data['edc_state']
-
-        result = super(EDCPackageController, self).edit(id, data, errors, error_summary)
-
-        return result
-
-    def _form_save_redirect(self, pkgname, action, package_type=None):
-        '''This overrides ckan's _form_save_redirect method of package controller class
-        so that it can be called after the data has been recorded and the package has been updated.
-        '''
-
-        context = {'model': model, 'session': model.Session,
-                   'user': c.user or c.author, 'auth_user_obj': c.userobj}
-
-        new_data =  get_action('package_show')(context, {'id': pkgname})
-        if new_data:
-            check_record_state(EDCPackageController.old_state, new_data, pkgname)
-            EDCPackageController.old_state = new_data['edc_state']
-
-        assert action in ('new', 'edit')
-        url = request.params.get('return_to') or \
-            config.get('package_%s_return_url' % action)
-        if url:
-            url = url.replace('<NAME>', pkgname)
-        else:
-            url = h.url_for('dataset_read', id=pkgname)
-        redirect(url)
+#     def _form_save_redirect(self, pkgname, action, package_type=None):
+#         '''This overrides ckan's _form_save_redirect method of package controller class
+#         so that it can be called after the data has been recorded and the package has been updated.
+#         '''
+# 
+#         context = {'model': model, 'session': model.Session,
+#                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
+# 
+#         new_data =  get_action('package_show')(context, {'id': pkgname})
+#         if new_data:
+#             check_record_state(EDCPackageController.old_state, new_data, pkgname)
+#             EDCPackageController.old_state = new_data['edc_state']
+# 
+#         assert action in ('new', 'edit')
+#         url = request.params.get('return_to') or \
+#             config.get('package_%s_return_url' % action)
+#         if url:
+#             url = url.replace('<NAME>', pkgname)
+#         else:
+#             url = h.url_for('dataset_read', id=pkgname)
+#         redirect(url)
 
 
 
@@ -392,7 +393,7 @@ class EDCPackageController(PackageController):
         from ckanext.edc_schema.util.helpers import record_is_viewable
         if not record_is_viewable(c.pkg_dict, c.userobj) :
             abort(401, _('Unauthorized to read package %s') % id)
-
+        
         metadata_modified_time = from_utc(c.pkg_dict['metadata_modified'])
         revision_timestamp_time = from_utc(c.pkg_dict['revision_timestamp'])
 

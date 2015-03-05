@@ -204,11 +204,20 @@ class EDCApiController(ApiController):
             
             #add the top-level org to the organization
             #'organization, branch'
-            orgs = get_all_orgs()
-            org=orgs[pkg['org']]
-            branch=orgs[pkg['sub_org']]
-            org_title = org['title']
-            branch_title = branch['title']
+#            orgs = get_all_orgs()
+            org = model.Group.get(pkg['org'])
+#            org=orgs[pkg['org']]
+            branch = model.Group.get(pkg['sub_org'])
+#            branch=orgs[pkg['sub_org']]
+#            org_title = org['title']
+#            branch_title = branch['title']
+            org_title = ''
+            branch_title = ''
+            if org : 
+                org_title = org.title
+            if branch :
+                branch_title = branch.title
+            
             pkg['organization']['full_title'] = org_title + ', ' + branch_title
 
             from ckanext.edc_schema.util.helpers import record_is_viewable

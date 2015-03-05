@@ -48,7 +48,7 @@
 {% endblock %}
 
 {% block package_search_results_list %}
-  {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, admin_org=admin_org, editor_org=editor_org, mem_org=mem_org) }}
+  {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, admin_org=admin_org, editor_org=editor_org, mem_org=mem_org, controller=c.controller) }}
 {% endblock %}
 
 {% block secondary_content %}

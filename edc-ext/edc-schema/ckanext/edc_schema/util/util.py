@@ -114,6 +114,7 @@ def get_username(id):
     '''
     Returns the user name for the given id.
     '''
+    
     try:
         user = toolkit.get_action('user_show')(data_dict={'id': id})
         return user['name']
@@ -180,6 +181,7 @@ def get_user_orgs(user_id, role=None):
     Returns the list of orgs and suborgs that the given user belongs to and has the given role('admin', 'member', 'editor', ...)
     '''
 
+        
     orgs = []
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
@@ -188,7 +190,8 @@ def get_user_orgs(user_id, role=None):
     #Get the list of all first level organizations.
     all_orgs = org_model.Group.get_top_level_groups(type="organization")
 
-
+    
+    
     for org in all_orgs:
         members = []
         try:
@@ -227,49 +230,28 @@ def get_user_role_orgs(user_id, sysadmin):
     '''
         Returns the list of all  organizations that the given user is a member of.
         The organizations are splitted in three lists depending of the user role.
+        
+        Modified by Khalegh Mamakani on March 5 2015.
+            -Replaced organization_list and member_list calls with sqlAlchemy queries
+             to get the list faster
     '''
-    all_orgs = []
-    data_string = urllib.quote(json.dumps({'all_fields': True }))
-    try:
-        request = urllib2.Request(site_url + '/api/3/action/organization_list')
-        response = urllib2.urlopen(request, data_string)
-        assert response.code == 200
-
-        # Use the json module to load CKAN's response into a dictionary.
-        response_dict = json.loads(response.read())
-        assert response_dict['success'] is True
-
-        # package_create returns the created package as its result.
-        all_orgs = response_dict['result']
-    except:
-        all_orgs = []
-
-    if sysadmin :
-        return ([org['id'] for org in all_orgs], [], [])
     
-    admin_orgs = []
-    editor_orgs = []
-    member_orgs = []
-
-    for org in all_orgs:
-        members = []
-        try:
-            member_dict = {'id': org['id'], 'object_type': 'user'}
-            members = toolkit.get_action('member_list')(data_dict=member_dict)
-        except toolkit.ObjectNotFound:
-            pass
-
-        admins = [member[0] for member in members if member[2] == 'Admin']
-        editors = [member[0] for member in members if member[2] == 'Editor']
-        mems = [member[0] for member in members if member[2] == 'Member']
-
-        if user_id in admins:
-            admin_orgs.append(org['id'])
-        if user_id in editors:
-            editor_orgs.append(org['id'])
-        if user_id in mems:
-            member_orgs.append(org['id'])
-
+    
+    #Get the list of all organizations (only org id's)
+    
+    org_query = model.Session.query(model.Group.id).filter(model.Group.type == 'organization')
+    
+    if sysadmin :
+        return (org_query.all(), [], [])
+    
+    member_query = model.Session.query(model.Member.group_id) \
+                   .filter(model.Member.table_name == 'user') \
+                   .filter(model.Member.table_id == user_id)
+                   
+    admin_orgs = member_query.filter(model.Member.capacity == 'admin').distinct(model.Member.group_id).all()
+    editor_orgs = member_query.filter(model.Member.capacity == 'editor').distinct(model.Member.group_id).all()
+    member_orgs = member_query.filter(model.Member.capacity == 'member').distinct(model.Member.group_id).all()
+    
     return (admin_orgs, editor_orgs, member_orgs)
 
 
@@ -442,16 +424,20 @@ def get_all_orgs():
     and the value is a tuple of (name, title)
     '''
     orgs_dict = {}
+ 
+#     data_string = urllib.quote(json.dumps({'all_fields': True}))
+#     request = urllib2.Request(site_url + '/api/3/action/organization_list')
+#     request.add_header('Authorization', api_key)
+#     response = urllib2.urlopen(request, data_string)
+#     response_dict = json.loads(response.read())
 
-    data_string = urllib.quote(json.dumps({'all_fields': True}))
-    request = urllib2.Request(site_url + '/api/3/action/organization_list')
-    request.add_header('Authorization', api_key)
-    response = urllib2.urlopen(request, data_string)
-    response_dict = json.loads(response.read())
+    
+    all_orgs = model.Group.all('organization')
+    
+    return all_orgs
 
-
-    for org in response_dict['result']:
-        orgs_dict[org['id']] = {'name': org['name'], 'title': org['title']}
+    for org in all_orgs:
+        orgs_dict[org['id']] = {'name': org.name, 'title': org.title }
 
     return orgs_dict
 

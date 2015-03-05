@@ -28,12 +28,12 @@
         (_('Last Modified'), 'metadata_modified desc')
         ]
 	%}
-      {% snippet 'snippets/search_form.html', type='dataset', query=c.q, sorting=sorting, sorting_selected=c.sort_by_selected, count=c.page.item_count, facets=facets, placeholder=_('Search datasets...'), show_empty=request.params %}
+      {% snippet 'snippets/search_form.html', type='dataset', query=c.q, sorting=sorting, sorting_selected=c.sort_by_selected, count=c.page.item_count, facets=facets, fields = c.fields, placeholder=_('Search datasets...'), show_empty=request.params %}
     {% endblock %}
   {% block packages_list %}
     {% if c.page.items %}
-      {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, admin_org=admin_org, editor_org=editor_org, mem_org=mem_org) }}
-    {% endif %}
+      {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, admin_org=admin_org, editor_org=editor_org, mem_org=mem_org, org_id = c.group_dict.id) }}
+    {% endif %} 
   {% endblock %}
   {% block page_pagination %}
     {{ c.page.pager(q=c.q) }}

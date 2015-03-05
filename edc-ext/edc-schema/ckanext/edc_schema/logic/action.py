@@ -5,19 +5,27 @@ import datetime
 import sqlalchemy
 
 import ckan.logic as logic
-import ckan.lib.dictization.model_save as model_save
 import ckan.plugins as plugins
 
-
-from pylons import config
-
-from ckan.common import _, c, request
-import ckan.lib.plugins as lib_plugins
+import smtplib
+from time import time
 import ckan.lib as lib
+from email import Utils
+from email.mime.text import MIMEText
+from email.header import Header
+from pylons import config
+from ckan.common import _, c, g
+import ckan.lib.plugins as lib_plugins
+import ckan.lib.dictization.model_save as model_save
 
 import ckan.lib.uploader as uploader
 import ckan.lib.helpers as h
 import ckan.lib.munge as munge
+import paste.deploy.converters
+
+from ckan.lib.mailer import MailerException
+import ckan.model as model
+from ckanext.edc_schema.util.util import get_user_list
 
 import pprint
 
@@ -32,6 +40,202 @@ _get_action = logic.get_action
 log = logging.getLogger('ckanext.edc_schema')
 
 _or_ = sqlalchemy.or_
+
+
+
+
+'''
+Checking package status and sending a notification if the state is changed.
+'''
+
+def add_msg_niceties(recipient_name, body, sender_name, sender_url):
+    return "Dear %s,<br><br>" % recipient_name \
+           + "\r\n\r\n%s\r\n\r\n" % body \
+           + "<br><br>--<br>\r\n%s (<a href=\"%s\">%s</a>)" % (sender_name, sender_url, sender_url)
+
+def send_state_change_notifications(members, email_dict, sender_name, sender_url):
+    '''
+    Sends state change notifications to sub-org members. 
+    Updated by Khalegh Mamakani on March 5 2015.
+    List of changes :
+        - Creating the smtp connection once for all notifications instead of connecting and disconnecting for
+          every single recipient.
+        - Using a thread to send the notifications in the background. 
+    '''
+    
+    #Email common fields
+    subject = email_dict['subject']
+
+    mail_from = config.get('smtp.mail_from')
+    subject = Header(subject.encode('utf-8'), 'utf-8')
+
+    # Connecting to smtp server.
+    smtp_connection = smtplib.SMTP()
+    if 'smtp.test_server' in config:
+        # If 'smtp.test_server' is configured we assume we're running tests,
+        # and don't use the smtp.server, starttls, user, password etc. options.
+        smtp_server = config['smtp.test_server']
+        smtp_starttls = False
+        smtp_user = None
+        smtp_password = None
+    else:
+        smtp_server = config.get('smtp.server', 'localhost')
+        smtp_starttls = paste.deploy.converters.asbool(
+                config.get('smtp.starttls'))
+        smtp_user = config.get('smtp.user')
+        smtp_password = config.get('smtp.password')
+    smtp_connection.connect(smtp_server)
+    try:
+
+        # Identify ourselves and prompt the server for supported features.
+        smtp_connection.ehlo()
+
+        # If 'smtp.starttls' is on in CKAN config, try to put the SMTP
+        # connection into TLS mode.
+        if smtp_starttls:
+            if smtp_connection.has_extn('STARTTLS'):
+                smtp_connection.starttls()
+                # Re-identify ourselves over TLS connection.
+                smtp_connection.ehlo()
+            else:
+                raise MailerException("SMTP server does not support STARTTLS")
+
+        # If 'smtp.user' is in CKAN config, try to login to SMTP server.
+        if smtp_user:
+            assert smtp_password, ("If smtp.user is configured then "
+                    "smtp.password must be configured as well.")
+            smtp_connection.login(smtp_user, smtp_password)
+        
+        
+        '''
+        Adding extra email fields and Sending notification for each individual member.
+        '''
+        
+        for member in members :
+            if member.email : 
+                body = email_dict['body']
+                msg = MIMEText(body.encode('utf-8'), 'html', 'utf-8')
+                msg['Subject'] = subject
+                msg['From'] = "%s <%s>" % (sender_name, mail_from)
+                msg['Date'] = Utils.formatdate(time())
+                recipient_email = member.email
+                recipient_name = member.fullname or member.name
+                body = add_msg_niceties(recipient_name, body, sender_name, sender_url)
+                recipient = u"%s <%s>" % (recipient_name, recipient_email)
+                msg['To'] = Header(recipient, 'utf-8')
+                try :
+                    smtp_connection.sendmail(mail_from, [recipient_email], msg.as_string())
+                    log.info("Sent state change email to user {0} with email {1}".format(recipient_name, recipient_email))
+                except Exception, e:
+                    log.error('Failed to send notification to user {0} email address : {1}'.format(recipient_email, recipient_email))    
+        
+    except smtplib.SMTPException, e:
+        msg = '%r' % e
+        log.exception(msg)
+        log.error('Failed to connect to smtp server')
+    finally:
+        smtp_connection.quit()
+    
+
+def check_record_state(context, old_state, new_data, site_title, site_url, dataset_url):
+
+    '''
+    Checks if the dataset state has been changed during the update and
+    informs the users involving in package management.
+    
+    Updated by Khalegh Mamakani on MArch 5th 2015.
+    
+    List of changes : 
+        - replaced get_user_list with a model query to get the list of all members of the org with the given role
+          ( Preventing action functions calls  and multiple for loops)
+        - Removed the nested for loops for finding and sending notification to members (Replaced by a single for loop).
+    '''
+
+    new_state = new_data['edc_state']
+
+    #If dataset's state has not been changed do nothing
+    if (old_state == new_state):
+        return
+
+    '''
+    Get the organization and sub-organization data
+    '''
+    org_id = new_data.get('org')
+    sub_org_id = new_data.get('sub_org')
+   
+    org = model.Group.get(org_id)
+    sub_org = model.Group.get(sub_org_id)
+    
+    # Do not send emails for "DRAFT" datasets
+    if new_state == "DRAFT":
+        return
+    
+    # Basic dataset info
+    dataset_title = new_data['title']
+    org_title = org.title
+    sub_org_title = sub_org.title
+    orgs_titles = org_title + ' - ' + sub_org_title
+
+    # Prepare email
+    subject = ''
+    body = ''
+    role = 'admin'
+
+    # Change email based on new_state changes
+    if new_state == 'PENDING PUBLISH' :
+        subject = 'EDC - PENDING PUBLISH ' + dataset_title
+        body = 'The following record is "Pending Publication" for ' + orgs_titles + '<br><br>\
+Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
+Please review and act as required.'
+
+    elif new_state == 'REJECTED':
+        subject = 'EDC - REJECTED ' + new_data['title']
+        body = 'The following record is "REJECTED" for ' + orgs_titles + '<br><br>\
+Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
+Please review and act as required.'
+        role = 'editor'
+
+    elif new_state == 'PUBLISHED':
+        subject = 'EDC - PUBLISHED ' + new_data['title']
+        body = 'The following record is "PUBLISHED" for ' + orgs_titles + '<br><br>\
+Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
+Please review and act as required.'
+        role = 'editor'
+
+    elif new_state == 'PENDING ARCHIVE':
+        subject = 'EDC - PENDING ARCHIVE ' + new_data['title']
+        body = 'The following record is "Pending Archival" for ' + orgs_titles + '<br><br>\
+Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
+Please review and act as required.'
+
+    elif new_state == 'ARCHIVED':
+        subject = 'EDC - ARCHIVED ' + new_data['title']
+        body = 'The following record is "ARCHIVED" for ' + orgs_titles + '<br><br>\
+Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
+Please review and act as required.'
+        role = 'editor'
+    else :
+        pass
+
+    email_dict = { 'subject': subject, 'body': body }
+
+    # Get the entire list of users
+    
+    '''
+    Get the list of sub-organization users with the given role; Added by Khalegh Mamakani
+    '''
+    
+    log.info('Sending state change notification to organization users with role %s' %(role,))
+    
+    query = model.Session.query(model.User) \
+            .join(model.Member, model.User.id == model.Member.table_id) \
+            .filter(model.Member.capacity == role) \
+            .filter(model.Member.group_id == sub_org.id)
+    
+    members = query.all()
+    
+    send_state_change_notifications(members, email_dict, site_title, site_url)
+            
 
 @toolkit.side_effect_free
 def edc_package_update(context, input_data_dict):
@@ -257,7 +461,7 @@ def package_update(context, data_dict):
         if key not in data_dict :
             data_dict[key] = value
             
-    data_dict['resources'] = data_dict.get('resources', old_data.get('resources'))
+    #data_dict['resources'] = data_dict.get('resources', old_data.get('resources'))
     
     
     #Set the value of iso_topic_string for solr search
@@ -374,6 +578,23 @@ def package_update(context, data_dict):
     output = data_dict['id'] if return_id_only \
             else _get_action('package_show')(context, {'id': data_dict['id']})
 
+
+    '''
+    Send state change notifications if required; Added by Khalegh Mamakani
+    Using a thread to run the job in the background so that package_update will not wait for notifications sending.
+    '''
+    
+    old_state = old_data.get('edc_state')
+    
+    context = {'model': model, 'session': model.Session,
+               'user': c.user or c.author, 'auth_user_obj': c.userobj}
+
+    dataset_url = config.get('ckan.site_url') + h.url_for(controller='package', action="read", id = data_dict['name'])
+    import threading
+    
+    notify_thread = threading.Thread(target=check_record_state, args=(context, old_state, data_dict, g.site_title, g.site_url, dataset_url) )
+    notify_thread.start()
+                        
     return output
 
 @toolkit.side_effect_free

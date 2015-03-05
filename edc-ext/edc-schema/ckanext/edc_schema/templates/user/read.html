@@ -33,7 +33,7 @@
 
   {% block packages_list %}
     {% if c.page.items %}
-      {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, admin_org=admin_org, editor_org=editor_org, mem_org=mem_org) }}
+      {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, admin_org=admin_org, editor_org=editor_org, mem_org=mem_org, user_id = user.id) }}
     {% endif %}
   {% endblock %}
   {% block page_pagination %}
@@ -83,6 +83,7 @@
           {% else %}
             <dt>{{ _('Username') }}</dt>
             <dd>{{ user.name }}</dd>
+            <dd> {{ user.id }} </dd>
           {% endif %}
         </dl>
         {% if c.is_myself %}
