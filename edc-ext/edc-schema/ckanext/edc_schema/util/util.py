@@ -181,13 +181,6 @@ def get_user_orgs(user_id, role=None):
     Returns the list of orgs and suborgs that the given user belongs to and has the given role('admin', 'member', 'editor', ...)
     '''
 
-    member_query = model.Session.query(model.Member.group_id) \
-                   .filter(model.Member.table_name == 'user') \
-                   .filter(model.Member.table_id == user_id)
-
-    if role :
-        member_query = member_query.filter(model.Member.capacity == role)
-                
     orgs = []
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
@@ -242,7 +235,9 @@ def get_user_role_orgs(user_id, sysadmin):
              to get the list faster
     '''
     
-    
+    if not user_id :
+        return ([], [], [])
+
     #Get the list of all organizations (only org id's)
     
     org_query = model.Session.query(model.Group.id).filter(model.Group.type == 'organization')
