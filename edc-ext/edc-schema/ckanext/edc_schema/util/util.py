@@ -247,8 +247,9 @@ def get_user_role_orgs(user_id, sysadmin):
     
     org_query = model.Session.query(model.Group.id).filter(model.Group.type == 'organization')
     
+    admin_orgs = [org[0] for org in org_query.all()]
     if sysadmin :
-        return (org_query.all(), [], [])
+        return (admin_orgs, [], [])
     
     member_query = model.Session.query(model.Member.group_id) \
                    .filter(model.Member.table_name == 'user') \
@@ -257,7 +258,11 @@ def get_user_role_orgs(user_id, sysadmin):
     admin_orgs = member_query.filter(model.Member.capacity == 'admin').distinct(model.Member.group_id).all()
     editor_orgs = member_query.filter(model.Member.capacity == 'editor').distinct(model.Member.group_id).all()
     member_orgs = member_query.filter(model.Member.capacity == 'member').distinct(model.Member.group_id).all()
-    
+
+    admin_orgs = [org[0] for org in admin_orgs]
+    editor_orgs = [org[0] for org in editor_orgs]
+    member_orgs = [org[0] for org in member_orgs]
+
     return (admin_orgs, editor_orgs, member_orgs)
 
 
