@@ -135,26 +135,6 @@ def get_user_toporgs(user_id, role=None):
 
     #Get the list of all first level organizations.
     all_orgs = org_model.Group.get_top_level_groups(type="organization")
-
-
-    top_orgs_query = model.Session.query(model.Group.id).\
-                     outerjoin(model.Member, 
-                                and_(model.Member.group_id == model.Group.id,
-                                     model.Member.table_name == 'group',
-                                     model.Member.state == 'active')).\
-                     filter(model.Member.id == None).\
-                     filter(model.Group.type == 'organization').\
-                     filter(model.Group.state == 'active')
-    
-    
-    member_query = model.Session.query(model.Member.group_id).\
-                                       filter(model.Member.table_name == 'user').\
-                                       filter(model.Member.state == 'active').\
-                                       filter(model.Member.table_id == user_id).\
-                                       filter(model.Member.group_id.in_(top_orgs_query.all()))
-    
-    for item in member_query.all() :
-        print 'Org id ---------------> ', item 
         
     for org in all_orgs:
         members = []
