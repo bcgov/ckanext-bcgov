@@ -47,6 +47,7 @@
     	    {% endblock %}
 
             {% if record_type != 'Application' and record_type != 'WebService' %}
+            {#
             {% set topic_error = errors.iso_topic_cat %}
             <div class="control-group {{ " error" if topic_error }}">
                 <label class="control-label" for="field-iso_topic_cat"><span class="control-required">*</span> {{ _("ISO Topic Category") }}</label>
@@ -66,6 +67,7 @@
                     {% endif %}
                 </div>
             </div>
+            #}
             {% endif %}
         </div>
 
