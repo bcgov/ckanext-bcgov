@@ -10,6 +10,7 @@ from ckan.common import  c
 import ckan.logic as logic
 
 from ckanext.edc_schema.util.helpers import get_record_type_label
+from sqlalchemy import and_
 
 ValidationError = logic.ValidationError
 
@@ -136,6 +137,25 @@ def get_user_toporgs(user_id, role=None):
     all_orgs = org_model.Group.get_top_level_groups(type="organization")
 
 
+    top_orgs_query = model.Session.query(model.Group.id).\
+                     outerjoin(model.Member, 
+                                and_(model.Member.group_id == model.Group.id,
+                                     model.Member.table_name == 'group',
+                                     model.Member.state == 'active')).\
+                     filter(model.Member.id == None).\
+                     filter(model.Group.type == 'organization').\
+                     filter(model.Group.state == 'active')
+    
+    
+    member_query = model.Session.query(model.Member.group_id).\
+                                       filter(model.Member.table_name == 'user').\
+                                       filter(model.Member.state == 'active').\
+                                       filter(model.Member.table_id == user_id).\
+                                       filter(model.Member.group_id.in_(top_orgs_query.all()))
+    
+    for item in member_query.all() :
+        print 'Org id ---------------> ', item 
+        
     for org in all_orgs:
         members = []
         try:
@@ -181,7 +201,13 @@ def get_user_orgs(user_id, role=None):
     Returns the list of orgs and suborgs that the given user belongs to and has the given role('admin', 'member', 'editor', ...)
     '''
 
-        
+    member_query = model.Session.query(model.Member.group_id) \
+                   .filter(model.Member.table_name == 'user') \
+                   .filter(model.Member.table_id == user_id)
+
+    if role :
+        member_query = member_query.filter(model.Member.capacity == role)
+                
     orgs = []
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
@@ -434,8 +460,6 @@ def get_all_orgs():
     
     all_orgs = model.Group.all('organization')
     
-    return all_orgs
-
     for org in all_orgs:
         orgs_dict[org['id']] = {'name': org.name, 'title': org.title }
 
