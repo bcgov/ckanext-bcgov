@@ -14,9 +14,6 @@ from ckan.logic.validators import (url_validator,
                                    name_validator,
                                    package_name_validator)
 
-from ckan.lib.field_types import DateType, DateConvertError
-from ckan.lib.navl.dictization_functions import Invalid
-
 from converters import (convert_to_extras,
                         convert_from_extras)
 
@@ -33,24 +30,6 @@ from validators import (check_empty,
 log = logging.getLogger(__name__)
 
 EDC_DATASET_TYPE_VOCAB = u'dataset_type_vocab'
-
-
-
-def date_to_db(value, context):
-    try:
-        value = DateType.form_to_db(value)
-    except DateConvertError, e:
-        raise Invalid(str(e))
-    return value
-
-
-def date_to_form(value, context):
-    try:
-        value = DateType.db_to_form(value)
-    except DateConvertError, e:
-        raise Invalid(str(e))
-    return value
-
 
 
 def contacts_db_schema():
