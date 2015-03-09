@@ -117,8 +117,8 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'north_bound_latitude' : [ignore_missing, latitude_validator, convert_to_extras],
                         'table_comment' : [ignore_missing, convert_to_extras],
                         'details' : details_schema(),
-                      #'iso_topic_cat' : [not_empty, cnvrt_to_tags('iso_topic_category')],
-                      #'iso_topic_string' : [ignore_missing, convert_to_extras],
+                        #'iso_topic_cat' : [toolkit.get_validator('not_empty'), cnvrt_to_tags('iso_topic_category')],
+                        'iso_topic_string' : [ignore_missing, convert_to_extras],
                         'dates' : dates_to_db_schema()
                       })
         schema['resources'].update({
@@ -172,8 +172,8 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'north_bound_latitude' : [convert_from_extras, ignore_missing],
                         'table_comment' : [convert_from_extras, ignore_missing],
                         'details' : [convert_from_extras, ignore_missing],
-                      #'iso_topic_cat' : [cnvrt_from_tags('iso_topic_category'), not_empty],
-                      #'iso_topic_string' : [convert_from_extras, ignore_missing],
+                        #'iso_topic_cat' : [cnvrt_from_tags('iso_topic_category'), toolkit.get_validator('not_empty')],
+                        'iso_topic_string' : [convert_from_extras, ignore_missing],
                         'dates' : [convert_from_extras, ignore_missing]
                         })
         schema['resources'].update({
@@ -217,7 +217,7 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
                         'east_bound_longitude' : [ignore_missing, convert_to_extras],
                         'south_bound_latitude' : [ignore_missing, convert_to_extras],
                         'north_bound_latitude' : [ignore_missing, convert_to_extras],
-                        'iso_topic_cat' : [not_empty, cnvrt_to_tags('iso_topic_category')],
+                        #'iso_topic_cat' : [not_empty, cnvrt_to_tags('iso_topic_category')],
                         'iso_topic_string' : [ignore_missing, convert_to_extras],
                         'dates' : dates_to_db_schema()
                      })
@@ -259,7 +259,7 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
                         'east_bound_longitude' : [convert_from_extras, ignore_missing],
                         'south_bound_latitude' : [convert_from_extras, ignore_missing],
                         'north_bound_latitude' : [convert_from_extras, ignore_missing],
-                        'iso_topic_cat' : [cnvrt_from_tags('iso_topic_category'), not_empty],
+                        #'iso_topic_cat' : [cnvrt_from_tags('iso_topic_category'), not_empty],
                         'iso_topic_string' : [convert_from_extras, ignore_missing],
                         'dates' : [convert_from_extras, ignore_missing]
                          })

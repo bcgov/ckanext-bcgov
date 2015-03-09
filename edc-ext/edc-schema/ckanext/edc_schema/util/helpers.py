@@ -342,3 +342,12 @@ def get_espg_id(espg_string):
     return espg_id[0]
 
 
+def get_iso_topic_values(iso_topic_str):
+    '''
+    Converts the comma separated iso topic tokens into a list of iso topic values.
+    '''
+    iso_topic_values = []
+    if iso_topic_str :
+        iso_topic_values = [item.strip() for item in  iso_topic_str.split(',')]
+    
+    return iso_topic_values

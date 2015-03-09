@@ -57,7 +57,8 @@
     {# Displaying Dataset information in colorful markers #}
 
     {% block package_markers %}
-      {% snippet 'package/snippets/markers.html', type=pkg.type, iso_topic_cat=pkg.get('iso_topic_cat', []), org=pkg.org, branch=pkg.sub_org %}
+      {% set iso_topic_values = h.get_iso_topic_values(pkg.get('iso_topic_string')) %}
+      {% snippet 'package/snippets/markers.html', type=pkg.type, iso_topic_cat=iso_topic_values, org=pkg.org, branch=pkg.sub_org %}
     {% endblock %}
 
     <h1>

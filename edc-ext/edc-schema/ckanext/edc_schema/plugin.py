@@ -33,7 +33,8 @@ from ckanext.edc_schema.util.helpers import (get_suborg_sector,
                                              get_organization_title,
                                              get_espg_id,
                                              get_org_title,
-                                             get_edc_org
+                                             get_edc_org,
+                                             get_iso_topic_values
                                              )
 
 
@@ -81,7 +82,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "get_facets_unselected" : get_facets_unselected,
                 "get_sectors_list": get_sectors_list,
                 "get_org_title" : get_org_title,
-                "get_edc_org" : get_edc_org
+                "get_edc_org" : get_edc_org,
+                "get_iso_topic_values" : get_iso_topic_values
                 }
 
 

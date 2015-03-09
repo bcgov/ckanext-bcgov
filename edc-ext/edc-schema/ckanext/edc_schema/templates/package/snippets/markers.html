@@ -23,6 +23,6 @@
     	<li class="marker dataset-sector {{ sector|lower|replace(' ', '-')|replace('.', '-') }}{% if sector_length >= marker_strlen or sector_length == 0 %} small{% endif %}"><a href="{{ h.url_for(controller='package', action='search', sector=sector) }}">{{ sector }}</a></li>
     {% endif %}
     {% if iso_topic_cat and type == 'Geographic' %}
-    <li class="marker dataset-iso{% if iso_topic_title|length >= marker_strlen %} small{% endif %}"><a href="{{ h.url_for(controller='package', action='search', q='vocab_iso_topic_category:' + iso_topic_title )}}">{{ iso_topic_title }}</a></li>
+    <li class="marker dataset-iso{% if iso_topic_title|length >= marker_strlen %} small{% endif %}"><a href="{{ h.url_for(controller='package', action='search', q='iso_topic_string:*' + iso_topic_title + '*')}}">{{ iso_topic_title }}</a></li>
     {% endif %}
 </ul>

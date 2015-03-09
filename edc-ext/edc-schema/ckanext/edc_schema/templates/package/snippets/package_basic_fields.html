@@ -47,15 +47,16 @@
     	    {% endblock %}
 
             {% if record_type != 'Application' and record_type != 'WebService' %}
-            {#
+            
             {% set topic_error = errors.iso_topic_cat %}
             <div class="control-group {{ " error" if topic_error }}">
                 <label class="control-label" for="field-iso_topic_cat"><span class="control-required">*</span> {{ _("ISO Topic Category") }}</label>
                 {% set topic_cat_list = h.edc_tags(_("iso_topic_category")) %}
+                {% set iso_topic_values = h.get_iso_topic_values(data.get('iso_topic_string')) %}
                 <div class="controls">
-                    <select multiple id="field-iso_topic_cat" name="iso_topic_cat" data-module="autocomplete" class="required">
+                    <select multiple id="field-iso_topic_string" name="iso_topic_string" data-module="autocomplete" class="required">
                         {% for tag in topic_cat_list  %}
-                            {% set selected_cat = (tag in data.get('iso_topic_cat', [])) %}
+                            {% set selected_cat = (tag in iso_topic_values) %}
                             <option value="{{ tag }}"
                                 {% if selected_cat %} selected="selected" {% endif %}>
                                 {{ tag }}
@@ -66,8 +67,7 @@
                         <span class="error-block">{{ topic_error|join(', ') }}</span>
                     {% endif %}
                 </div>
-            </div>
-            #}
+            </div> 
             {% endif %}
         </div>
 
