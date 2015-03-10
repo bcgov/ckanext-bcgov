@@ -1,17 +1,20 @@
-########################################################################### DataBC release version 1.0.2## This document constitutes the delivery instructions for ## K.Mamakani, HighwayThreeSolutions, Jan. 5, 2015##########################################################################1) List of changes:
+########################################################################### DataBC release version 1.0.3## This document constitutes the delivery instructions for ## K.Mamakani, HighwayThreeSolutions, March. 10, 2015##########################################################################1) List of changes:
    Key	                                        Summary
 --------------------------------------------------------------------------------------------------------
+CITZEDC-544	Email notifications are being sent out to editors when an update is made to a package
 CITZEDC-539	Server error when adding a member as an editor unless the member logs in first
-CITZEDC-501	Logout repeats?
 CITZEDC-537	No fields are provided for the entry of geographic extent of a dataset
-CITZEDC-533	Server error generated when trying to view trashcan ../ckan-admin/trash as sysadmin
-CITZEDC-546	Some Geographic Datasets are being updated daily
-CITZEDC-549	Duplicate button generates server error
-CITZEDC-553	BCDC base document mode for IE2) Installation Instructions:1.	Activate virtual env	$ . /usr/lib/ckan/default/bin/activate2.	Update config file (if there are any changes)
+CITZEDC-501	Logout repeats?
+CITZEDC-476	Some data dictionary content fails to import into ckan (invalid characters?)
+
+2) Installation Instructions:1.	Activate virtual env	$ . /usr/lib/ckan/default/bin/activate2.	Update config file (if there are any changes)
 	a.	Add admin api key to the ini file as ckan.api_key 	b.	Add the major and minor version numbers to ini file as follow :
 		edc.major_version = DLV
-		edc.minor_version = 1.0.2	    		edc.major_version = TST		edc.minor_version = 1.0.2			edc.major_version = PRD		edc.minor_version = 1.0.2
-	c. Add the following two line to ini file to the search setting section if they don’t exist.
+		edc.minor_version = 1.0.3	    		edc.major_version = TST		edc.minor_version = 1.0.3			edc.major_version = PRD		edc.minor_version = 1.0.3
+	c. Check if the following config options have been defined in ini file.
+		ckan.search.show_all_types = true
+		ckan.search.automatic_indexing = true
+		ckan.search.solr_commit = true
 		search.facets.limit = 500
 		search.facets.default = 20
 
