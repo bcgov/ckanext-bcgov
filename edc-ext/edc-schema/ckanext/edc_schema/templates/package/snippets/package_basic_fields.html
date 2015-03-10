@@ -48,7 +48,7 @@
 
             {% if record_type != 'Application' and record_type != 'WebService' %}
             
-            {% set topic_error = errors.iso_topic_cat %}
+            {% set topic_error = errors.iso_topic_string %}
             <div class="control-group {{ " error" if topic_error }}">
                 <label class="control-label" for="field-iso_topic_cat"><span class="control-required">*</span> {{ _("ISO Topic Category") }}</label>
                 {% set topic_cat_list = h.edc_tags(_("iso_topic_category")) %}

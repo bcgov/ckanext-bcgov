@@ -69,3 +69,12 @@ def remove_whitespace(value, context):
     if isinstance(value, basestring):
         return value.strip()
     return value
+
+
+def convert_iso_topic(key, data, errors, context):    
+    iso_topic_cat = data[key]
+    if iso_topic_cat :
+        if isinstance(iso_topic_cat, basestring):  
+            iso_topic_cat = [iso_topic_cat]  
+        data[key] = ','.join(iso_topic_cat)          
+        
