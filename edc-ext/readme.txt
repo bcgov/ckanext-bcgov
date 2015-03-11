@@ -6,7 +6,7 @@ CITZEDC-539	Server error when adding a member as an editor unless the member log
 CITZEDC-537	No fields are provided for the entry of geographic extent of a dataset
 CITZEDC-501	Logout repeats?
 CITZEDC-476	Some data dictionary content fails to import into ckan (invalid characters?)
-
+CITZEDC-550	Updates in production are too slow - 1.5 to 2 min per update
 2) Installation Instructions:1.	Activate virtual env	$ . /usr/lib/ckan/default/bin/activate2.	Update config file (if there are any changes)
 	a.	Add admin api key to the ini file as ckan.api_key 	b.	Add the major and minor version numbers to ini file as follow :
 		edc.major_version = DLV
