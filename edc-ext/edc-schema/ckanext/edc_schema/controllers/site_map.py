@@ -9,7 +9,6 @@ from pylons import config, response
 from pylons.decorators.cache import beaker_cache
 import ckan.model as model
 import ckan.lib.helpers as h
-import pprint 
 import time
 from ckan.logic import get_action, NotFound
 
@@ -17,74 +16,110 @@ SITEMAP_NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
 GSA_SITEMAP_NS = "http://www.w3.org/1999/xhtml"
 
 
-log = logging.getLogger(__file__)
+log = logging.getLogger('ckanext.edc_schema')
 
 
 
 class GsaSitemapController(BaseController):
 
+
+    def get_package_chunk(self, data_dict):
+        '''
+        Gets a chunk of at most 1000 records from the search results, the offset is
+        specified by the start parameter in data_dict.
+        '''
+    
+        from ckan.lib.search import SearchError
+        
+        context = {'model': model, 'user': c.user or c.author,
+                       'auth_user_obj': c.userobj}
+        
+        try:
+            query = get_action('package_search')(context, data_dict)
+            count = query.get('count', 0)
+            packages = query.get('results', [])
+        except SearchError, se:
+            log.error('Dataset search error in creating the package site map: %r', se.args)
+            count = 0
+            packages = []
+        return count, packages
+
+    def get_packages_sitemap(self, packages, output_type='html'):
+        
+        site_map = ''
+        
+        for pkg in packages:
+            if output_type == 'html' :            
+                site_map += "<a href=\""+ config.get('ckan.site_url') + "/dataset/" + pkg['name'] + "\">" + pkg['name'] + "</a><br>"
+            else:
+                pkg_lastmod = url_for(controller='package', action="read", id = pkg['metadata_modified'])
+                short_date = pkg_lastmod[9:-7] 
+                escaped_date = short_date.replace("%3A",":")
+                utc_date = escaped_date + '-07:00'
+                site_map += "<url>"            
+                site_map += "<loc>" + config.get('ckan.site_url') +  "/dataset/" + pkg['name'] + "</loc>"
+                #output += "<lastmod>" + pkg_lastmod[9:-20] + "</lastmod>"
+                site_map += "<lastmod>" + utc_date + "</lastmod>"
+                site_map += "</url>"  
+                        
+        return site_map
+
+
+    def create_sitemap(self, output_type='html'):
+        output = ''
+        
+        if (output_type != 'html') and (output_type != 'xml') :
+            return output
+        
+        if output_type == 'html' :
+            output = '<!DOCTYPE html><html><head><title>EDC Sitemap</title><META NAME=\"ROBOTS\" CONTENT=\"NOINDEX\"></head><body>'
+        else :
+            output = '<?xml version="1.0" encoding="UTF-8"?>'
+            output += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+        
+        user_name = c.user or 'visitor'
+        fq = ''    
+        if user_name == 'visitor':
+            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
+
+        max_results = 1000000
+        data_dict = {
+                'fq': fq.strip(),
+                'rows' : max_results,
+                'start' : 0
+        }
+
+        count, packages = self.get_package_chunk(data_dict)
+        log.info('Site map records count : {0}'.format(count))
+        output += self.get_packages_sitemap(packages, output_type)
+        
+        max_records = min(count, max_results)
+        start = 1000
+        remained = max_records - 1000
+        while remained > 0 :
+            data_dict['start'] = start
+            data_dict['rows'] = min(remained, 1000)
+            count, packages = self.get_package_chunk(data_dict)
+            output += self.get_packages_sitemap(packages, output_type)    
+            remained -= 1000
+            start += 1000
+
+        if output_type == 'html' :
+            output += "</body></html>" 
+        else :
+            output += "</urlset>"    
+
+        return output   
+            
 #    @beaker_cache(expire=3600*24, type="dbm", invalidate_on_startup=True)
     def _render_gsa_sitemap(self):
-        context = {'model': model, 'user': c.user or c.author,
-                       'auth_user_obj': c.userobj}
-            
-        output = '<!DOCTYPE html><html><head><title>EDC Sitemap</title><META NAME=\"ROBOTS\" CONTENT=\"NOINDEX\"></head><body>'
-        pkgs = Session.query(Package).all() # 
-
-        user_name = c.user or 'visitor'
-        fq = ''    
-        if user_name == 'visitor':
-            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
-
-        data_dict = {
-                'fq': fq.strip(),
-                'rows' : 10000,
-                'start' : 0
-        }
-
-        query = get_action('package_search')(context, data_dict)
-                
-        for pkg in query['results']:
-            pkg_url = url_for(controller='package', action="read", id = pkg['name'])            
-            output += "<a href=\""+ config.get('ckan.site_url') + "/dataset/" + pkg['name'] + "\">" + pkg['name'] + "</a><br>"
-        output += "</body></html>"    
-        return output
+        return self.create_sitemap('html')
         
     def _render_xml_sitemap(self):
-        context = {'model': model, 'user': c.user or c.author,
-                       'auth_user_obj': c.userobj}
-            
-        output = '<?xml version="1.0" encoding="UTF-8"?>'
-        output += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-        pkgs = Session.query(Package).all() # 
-
-        user_name = c.user or 'visitor'
-        fq = ''    
-        if user_name == 'visitor':
-            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
-
-        data_dict = {
-                'fq': fq.strip(),
-                'rows' : 10000,
-                'start' : 0
-        }
-
-        query = get_action('package_search')(context, data_dict)
-                
-        for pkg in query['results']:
-            pkg_url = url_for(controller='package', action="read", id = pkg['name'])
-            pkg_lastmod = url_for(controller='package', action="read", id = pkg['metadata_modified'])
-            short_date = pkg_lastmod[9:-7] 
-            escaped_date = short_date.replace("%3A",":")
-            utc_date = escaped_date + '-07:00'
-            output += "<url>"            
-            output += "<loc>" + config.get('ckan.site_url') +  "/dataset/" + pkg['name'] + "</loc>"
-            #output += "<lastmod>" + pkg_lastmod[9:-20] + "</lastmod>"
-            output += "<lastmod>" + utc_date + "</lastmod>"
-            output += "</url>"  
-        output += "</urlset>"    
+        
         response.content_type = "text/xml"
-        return output        
+        return self.create_sitemap('xml')
+    
     def view(self):
         return self._render_gsa_sitemap()
     def read(self):
