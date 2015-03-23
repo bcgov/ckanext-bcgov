@@ -1,5 +1,13 @@
 {% ckan_extends %}
 
+{% block head_extras -%}
+  {# defined in the config.ini under "ckan.template_head_end" #}
+  {{ g.template_head_end | safe }}
+  {% set description = h.markdown_extract(pkg.notes, extract_length=0)|forceescape %}
+  <meta property="og:title" content="{{ h.dataset_display_name(pkg) }} - {{ g.site_title }}">
+  <meta property="og:description" content="{{ description|forceescape }}">
+{% endblock -%}
+
 {% block content_primary_nav %}
   {{ h.build_nav_icon('dataset_read', _('Dataset'), id=pkg.name) }}
   {{ h.build_nav_icon('dataset_groups', _('Groups'), id=pkg.name) }}
