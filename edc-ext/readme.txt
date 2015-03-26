@@ -1,13 +1,14 @@
 ########################################################################### DataBC release version 1.0.4## This document constitutes the delivery instructions for ## K.Mamakani, HighwayThreeSolutions, March. 26, 2015##########################################################################1) List of changes:
    Key	                                        Summary
 --------------------------------------------------------------------------------------------------------
+CITZEDC-583	Radio buttons on history template overlap
 CITZEDC-582	Government wide GSA powered search input does not work
 CITZEDC-581	Once a hyperlink is visited it is now longer identifiable
-CITZEDC-579	HTML meta property="og:description" content is truncated
-CITZEDC-533	Server error generated when trying to view trashcan ../ckan-admin/trash as sysadmin
-CITZEDC-547	Web Service / API datasets with missing resources take user to the create a new resource page when not logged in
-CITZEDC-38	CITZEDC-24 Sitemaps
 CITZEDC-580	Last Modified URL is incorrect on Dashboard
+CITZEDC-579	HTML meta property="og:description" content is truncated
+CITZEDC-547	Web Service / API datasets with missing resources take user to the create a new resource page when not logged in
+CITZEDC-533	Server error generated when trying to view trashcan ../ckan-admin/trash as sysadmin
+CITZEDC-38	CITZEDC-24 Sitemaps
 2) Installation Instructions:1.	Activate virtual env	$ . /usr/lib/ckan/default/bin/activate2.	Update config file (if there are any changes)
 	a.	Add admin api key to the ini file as ckan.api_key 	b.	Add the major and minor version numbers to ini file as follow :
 		edc.major_version = DLV
