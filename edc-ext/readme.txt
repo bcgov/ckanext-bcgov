@@ -1,12 +1,13 @@
-########################################################################### DataBC release version 1.0.3## This document constitutes the delivery instructions for ## K.Mamakani, HighwayThreeSolutions, March. 10, 2015##########################################################################1) List of changes:
+########################################################################### DataBC release version 1.0.4## This document constitutes the delivery instructions for ## K.Mamakani, HighwayThreeSolutions, March. 26, 2015##########################################################################1) List of changes:
    Key	                                        Summary
 --------------------------------------------------------------------------------------------------------
-CITZEDC-544	Email notifications are being sent out to editors when an update is made to a package
-CITZEDC-539	Server error when adding a member as an editor unless the member logs in first
-CITZEDC-537	No fields are provided for the entry of geographic extent of a dataset
-CITZEDC-501	Logout repeats?
-CITZEDC-476	Some data dictionary content fails to import into ckan (invalid characters?)
-CITZEDC-550	Updates in production are too slow - 1.5 to 2 min per update
+CITZEDC-582	Government wide GSA powered search input does not work
+CITZEDC-581	Once a hyperlink is visited it is now longer identifiable
+CITZEDC-579	HTML meta property="og:description" content is truncated
+CITZEDC-533	Server error generated when trying to view trashcan ../ckan-admin/trash as sysadmin
+CITZEDC-547	Web Service / API datasets with missing resources take user to the create a new resource page when not logged in
+CITZEDC-38	CITZEDC-24 Sitemaps
+CITZEDC-580	Last Modified URL is incorrect on Dashboard
 2) Installation Instructions:1.	Activate virtual env	$ . /usr/lib/ckan/default/bin/activate2.	Update config file (if there are any changes)
 	a.	Add admin api key to the ini file as ckan.api_key 	b.	Add the major and minor version numbers to ini file as follow :
 		edc.major_version = DLV
