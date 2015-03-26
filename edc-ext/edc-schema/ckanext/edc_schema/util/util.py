@@ -432,19 +432,19 @@ def get_all_orgs():
     '''
     orgs_dict = {}
  
-#     data_string = urllib.quote(json.dumps({'all_fields': True}))
-#     request = urllib2.Request(site_url + '/api/3/action/organization_list')
-#     request.add_header('Authorization', api_key)
-#     response = urllib2.urlopen(request, data_string)
-#     response_dict = json.loads(response.read())
-# 
-#     for org in response_dict['result']:
-#         orgs_dict[org['id']] = {'name': org['name'], 'title': org['title']}
+    data_string = urllib.quote(json.dumps({'all_fields': True}))
+    request = urllib2.Request(site_url + '/api/3/action/organization_list')
+    request.add_header('Authorization', api_key)
+    response = urllib2.urlopen(request, data_string)
+    response_dict = json.loads(response.read())
+ 
+    for org in response_dict['result']:
+        orgs_dict[org['id']] = {'name': org['name'], 'title': org['title']}
     
-    all_orgs = model.Group.all('organization')
-    
-    for org in all_orgs:
-        orgs_dict[org['id']] = {'name': org.name, 'title': org.title }
+#     all_orgs = model.Group.all('organization')
+#     
+#     for org in all_orgs:
+#         orgs_dict[org['id']] = {'name': org.name, 'title': org.title }
 
     return orgs_dict
 
