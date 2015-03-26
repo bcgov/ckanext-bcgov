@@ -135,7 +135,8 @@ def get_user_toporgs(user_id, role=None):
 
     #Get the list of all first level organizations.
     all_orgs = org_model.Group.get_top_level_groups(type="organization")
-        
+
+
     for org in all_orgs:
         members = []
         try:
@@ -180,7 +181,7 @@ def get_user_orgs(user_id, role=None):
     '''
     Returns the list of orgs and suborgs that the given user belongs to and has the given role('admin', 'member', 'editor', ...)
     '''
-
+                
     orgs = []
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
@@ -237,7 +238,7 @@ def get_user_role_orgs(user_id, sysadmin):
     
     if not user_id :
         return ([], [], [])
-
+    
     #Get the list of all organizations (only org id's)
     
     org_query = model.Session.query(model.Group.id).filter(model.Group.type == 'organization')
@@ -426,25 +427,25 @@ def get_user_list():
 
 def get_all_orgs():
     '''
-        Returns all user orgs as a dictionary with the id as the key
-        and the value is a tuple of (name, title)
-        '''
+    Returns all user orgs as a dictionary with the id as the key
+    and the value is a tuple of (name, title)
+    '''
     orgs_dict = {}
+ 
+#     data_string = urllib.quote(json.dumps({'all_fields': True}))
+#     request = urllib2.Request(site_url + '/api/3/action/organization_list')
+#     request.add_header('Authorization', api_key)
+#     response = urllib2.urlopen(request, data_string)
+#     response_dict = json.loads(response.read())
+# 
+#     for org in response_dict['result']:
+#         orgs_dict[org['id']] = {'name': org['name'], 'title': org['title']}
     
-    data_string = urllib.quote(json.dumps({'all_fields': True}))
-    request = urllib2.Request(site_url + '/api/3/action/organization_list')
-    request.add_header('Authorization', api_key)
-    response = urllib2.urlopen(request, data_string)
-    response_dict = json.loads(response.read())
+    all_orgs = model.Group.all('organization')
     
-    for org in response_dict['result']:
-        orgs_dict[org['id']] = {'name': org['name'], 'title': org['title']}
-    
-    #all_orgs = model.Group.all('organization')
-    
-    #for org in all_orgs:
-    #    orgs_dict[org['id']] = {'name': org.name, 'title': org.title }
-    
+    for org in all_orgs:
+        orgs_dict[org['id']] = {'name': org.name, 'title': org.title }
+
     return orgs_dict
 
     

@@ -216,6 +216,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         return pkg_dict
 
 
+        
     def before_search(self, search_params):
         '''
         Customizes package search and applies filters based on the dataset metadata-visibility

@@ -268,15 +268,13 @@ def edc_package_update(context, input_data_dict):
         query = get_action('package_search')(context, data_dict)
 
     except SearchError, se :
-        print 'Search error', str(se)
         log.error('Search error : %s', str(se))
-        #pprint.pprint('Search error!')
         raise SearchError(str(se))
 
     #check the search results - there can be only 1!!
     the_count = query['count']
     if the_count != 1:
-        pprint.pprint('count error!')
+        log.error('Search for the dataset with q={0} returned 0 or more than 1 record.'.format(q))
         raise SearchError('Search returned 0 or more than 1 item')
 
     results = query['results']
@@ -289,6 +287,7 @@ def edc_package_update(context, input_data_dict):
     try :
         package_dict = get_action('package_show')(context, {'id': results[0]['id']})
         
+        current_imap_link = package_dict.get('link_to_imap', None)
         visibility = package_dict['metadata_visibility']
         
         #pprint.pprint('package_dict:')
@@ -300,20 +299,20 @@ def edc_package_update(context, input_data_dict):
         update = {}
         #don't update archived records
         
+        #Upadted by Khalegh Mamakani to update the i-map link only if it has been done already.
+        new_imap_link = None
         if (package_dict['edc_state'] != 'ARCHIVED'):
-			if (visibility == 'Public'):
-				if (input_data_dict.get("imap_layers_pub")):
-					package_dict['link_to_imap'] = public_map_link + input_data_dict.get("imap_layers_pub")
-					update = get_action('package_update')(context, package_dict)
-					#pprint.pprint('update results:')
-					#pprint.pprint(update)                
-			else:        
-				if (input_data_dict.get("imap_layers_gov")):   
-					package_dict['link_to_imap'] = private_map_link + input_data_dict.get("imap_layers_gov")
-					update = get_action('package_update')(context, package_dict)
-					#pprint.pprint('update results:')
-					#pprint.pprint(update)
+            if (visibility == 'Public'):
+                if (input_data_dict.get("imap_layers_pub")): 
+                    new_imap_link = public_map_link + input_data_dict.get("imap_layers_pub")
+            else:
+                if (input_data_dict.get("imap_layers_gov")):
+                    new_imap_link = private_map_link + input_data_dict.get("imap_layers_gov")
+        if (new_imap_link != None) and (new_imap_link != current_imap_link) :
+            package_dict['link_to_imap'] = new_imap_link
+            update = get_action('package_update')(context, package_dict)
     except Exception, ue:
+        log.error('Error raised when updating dataset imap_link for dataset {0}.'.format(package_dict.get('name')))
         raise Exception(str(ue))
 
     response_dict = {}
@@ -360,7 +359,7 @@ def edc_package_update_bcgw(context, input_data_dict):
         #Use package_search to filter the list
         query = get_action('package_search')(context, data_dict)
     except SearchError, se :
-        print 'Search error', str(se)
+        log.error('Search error : %s', str(se))
         raise SearchError(str(se))
 
     #check the search results - there can be only 1!!

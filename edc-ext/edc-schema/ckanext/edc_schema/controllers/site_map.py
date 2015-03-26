@@ -89,10 +89,17 @@ class GsaSitemapController(BaseController):
                 'start' : 0
         }
 
+        '''
+        Get the first chunk of records and add them to the sitemap.
+        '''
         count, packages = self.get_package_chunk(data_dict)
         log.info('Site map records count : {0}'.format(count))
         output += self.get_packages_sitemap(packages, output_type)
         
+        '''
+        Count the number of remaining records.
+        Read the records in chunks and add them to the site map util there are no more records.
+        '''
         max_records = min(count, max_results)
         start = 1000
         remained = max_records - 1000

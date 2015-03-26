@@ -947,10 +947,15 @@ menu li {
   top: 7px;
 }
 
-/* Wet-boew overrides */
+/* Wet-boew overrides 
 a:visited {
   color: inherit;
-}
+} */
+
+/* visited link 
+a:visited {
+    color: #1A5A96;
+} */
 
 a.label {
   color: #fff;
@@ -989,6 +994,10 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 input[type="radio"], input[type="checkbox"] {
   margin: 0 0 0 -20px;
   top: 5px;
+}
+
+.dataset-form.form-horizontal input[type="radio"] {
+  margin: 0;
 }
 
 label:after,
@@ -1412,9 +1421,9 @@ input.search.tt-hint {
 .add-member-or {
 	float: left;
 	margin-top: 25px;
-	margin-bottom: 0px; 
+	margin-bottom: 0px;
 	width: 7%;
-	text-align: center; 
+	text-align: center;
 	text-transform: uppercase;
 	color: #999999;
 	font-weight: bold;
@@ -1433,7 +1442,7 @@ input.search.tt-hint {
 	list-style: none;
 	top: 10px;
 	right: 10px;
-	z-index: 1;	
+	z-index: 1;
 }
 
 .trash-actions .btn {

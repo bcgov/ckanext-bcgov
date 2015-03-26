@@ -36,12 +36,13 @@
             </li>
         </ul>
         <div id="wb-pnl"></div>
-        <div id="wb-srch">
+        <div id="wb-srch">        
             {% block header_site_search %}
-                <form class="section site-search simple-input" action="http://www2.gov.bc.ca/gov/search/results.page" method="get" onsubmit="javascript:this.q.value=this.q.value.toLowerCase();">
+                <form class="section site-search simple-input" action="http://www2.gov.bc.ca/gov/search/results.page" method="get" onsubmit="javascript:this.keywords.value=this.keywords.value.toLowerCase();">
                   <div class="field">
                     <label for="field-sitewide-search">{{ _('Search') }}</label>
-                    <input id="field-sitewide-search" type="text" name="q" placeholder="{{ _('Search gov.bc.ca') }}" />
+                    <input id="field-sitewide-search" type="text" name="keywords" placeholder="{{ _('Search gov.bc.ca') }}" />
+                    <input type="hidden" value="gov" name="config" /> 
                     <button class="btn-search" type="submit"><i class="icon-search"></i></button>
                   </div>
                 </form>
