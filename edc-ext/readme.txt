@@ -6,6 +6,7 @@ CITZEDC-582	Government wide GSA powered search input does not work
 CITZEDC-581	Once a hyperlink is visited it is now longer identifiable
 CITZEDC-580	Last Modified URL is incorrect on Dashboard
 CITZEDC-579	HTML meta property="og:description" content is truncated
+CITZEDC-560	Update ETS to use the DBCDLV 12c instance
 CITZEDC-547	Web Service / API datasets with missing resources take user to the create a new resource page when not logged in
 CITZEDC-533	Server error generated when trying to view trashcan ../ckan-admin/trash as sysadmin
 CITZEDC-38	CITZEDC-24 Sitemaps
