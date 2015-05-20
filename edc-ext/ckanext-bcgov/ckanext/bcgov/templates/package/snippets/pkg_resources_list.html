@@ -1,0 +1,26 @@
+{# 
+Show a list of resources added to the dataset.
+
+resources - A list of available resources
+pkg - A package object that the resources belong to.
+
+Example:
+
+  {% snippet "package/snippets/pkg_resources_list.html", pkg=pkg_data, resources=pkg_data.resources %}
+
+#}
+
+<section id="dataset-resources" class="pkg-resources">
+{% if resources %}
+  	<h3>{{ _('Available Resources') }}</h3>
+  	{% block resource_list %}
+      	<ul class="{% block resource_list_class %}resource-list{% endblock %}">
+        {% block resource_list_inner %}
+          {% for resource in resources %}
+            {% snippet 'package/snippets/pkg_resource_item.html', pkg=pkg, res=resource %}
+          {% endfor %}
+        {% endblock %}
+      </ul>
+	{% endblock %}
+{% endif %}
+</section>

@@ -1,0 +1,144 @@
+{#
+Displays a single of dataset.
+
+package        - A package to display.
+item_class     - The class name to use on the list item.
+hide_resources - If true hides the resources (default: false).
+banner         - If true displays a popular banner (default: false).
+truncate       - The length to trucate the description to (default: 180)
+truncate_title - The length to truncate the title to (default: 80).
+
+Example:
+
+  {% snippet 'snippets/package_item.html', package=c.datasets[0] %}
+
+#}
+{% set truncate = truncate or 180 %}
+{% set truncate_title = truncate_title or 80 %}
+{% set title = package.title or package.name %}
+{% set notes = h.markdown_extract(package.notes, extract_length=truncate) %}
+
+{# Added only for testing page view tracking
+{% if package.tracking_summary %}
+<div>
+Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tracking_summary.recent }}
+</div>
+{% endif %}
+#}
+
+{% block package_item %}
+  {{ icon_type }}
+  <li class="{{ item_class or "dataset-item" }}">
+    {% block content %}
+      <div class="dataset-content">
+        {% block markers %}
+          {% if package.sector %}
+            {% set marker_strlen = 12 %}
+            {% set sector_length = package.sector|truncate(marker_strlen+1, False, '')|length %}
+            <ul class="dataset-markers">
+              <li class="marker dataset-sector {{ package.sector|lower|replace(' ', '-')|replace('.', '-')  }}{% if sector_length >= marker_strlen or sector_length == 0 %} small{% endif %}"><a href="{{ h.url_for(controller='package', action='search', sector=package.sector) }}">{{ package.sector }}</a></li>
+            </ul>
+          {% endif %}
+          {% set package_type = package.type|lower %}
+          {% set icon_type = package_type|replace('geographic', 'globe')|replace('dataset', 'table')|replace('webservice', 'code')|replace('application', 'cogs') %}
+          {% set title_text = package_type|replace('geographic', 'Geographic Datasets')|replace('dataset', 'Datasets')|replace('webservice', 'APIs')|replace('application', 'Applications') %}
+          {% if org_id or user_id %}
+          	{% set href = h.add_url_param(new_params={'type': package.type}, extras={'id' : org_id }) %}
+          {% else %}                   
+          	{% set href = h.add_url_param(new_params={'type': package.type}) %}
+          {% endif %}
+          <div class="dataset-marker-type-icon">
+         
+            {# <a href="{{ h.url_for(controller='package', action='search', type=package.type) }}" title="{{ title_text }}"><i class="icon icon-2x icon-{{ icon_type }}"></i></a> #}
+            <a href="{{ href }}" title="{{ title_text }}"><i class="icon icon-2x icon-{{ icon_type }}"></i></a>
+          </div>
+        {% endblock %}
+
+		{# Check if the user is a member of the package orgs #}
+        {% if logged_in and is_editor %}
+          {% set edc_state_class = package.edc_state|lower|replace(" ", "") %}
+          <div class="edc-state {{ edc_state_class }}">
+            {{ package.edc_state }}
+          </div>
+        {% endif %}
+
+        {% block heading %}
+          <h3 class="dataset-heading">
+            {% block heading_private %}
+              {% if package.private %}
+                <span class="dataset-private label label-inverse">
+                  <i class="icon-lock"></i>
+                  {{ _('Private') }}
+                </span>
+              {% endif %}
+            {% endblock %}
+            {% block heading_title %}
+              {{ h.link_to(h.truncate(title, truncate_title), h.url_for(controller='package', action='read', id=package.name)) }}
+            {% endblock %}
+            {{ h.popular('recent views', package.tracking_summary.total, min=10) if package.tracking_summary }}
+            {% if package.org and package.sub_org %}
+            {% block heading_orgs %}
+              <div class="dataset-heading-orgs">
+              {# 
+                  	{% set org = h.get_edc_org(package.org) %}
+    				{% set branch = h.get_edc_org(package.sub_org) %}
+              
+              #}
+              {# snippet 'package/snippets/org_view.html', org=org, branch=branch #}
+              </div>
+            {% endblock %}
+            {% endif %}
+            {% block heading_meta %}
+              {% if package.get('state', '').startswith('draft') %}
+                <span class="label label-info">{{ _('Draft') }}</span>
+              {% elif package.get('state', '').startswith('deleted') %}
+                <span class="label label-important">{{ _('Deleted') }}</span>
+              {% endif %}
+            {% endblock %}
+          </h3>
+        {% endblock %}
+        {% block banner %}
+          {% if banner %}
+            <span class="banner">{{ _('Popular') }}</span>
+          {% endif %}
+        {% endblock %}
+        {% block notes %}
+          {% if notes %}
+            <div>{{ notes|urlize }}</div>
+          {% else %}
+            <p class="empty">{{ _("This dataset has no description") }}</p>
+          {% endif %}
+        {% endblock %}
+      </div>
+      {% block resources %}
+        {% if package.resources and not hide_resources %}
+          {% block resources_outer %}
+            <ul class="dataset-resources unstyled">
+              {% block resources_inner %}
+                {% for resource in h.dict_list_reduce(package.resources, 'format') %}
+                <li>
+                  <a href="{{ h.url_for(controller='package', action='read', id=package.name) }}" class="label" data-format="{{ resource.lower() }}" >{{ resource.lower() }}</a>
+                </li>
+                {% endfor %}
+              {% endblock %}
+            </ul>
+          {% endblock %}
+        {% endif %}
+      {% endblock %}
+
+      {% block package_dates %}
+        <ul class="dataset-dates">
+          {% if package.record_publish_date %}
+            <li>Record Published: {{ h.render_datetime(package.record_publish_date, '%Y-%m-%d') }}</li>
+          {% endif %}
+
+          {% if package.record_last_modified %}
+            <li>Record Last Modified: {{ h.render_datetime(package.record_last_modified, '%Y-%m-%d') }}</li>
+          {% else %}
+          	<li>Record Last Modified: {{ h.render_datetime(package.metadata_modified, '%Y-%m-%d') or h.render_datetime(package.revision_timestamp, '%Y-%m-%d') or _('unknown') }}</li>
+          {% endif %}
+        </ul>
+      {% endblock %}
+    {% endblock %}
+  </li>
+{% endblock %}

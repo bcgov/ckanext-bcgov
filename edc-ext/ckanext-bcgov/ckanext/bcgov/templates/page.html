@@ -1,0 +1,49 @@
+{% ckan_extends %}
+
+{%- block page -%}
+
+<div id="wb-body">
+    <div id="wb-skip">
+      <ul id="wb-tphp">
+        <li id="wb-skip1"><a href="#wb-cont">Skip to main content</a></li>
+        <li id="wb-skip2"><a href="#wb-nav">Skip to footer</a></li>
+        <li id="wb-skip3"><a href="http://www2.gov.bc.ca/gov/admin/accessibility.page">Accessibility Statement</a></li>
+      </ul>
+    </div>
+    <div id="wb-head">
+      <div id="wb-head-in">
+        <header>
+          {% block header %}
+            {{ super() }}
+          {% endblock %}
+        </header>
+      </div>
+    </div>
+
+    <div id="wb-core">
+      <div id="wb-core-in" class="equalize">
+        <div id="wb-main" role="main">
+          <div id="wb-main-in">
+            <div class="wrap">
+              {%- block content %}
+                {{ super() }}
+              {% endblock -%}
+            </div>
+            <div class="clear"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="wb-foot">
+      <div id="wb-foot-in">
+        <footer>
+          {% block footer %}
+            {% include "footer.html" %}
+          {% endblock %}
+        </footer>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

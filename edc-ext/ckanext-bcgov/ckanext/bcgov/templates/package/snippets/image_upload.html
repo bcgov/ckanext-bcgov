@@ -1,0 +1,42 @@
+{% import 'macros/form.html' as form %}
+
+
+<h3 class="module-sub-heading">
+		Photo upload
+</h3>
+
+
+{% set is_upload = data.image_url and not data.image_url.startswith('http') %}
+{% set is_url = data.image_url and data.image_url.startswith('http') %}
+{% set is_upload_enabled = h.uploads_enabled() %}
+{% set field_url='image_url' %}
+{% set field_upload='image_upload' %}
+{% set field_clear='clear_upload' %}
+
+{# form.image_upload(data, errors, is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload) #}
+
+
+{# macro image_upload(data, errors, field_url='image_url', field_upload='image_upload', field_clear='clear_upload',
+                      is_url=false, is_upload=false, is_upload_enabled=false, placeholder=false,
+                      url_label='', upload_label='')  #}
+  {% set placeholder = _('http://example.com/my-image.jpg') %}
+  {% set url_label =  _('Image URL')  %}
+  {% set upload_label = _('Image')  %}
+
+  {% if is_upload_enabled %}
+  <div class="image-upload" data-module="edc-image-upload" data-module-is_url="{{ 'true' if is_url else 'false' }}" data-module-is_upload="{{ 'true' if is_upload else 'false' }}"
+       data-module-field_url="{{ field_url }}" data-module-field_upload="{{ field_upload }}" data-module-field_clear="{{ field_clear }}" data-module-upload_label="{{ upload_label }}">
+  {% endif %}
+
+  {{ form.input(field_url, label=url_label, id='field-image-url', placeholder=placeholder, value=data.get(field_url), error=errors.get(field_url), classes=['control-full']) }}
+
+  {% if is_upload_enabled %}
+    {{ form.input(field_upload, label=upload_label, id='field-image-upload', type='file', placeholder='', value='', error='', classes=['control-full']) }}
+    {% if is_upload %}
+      {{ form.checkbox(field_clear, label=_('Clear Upload'), id='field-clear-upload', value='true', error='', classes=['control-full']) }}
+    {% endif %}
+  {% endif %}
+
+  {% if is_upload_enabled %}</div>{% endif %}
+
+{# endmacro #}

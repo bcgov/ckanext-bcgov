@@ -1,0 +1,41 @@
+
+
+{% resource 'edc_resource/jquery.iframe-transport.js' %}
+{% resource 'edc_resource/jquery.fileupload.js' %}
+{% resource 'edc_resource/image_upload.js' %}
+
+<h3 class="module-sub-heading">
+		Photo upload
+</h3>
+<div class = "control-list">
+<div id="imageUploadBox" class="control-list">
+	<div class=" row-fluid  control-group">
+		<input type="file" id="imageFile" name="imageFile" style="visibility:hidden; position : absolute; top : 0;"/>
+		<div style="float:left">
+			<input id="new_image_filename" name="new_image_filename" type="text" style="width: 400px" readonly />
+			<a id="selectImageButton" class="btn btn-primary btn-xs"> Select an image</a>
+		</div>
+		<div style="float:right">	
+					<a id="uploadButton" class="btn btn-primary btn-xs"> Upload</a>
+					<a id="removeImageBtn" class="btn btn-primary btn-xs btn-disabled" disabled="disabled"> Remove</a>
+		</div>
+	</div>
+	<div id="image_box">
+		{% if errors %}
+			{% set image_deleted = '0' %}
+		{% else %}
+			{% set image_deleted = data.image_delete or '1' %}
+		{% endif %}
+		
+		<input type="hidden" id="uploaded_image" name="image_url" value="{{ data.image_url }}"/>
+		<input type="hidden" id="field-image_delete" name="image_delete" value="{{ image_deleted }}"/>
+		
+		{% if image_deleted == '0' %}
+			<img id="dataset_img"  src="{{ data.image_url }}"/>
+		{% else %}
+			<img id="dataset_img" src=""/>
+		{% endif %}
+	</div>
+</div>
+</div>
+

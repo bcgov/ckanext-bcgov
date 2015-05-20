@@ -1,0 +1,36 @@
+{% set can_edit = h.check_access('package_update', {'id':pkg.id }) %}
+{% set url_action = 'resource_edit' if url_is_edit and can_edit else 'resource_read' %}
+{% set url = h.url_for(controller='package', action=url_action, id=pkg.name, resource_id=res.id) %}
+
+{% set archived = pkg.edc_state == "ARCHIVED" %}
+
+<li class="resource-item" data-id="{{ res.id }}">
+  {% block resource_item_title %}
+  <a class="heading resource-url-analytics" href="{{ res.url }}" title="{{ res.name or res.description }}">
+    {{ h.resource_display_name(res) | truncate(50) }}<span class="format-label" property="dc:format" data-format="{{ res.format.lower() or 'data' }}">{{ res.format }}</span>
+    {{ h.popular('views', res.tracking_summary.total, min=10) }}
+  </a>
+  {% endblock %}
+  <p class="description">
+    {% if res.description %}
+      {{ h.markdown_extract(res.description, extract_length=80) }}
+    {% endif %}
+  </p>
+  {% block resource_item_explore %}
+  {% if not url_is_edit %}
+  <div class="dropdown btn-group">
+    <a href="{{ url }}" class="btn btn-primary dropdown-toggle">
+      <i class="icon-share-alt"></i>
+      {{ _('Explore') }}
+    </a>
+  </div>
+  {% else %}
+  <div class="dropdown btn-group">
+    <a href="{{ url }}"{% if archived %} disabled="disabled"{% endif %} class="btn dropdown-toggle">
+      <i class="icon-wrench"></i>
+      {{ _('Manage') }}
+    </a>
+  </div>
+  {% endif %}
+  {% endblock %}
+</li>

@@ -1,0 +1,19 @@
+{% ckan_extends %}
+
+{% block secondary %}{% endblock %}
+
+{% block primary_content_inner %}
+  <h2 class="hide-heading">{{ _('My Organizations') }}</h2>
+  {% if c.top_orgs_items %}
+    <div class="wide">
+      {% snippet "organization/snippets/my_organization_list.html", organizations=c.top_orgs_items, sub_organizations=c.suborgs_items, pkg_count = c.org_pkg_count %}
+    </div>
+  {% else %}
+    <p class="empty">
+      {{ _('You are not a member of any organizations.') }}
+      {% if h.check_access('organization_create') %}
+        {% link_for _('Create one now?'), controller='organization', action='new' %}
+      {% endif %}
+    </p>
+  {% endif %}
+{% endblock %}

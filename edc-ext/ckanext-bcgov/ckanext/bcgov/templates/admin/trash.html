@@ -1,0 +1,41 @@
+{% extends "admin/base.html" %}
+
+{% block primary_content_inner %}
+    <h3>Deleted Revisions</h3>
+	<form method="POST" id="form-purge-revisions" class="form-horizontal">
+		<div class="control-group control-full">
+		{% set revisions = h.convert_to_dict('revisions', c.deleted_revisions) %}
+		{{ h.snippet('snippets/revision_list.html', revisions=revisions, allow_compare=False, revision_change_state_allowed=c.revision_change_state_allowed) }}
+	  <div class="form-actions trash-form">
+      <button class="btn btn-primary"
+        type="submit"
+        name="purge-revisions"
+        value="purge" 
+        {% if not revisions %} disabled="disabled" {% endif %}
+        >
+        Purge them all (forever and irreversibly)
+      </button>
+	</div>	      
+		</div>
+	</form>
+	
+	<h3>Deleted Datasets</h3>
+	<form method="post" id="form-purge-packages" class="form-horizontal" >
+		<div class="control-group control-full">
+		{% set packages = h.convert_to_dict('package', c.deleted_packages) %}
+		
+  		{{ h.snippet('snippets/deleted_packages.html', packages=packages) }}
+		</div>		
+	  <div class="form-actions trash-form">
+      <button class="btn btn-primary"
+        type="submit"
+        name="purge-packages"
+        value="purge"
+        {% if not packages %} disabled="disabled" {% endif %}
+        >
+        Purge them all (forever and irreversibly)
+      </button>
+	</div>	      
+	</form>
+	
+{% endblock %}
