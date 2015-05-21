@@ -1,6 +1,15 @@
-#This folder only contains EDC required ckan extension published on github
+#CKAN source from github
+#version: 2.2
+#instruction: http://docs.ckan.org/en/ckan-2.2/
+#wget url: https://github.com/ckan/ckan/archive/ckan-2.2.zip
+#subversion url: https://github.com/ckan/ckan/archive/ckan-2.2.zip
+#git clone url: https://github.com/ckan/ckan.git@ckan-2.2
 
-##ckanext-spatial 
+#solr binary from apache
+#version: 4.3.1
+#http://archive.apache.org/dist/lucene/solr/4.3.1/
+
+##ckanext-spatial
 #version 2.0
 #instructions => http://ckanext-spatial.readthedocs.org/en/release-v2.0/install.html
 #wget url: https://github.com/ckan/ckanext-spatial/archive/release-v2.0.zip
