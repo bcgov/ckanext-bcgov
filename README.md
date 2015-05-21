@@ -42,23 +42,23 @@ Installation
         edc.minor_version = minor_version_num
 
 
-4.  Update (or create) `import.ini` file inside `ckanext-bcgov/ckanext/bcgov/commands/config`. Add `api_key`, `site_url` options (they should be the same as in your CKAN `.ini` file).
+4.  Update (or create) `import.ini` file inside `ckanext-bcgov/ckanext/bcgov/scripts/config`. Add `api_key`, `site_url` options (they should be the same as in your CKAN `.ini` file).
 
 5.  Create default vocabularies
 
-        cd ckanext-bcgov/ckanext/bcgov/commands
+        cd ckanext-bcgov/ckanext/bcgov/scripts
         $ python create_vocabs.py
 
-   Note: The following data files in `ckanext-bcgov/ckanext/bcgov/commands/data` is required:
+   Note: The following data files in `ckanext-bcgov/ckanext/bcgov/scripts/data` is required:
 
         edc-vocabs.json
 
 6.  Create organizations
 
-        $ cd ckanext-bcgov/ckanext/bcgov/commands
+        $ cd ckanext-bcgov/ckanext/bcgov/scripts
         $ python create_orgs.py
 
-   Note: The following data files in `ckanext-bcgov/ckanext/bcgov/commands/data` is required:
+   Note: The following data files in `ckanext-bcgov/ckanext/bcgov/scripts/data` is required:
 
         org_suborg_sector_mapping_forEDC.csv
 
