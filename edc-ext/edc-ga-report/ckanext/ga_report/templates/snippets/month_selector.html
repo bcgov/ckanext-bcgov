@@ -1,8 +1,0 @@
-
-<select name="month">
-    <option value='' {% if not current_moth %} selected= "selected" {% endif %}>All months</option>
-    {% for (iso_code, string_name) in months %}
-    	<option value="{{ iso_code }}"  {% if current_moth == iso_code %} selected="selected" {% endif %}> {{ h.month_option_title(iso_code,months,day) }}</option>
-  	{% endfor %}
-</select>
-
