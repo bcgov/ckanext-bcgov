@@ -272,12 +272,16 @@ def edc_package_update(context, input_data_dict):
         raise SearchError(str(se))
 
     #check the search results - there can be only 1!!
+    results = query['results']
     the_count = query['count']
     if the_count != 1:
         log.error('Search for the dataset with q={0} returned 0 or more than 1 record.'.format(q))
-        raise SearchError('Search returned 0 or more than 1 item')
 
-    results = query['results']
+        return_dict = {}
+        return_dict['results'] = query
+        return_dict['success'] = False
+        return_dict['error'] = True
+        
     #results[0]['imap_layer_key'] = input_data_dict.get("imap_layer_key")
     # JER - the line below was removed because we don't use the data, and getting it into the query was a nightmare
     #
@@ -299,7 +303,7 @@ def edc_package_update(context, input_data_dict):
         update = {}
         #don't update archived records
         
-        #Upadted by Khalegh Mamakani to update the i-map link only if it has been done already.
+        #Upadted by Khalegh Mamakani to update the i-map link only if it has not been done already.
         new_imap_link = None
         if (package_dict['edc_state'] != 'ARCHIVED'):
             if (visibility == 'Public'):
@@ -309,6 +313,7 @@ def edc_package_update(context, input_data_dict):
                 if (input_data_dict.get("imap_layers_gov")):
                     new_imap_link = private_map_link + input_data_dict.get("imap_layers_gov")
         if (new_imap_link != None) and (new_imap_link != current_imap_link) :
+            log.info('Updating IMAP Link to : {0} for dataset {1}').format(new_imap_link, package_dict.get('title'))
             package_dict['link_to_imap'] = new_imap_link
             update = get_action('package_update')(context, package_dict)
     except Exception, ue:
@@ -385,20 +390,20 @@ def edc_package_update_bcgw(context, input_data_dict):
         current_obj_table_comments = package_dict.get('object_table_comments')
         
         if current_details != input_data_dict.get("details") :
+            package_dict['details'] = input_data_dict.get("details")
             data_changed = True
         
         if curent_obj_short_name != input_data_dict.get("object_short_name") :
+            package_dict['object_short_name'] = input_data_dict.get("object_short_name")
             data_changed = True
             
         if current_obj_table_comments != input_data_dict.get("object_table_comments") :
+            package_dict['object_table_comments'] = input_data_dict.get("object_table_comments")
             data_changed = True
         
-        if data_changed :
-            package_dict['details'] = input_data_dict.get("details")
-            package_dict['object_short_name'] = input_data_dict.get("object_short_name")
-            package_dict['object_table_comments'] = input_data_dict.get("object_table_comments")
-            if (package_dict['edc_state'] != 'ARCHIVED'):
-                update = get_action('package_update')(context, package_dict)
+        if data_changed and (package_dict['edc_state'] != 'ARCHIVED'):
+            log.info('Updating data dictionary for dataset {1}').format(new_imap_link, package_dict.get('title'))
+            update = get_action('package_update')(context, package_dict)
         
     except Exception, ue:
         raise Exception(str(ue))
