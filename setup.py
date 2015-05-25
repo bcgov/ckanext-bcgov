@@ -4,9 +4,9 @@ import sys, os
 version = '1.0.4'
 
 setup(
-	name='bcgov',
+	name='ckanext-bcdc',
 	version=version,
-	description="BCGOV CKAN Extension.",
+	description="CKAN Extension - BC Data Catalogue.",
 	long_description="""\
 	""",
 	classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
