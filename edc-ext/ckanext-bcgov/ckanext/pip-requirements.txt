@@ -1,2 +1,0 @@
-validate_email==1.2
-pycurl==7.19.5

@@ -1,9 +1,0 @@
-{% set links_len = links|length %}
-{% if links_len > 0 %}
-    <h2>More Information</h2>
-    <ul class="more-info-links">
-    {% for info in links %}
-        <li><a href="{{ info.link }}">{{ info.link }}</a></li>
-    {% endfor %}
-    </ul>
-{% endif %}

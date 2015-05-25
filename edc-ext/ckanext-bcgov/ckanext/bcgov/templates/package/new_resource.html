@@ -1,9 +1,0 @@
-{% ckan_extends %}
-
-{% block form %}
-		{% snippet 'package/snippets/resource_form.html', pkg=pkg_dict, data=data, errors=errors, error_summary=error_summary, include_metadata=false, pkg_name=pkg_name, stage=stage, allow_upload=g.ofs_impl and logged_in %}
-{% endblock %}
-
-
-
-{% block secondary_content %}{% endblock %}
