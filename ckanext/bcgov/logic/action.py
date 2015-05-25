@@ -402,7 +402,7 @@ def edc_package_update_bcgw(context, input_data_dict):
             data_changed = True
         
         if data_changed and (package_dict['edc_state'] != 'ARCHIVED'):
-            log.info('Updating data dictionary for dataset {1}').format(new_imap_link, package_dict.get('title'))
+            log.info('Updating data dictionary for dataset {0}').format(package_dict.get('title'))
             update = get_action('package_update')(context, package_dict)
         
     except Exception, ue:
