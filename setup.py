@@ -4,7 +4,7 @@ import sys, os
 version = '1.0.4'
 
 setup(
-	name='edc',
+	name='ckanext-bcgov',
 	version=version,
 	description="CKAN Extension - BC Data Catalogue.",
 	long_description="""\
