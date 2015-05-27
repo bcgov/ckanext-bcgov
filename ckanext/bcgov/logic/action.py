@@ -313,7 +313,7 @@ def edc_package_update(context, input_data_dict):
                 if (input_data_dict.get("imap_layers_gov")):
                     new_imap_link = private_map_link + input_data_dict.get("imap_layers_gov")
         if (new_imap_link != None) and (new_imap_link != current_imap_link) :
-            log.info('Updating IMAP Link to : {0} for dataset {1}').format(new_imap_link, package_dict.get('title'))
+            log.info('Updating IMAP Link to : {0} for dataset {1}'.format(new_imap_link, package_dict.get('title')))
             package_dict['link_to_imap'] = new_imap_link
             update = get_action('package_update')(context, package_dict)
     except Exception, ue:
@@ -402,7 +402,7 @@ def edc_package_update_bcgw(context, input_data_dict):
             data_changed = True
         
         if data_changed and (package_dict['edc_state'] != 'ARCHIVED'):
-            log.info('Updating data dictionary for dataset {0}').format(package_dict.get('title'))
+            log.info('Updating data dictionary for dataset {0}'.format(package_dict.get('title')))
             update = get_action('package_update')(context, package_dict)
         
     except Exception, ue:
