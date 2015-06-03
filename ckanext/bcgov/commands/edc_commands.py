@@ -87,8 +87,8 @@ class EdcCommand(CkanCommand):
         print "Vocab ========> ", vocab_name, "tags ===> ", tags
         vocab = get_action('vocabulary_create')(context, {'name': vocab_name})
         for tag in tags:
-            get_action('tag_create')(context, {'name': tag['id'] + '__' + tag['name'],
-                                                               'vocabulary_id': vocab['id']})
+            get_action('tag_create')(context, {'name': tag,
+                                               'vocabulary_id': vocab['id']})
 
     def create_all_vocabs(self, vocab_file=None):
 
