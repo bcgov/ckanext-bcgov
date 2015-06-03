@@ -1,3 +1,6 @@
+# Copyright  2015, Province of British Columbia 
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
+ 
 from ckan.controllers.api import ApiController
 
 import ckan.lib.base as base

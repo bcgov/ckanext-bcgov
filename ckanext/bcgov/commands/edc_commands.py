@@ -1,3 +1,6 @@
+# Copyright  2015, Province of British Columbia 
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
+ 
 #Author : Khalegh Mamakani, Highway Three Solutions  Inc.
 #Date created : January 29 2014
 #Last modified on January 29 2014
