@@ -119,7 +119,7 @@
   {% block package_additional_info %}
     <h3>Additional Information</h3>
     <div id="additional-information">
-      {% if pkg.object_name and pkg.resources and pkg.resources[0].resource_storage_location == 'BCGW Data Store' %}
+      {% if pkg.object_name and pkg.resources %}
         <h2>Database Object Name</h2>
         {{ pkg.object_name }}
       {% endif %}

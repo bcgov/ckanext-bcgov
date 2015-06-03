@@ -1,3 +1,6 @@
+# Copyright  2015, Province of British Columbia 
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
+ 
 '''
     Important : When importing discovery and odsi records, two files with names
     discovery_record_count.txt and odsi_record_count.txt are created which simply contain
