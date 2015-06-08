@@ -405,7 +405,7 @@ def edc_package_update_bcgw(context, input_data_dict):
             data_changed = True
         
         if curent_obj_short_name != input_data_dict.get("object_short_name") :
-            print('Dataset object_short_name have been changed.')
+            print('Dataset object_short_name has been changed.')
             pprint.pprint(curent_obj_short_name)
             print('New object_short_name :')
             pprint.pprint(input_data_dict.get("object_short_name"))
@@ -413,7 +413,7 @@ def edc_package_update_bcgw(context, input_data_dict):
             data_changed = True
             
         if current_obj_table_comments != input_data_dict.get("object_table_comments") :
-            print('Dataset object_short_name have been changed.')
+            print('Dataset object_short_name has been changed.')
             pprint.pprint(current_obj_table_comments)
             print('New object_table_comments :')
             pprint.pprint(input_data_dict.get("object_table_comments"))
