@@ -1,7 +1,10 @@
+# Copyright  2015, Province of British Columbia 
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
+ 
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.0.4'
+version = '1.0.5-SNAPSHOT'
 
 setup(
 	name='ckanext-bcgov',

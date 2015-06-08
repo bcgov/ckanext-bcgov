@@ -1,3 +1,6 @@
+# Copyright  2015, Province of British Columbia 
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
+ 
 import logging
 from ckan.controllers.user import UserController
 from ckan.common import OrderedDict,_,g, request

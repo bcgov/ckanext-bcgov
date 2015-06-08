@@ -1,3 +1,6 @@
+# Copyright  2015, Province of British Columbia 
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
+ 
 '''
 This script remove a given user (list of users) from all available organizations.
 It is required to reconcile the users roles between Adam and CKAN.

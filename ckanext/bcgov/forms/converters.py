@@ -1,3 +1,6 @@
+# Copyright  2015, Province of British Columbia 
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
+ 
 def convert_to_extras(key, data, errors, context):
     extras = data.get(('extras',), [])
     if not extras:
