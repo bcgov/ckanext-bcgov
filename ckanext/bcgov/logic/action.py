@@ -335,6 +335,8 @@ def edc_package_update_bcgw(context, input_data_dict):
     4) Call get_action(package_update) to update the package
     '''
     from ckan.lib.search import SearchError
+
+    import pprint
     
     '''
     Fixed unicode characters decoding problem. 
@@ -382,7 +384,8 @@ def edc_package_update_bcgw(context, input_data_dict):
         
         #need the right data package
         package_dict = get_action('package_show')(context, {'id': results[0]['id']})
-        
+
+
         #Check if input_data has been modified and is not the same as package data
         data_changed = False
         current_details = package_dict.get('details')
@@ -390,19 +393,33 @@ def edc_package_update_bcgw(context, input_data_dict):
         current_obj_table_comments = package_dict.get('object_table_comments')
         
         if current_details != input_data_dict.get("details") :
+            print('Dataset details have been changed.')
+            pprint.pprint(current_details)
+            print('New details :')
+            pprint.pprint(input_data_dict.get("details"))
+
             package_dict['details'] = input_data_dict.get("details")
             data_changed = True
         
         if curent_obj_short_name != input_data_dict.get("object_short_name") :
+            print('Dataset object_short_name have been changed.')
+            pprint.pprint(curent_obj_short_name)
+            print('New object_short_name :')
+            pprint.pprint(input_data_dict.get("object_short_name"))
             package_dict['object_short_name'] = input_data_dict.get("object_short_name")
             data_changed = True
             
         if current_obj_table_comments != input_data_dict.get("object_table_comments") :
+            print('Dataset object_short_name have been changed.')
+            pprint.pprint(current_obj_table_comments)
+            print('New object_table_comments :')
+            pprint.pprint(input_data_dict.get("object_table_comments"))
             package_dict['object_table_comments'] = input_data_dict.get("object_table_comments")
             data_changed = True
         
         if data_changed and (package_dict['edc_state'] != 'ARCHIVED'):
             log.info('Updating data dictionary for dataset {0}'.format(package_dict.get('title')))
+
             update = get_action('package_update')(context, package_dict)
         
     except Exception, ue:
