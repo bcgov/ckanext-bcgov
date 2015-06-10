@@ -293,6 +293,12 @@ def edc_package_update(context, input_data_dict):
 
     try :
         package_dict = get_action('package_show')(context, {'id': results[0]['id']})
+
+        if not package_dict :
+            return_dict = {}
+            return_dict['success'] = False
+            return_dict['error'] = True
+            return return_dict
         
         current_imap_link = package_dict.get('link_to_imap', None)
         visibility = package_dict['metadata_visibility']
@@ -339,7 +345,6 @@ def edc_package_update_bcgw(context, input_data_dict):
     '''
     from ckan.lib.search import SearchError
 
-    import pprint
     
     '''
     Fixed unicode characters decoding problem. 
@@ -383,11 +388,21 @@ def edc_package_update_bcgw(context, input_data_dict):
         return return_dict
     results = query['results']
     results[0]['details'] = input_data_dict.get("details")
+    update = None
     try :
         
         #need the right data package
         package_dict = get_action('package_show')(context, {'id': results[0]['id']})
 
+        if package_dict['edc_state'] == 'ARCHIVED' :
+            response_dict['results'] = None
+            return response_dict
+
+        if not package_dict :
+            return_dict = {}
+            return_dict['success'] = False
+            return_dict['error'] = True
+            return return_dict
 
         #Check if input_data has been modified and is not the same as package data
         data_changed = False
@@ -395,32 +410,35 @@ def edc_package_update_bcgw(context, input_data_dict):
         curent_obj_short_name = package_dict.get('object_short_name')
         current_obj_table_comments = package_dict.get('object_table_comments')
         
-        if current_details != input_data_dict.get("details") :
-            print('Dataset details have been changed.')
-            pprint.pprint(current_details)
-            print('New details :')
-            pprint.pprint(input_data_dict.get("details"))
+        if current_details != input_data_dict.get('details') :
+            log.info('Dataset details have been changed for dataset {0}.'.format(package_dict.get('title')))
+            log.info('Current Details : ')
+            log.info(current_details)
+            log.info('New details :')
+            log.info(input_data_dict.get('details'))
 
-            package_dict['details'] = input_data_dict.get("details")
+            package_dict['details'] = input_data_dict.get('details')
             data_changed = True
         
-        if curent_obj_short_name != input_data_dict.get("object_short_name") :
-            print('Dataset object_short_name has been changed.')
-            pprint.pprint(curent_obj_short_name)
-            print('New object_short_name :')
-            pprint.pprint(input_data_dict.get("object_short_name"))
-            package_dict['object_short_name'] = input_data_dict.get("object_short_name")
+        if curent_obj_short_name != input_data_dict.get('object_short_name') :
+            log.info('Dataset object_short_name has been changed for dataset {0}.'.format(package_dict.get('title')))
+            log.info('Current object_short_name :')
+            log.info(curent_obj_short_name)
+            log.info('New object_short_name :')
+            log.info(input_data_dict.get('object_short_name'))
+            package_dict['object_short_name'] = input_data_dict.get('object_short_name')
             data_changed = True
             
-        if current_obj_table_comments != input_data_dict.get("object_table_comments") :
-            print('Dataset object_short_name has been changed.')
-            pprint.pprint(current_obj_table_comments)
-            print('New object_table_comments :')
-            pprint.pprint(input_data_dict.get("object_table_comments"))
-            package_dict['object_table_comments'] = input_data_dict.get("object_table_comments")
+        if current_obj_table_comments != input_data_dict.get('object_table_comments') :
+            log.info('Dataset current_obj_table_comments has been changed for dataset {0}.'.format(package_dict.get('title')))
+            log.info('Current object_table_comments :')
+            log.info(current_obj_table_comments)
+            log.info('New object_table_comments :')
+            log.info(input_data_dict.get('object_table_comments'))
+            package_dict['object_table_comments'] = input_data_dict.get('object_table_comments')
             data_changed = True
         
-        if data_changed and (package_dict['edc_state'] != 'ARCHIVED'):
+        if data_changed :
             log.info('Updating data dictionary for dataset {0}'.format(package_dict.get('title')))
 
             update = get_action('package_update')(context, package_dict)
