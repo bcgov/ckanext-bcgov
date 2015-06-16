@@ -119,10 +119,6 @@
   {% block package_additional_info %}
     <h3>Additional Information</h3>
     <div id="additional-information">
-      {% if pkg.object_name and pkg.resources %}
-        <h2>Database Object Name</h2>
-        {{ pkg.object_name }}
-      {% endif %}
       {% block pakage_purpose %}
         {% if pkg.purpose %}
         <h2>Purpose</h2>
@@ -258,11 +254,11 @@
       {% set object_table_comments = pkg.object_table_comments or '' %}
       {% set object_details = pkg.details or '' %}
 
-      {% if object_name and ( object_short_name or object_table_comments or object_details ) %}
+      {% if object_name or object_short_name or object_table_comments or object_details %}
         <h3>Object Description</h3>
         <div id="object-description">
           {% if object_name %}
-          <p><strong>Object Description for: {{ object_name }}</strong></p>
+          <p><strong>Object Name: {{ object_name }}</strong></p>
           {% endif %}
           <p>
             {% if object_short_name %}
