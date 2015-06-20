@@ -14,6 +14,9 @@ import urllib2
 import ckan.lib.base as base
 import pylons.config as config
 
+import ckanext.bcgov
+from ckanext.bcgov.util.git import get_short_commit_id
+
 NotFound = logic.NotFound
 get_action = logic.get_action
 snippet = ckan.lib.helpers.snippet
@@ -384,3 +387,16 @@ def get_major_version():
 def get_minor_version():
     ''' Return the value of the minor_version config setting '''
     return config.get('edc.minor_version')
+
+_bcgov_commit_id = None
+
+def get_bcgov_commit_id():
+    '''Return the commit id corresponding to ckanext.bcgov'''
+    global _bcgov_commit_id
+
+    if _bcgov_commit_id is None:
+        _bcgov_commit_id = get_short_commit_id(ckanext.bcgov.__path__[0])
+        if _bcgov_commit_id is None:
+            _bcgov_commit_id = 'unknown'
+
+    return _bcgov_commit_id

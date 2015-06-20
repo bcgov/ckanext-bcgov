@@ -67,6 +67,8 @@
             {% if h.get_minor_version() %}
                 _{{ h.get_minor_version() }}
             {% endif %}
+
+            {{ h.get_bcgov_commit_id() }}
         </div>
     </div>
 </div>
