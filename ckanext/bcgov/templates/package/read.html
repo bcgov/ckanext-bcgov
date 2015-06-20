@@ -9,6 +9,10 @@
     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-share-alt"></i> Share this Record</a>
     {% snippet "snippets/social.html" %}
   </li>
+  <li>
+    <a href="{% url_for controller='package', action='read', id=pkg.id %}"
+      ><i class="icon-link"></i> Permalink</a>
+  </li>
   {#
   <li><a href="#"><i class="icon-rss"></i> RSS</a></li> #}
 {% endblock %}
