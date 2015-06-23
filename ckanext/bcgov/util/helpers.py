@@ -15,6 +15,7 @@ import ckan.lib.base as base
 import pylons.config as config
 
 import ckanext.bcgov
+from ckanext.bcgov.version import version
 from ckanext.bcgov.util.git import get_short_commit_id
 
 NotFound = logic.NotFound
@@ -378,15 +379,12 @@ def get_fqdn():
 
 def get_environment_name():
     ''' Return the value of the environment_name config setting '''
-    return config.get('edc.environment_name')
+    # we seem to be using major_version for our environment name
+    return config.get('edc.environment_name') or config.get('edc.major_version')
 
-def get_major_version():
+def get_version():
     ''' Return the value of the major_version config setting '''
-    return config.get('edc.major_version')
-
-def get_minor_version():
-    ''' Return the value of the minor_version config setting '''
-    return config.get('edc.minor_version')
+    return version
 
 _bcgov_commit_id = None
 

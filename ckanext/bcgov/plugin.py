@@ -43,8 +43,7 @@ from ckanext.bcgov.util.helpers import (get_suborg_sector,
                                              get_eas_login_url,
                                              get_fqdn,
                                              get_environment_name,
-                                             get_major_version,
-                                             get_minor_version,
+                                             get_version,
                                              get_bcgov_commit_id,
                                              )
 
@@ -98,8 +97,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "get_eas_login_url": get_eas_login_url,
                 "get_fqdn": get_fqdn,
                 "get_environment_name": get_environment_name,
-                "get_major_version": get_major_version,
-                "get_minor_version": get_minor_version,
+                "get_version": get_version,
                 "get_bcgov_commit_id": get_bcgov_commit_id,
                 }
 

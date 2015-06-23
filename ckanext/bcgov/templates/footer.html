@@ -60,12 +60,8 @@
                 {{ h.get_environment_name() }}:
             {% endif %}
 
-            {% if h.get_major_version() %}
-                v{{ h.get_major_version() }}
-            {% endif %}
-
-            {% if h.get_minor_version() %}
-                _{{ h.get_minor_version() }}
+            {% if h.get_version() %}
+                v{{ h.get_version() }}
             {% endif %}
 
             {{ h.get_bcgov_commit_id() }}
