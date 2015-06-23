@@ -231,6 +231,12 @@ class SchemaPlugin(plugins.SingletonPlugin):
             #Assign title to title_string with all characters switched to lower case.
             pkg_dict['title_string'] = title.lower()
 
+        res_format = pkg_dict['res_format']
+        if 'other' in res_format:
+            # custom download (other) supports a number of formats
+            res_format.remove('other')
+            res_format.extend(['shp', 'fgdb', 'e00'])
+
         return pkg_dict
 
 
