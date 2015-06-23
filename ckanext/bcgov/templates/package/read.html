@@ -148,7 +148,7 @@
       {% endblock %}
 
       {% block security_classification %}
-        {% snippet 'package/snippets/security_classification.html', security_class=pkg.security_class, bc_ocio=pkg.bc_ocio, view_audience=pkg.view_audience, download_audience=pkg.download_audience, metadata_visibility=pkg.metadata_visibility, privacy_impact_assessment=pkg.privacy_impact_assessment, logged_in=c.user %}
+        {% snippet 'package/snippets/security_classification.html', security_class=pkg.security_class, bc_ocio=pkg.bc_ocio, view_audience=pkg.view_audience, download_audience=pkg.download_audience, metadata_visibility=pkg.metadata_visibility, logged_in=c.user %}
       {% endblock %}
     <h2>Metadata Information</h2>
     <table class="table dataset_view">
