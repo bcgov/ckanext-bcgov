@@ -220,30 +220,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="span4">
-                    {% block package_privacy %}
-                        {% set pa_error = errors.privacy_impact_assessment %}
-                        {% set pa = data.get('privacy_impact_assessment', 'No') %}
-                        <div class="required control-group{{ " error" if pa_error }}">
-                            <label class="control-label"><span class="control-required">*</span> Has a privacy impact assessment been completed on this data?</label>
-                            <div clss="controls">
-                                <div class="radio-inline">
-                                    <label>
-                                        <input type="radio" name="privacy_impact_assessment" value="Yes"
-                                            {% if pa == 'Yes' %} checked="checked" {% endif %} >Yes
-                                    </label>
-                                </div>
-                                <div class="radio-inline">
-                                    <label>
-                                        <input type="radio" name="privacy_impact_assessment" value="No"
-                                            {% if pa == 'No' %} checked="checked" {% endif %}>No
-                                    </label>
-                                </div>
-                            </div>
-                            {% if pa_error and pa_error is iterable %}<span class="error-block">{{ pa_error|join(', ') }}</span>{% endif %}
-                        </div>
-                    {% endblock %}
-                </div>
             </div>
             {% endblock %}
     	</div>
