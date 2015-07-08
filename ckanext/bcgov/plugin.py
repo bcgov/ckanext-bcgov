@@ -353,7 +353,7 @@ class EDCDisqusPlugin(plugins.SingletonPlugin):
 
     def before_map(self, map):
 
-        disqus_controller = 'bcgov.controllers.disqus:DisqusController'
+        disqus_controller = 'ckanext.bcgov.controllers.disqus:DisqusController'
 
         with SubMapper(map, controller=disqus_controller) as m:
             m.connect('/disqus/posts/create', action='disqusPostCreate')
