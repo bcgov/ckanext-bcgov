@@ -46,7 +46,6 @@ class EdcCommand(CkanCommand):
         )
     default_vocab_file = os.path.join(default_data_dir, 'edc-vocabs.json')
     default_org_file =   os.path.join(default_data_dir, 'orgs.json')
-    import pdb; pdb.set_trace()
 
     def command(self):
         '''
