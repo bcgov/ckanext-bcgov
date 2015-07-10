@@ -14,6 +14,7 @@ import os
 import sys
 import json
 import pprint
+import inspect
 import ckan.lib.base as base
 _ = base._
 
@@ -38,9 +39,14 @@ class EdcCommand(CkanCommand):
     summary = __doc__.split('\n')[0]
     usage = __doc__
 
-    default_data_dir = os.path.dirname(os.path.abspath(__file__))
-    default_vocab_file = default_data_dir + '/../../../data/edc-vocabs.json'
-    default_org_file =   default_data_dir + '/../../../data/orgs.json'
+    module = __import__('ckanext.bcgov', fromlist=[''])
+    default_data_dir = os.path.join(
+        os.path.dirname(inspect.getfile(module)),
+        'scripts/data'
+        )
+    default_vocab_file = os.path.join(default_data_dir, 'edc-vocabs.json')
+    default_org_file =   os.path.join(default_data_dir, 'orgs.json')
+    import pdb; pdb.set_trace()
 
     def command(self):
         '''
