@@ -82,7 +82,7 @@ class EdcCommand(CkanCommand):
             self.purge_records()
         elif cmd == 'purge-revisions':
             self.purge_revisions()
-        elif cmd == 'create_views':
+        elif cmd == 'create-views':
             self.create_views()
         else:
             log.error('Command "%s" not defined' % (cmd,))
