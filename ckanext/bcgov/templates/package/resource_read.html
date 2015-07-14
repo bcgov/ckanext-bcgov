@@ -80,7 +80,7 @@
         </div>
       </div>
       {% block data_preview %}
-        {{ h.resource_preview(c.resource, c.package) }}
+        {{ super() }}
       {% endblock %}
     </section>
   {% endblock %}

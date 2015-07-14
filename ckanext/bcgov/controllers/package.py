@@ -1,6 +1,6 @@
-# Copyright  2015, Province of British Columbia 
-# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
- 
+# Copyright  2015, Province of British Columbia
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
+
 #Author: Kahlegh Mamakani Highwaythree Solutions Inc.
 #Created on Jan 28 2014
 
@@ -339,41 +339,41 @@ class EDCPackageController(PackageController):
         else:
             redirect(toolkit.url_for(form_urls[dataset_type]))
 
-# 
+#
 #     def edc_edit(self, id, data=None, errors=None, error_summary=None):
 #         '''
 #         Gets the latest package data saved before applying package update.
 #         It is used to get the previous dataset state and compare it with the current state
 #         to see if the state has been changed.
 #         '''
-# 
+#
 #         c.form_style = 'edit'
 #         context = {'model': model, 'session': model.Session,
 #                    'user': c.user or c.author, 'auth_user_obj': c.userobj,
 #                    'save': 'save' in request.params}
 #         old_data = None
-# 
+#
 #         if not context['save'] or data :
 #             old_data = get_action('package_show')(context, {'id': id})
 #             EDCPackageController.old_state = old_data['edc_state']
-# 
+#
 #         result = super(EDCPackageController, self).edit(id, data, errors, error_summary)
-# 
+#
 #         return result
 
 #     def _form_save_redirect(self, pkgname, action, package_type=None):
 #         '''This overrides ckan's _form_save_redirect method of package controller class
 #         so that it can be called after the data has been recorded and the package has been updated.
 #         '''
-# 
+#
 #         context = {'model': model, 'session': model.Session,
 #                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
-# 
+#
 #         new_data =  get_action('package_show')(context, {'id': pkgname})
 #         if new_data:
 #             check_record_state(EDCPackageController.old_state, new_data, pkgname)
 #             EDCPackageController.old_state = new_data['edc_state']
-# 
+#
 #         assert action in ('new', 'edit')
 #         url = request.params.get('return_to') or \
 #             config.get('package_%s_return_url' % action)
@@ -396,9 +396,13 @@ class EDCPackageController(PackageController):
         from ckanext.bcgov.util.helpers import record_is_viewable
         if not record_is_viewable(c.pkg_dict, c.userobj) :
             abort(401, _('Unauthorized to read package %s') % id)
-        
+
+        #TODO: find out if/why comparing times is neccessary? - @deniszgonjanin
         metadata_modified_time = from_utc(c.pkg_dict['metadata_modified'])
-        revision_timestamp_time = from_utc(c.pkg_dict['revision_timestamp'])
+        revision = get_action('revision_show')(
+            {}, {'id': c.pkg_dict['revision_id']}
+        )
+        revision_timestamp_time = from_utc(revision['timestamp'])
 
         if (metadata_modified_time >= revision_timestamp_time):
             timestamp = metadata_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')

@@ -8,6 +8,8 @@
 from ckan import model
 from ckan.lib.cli import CkanCommand
 from ckan.logic import get_action, NotFound
+from ckan.lib.datapreview import (get_default_view_plugins,
+                                  add_views_to_dataset_resources)
 
 import logging
 import os
@@ -35,6 +37,7 @@ class EdcCommand(CkanCommand):
         delete-all-orgs     Delete all organizations
         purge-records       Purge all already-deleted datasets
         purge-revisions     Purge all already-deleted revisions
+        create-views         Create CKAN 2.3 resource views
     '''
     summary = __doc__.split('\n')[0]
     usage = __doc__
@@ -79,6 +82,8 @@ class EdcCommand(CkanCommand):
             self.purge_records()
         elif cmd == 'purge-revisions':
             self.purge_revisions()
+        elif cmd == 'create-views':
+            self.create_views()
         else:
             log.error('Command "%s" not defined' % (cmd,))
 
@@ -306,3 +311,15 @@ class EdcCommand(CkanCommand):
         print 'Purge errors : '
         for msg in msgs:
             print msg
+
+
+    def create_views(self):
+        #TODO: we need this method because of this bug - @deniszgonjanin
+        #https://github.com/ckan/ckan/issues/2532
+        view_plugins = [view_plugin.info()['name']
+                        for view_plugin in get_default_view_plugins()]
+
+        for p in get_action('package_list')({},{}):
+            package = get_action('package_show')({}, {'id':p})
+
+            add_views_to_dataset_resources({}, package, view_types=view_plugins)
