@@ -43,8 +43,8 @@ from ckanext.bcgov.util.helpers import (get_suborg_sector,
                                              get_eas_login_url,
                                              get_fqdn,
                                              get_environment_name,
-                                             get_major_version,
-                                             get_minor_version
+                                             get_version,
+                                             get_bcgov_commit_id,
                                              )
 
 
@@ -97,8 +97,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "get_eas_login_url": get_eas_login_url,
                 "get_fqdn": get_fqdn,
                 "get_environment_name": get_environment_name,
-                "get_major_version": get_major_version,
-                "get_minor_version": get_minor_version
+                "get_version": get_version,
+                "get_bcgov_commit_id": get_bcgov_commit_id,
                 }
 
 
@@ -229,6 +229,12 @@ class SchemaPlugin(plugins.SingletonPlugin):
             #Assign title to title_string with all characters switched to lower case.
             pkg_dict['title_string'] = title.lower()
 
+        res_format = pkg_dict.get('res_format', [])
+        if 'other' in res_format:
+            # custom download (other) supports a number of formats
+            res_format.remove('other')
+            res_format.extend(['shp', 'fgdb', 'e00'])
+
         return pkg_dict
 
 
@@ -347,7 +353,7 @@ class EDCDisqusPlugin(plugins.SingletonPlugin):
 
     def before_map(self, map):
 
-        disqus_controller = 'bcgov.controllers.disqus:DisqusController'
+        disqus_controller = 'ckanext.bcgov.controllers.disqus:DisqusController'
 
         with SubMapper(map, controller=disqus_controller) as m:
             m.connect('/disqus/posts/create', action='disqusPostCreate')

@@ -37,9 +37,8 @@ Installation
 
         ...
 
-        # (optional) Version numbers
-        edc.major_version = major_version_num
-        edc.minor_version = minor_version_num
+        # (optional) Environment name
+        edc.environment_name = MYDEVBOX
 
 
 4.  Update (or create) `import.ini` file inside `ckanext-bcgov/ckanext/bcgov/scripts/config`. Add `api_key`, `site_url` options (they should be the same as in your CKAN `.ini` file).

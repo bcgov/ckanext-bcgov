@@ -4,7 +4,8 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.0.5-SNAPSHOT'
+# for version variable
+exec(open("ckanext/bcgov/version.py").read())
 
 setup(
 	name='ckanext-bcgov',

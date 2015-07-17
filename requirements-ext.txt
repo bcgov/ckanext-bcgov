@@ -1,13 +1,6 @@
-#CKAN source from github
-#version: 2.2
-#instruction: http://docs.ckan.org/en/ckan-2.2/
-#wget url: https://github.com/ckan/ckan/archive/ckan-2.2.zip
-#subversion url: https://github.com/ckan/ckan/archive/ckan-2.2.zip
-#git clone url: https://github.com/ckan/ckan.git@ckan-2.2
-
 #solr binary from apache
-#version: 4.3.1
-#http://archive.apache.org/dist/lucene/solr/4.3.1/
+#version: 4.10.3
+#http://archive.apache.org/dist/lucene/solr/4.10.3/solr-4.10.3-src.tgz
 
 ##ckanext-spatial
 #version 2.0
@@ -21,14 +14,18 @@
 #wget url: https://github.com/ckan/datapusher/archive/stable.zip
 #git url: https://github.com/ckan/datapusher.git
 
-##ckanext-disqus
-#version 2.0
-#instruction => https://github.com/ckan/ckanext-disqus/blob/release-v2.0/README.rst
-#wget url: https://github.com/ckan/ckanext-disqus/archive/release-v2.0.zip
-#git url:  https://github.com/ckan/ckanext-disqus.git
-
 ##ckanext-googleanalytics
 #version stable
 #instruction => https://github.com/ckan/ckanext-googleanalytics/blob/stable/README.rst
-#wget url: https://github.com/ckan/ckanext-googleanalytics/archive/stable.zip
-#git url:  https://github.com/ckan/ckanext-googleanalytics.git
+#git url:  https://github.com/bcgov/ckanext-googleanalytics.git
+
+##ckanext-ga-report
+#version stable
+#instruction => https://github.com/bcgov/ckanext-ga-report/README.rst
+#git url:  https://github.com/bcgov/ckanext-ga-report.git
+
+##ckanext-hierarchy
+#version stable
+#instruction => https://github.com/bcgov/ckanext-hierarchy/README.rst
+#git url:  https://github.com/bcgov/ckanext-hierarchy.git
+
