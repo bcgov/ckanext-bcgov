@@ -947,12 +947,12 @@ menu li {
   top: 7px;
 }
 
-/* Wet-boew overrides 
+/* Wet-boew overrides
 a:visited {
   color: inherit;
 } */
 
-/* visited link 
+/* visited link
 a:visited {
     color: #1A5A96;
 } */
@@ -980,6 +980,7 @@ a {
 
 .page-header {
   padding-bottom: 0;
+  margin-left: 0 !important;
 }
 
 .container {
