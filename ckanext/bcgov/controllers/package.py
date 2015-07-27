@@ -541,8 +541,13 @@ class EDCPackageController(PackageController):
         ------------------------------------------------------------------------------------------
         '''
 
+        package_type = pkg_dict['type'] or 'dataset'
+
         vars = {'data': data, 'errors': errors,
-                'error_summary': error_summary, 'action': 'new'}
+                'error_summary': error_summary, 'action': 'new',
+                'resource_form_snippet': self._resource_form(package_type),
+                'dataset_type':package_type}
+
         return render('package/resource_edit.html', extra_vars=vars)
 
 
