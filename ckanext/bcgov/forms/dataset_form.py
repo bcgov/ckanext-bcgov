@@ -12,6 +12,7 @@ import ckan.plugins.toolkit as toolkit
 from ckan.lib.navl.validators import (ignore_missing,
                                       not_empty,
                                       if_empty_same_as,
+                                      ignore,
                                       )
 from ckan.logic.validators import (url_validator,
                                    name_validator,
@@ -69,6 +70,8 @@ def more_info_schema():
               }
     return schema
 
+def remove_free_extras(value):
+    return []
 
 class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
@@ -135,7 +138,9 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                         'metadata_language' : [ignore_missing, convert_to_extras],
                         'metadata_character_set' : [ignore_missing, convert_to_extras],
                         'metadata_standard_name' : [ignore_missing, convert_to_extras],
-                        'metadata_standard_version' : [ignore_missing, convert_to_extras]
+                        'metadata_standard_version' : [ignore_missing, convert_to_extras],
+                        'extras': {},
+                        '__junk': [ignore],
                       })
         schema['resources'].update( {
                                      'supplemental_info' : [ignore_missing, convert_to_extras]
