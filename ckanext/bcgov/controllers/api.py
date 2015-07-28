@@ -221,7 +221,8 @@ class EDCApiController(ApiController):
             if branch :
                 branch_title = branch.title
 
-            pkg['organization']['full_title'] = org_title + ', ' + branch_title
+            if pkg['organization']:
+                pkg['organization']['full_title'] = org_title + ', ' + branch_title
 
             from ckanext.bcgov.util.helpers import record_is_viewable
 
