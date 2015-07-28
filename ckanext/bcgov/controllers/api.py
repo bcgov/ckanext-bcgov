@@ -1,6 +1,6 @@
-# Copyright  2015, Province of British Columbia 
-# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
- 
+# Copyright  2015, Province of British Columbia
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
+
 from ckan.controllers.api import ApiController
 
 import os.path
@@ -20,8 +20,8 @@ import ckan.logic as logic
 import ckan.lib.navl.dictization_functions
 
 from ckan.common import _, c, request, response
-from ckanext.bcgov.util.util import (get_all_orgs, 
-                                          get_organization_branches, 
+from ckanext.bcgov.util.util import (get_all_orgs,
+                                          get_organization_branches,
                                           get_parent_orgs)
 
 log = logging.getLogger('ckanext.edc_schema')
@@ -136,7 +136,7 @@ class EDCApiController(ApiController):
         except SearchError, se :
             print 'Search error', str(se)
             return self._finish_bad_request()
-        
+
         result = []
         for pkg in query['results']:
             result.append(pkg['name'])
@@ -204,7 +204,7 @@ class EDCApiController(ApiController):
         return_dict = {"help": help_str}
         try :
             pkg = get_action('package_show')(context, {'id' : pkg_id})
-            
+
             #add the top-level org to the organization
             #'organization, branch'
 #            orgs = get_all_orgs()
@@ -216,11 +216,11 @@ class EDCApiController(ApiController):
 #            branch_title = branch['title']
             org_title = ''
             branch_title = ''
-            if org : 
+            if org :
                 org_title = org.title
             if branch :
                 branch_title = branch.title
-            
+
             pkg['organization']['full_title'] = org_title + ', ' + branch_title
 
             from ckanext.bcgov.util.helpers import record_is_viewable
@@ -234,7 +234,7 @@ class EDCApiController(ApiController):
         except NotFound, e:
             return_dict['error'] = {'__type': 'Not Found Error',
                                     'message': _('Not found')}
-            if e.extra_msg:
+            if hasattr(e, 'extra_msg'):
                 return_dict['error']['message'] += ': %s' % e.extra_msg
             return_dict['success'] = False
             return self._finish(404, return_dict, content_type='json')
@@ -251,10 +251,10 @@ class EDCApiController(ApiController):
 
     def organization_list_related(self, ver=None):
         '''
-        Returns the list of organizations including parent_of and child_of relationships. 
+        Returns the list of organizations including parent_of and child_of relationships.
         '''
         from ckan.lib.search import SearchError
-        
+
         help_str =  "Return a list of the names of the site's organizations.\n\n" + \
 					":param order_by: the field to sort the list by, must be ``'name'`` or \n" + \
 					" ``'packages'`` (optional, default: ``'name'``) Deprecated use sort. \n" + \
@@ -272,20 +272,20 @@ class EDCApiController(ApiController):
 					":rtype: list of strings \n"
 
         return_dict = {"help": help_str}
-            
-        data_dict = self._get_request_data(try_url_params=True)    
+
+        data_dict = self._get_request_data(try_url_params=True)
         all_fields = data_dict.get('all_fields', False)
         order_by = data_dict.get('order_by', 'name')
         sort = data_dict.get('sort', 'name asc')
         organizations = data_dict.get('organizations', [])
-             
 
-        
+
+
         context = {'model': model, 'session': model.Session, 'user': c.user,
                    'api_version': ver, 'auth_user_obj': c.userobj}
 
         org_list = get_action('organization_list')(context, data_dict)
-        
+
         if (all_fields):
 			#add the child orgs to the response:
 			for org in org_list:
@@ -298,7 +298,7 @@ class EDCApiController(ApiController):
 					children.append(d)
 
 				org['parent_of'] = children
-				
+
 				parents = []
 				branches = get_parent_orgs(org['id'])
 				group_list = model_dictize.group_list_dictize(branches, context)
@@ -307,7 +307,7 @@ class EDCApiController(ApiController):
 					d['title'] = branch['title']
 					parents.append(d)
 				org['child_of'] = parents
-        
+
         return_dict['success'] = True
         return_dict['result'] = org_list
         return self._finish_ok(return_dict)
@@ -333,9 +333,9 @@ class EDCApiController(ApiController):
             error_dict['__type'] = 'Authorization Error'
             return_dict['error'] = error_dict
             return self._finish(200, return_dict, content_type='json')
-        
-    
-    def action(self, logic_function, ver=None):        
+
+
+    def action(self, logic_function, ver=None):
         #Need to apply the restriction rules to each one of the restricted functions.
         #Check if the logic function is known
         try:
@@ -362,8 +362,8 @@ class EDCApiController(ApiController):
         elif logic_function == 'current_package_list_with_resources' :
             return self.__get_package_list_with_resources(context, ver)
         elif logic_function == 'recently_changed_packages_activity_list' :
-            return self.__get_recently_changed_packages_activity_list(context, ver) 
+            return self.__get_recently_changed_packages_activity_list(context, ver)
         elif logic_function == 'vocabulary_list' :
-            return self.__get_vocabulary_list(context, ver)          
+            return self.__get_vocabulary_list(context, ver)
         else :
             return super(EDCApiController, self).action(logic_function, ver)
