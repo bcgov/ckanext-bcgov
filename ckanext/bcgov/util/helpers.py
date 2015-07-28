@@ -1,6 +1,6 @@
-# Copyright  2015, Province of British Columbia
-# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
-
+# Copyright  2015, Province of British Columbia 
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
+ 
 import pprint
 import logging
 import ckan.lib.helpers
@@ -169,7 +169,7 @@ def is_license_open(license_id):
     '''
     edc_license = get_license_data(license_id)
 
-    if 'is_open' in edc_license and edc_license['is_open'] == True :
+    if edc_license and edc_license['is_open'] == True :
         return True
 
     #License doesn't exist or it is not an open license
