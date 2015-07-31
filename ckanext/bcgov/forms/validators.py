@@ -1,6 +1,6 @@
-# Copyright  2015, Province of British Columbia 
-# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
- 
+# Copyright  2015, Province of British Columbia
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
+
 import re
 
 import ckan.lib.navl.dictization_functions as df
@@ -20,10 +20,10 @@ log = logging.getLogger('ckanext.edc_schema')
 
 def float_validator(key, data, errors, content):
     value = data.get(key, 0.0)
-    
+
     if isinstance(value, int) :
         return float(value)
-    
+
     if isinstance(value, float):
         return value
     try:
@@ -38,33 +38,33 @@ def latitude_validator(key, data, errors, context):
     '''
     Checks if the given latitude value is a valid positive float number.
     '''
-        
+
     value = float_validator(key, data, errors, context)
-        
+
     if not value or value < 0.0 :
         errors[key].append("A positive float value must be given.")
         raise StopOnError
-    
+
 def longitude_validator(key, data, errors, context):
     '''
     Checks if the given longitude value is a valid negative float number.
     '''
-    
+
     value = float_validator(key, data, errors, context)
-    
+
     if not value or value > 0.0 :
         errors[key].append("A negative float value must be given.")
         raise StopOnError
 
-def check_empty(key, data, errors, context):    
+def check_empty(key, data, errors, context):
     '''
-    This method checks if the field with given key has some value.   
-    The field belongs to a record of related fields with a delete    
-    field. If the value of delete field is 0 then record is active   
-    and should be validated. If the value of delete field is 1, it   
-    means that the record has been deleted and it won't be validated 
-    Validation takes place only the record has not been deleted in   
-    form by user.                                                    
+    This method checks if the field with given key has some value.
+    The field belongs to a record of related fields with a delete
+    field. If the value of delete field is 0 then record is active
+    and should be validated. If the value of delete field is 1, it
+    means that the record has been deleted and it won't be validated
+    Validation takes place only the record has not been deleted in
+    form by user.
     '''
     #Construct the delete key
     delete_key = (key[0], key[1], 'delete')
@@ -87,9 +87,9 @@ def license_not_empty(key, data, errors, content):
         errors[key].append(_('License is not specified'))
 
 def valid_email(key, data, errors, context):
-    
+
     from validate_email import validate_email
-        
+
     #Get the number of the key components
     key_length = len(key)
 
@@ -102,10 +102,10 @@ def valid_email(key, data, errors, context):
             return
 
     contact_email = data.get(key)
-    
+
     if (validate_email(contact_email)) :
         return
-        
+
     errors[key].append(_('Invalid email address'))
 
 
@@ -128,18 +128,18 @@ def validate_link(key, data, errors, context):
     link = data[key]
     if not link:
         return
-    
+
     url_validator(key, data, errors, context)
-    
+
 def valid_date(key, data, errors, context):
     import datetime
-    
+
     date_value = data[key]
     if not date_value :
         return
     try:
         datetime.datetime.strptime(date_value, '%Y-%m-%d')
-        
+
     except ValueError:
         errors[key].append('Invalid date format/value')
     pass
@@ -174,33 +174,33 @@ def get_org_sector(key, data, errors, context):
     This validator gets the value of sector based on the given values for org and suborg fields.
     '''
     from ckanext.bcgov.util.helpers import get_suborg_sector
-    
-    
+
+
     if key[0] != 'sector' :
         return
-    
+
     sub_org_key = ('sub_org',)
-    if sub_org_key in data :
+    if sub_org_key in data and data[sub_org_key]:
         sector = get_suborg_sector(data[sub_org_key])
         data[key] = sector
 
 
 def check_branch(key, data, errors, context):
-    
+
     ignore_missing(key, data, errors, context)
     return
- 
+
     from ckanext.bcgov.util.util import get_organization_branches
-    
+
     org_key = ('org',)
-    
+
     org_id = None
     if org_key in data:
         org_id = data[org_key]
-    
+
     #Check if the organization has any branches
     branches = get_organization_branches(org_id)
-    
+
     if len(branches) > 0 :
         value = data.get(key)
         if not value or value is missing:
@@ -211,9 +211,9 @@ def check_dashes(key, data, errors, context):
     ''' make sure dashes have space after them '''
     #Get the package title
     title = data[key]
- 
+
     dashes = re.findall(r'\s+(?:-+\w+)+',title)
-    
+
     if len(dashes) > 0:
         errors[key].append('Non-hyphenated dashes in Title must be followed by a space. Please change the title.')
 
@@ -227,14 +227,14 @@ def duplicate_pkg(key, data, errors, context):
     '''
     name_key = ('name',)
     title_key = ('title',)
-    
+
     pkg_name = data[name_key]
     pkg_title = data[title_key]
-    
+
     #Check if the duplicate title has not been changed
     if key[0] == 'title' and pkg_title.startswith('#Duplicate#') :
         errors[title_key].append(_('The duplicated title must be changed.'))
-    
+
     #Check if the duplicated name has not been changed.
     if key[0] == 'name' and pkg_name.startswith('__duplicate__') :
         errors[name_key].append(_('A new name must be given for the duplicated record.'))
@@ -246,9 +246,9 @@ def check_duplicates(key, data, errors, context):
     '''
     #Get the package title
     title = data[key]
-    
+
     #Search for packages with the same title
-    from ckan.logic import get_action 
+    from ckan.logic import get_action
     from ckan.lib.search import SearchError
     try :
         data_dict = {
@@ -258,11 +258,11 @@ def check_duplicates(key, data, errors, context):
         #Use package_search to filter the list
         results = get_action('package_autocomplete')(context, data_dict)
     #    results = query['result']
-        
-        count = 0        
+
+        count = 0
         for record in results :
             record_title = record['title'].lower()
-            if title.lower() == record_title : 
+            if title.lower() == record_title :
                 result_name = record['name']
                 count = 1
                 break
@@ -270,19 +270,19 @@ def check_duplicates(key, data, errors, context):
         id_key = ('name',)
         if count == 1 and id_key in data :
             if  result_name == data[id_key] :
-                return        
+                return
         if count > 0 :
             errors[key].append('Record title must be unique. Please change the title.')
             raise StopOnError
     except SearchError, se :
         return
-    
+
 def check_extension(key, data, errors, context):
     import os
     url_type_key = (key[0], key[1], 'url_type')
-    
+
     url_type = data.get(url_type_key)
-    
+
     if url_type != 'upload' :
         return
 #    valid_formats = []
@@ -291,8 +291,7 @@ def check_extension(key, data, errors, context):
         errors[key].appned('Resource file/url is missing')
         raise StopOnError
     if res_url :
-        res_format = os.path.splitext(res_url)[1]    
+        res_format = os.path.splitext(res_url)[1]
         if not res_format :
             errors[key].append('Unknown resource extension. Please provide a file with a valid extension')
             raise StopOnError
-    

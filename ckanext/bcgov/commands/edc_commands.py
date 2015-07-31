@@ -175,6 +175,9 @@ class EdcCommand(CkanCommand):
 
 
     def create_orgs(self, org_file=None):
+        # TODO: This command is broken - the data that feeds into this command
+        # is much different than the format expected by this command
+        # - @deniszgonjanin
 
         if not org_file:
             org_file = self.default_org_file
