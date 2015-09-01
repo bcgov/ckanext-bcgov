@@ -75,7 +75,7 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
             {% block heading_title %}
               {{ h.link_to(h.truncate(title, truncate_title), h.url_for(controller='package', action='read', id=package.name)) }}
             {% endblock %}
-            {{ h.popular('recent views', package.tracking_summary.total, min=10) if package.tracking_summary }}
+            {{ h.popular('recent views', package.tracking_summary.recent, min=10) if package.tracking_summary }}
             {% if package.org and package.sub_org %}
             {% block heading_orgs %}
               <div class="dataset-heading-orgs">
