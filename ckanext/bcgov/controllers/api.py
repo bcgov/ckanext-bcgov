@@ -305,6 +305,7 @@ class EDCApiController(ApiController):
 				for branch in group_list:
 					d = {}
 					d['title'] = branch['title']
+					d['id'] = branch['id']
 					parents.append(d)
 				org['child_of'] = parents
         
