@@ -257,20 +257,20 @@ class EDCApiController(ApiController):
         from ckan.lib.search import SearchError
 
         help_str =  "Return a list of the names of the site's organizations.\n\n" + \
-					":param order_by: the field to sort the list by, must be ``'name'`` or \n" + \
-					" ``'packages'`` (optional, default: ``'name'``) Deprecated use sort. \n" + \
-					":type order_by: string \n" + \
-					":param sort: sorting of the search results.  Optional.  Default:\n" + \
-					"'name asc' string of field name and sort-order. The allowed fields are \n" + \
-					"'name' and 'packages' \n" + \
-					":type sort: string \n" + \
-					":param organizations: a list of names of the groups to return, if given only \n" + \
-					"groups whose names are in this list will be returned (optional) \n" + \
-					":type organizations: list of strings \n" + \
-					":param all_fields: return full group dictionaries instead of  just names \n" + \
-					"(optional, default: ``False``) \n" + \
-					":type all_fields: boolean \n" + \
-					":rtype: list of strings \n"
+                    ":param order_by: the field to sort the list by, must be ``'name'`` or \n" + \
+                    " ``'packages'`` (optional, default: ``'name'``) Deprecated use sort. \n" + \
+                    ":type order_by: string \n" + \
+                    ":param sort: sorting of the search results.  Optional.  Default:\n" + \
+                    "'name asc' string of field name and sort-order. The allowed fields are \n" + \
+                    "'name' and 'packages' \n" + \
+                    ":type sort: string \n" + \
+                    ":param organizations: a list of names of the groups to return, if given only \n" + \
+                    "groups whose names are in this list will be returned (optional) \n" + \
+                    ":type organizations: list of strings \n" + \
+                    ":param all_fields: return full group dictionaries instead of  just names \n" + \
+                    "(optional, default: ``False``) \n" + \
+                    ":type all_fields: boolean \n" + \
+                    ":rtype: list of strings \n"
 
         return_dict = {"help": help_str}
 
@@ -288,26 +288,26 @@ class EDCApiController(ApiController):
         org_list = get_action('organization_list')(context, data_dict)
 
         if (all_fields):
-			#add the child orgs to the response:
-			for org in org_list:
-				children = []
-				branches = get_organization_branches(org['id'])
-				group_list = model_dictize.group_list_dictize(branches, context)
-				for branch in group_list:
-					d = {}
-					d['title'] = branch['title']
-					children.append(d)
+            #add the child orgs to the response:
+            for org in org_list:
+                children = []
+                branches = get_organization_branches(org['id'])
+                group_list = model_dictize.group_list_dictize(branches, context)
+                for branch in group_list:
+                    d = {}
+                    d['title'] = branch['title']
+                    children.append(d)
 
-				org['parent_of'] = children
+                org['parent_of'] = children
 
-				parents = []
-				branches = get_parent_orgs(org['id'])
-				group_list = model_dictize.group_list_dictize(branches, context)
-				for branch in group_list:
-					d = {}
-					d['title'] = branch['title']
-					parents.append(d)
-				org['child_of'] = parents
+                parents = []
+                branches = get_parent_orgs(org['id'])
+                group_list = model_dictize.group_list_dictize(branches, context)
+                for branch in group_list:
+                    d = {}
+                    d['title'] = branch['title']
+                    parents.append(d)
+                org['child_of'] = parents
 
         return_dict['success'] = True
         return_dict['result'] = org_list
@@ -349,8 +349,7 @@ class EDCApiController(ApiController):
             request_data = self._get_request_data(try_url_params=side_effect_free)
         except ValueError, inst:
             log.error('Bad request data: %s' % inst)
-            return self._finish_bad_request(
-					_('JSON Error: %s') % inst)
+            return self._finish_bad_request(_('JSON Error: %s') % inst)
 
 
         context = {'model': model, 'session': model.Session, 'user': c.user,
