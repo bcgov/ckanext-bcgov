@@ -68,27 +68,6 @@ def get_edc_tags(vocab_id):
 
     return tags
 
-def get_org_name(org_id):
-    '''
-    Returns the organization title with the given id
-    '''
-    data_string = urllib.quote(json.dumps({'id': org_id, 'include_datasets': False}))
-    try:
-        request = urllib2.Request(site_url + '/api/3/action/organization_show')
-        response = urllib2.urlopen(request, data_string)
-        assert response.code == 200
-
-        response_dict = json.loads(response.read())
-        assert response_dict['success'] is True
-
-        org_dict = response_dict['result']
-    except:
-        org_dict = []
-
-    if org_dict :
-        return org_dict['title']
-    return None
-
 
 def get_username(id):
     '''
