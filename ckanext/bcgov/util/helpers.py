@@ -301,11 +301,6 @@ def get_organizations():
 
     return top_level_orgs
 
-def get_org_title(id):
-    org = model.Group.get(id)
-    if org :
-        return org.title
-    return None
 
 def get_edc_org(id):
     return model.Group.get(id)
