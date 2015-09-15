@@ -55,30 +55,6 @@ def edc_type_label(item):
     rec_type = item['display_name']
     return get_record_type_label(rec_type)
 
-def add_admin(member, site_url, api_key):
-    ''' adds a user as admin of an organization'''
-
-    data_string = urllib.quote(json.dumps(member))
-
-    member_dict = None
-    errors = None
-    try:
-        request = urllib2.Request(site_url + '/api/3/action/organization_member_create')
-        request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
-        assert response.code == 200
-
-        # Use the json module to load CKAN's response into a dictionary.
-        response_dict = json.loads(response.read())
-        if response_dict['success'] == True :
-            member_dict = response_dict
-        else:
-            errors = response_dict['error']
-    except Exception, e:
-        print str(e)
-        pass
-    return (member_dict, errors)
-
 def get_edc_tags(vocab_id):
     '''
     Returns the list of tags for a given vocabulary.
