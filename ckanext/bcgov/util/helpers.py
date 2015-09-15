@@ -236,6 +236,8 @@ def get_facets_selected(facet):
     return facets
 
 
+_sectors_list = None
+
 def get_sectors_list():
     '''
     Returns a list of sectors available in the file specified by sectors_file_url in ini file.
@@ -243,6 +245,10 @@ def get_sectors_list():
     in order to assign a new sector to the sub-organization.
     '''
     from pylons import config
+    global _sectors_list
+
+    if _sectors_list is not None:
+        return _sectors_list
 
     #Get the url for the sectors file.
     sectors_url = config.get('sectors_file_url', None)
@@ -266,6 +272,7 @@ def get_sectors_list():
         '''
         sectors_list = ["Natural Resources", "Service", "Transportation", "Education", "Economy", "Social Services", "Health and Safety", "Justice", "Finance" ]
 
+    _sectors_list = sectors_list
     return sectors_list
 
 
