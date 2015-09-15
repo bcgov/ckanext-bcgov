@@ -41,7 +41,6 @@ from ckan.lib.mailer import MailerException
 
 from pylons import config
 
-#from ckanext.bcgov.util.util import edc_state_activity_create
 
 log = logging.getLogger('ckanext.edc_schema')
 

@@ -240,7 +240,6 @@ Please review and act as required.'
     send_state_change_notifications(members, email_dict, site_title, site_url)
 
 
-@toolkit.side_effect_free
 def edc_package_update(context, input_data_dict):
     '''
     Find a package, from the given object_name, and update it with the given fields.
@@ -334,7 +333,7 @@ def edc_package_update(context, input_data_dict):
 
     return response_dict
 
-@toolkit.side_effect_free
+
 def edc_package_update_bcgw(context, input_data_dict):
     '''
     Find a package, from the given object_name, and update it with the given fields.
@@ -451,7 +450,6 @@ def edc_package_update_bcgw(context, input_data_dict):
     return response_dict
 
 
-@toolkit.side_effect_free
 def package_update(context, data_dict):
 
     '''Update a dataset (package).
@@ -657,7 +655,7 @@ def package_update(context, data_dict):
 
     return output
 
-@toolkit.side_effect_free
+
 def post_disqus_comment(context, comment_dict):
     '''
     Uses Disqus api to post a guest comment.
