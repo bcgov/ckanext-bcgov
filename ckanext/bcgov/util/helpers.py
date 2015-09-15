@@ -310,22 +310,18 @@ def get_org_title(id):
 def get_edc_org(id):
     return model.Group.get(id)
 
+
 def get_organization_title(org_id):
     '''
     Returns the title of an organization with the given organization id.
     '''
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
-
     try:
-        orgs = get_action('organization_list')(context, {'all_fields': True})
+        org = get_action('organization_show')(context, {'id': org_id})
     except NotFound:
-        orgs = []
-    for org in orgs:
-
-        if org['id'] == org_id:
-            return org['title']
-    return None
+        return
+    return org['title']
 
 
 def get_espg_id(espg_string):
