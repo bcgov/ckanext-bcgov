@@ -190,31 +190,6 @@ def get_record_type_label(rec_type):
     return rec_type
 
 
-
-###################################################
-#
-## JER - Aug. 15, 2014.
-#    The two functions below are related to JIRA CITZEDC-296 - Turn off Gravatar
-#    Greg had concerns about email being passed to Gravatar, but it turns out
-#    that a hash of the email is being sent, so he is ok with that for now...
-#    So these two functions are not being used.
-#
-###################################################
-
-def edc_linked_gravatar(email_hash, size=100, default=None):
-    return literal(
-        '<a href="https://gravatar.com/" target="_blank" ' +
-        'title="%s" alt="">' % _('Update your avatar at gravatar.com') +
-        'monsterid</a>' % edc_gravatar(email_hash, size)
-    )
-
-def edc_gravatar(email_hash, size=100, default=None):
-    return literal('''<img src="//gravatar.com/avatar/?s=%d&amp;d=monsterid"
-        class="gravatar" width="%s" height="%s" />'''
-                   % (size, size, size)
-                   )
-
-
 def get_facets_unselected(facet, limit=None):
     '''Return the list of unselected facet items for the given facet, sorted
     by count.
