@@ -588,6 +588,9 @@ class EDCPackageController(PackageController):
 
 
     def resource_delete(self, id, resource_id):
+        # TODO: This whole method is a workaround for a core ckan issue
+        # that can be removed when the issue is resolved
+        # https://github.com/ckan/ckan/issues/2651
 
         #Back to the resource edit if user has chosen cancel on delete confirmation
         if 'cancel' in request.params:
