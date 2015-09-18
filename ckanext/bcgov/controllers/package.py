@@ -565,6 +565,8 @@ class EDCPackageController(PackageController):
         saved in upload directory. In that case the resource url must be reset to force the user
         to upload the resource again.
         '''
+        # TODO: This is a workaround for a core ckan issue that can be removed when the issue
+        # is resolved https://github.com/ckan/ckan/issues/2650
         errors = errors or {}
         if errors != {} :
             res_url = data.get('url')
