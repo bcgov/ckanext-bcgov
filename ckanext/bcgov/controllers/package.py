@@ -477,6 +477,11 @@ class EDCPackageController(PackageController):
                    'api_version': 3, 'for_edit': True,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
         pkg_dict = get_action('package_show')(context, {'id': id})
+
+        # TODO: This is the modified part of resource_edit from ckan's controller
+        # it includes a static list of the resource expected for each type.
+        # This method is a workaroung for a core ckan issue that can be removed when
+        # the issue is resolved: https://github.com/ckan/ckan/issues/2649
         if pkg_dict['state'].startswith('draft'):
             # dataset has not yet been fully created
             resource_dict = get_action('resource_show')(context, {'id': resource_id})
