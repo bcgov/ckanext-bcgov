@@ -478,9 +478,9 @@ class EDCPackageController(PackageController):
                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
         pkg_dict = get_action('package_show')(context, {'id': id})
 
-        # TODO: This is the modified part of resource_edit from ckan's controller
+        # TODO: This is the first modified part of resource_edit from ckan's controller
         # it includes a static list of the resource expected for each type.
-        # This method is a workaroung for a core ckan issue that can be removed when
+        # This is a workaroung for a core ckan issue that can be removed when
         # the issue is resolved: https://github.com/ckan/ckan/issues/2649
         if pkg_dict['state'].startswith('draft'):
             # dataset has not yet been fully created
@@ -520,6 +520,9 @@ class EDCPackageController(PackageController):
         errors = errors or {}
         error_summary = error_summary or {}
 
+        # TODO: This is the second modified part of resource_edit from ckan's controller
+        # It is a workaround for a core ckan issue that can be removed when the issue
+        # is resolved https://github.com/ckan/ckan/issues/2650
         '''
         ------------------------------------------------------------------------------------------
         If there are errors, then check if user has uploaded the resource.
