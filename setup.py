@@ -25,6 +25,8 @@ setup(
 	zip_safe=False,
 	install_requires=[
 		'ckan==2.3.1',
+		'pycurl==7.19.5',
+		'validate_email==1.2',
 	],
 	entry_points=\
 	"""
