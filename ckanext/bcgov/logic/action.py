@@ -485,6 +485,10 @@ def package_update(context, data_dict):
     context["package"] = pkg
     data_dict["id"] = pkg.id
 
+    # FIXME: first modifications to package_updade begin here:
+    # tag strings are reconstructed because validators are stripping
+    # tags passed and only taking taks as tag_string values
+    # image upload support has also been added here
     old_data = get_action('package_show')(context, {'id': pkg.id})
 
     '''
@@ -560,6 +564,7 @@ def package_update(context, data_dict):
                 # Old plugins do not support passing the schema so we need
                 # to ensure they still work.
                 package_plugin.check_data_dict(data_dict)
+    # FIXME: modifications to package_update end here^
 
     data, errors = _validate(data_dict, schema, context)
 #     log.debug('package_update validate_errs=%r user=%s package=%s data=%r',
