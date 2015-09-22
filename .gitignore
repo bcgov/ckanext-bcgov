@@ -1,3 +1,4 @@
 *.pyc
 ckanext_bcgov.egg-info/
 requirements-ext.txt
+pip-requirements.txt
