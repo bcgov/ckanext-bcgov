@@ -55,6 +55,7 @@ class EDCApiController(ApiController):
         ckan_path = os.path.join(os.path.dirname(__file__), '..')
         source = os.path.abspath(os.path.join(ckan_path, 'public',
                                  'base', 'i18n', '%s.js' % lang))
+        # FIXME: cache everything forever?
         response.headers['Content-Type'] = CONTENT_TYPES['html']
         response.headers['Cache-Control'] = 'public, max-age=31536000'
         response.headers['Pragma'] = 'cache'
@@ -66,7 +67,7 @@ class EDCApiController(ApiController):
         return(f)
 
 
-    def __get_package_list(self, context, ver=None):
+    def _get_package_list(self, context, ver=None):
         '''
         Returns a list of site packages depending on the user.
         The public users could only see published public records.
@@ -116,7 +117,7 @@ class EDCApiController(ApiController):
         return self._finish_ok(return_dict)
 
 
-    def __get_package_list_with_resources(self, context, ver):
+    def _get_package_list_with_resources(self, context, ver):
         '''
         Returns a list of site packages depending on the user.
         The public users could only see published public records.
@@ -164,7 +165,7 @@ class EDCApiController(ApiController):
         return self._finish_ok(return_dict)
 
 
-    def __package_show(self, context, pkg_id):
+    def _package_show(self, context, pkg_id):
         '''
         Returns record's data with the given id only if the user is allowed to view the record.
         '''
@@ -283,7 +284,7 @@ class EDCApiController(ApiController):
         return_dict['result'] = org_list
         return self._finish_ok(return_dict)
 
-    def __get_recently_changed_packages_activity_list(self, context, ver):
+    def _get_recently_changed_packages_activity_list(self, context, ver):
         if c.userobj and c.userobj.sysadmin == True:
             return super(EDCApiController, self).action('recently_changed_packages_activity_list', ver)
         else:
@@ -294,7 +295,7 @@ class EDCApiController(ApiController):
             return_dict['error'] = error_dict
             return self._finish(200, return_dict, content_type='json')
 
-    def __get_vocabulary_list(self, context, ver):
+    def _get_vocabulary_list(self, context, ver):
         if c.userobj and c.userobj.sysadmin == True:
             return super(EDCApiController, self).action('vocabulary_list', ver)
         else :
@@ -326,14 +327,14 @@ class EDCApiController(ApiController):
                    'api_version': ver, 'auth_user_obj': c.userobj}
 
         if logic_function == 'package_show':
-            return self.__package_show(context, request_data['id'])
+            return self._package_show(context, request_data['id'])
         elif logic_function == 'package_list':
-            return self.__get_package_list(context, ver)
+            return self._get_package_list(context, ver)
         elif logic_function == 'current_package_list_with_resources' :
-            return self.__get_package_list_with_resources(context, ver)
+            return self._get_package_list_with_resources(context, ver)
         elif logic_function == 'recently_changed_packages_activity_list' :
-            return self.__get_recently_changed_packages_activity_list(context, ver)
+            return self._get_recently_changed_packages_activity_list(context, ver)
         elif logic_function == 'vocabulary_list' :
-            return self.__get_vocabulary_list(context, ver)
+            return self._get_vocabulary_list(context, ver)
         else :
             return super(EDCApiController, self).action(logic_function, ver)
