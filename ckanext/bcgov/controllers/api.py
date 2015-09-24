@@ -66,36 +66,6 @@ class EDCApiController(ApiController):
         return(f)
 
 
-    def __get_search_filter(self):
-
-        user_name = c.user or 'visitor'
-
-        from ckanext.bcgov.util.util import get_user_orgs
-
-        fq =  request.params.get('fq', '')
-
-        #Filter private and unpublished records for anonymous users
-        if c.userobj and c.userobj.sysadmin == True:
-            fq += ''
-        else :
-            if user_name != 'visitor':
-                fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
-
-                #IDIR users can also see private records of their organizations
-                user_id = c.userobj.id
-                #Get the list of orgs that the user is an admin or editor of
-                user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
-                user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
-                if user_orgs != []:
-                    fq += ' OR ' + 'owner_org:(' + ' OR '.join(user_orgs) + ')'
-                fq += ')'
-            else:
-                #Public user can only view public and published records
-                fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
-
-        return fq
-
-
     def __get_package_list(self, context, ver=None):
         '''
         Returns a list of site packages depending on the user.
