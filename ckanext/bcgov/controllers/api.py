@@ -73,6 +73,7 @@ class EDCApiController(ApiController):
         The public users could only see published public records.
         Each user can only see private records of his/her own organization
         '''
+        # FIXME: override with IActions plugin instead
         from ckan.lib.search import SearchError
 
         help_str = "Return a list of the names of the site's datasets (packages).\n\n    " + \
@@ -123,6 +124,7 @@ class EDCApiController(ApiController):
         The public users could only see published public records.
         Each user can only see private records of his/her own organization
         '''
+        # FIXME: override with IActions plugin instead
         from ckan.lib.search import SearchError
 
         help_str = "Returns a list of the names of top 10 most viewed datasets (packages).\n\n    " + \
@@ -169,6 +171,9 @@ class EDCApiController(ApiController):
         '''
         Returns record's data with the given id only if the user is allowed to view the record.
         '''
+        # FIXME: use IAuth plugin for authorization check and
+        # use IPackageController to fill in extra values
+        # then remove this method
 
         help_str = "Shows the package info with the given id. Param : id"
 
@@ -225,6 +230,7 @@ class EDCApiController(ApiController):
         '''
         Returns the list of organizations including parent_of and child_of relationships.
         '''
+        # FIXME: use IActions plugin instead
         from ckan.lib.search import SearchError
 
         help_str =  "Return a list of the names of the site's organizations.\n\n" + \
@@ -285,6 +291,7 @@ class EDCApiController(ApiController):
         return self._finish_ok(return_dict)
 
     def _get_recently_changed_packages_activity_list(self, context, ver):
+        # FIXME: use IAuth plugin instead
         if c.userobj and c.userobj.sysadmin == True:
             return super(EDCApiController, self).action('recently_changed_packages_activity_list', ver)
         else:
@@ -296,6 +303,7 @@ class EDCApiController(ApiController):
             return self._finish(200, return_dict, content_type='json')
 
     def _get_vocabulary_list(self, context, ver):
+        # FIXME: use IAuth plugin instead
         if c.userobj and c.userobj.sysadmin == True:
             return super(EDCApiController, self).action('vocabulary_list', ver)
         else :
@@ -308,8 +316,8 @@ class EDCApiController(ApiController):
 
 
     def action(self, logic_function, ver=None):
-        #Need to apply the restriction rules to each one of the restricted functions.
-        #Check if the logic function is known
+        # FIXME: remove this method when functions called below are removed
+
         try:
             function = get_action(logic_function)
         except KeyError:
