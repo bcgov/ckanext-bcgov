@@ -4,7 +4,7 @@
 
 Major changes
 
-- migrate from CKAN 2.2 to CKAN 2.3
+- migrate from CKAN 2.2.1 to CKAN 2.3.1
 
 Steps required for upgrade
 
