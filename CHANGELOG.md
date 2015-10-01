@@ -1,4 +1,4 @@
-# Relase Notes
+# Release Notes
 
 ## 1.1.0
 
