@@ -55,6 +55,7 @@ class EDCApiController(ApiController):
         ckan_path = os.path.join(os.path.dirname(__file__), '..')
         source = os.path.abspath(os.path.join(ckan_path, 'public',
                                  'base', 'i18n', '%s.js' % lang))
+        # FIXME: cache everything forever?
         response.headers['Content-Type'] = CONTENT_TYPES['html']
         response.headers['Cache-Control'] = 'public, max-age=31536000'
         response.headers['Pragma'] = 'cache'
@@ -66,42 +67,13 @@ class EDCApiController(ApiController):
         return(f)
 
 
-    def __get_search_filter(self):
-
-        user_name = c.user or 'visitor'
-
-        from ckanext.bcgov.util.util import get_user_orgs
-
-        fq =  request.params.get('fq', '')
-
-        #Filter private and unpublished records for anonymous users
-        if c.userobj and c.userobj.sysadmin == True:
-            fq += ''
-        else :
-            if user_name != 'visitor':
-                fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
-
-                #IDIR users can also see private records of their organizations
-                user_id = c.userobj.id
-                #Get the list of orgs that the user is an admin or editor of
-                user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
-                user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
-                if user_orgs != []:
-                    fq += ' OR ' + 'owner_org:(' + ' OR '.join(user_orgs) + ')'
-                fq += ')'
-            else:
-                #Public user can only view public and published records
-                fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
-
-        return fq
-
-
-    def __get_package_list(self, context, ver=None):
+    def _get_package_list(self, context, ver=None):
         '''
         Returns a list of site packages depending on the user.
         The public users could only see published public records.
         Each user can only see private records of his/her own organization
         '''
+        # FIXME: override with IActions plugin instead
         from ckan.lib.search import SearchError
 
         help_str = "Return a list of the names of the site's datasets (packages).\n\n    " + \
@@ -146,12 +118,13 @@ class EDCApiController(ApiController):
         return self._finish_ok(return_dict)
 
 
-    def __get_package_list_with_resources(self, context, ver):
+    def _get_package_list_with_resources(self, context, ver):
         '''
         Returns a list of site packages depending on the user.
         The public users could only see published public records.
         Each user can only see private records of his/her own organization
         '''
+        # FIXME: override with IActions plugin instead
         from ckan.lib.search import SearchError
 
         help_str = "Returns a list of the names of top 10 most viewed datasets (packages).\n\n    " + \
@@ -194,10 +167,13 @@ class EDCApiController(ApiController):
         return self._finish_ok(return_dict)
 
 
-    def __package_show(self, context, pkg_id):
+    def _package_show(self, context, pkg_id):
         '''
         Returns record's data with the given id only if the user is allowed to view the record.
         '''
+        # FIXME: use IAuth plugin for authorization check and
+        # use IPackageController to fill in extra values
+        # then remove this method
 
         help_str = "Shows the package info with the given id. Param : id"
 
@@ -254,23 +230,24 @@ class EDCApiController(ApiController):
         '''
         Returns the list of organizations including parent_of and child_of relationships.
         '''
+        # FIXME: use IActions plugin instead
         from ckan.lib.search import SearchError
 
         help_str =  "Return a list of the names of the site's organizations.\n\n" + \
-					":param order_by: the field to sort the list by, must be ``'name'`` or \n" + \
-					" ``'packages'`` (optional, default: ``'name'``) Deprecated use sort. \n" + \
-					":type order_by: string \n" + \
-					":param sort: sorting of the search results.  Optional.  Default:\n" + \
-					"'name asc' string of field name and sort-order. The allowed fields are \n" + \
-					"'name' and 'packages' \n" + \
-					":type sort: string \n" + \
-					":param organizations: a list of names of the groups to return, if given only \n" + \
-					"groups whose names are in this list will be returned (optional) \n" + \
-					":type organizations: list of strings \n" + \
-					":param all_fields: return full group dictionaries instead of  just names \n" + \
-					"(optional, default: ``False``) \n" + \
-					":type all_fields: boolean \n" + \
-					":rtype: list of strings \n"
+                    ":param order_by: the field to sort the list by, must be ``'name'`` or \n" + \
+                    " ``'packages'`` (optional, default: ``'name'``) Deprecated use sort. \n" + \
+                    ":type order_by: string \n" + \
+                    ":param sort: sorting of the search results.  Optional.  Default:\n" + \
+                    "'name asc' string of field name and sort-order. The allowed fields are \n" + \
+                    "'name' and 'packages' \n" + \
+                    ":type sort: string \n" + \
+                    ":param organizations: a list of names of the groups to return, if given only \n" + \
+                    "groups whose names are in this list will be returned (optional) \n" + \
+                    ":type organizations: list of strings \n" + \
+                    ":param all_fields: return full group dictionaries instead of  just names \n" + \
+                    "(optional, default: ``False``) \n" + \
+                    ":type all_fields: boolean \n" + \
+                    ":rtype: list of strings \n"
 
         return_dict = {"help": help_str}
 
@@ -288,32 +265,33 @@ class EDCApiController(ApiController):
         org_list = get_action('organization_list')(context, data_dict)
 
         if (all_fields):
-			#add the child orgs to the response:
-			for org in org_list:
-				children = []
-				branches = get_organization_branches(org['id'])
-				group_list = model_dictize.group_list_dictize(branches, context)
-				for branch in group_list:
-					d = {}
-					d['title'] = branch['title']
-					children.append(d)
+            #add the child orgs to the response:
+            for org in org_list:
+                children = []
+                branches = get_organization_branches(org['id'])
+                group_list = model_dictize.group_list_dictize(branches, context)
+                for branch in group_list:
+                    d = {}
+                    d['title'] = branch['title']
+                    children.append(d)
 
-				org['parent_of'] = children
+                org['parent_of'] = children
 
-				parents = []
-				branches = get_parent_orgs(org['id'])
-				group_list = model_dictize.group_list_dictize(branches, context)
-				for branch in group_list:
-					d = {}
-					d['title'] = branch['title']
-					parents.append(d)
-				org['child_of'] = parents
+                parents = []
+                branches = get_parent_orgs(org['id'])
+                group_list = model_dictize.group_list_dictize(branches, context)
+                for branch in group_list:
+                    d = {}
+                    d['title'] = branch['title']
+                    parents.append(d)
+                org['child_of'] = parents
 
         return_dict['success'] = True
         return_dict['result'] = org_list
         return self._finish_ok(return_dict)
 
-    def __get_recently_changed_packages_activity_list(self, context, ver):
+    def _get_recently_changed_packages_activity_list(self, context, ver):
+        # FIXME: use IAuth plugin instead
         if c.userobj and c.userobj.sysadmin == True:
             return super(EDCApiController, self).action('recently_changed_packages_activity_list', ver)
         else:
@@ -324,7 +302,8 @@ class EDCApiController(ApiController):
             return_dict['error'] = error_dict
             return self._finish(200, return_dict, content_type='json')
 
-    def __get_vocabulary_list(self, context, ver):
+    def _get_vocabulary_list(self, context, ver):
+        # FIXME: use IAuth plugin instead
         if c.userobj and c.userobj.sysadmin == True:
             return super(EDCApiController, self).action('vocabulary_list', ver)
         else :
@@ -337,8 +316,8 @@ class EDCApiController(ApiController):
 
 
     def action(self, logic_function, ver=None):
-        #Need to apply the restriction rules to each one of the restricted functions.
-        #Check if the logic function is known
+        # FIXME: remove this method when functions called below are removed
+
         try:
             function = get_action(logic_function)
         except KeyError:
@@ -349,22 +328,21 @@ class EDCApiController(ApiController):
             request_data = self._get_request_data(try_url_params=side_effect_free)
         except ValueError, inst:
             log.error('Bad request data: %s' % inst)
-            return self._finish_bad_request(
-					_('JSON Error: %s') % inst)
+            return self._finish_bad_request(_('JSON Error: %s') % inst)
 
 
         context = {'model': model, 'session': model.Session, 'user': c.user,
                    'api_version': ver, 'auth_user_obj': c.userobj}
 
         if logic_function == 'package_show':
-            return self.__package_show(context, request_data['id'])
+            return self._package_show(context, request_data['id'])
         elif logic_function == 'package_list':
-            return self.__get_package_list(context, ver)
+            return self._get_package_list(context, ver)
         elif logic_function == 'current_package_list_with_resources' :
-            return self.__get_package_list_with_resources(context, ver)
+            return self._get_package_list_with_resources(context, ver)
         elif logic_function == 'recently_changed_packages_activity_list' :
-            return self.__get_recently_changed_packages_activity_list(context, ver)
+            return self._get_recently_changed_packages_activity_list(context, ver)
         elif logic_function == 'vocabulary_list' :
-            return self.__get_vocabulary_list(context, ver)
+            return self._get_vocabulary_list(context, ver)
         else :
             return super(EDCApiController, self).action(logic_function, ver)

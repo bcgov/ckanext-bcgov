@@ -92,27 +92,6 @@ def get_edc_tags(vocab_id):
 
     return tags
 
-def get_org_name(org_id):
-    '''
-    Returns the organization title with the given id
-    '''
-    data_string = urllib.quote(json.dumps({'id': org_id, 'include_datasets': False}))
-    try:
-        request = urllib2.Request(site_url + '/api/3/action/organization_show')
-        response = urllib2.urlopen(request, data_string)
-        assert response.code == 200
-
-        response_dict = json.loads(response.read())
-        assert response_dict['success'] is True
-
-        org_dict = response_dict['result']
-    except:
-        org_dict = []
-
-    if org_dict :
-        return org_dict['title']
-    return None
-
 
 def get_username(id):
     '''
@@ -324,31 +303,6 @@ def get_org_users(org_id, role=None):
     except toolkit.ObjectNotFound:
         members = []
     return members
-
-
-def edc_state_activity_create(user_name, edc_record, old_state):
-
-    activity_data = {'package' : edc_record}
-    activity_info = {'user_id' : user_name,
-                     'object_id' : edc_record['id'],
-                     'activity_type' : 'changed package',
-                     'data' : activity_data}
-
-    data_string = urllib.quote(json.dumps(activity_info))
-    request = urllib2.Request(site_url + '/api/3/action/activity_create')
-    request.add_header('Authorization', api_key)
-
-    try:
-        response = urllib2.urlopen(request, data_string)
-        assert response.code == 200
-
-        response_dict = json.loads(response.read())
-        assert response_dict['success'] is True
-        activity_result = response_dict['result']
-    except:
-        return False
-
-    return True
 
 
 def get_state_values(userobj, pkg):

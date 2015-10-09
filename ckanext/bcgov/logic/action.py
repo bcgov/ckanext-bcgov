@@ -240,7 +240,6 @@ Please review and act as required.'
     send_state_change_notifications(members, email_dict, site_title, site_url)
 
 
-@toolkit.side_effect_free
 def edc_package_update(context, input_data_dict):
     '''
     Find a package, from the given object_name, and update it with the given fields.
@@ -334,7 +333,7 @@ def edc_package_update(context, input_data_dict):
 
     return response_dict
 
-@toolkit.side_effect_free
+
 def edc_package_update_bcgw(context, input_data_dict):
     '''
     Find a package, from the given object_name, and update it with the given fields.
@@ -451,7 +450,6 @@ def edc_package_update_bcgw(context, input_data_dict):
     return response_dict
 
 
-@toolkit.side_effect_free
 def package_update(context, data_dict):
 
     '''Update a dataset (package).
@@ -487,6 +485,10 @@ def package_update(context, data_dict):
     context["package"] = pkg
     data_dict["id"] = pkg.id
 
+    # FIXME: first modifications to package_updade begin here:
+    # tag strings are reconstructed because validators are stripping
+    # tags passed and only taking taks as tag_string values
+    # image upload support has also been added here
     old_data = get_action('package_show')(context, {'id': pkg.id})
 
     '''
@@ -562,6 +564,7 @@ def package_update(context, data_dict):
                 # Old plugins do not support passing the schema so we need
                 # to ensure they still work.
                 package_plugin.check_data_dict(data_dict)
+    # FIXME: modifications to package_update end here^
 
     data, errors = _validate(data_dict, schema, context)
 #     log.debug('package_update validate_errs=%r user=%s package=%s data=%r',
@@ -657,7 +660,7 @@ def package_update(context, data_dict):
 
     return output
 
-@toolkit.side_effect_free
+
 def post_disqus_comment(context, comment_dict):
     '''
     Uses Disqus api to post a guest comment.
