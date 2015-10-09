@@ -18,8 +18,8 @@ from ckan.logic.validators import (url_validator,
                                    name_validator,
                                    package_name_validator)
 
-from converters import (nested_convert_to_extras,
-                        nested_convert_from_extras)
+from converters import (convert_to_extras,
+                        convert_from_extras)
 
 from validators import (check_empty,
                         valid_email,
@@ -31,9 +31,6 @@ from validators import (check_empty,
                         check_duplicates,
                         check_dashes)
 
-convert_from_extras = toolkit.get_converter('convert_from_extras')
-convert_to_extras = toolkit.get_converter('convert_to_extras')
-
 log = logging.getLogger(__name__)
 
 EDC_DATASET_TYPE_VOCAB = u'dataset_type_vocab'
@@ -41,35 +38,35 @@ EDC_DATASET_TYPE_VOCAB = u'dataset_type_vocab'
 
 def contacts_db_schema():
     schema = {
-              'name' : [check_empty, nested_convert_to_extras],
-              'organization' : [check_empty, nested_convert_to_extras],
-              'branch' : [check_empty, nested_convert_to_extras],
-              'email' : [check_empty, valid_email, nested_convert_to_extras],
-              'role' : [check_empty, nested_convert_to_extras],
-              'private' : [ignore_missing, nested_convert_to_extras],
-              'delete' :[ignore_missing, nested_convert_to_extras]
+              'name' : [check_empty, convert_to_extras],
+              'organization' : [check_empty, convert_to_extras],
+              'branch' : [check_empty, convert_to_extras],
+              'email' : [check_empty, valid_email, convert_to_extras],
+              'role' : [check_empty, convert_to_extras],
+              'private' : [ignore_missing, convert_to_extras],
+              'delete' :[ignore_missing, convert_to_extras]
               }
     return schema
 
 def dates_to_db_schema():
     schema = {
-              'date' : [check_empty, valid_date, nested_convert_to_extras],
-              'type' : [check_empty, nested_convert_to_extras],
-              'delete' :[ignore_missing, nested_convert_to_extras],
+              'date' : [check_empty, valid_date, convert_to_extras],
+              'type' : [check_empty, convert_to_extras],
+              'delete' :[ignore_missing, convert_to_extras],
               }
     return schema
 
 def feature_type_schema():
     schema = {
-              'name' : [ignore_missing, nested_convert_to_extras],
-              'description' : [ignore_missing, nested_convert_to_extras]
+              'name' : [ignore_missing, convert_to_extras],
+              'description' : [ignore_missing, convert_to_extras]
               }
     return schema
 
 def more_info_schema():
     schema = {
-              'link': [ignore_missing, url_validator, nested_convert_to_extras],
-              'delete' : [ignore_missing, nested_convert_to_extras]
+              'link': [ignore_missing, url_validator, convert_to_extras],
+              'delete' : [ignore_missing, convert_to_extras]
               }
     return schema
 
@@ -146,7 +143,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                         '__junk': [ignore],
                       })
         schema['resources'].update( {
-                                     'supplemental_info' : [ignore_missing, nested_convert_to_extras]
+                                     'supplemental_info' : [ignore_missing, convert_to_extras]
                                      })
         return schema
 
@@ -205,7 +202,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
                        })
         schema['resources'].update( {
-                                     'supplemental_info' : [ nested_convert_from_extras, ignore_missing ]
+                                     'supplemental_info' : [ convert_from_extras, ignore_missing ]
                                      })
 
         return schema

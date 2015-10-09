@@ -7,8 +7,8 @@ import ckanext.bcgov.forms.dataset_form as edc_form
 from ckan.lib.navl.validators import (ignore_missing,
                                       not_empty
                                       )
-from converters import (nested_convert_to_extras,
-                        nested_convert_from_extras,
+from converters import (convert_to_extras, 
+                        convert_from_extras,
                         remove_whitespace,
                         convert_iso_topic)
 from validators import (valid_date, 
@@ -19,14 +19,12 @@ from validators import (valid_date,
 from ckan.logic.validators import (url_validator,)
 
 import ckan.plugins.toolkit as toolkit
-convert_from_extras = toolkit.get_converter('convert_from_extras')
-convert_to_extras = toolkit.get_converter('convert_to_extras')
 
 def dates_to_db_schema():
     schema = {
-              'date' : [check_empty, valid_date, nested_convert_to_extras],
-              'type' : [check_empty, nested_convert_to_extras],
-              'delete' :[ignore_missing, nested_convert_to_extras],
+              'date' : [check_empty, valid_date, convert_to_extras],
+              'type' : [check_empty, convert_to_extras],
+              'delete' :[ignore_missing, convert_to_extras],
               }
     return schema
     
@@ -70,11 +68,11 @@ class EDC_ApplicationForm(edc_form.EDC_DatasetForm):
     
 def details_schema():
     schema = {
-              'column_name' : [ignore_missing, nested_convert_to_extras],
-              'short_name' : [ignore_missing, nested_convert_to_extras],
-              'data_type' : [ignore_missing, nested_convert_to_extras],
-              'data_precision' : [ignore_missing, nested_convert_to_extras],
-              'column_comments' : [ignore_missing, nested_convert_to_extras]
+              'column_name' : [ignore_missing, convert_to_extras],
+              'short_name' : [ignore_missing, convert_to_extras],
+              'data_type' : [ignore_missing, convert_to_extras],
+              'data_precision' : [ignore_missing, convert_to_extras],
+              'column_comments' : [ignore_missing, convert_to_extras]
               }
     return schema
 
@@ -129,14 +127,14 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                       })
         schema['resources'].update({
                                     'url': [not_empty, unicode, remove_whitespace, check_extension],
-                                    'resource_update_cycle' : [ not_empty, nested_convert_to_extras ],
-                                    'projection_name' : [not_empty, nested_convert_to_extras],
+                                    'resource_update_cycle' : [ not_empty, convert_to_extras ],
+                                    'projection_name' : [not_empty, convert_to_extras],
                                     'format' : [not_empty, unicode],
-                                    'edc_resource_type': [ not_empty, nested_convert_to_extras ],
-                                    'resource_storage_access_method': [ not_empty, nested_convert_to_extras ],
-                                    'resource_storage_location': [not_empty, unicode, nested_convert_to_extras],
-                                    'data_collection_start_date' : [ignore_missing, valid_date, nested_convert_to_extras ],
-                                    'data_collection_end_date' : [ignore_missing, valid_date, nested_convert_to_extras ],
+                                    'edc_resource_type': [ not_empty, convert_to_extras ],
+                                    'resource_storage_access_method': [ not_empty, convert_to_extras ],
+                                    'resource_storage_location': [not_empty, unicode, convert_to_extras],
+                                    'data_collection_start_date' : [ignore_missing, valid_date, convert_to_extras ],
+                                    'data_collection_end_date' : [ignore_missing, valid_date, convert_to_extras ],
                                     })
         return schema      
 
@@ -184,14 +182,14 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         })
         schema['resources'].update({
                                     'url': [not_empty, unicode, remove_whitespace, check_extension],
-                                    'resource_update_cycle' : [ nested_convert_from_extras, not_empty],
+                                    'resource_update_cycle' : [ convert_from_extras, not_empty],
                                     'format' : [not_empty, unicode],
-                                    'edc_resource_type': [ nested_convert_from_extras, not_empty ],
-                                    'resource_storage_access_method': [ nested_convert_from_extras],
-                                    'resource_storage_location': [nested_convert_from_extras, unicode, not_empty],
-                                    'data_collection_start_date' : [nested_convert_from_extras, ignore_missing ],
-                                    'data_collection_end_date' : [nested_convert_from_extras, ignore_missing ],               
-                                    'projection_name' : [nested_convert_from_extras, not_empty ]
+                                    'edc_resource_type': [ convert_from_extras, not_empty ],
+                                    'resource_storage_access_method': [ convert_from_extras],
+                                    'resource_storage_location': [convert_from_extras, unicode, not_empty],
+                                    'data_collection_start_date' : [convert_from_extras, ignore_missing ],
+                                    'data_collection_end_date' : [convert_from_extras, ignore_missing ],               
+                                    'projection_name' : [convert_from_extras, not_empty ]
                                     })
         return schema
 
@@ -228,13 +226,13 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
          
         schema['resources'].update({
                                     'url': [not_empty, unicode, remove_whitespace, check_extension],
-                                    'resource_update_cycle' : [ not_empty, nested_convert_to_extras ],
+                                    'resource_update_cycle' : [ not_empty, convert_to_extras ],
                                     'format' : [not_empty, unicode],
-                                    'edc_resource_type': [ not_empty, nested_convert_to_extras ],
-                                    'resource_storage_access_method': [ not_empty, nested_convert_to_extras ],
-                                    'resource_storage_location': [not_empty, unicode, nested_convert_to_extras],
-                                    'data_collection_start_date' : [ignore_missing, valid_date, nested_convert_to_extras ],
-                                    'data_collection_end_date' : [ignore_missing, valid_date, nested_convert_to_extras ],
+                                    'edc_resource_type': [ not_empty, convert_to_extras ],
+                                    'resource_storage_access_method': [ not_empty, convert_to_extras ],
+                                    'resource_storage_location': [not_empty, unicode, convert_to_extras],
+                                    'data_collection_start_date' : [ignore_missing, valid_date, convert_to_extras ],
+                                    'data_collection_end_date' : [ignore_missing, valid_date, convert_to_extras ],
                                     })
         return schema      
 
@@ -267,13 +265,13 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
                          })
         schema['resources'].update({
                                     'url': [not_empty, unicode, remove_whitespace, check_extension],
-                                    'resource_update_cycle' : [ nested_convert_from_extras, not_empty],
+                                    'resource_update_cycle' : [ convert_from_extras, not_empty],
                                     'format' : [not_empty, unicode],
-                                    'edc_resource_type': [ nested_convert_from_extras, not_empty ],
-                                    'resource_storage_access_method': [ nested_convert_from_extras],
-                                    'resource_storage_location': [nested_convert_from_extras, unicode, not_empty],
-                                    'data_collection_start_date' : [nested_convert_from_extras, ignore_missing ],
-                                    'data_collection_end_date' : [nested_convert_from_extras, ignore_missing ],               
+                                    'edc_resource_type': [ convert_from_extras, not_empty ],
+                                    'resource_storage_access_method': [ convert_from_extras],
+                                    'resource_storage_location': [convert_from_extras, unicode, not_empty],
+                                    'data_collection_start_date' : [convert_from_extras, ignore_missing ],
+                                    'data_collection_end_date' : [convert_from_extras, ignore_missing ],               
                                     })
         return schema
 

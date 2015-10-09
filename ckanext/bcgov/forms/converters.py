@@ -1,7 +1,7 @@
 # Copyright  2015, Province of British Columbia 
 # License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
  
-def nested_convert_to_extras(key, data, errors, context):
+def convert_to_extras(key, data, errors, context):
     extras = data.get(('extras',), [])
     if not extras:
         data[('extras',)] = extras
@@ -10,7 +10,7 @@ def nested_convert_to_extras(key, data, errors, context):
     extras.append({'key': keyStr, 'value': data[key]})
 
 
-def nested_convert_from_extras(key, data, errors, context):
+def convert_from_extras(key, data, errors, context):
 
     def remove_from_extras(data, keyList):
         to_remove = []
