@@ -1,11 +1,15 @@
 # Copyright  2015, Province of British Columbia 
 # License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
- 
+
+# FIXME: these redefined converters for extra fields are not compatible with
+# the way CKAN normally stores extras. They were created to support adding
+# nested values to datasets, so we need to find a new way to support nested
+# values without breaking compatibility
 def convert_to_extras(key, data, errors, context):
     extras = data.get(('extras',), [])
     if not extras:
         data[('extras',)] = extras
-    
+
     keyStr = ':'.join([str(x) for x in key])
     extras.append({'key': keyStr, 'value': data[key]})
 
@@ -19,8 +23,7 @@ def convert_from_extras(key, data, errors, context):
                 to_remove.append(data_key)
         for item in to_remove:
             del data[item]
-        
-    
+
     indexList = [] # A list containing the index of items in extras to be removed.
     new_data = {}  #A new dictionary for data stored in extras with the given key
     for data_key, data_value in data.iteritems():
