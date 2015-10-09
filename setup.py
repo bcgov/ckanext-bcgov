@@ -24,11 +24,13 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        # -*- Extra requirements: -*-
+        'ckan==2.3.1',
+        'pycurl==7.19.5',
+        'validate_email==1.2',
     ],
     entry_points=\
     """
-        [ckan.plugins]
+    [ckan.plugins]
     # Add plugins here, eg
     edc_dataset=ckanext.bcgov.plugin:SchemaPlugin
 #    edc_new=ckanext.bcgov.forms.dataset_form:EDC_DatasetForm
