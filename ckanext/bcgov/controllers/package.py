@@ -463,7 +463,7 @@ class EDCPackageController(PackageController):
         del data_dict['id']
 
         del data_dict['revision_id']
-        del data_dict['revision_timestamp']
+        data_dict.pop('revision_timestamp', None)
 
         # Create the tag_string if needed
         '''
@@ -481,11 +481,7 @@ class EDCPackageController(PackageController):
 
         c.is_duplicate = True
         #Create the duplicate record
-        from ckanext.bcgov.util.util import edc_package_create
-
-        (pkg_dict, errors) = edc_package_create(data_dict)
-
-        #pkg_dict = get_action('package_create')(context, new_dict)
+        pkg_dict = toolkit.get_action('package_create')(data_dict=data_dict)
 
         redirect(h.url_for(controller='package', action='edit', id=pkg_dict['id']))
 

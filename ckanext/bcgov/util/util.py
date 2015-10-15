@@ -23,34 +23,6 @@ site_url = config.get('ckan.site_url')
 api_key = config.get('ckan.api_key')
 
 
-
-def edc_package_create(edc_record):
-    '''
-    Creates a dataset. Used in package controller to duplicate a dataset.
-    '''
-    data_string = urllib.quote(json.dumps(edc_record))
-
-    pkg_dict = None
-    errors = None
-    try:
-        request = urllib2.Request(site_url + '/api/3/action/package_create')
-        request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
-        assert response.code == 200
-
-        response_dict = json.loads(response.read())
-        if response_dict['success'] == True :
-            pkg_dict = response_dict['result']
-        else:
-            errors = response_dict['error']
-    except Exception, e:
-        print str(e)
-        pass
-    return (pkg_dict, errors)
-
-
-
-
 def edc_type_label(item):
     rec_type = item['display_name']
     return get_record_type_label(rec_type)
