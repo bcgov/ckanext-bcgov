@@ -19,13 +19,12 @@ Example:
     {% for package in packages %}
     	{% set is_editor = (package.owner_org in admin_org) or (package.owner_org in editor_org) %}
     	{% set is_member = is_editor or (package.owner_org in mem_org) %}
-    	{% if org_id %}
-      		{% snippet 'snippets/package_item.html', package=package, item_class=item_class, hide_resources=hide_resources, banner=banner, truncate=truncate, truncate_title=truncate_title, logged_in=logged_in, user_orgs=user_orgs, is_editor=is_editor, is_member=is_member, org_id = org_id  %}
-      	{% elif user_id %}
-      		{% snippet 'snippets/package_item.html', package=package, item_class=item_class, hide_resources=hide_resources, banner=banner, truncate=truncate, truncate_title=truncate_title, logged_in=logged_in, user_orgs=user_orgs, is_editor=is_editor, is_member=is_member, user_id = user_id  %}
-      	{% else %}
-      		{% snippet 'snippets/package_item.html', package=package, item_class=item_class, hide_resources=hide_resources, banner=banner, truncate=truncate, truncate_title=truncate_title, logged_in=logged_in, user_orgs=user_orgs, is_editor=is_editor, is_member=is_member  %}
-      	{% endif %}
+        {% snippet 'snippets/package_item.html', package=package,
+          item_class=item_class, hide_resources=hide_resources,
+          banner=banner, truncate=truncate, truncate_title=truncate_title,
+          logged_in=logged_in, user_orgs=user_orgs, is_editor=is_editor,
+          is_member=is_member, org_id=org_id, user_id=user_id,
+          group_id=group_id  %}
     {% endfor %}
   </ul>
 {% endif %}

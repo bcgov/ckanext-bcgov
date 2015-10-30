@@ -313,6 +313,12 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
         return facet_dict
 
+    def group_facets(self, facet_dict, group_type, package_type):
+        '''
+        Use the same facets for filtering datasets within group pages
+        '''
+        return self.dataset_facets(facet_dict, package_type)
+
     def get_actions(self):
         import ckanext.bcgov.logic.action as edc_action
         return {'edc_package_update' : edc_action.edc_package_update,
