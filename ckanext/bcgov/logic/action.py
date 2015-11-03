@@ -393,8 +393,9 @@ def edc_package_update_bcgw(context, input_data_dict):
     package_dict = get_action('package_show')(context, {'id': results[0]['id']})
 
     if package_dict['edc_state'] == 'ARCHIVED' :
-        response_dict['results'] = None
-        return response_dict
+        return_dict = {}
+        return_dict['results'] = None
+        return return_dict
 
     if not package_dict :
         return_dict = {}
