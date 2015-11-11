@@ -30,13 +30,13 @@
     <div class="wrap">
         <ul class="pnl-btn list-inline text-right hidden-md hidden-lg">
             <li>
-                <a href="#wb-pnl" title="Menu" aria-controls="wb-pnl" class="overlay-lnk btn btn-xs btn-default" role="button">
+                <a href="#wb-pnl" id="hidden-btn" onclick="return false" title="Menu" class="overlay-lnk btn btn-xs btn-default">
                     <span class="glyphicon glyphicon-th-list"><span class="wb-inv">Menu</span></span>
                 </a>
             </li>
         </ul>
-        <div id="wb-pnl"></div>
-        <div id="wb-srch">        
+        <div id="wb-pnl" class="wb-overlay modal-content overlay-def wb-panel-r wb-overlay-inited open" aria-hidden="true"></div>
+        <div id="wb-srch">
             {% block header_site_search %}
                 <form class="section site-search simple-input" action="http://www2.gov.bc.ca/gov/search" method="get" onsubmit="javascript:this.keywords.value=this.keywords.value.toLowerCase();">
                   <div class="field">
