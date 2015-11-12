@@ -239,8 +239,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
         and user roles.
         '''
 
-        #Change the default sort order
-        if search_params.get('sort') in (None, 'rank'):
+        #Change the default sort order when no query passed
+        if not search_params.get('q') and search_params.get('sort') in (None, 'rank'):
             search_params['sort'] = 'record_publish_date desc, metadata_modified desc'
 
 
