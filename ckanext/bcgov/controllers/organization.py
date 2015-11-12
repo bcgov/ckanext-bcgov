@@ -87,7 +87,16 @@ class EDCOrganizationController(OrganizationController):
         org_id = c.group_dict.get('id')
         
         q = c.q = request.params.get('q', '')
-        
+
+        # XXX: unfortunate hack, copy sort default behaviour from
+        # before_search because we're using the q parameter below
+        # even when no text query was submitted
+        if not q and request.params.get('sort') in (None, 'rank'):
+            sort_by = 'record_publish_date desc, metadata_modified desc'
+        else:
+            sort_by = request.params.get('sort', None)
+
+
         suborgs = ['"' + org + '"' for org in get_suborgs(org_id)]
         if suborgs != []:
             q += ' owner_org:("' + org_id + '" OR ' + ' OR '.join(suborgs) + ')'
@@ -106,9 +115,7 @@ class EDCOrganizationController(OrganizationController):
         # most search operations should reset the page counter:
         params_nopage = [(k, v) for k, v in request.params.items()
                          if k != 'page']
-        
-        sort_by = request.params.get('sort', None)
-        
+
         def search_url(params):
             if group_type == 'organization':
                 if c.action == 'bulk_process':
