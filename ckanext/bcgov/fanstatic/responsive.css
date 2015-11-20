@@ -128,7 +128,7 @@
   color: #fff;
 }
 
-/*doesn't do anything */
+
 .hidden-hd .modal-body {
   padding-top: 50px;
 }
@@ -187,6 +187,11 @@ h3,
   margin-top: -2px;
 }
 
+.modal-header h3 {
+  padding:0px;
+  color:inherit;
+  background:inherit;
+}
 #wb-pnl {
   display:none;
 }
