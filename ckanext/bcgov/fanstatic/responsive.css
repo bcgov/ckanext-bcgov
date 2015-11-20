@@ -173,6 +173,10 @@ h3,
   padding: 0 1em 0 44px;
 }
 
+.modal {
+  display: none;
+}
+
 .modal-header {
   padding: 15px;
   border-bottom: 1px solid #e5e5e5;
