@@ -173,6 +173,16 @@
 			</div>
 		<input id="field-spatial" name="spatial" type="hidden" value='{"type": "Polygon", "coordinates": [[[{{west_longitude}}, {{south_latitude}}], [{{west_longitude}}, {{north_latitude}}], [{{east_longitude}}, {{north_latitude}}], [{{east_longitude}}, {{south_latitude}}], [{{west_longitude}}, {{south_latitude}}]]]}'/>
 		</div>
+		<div id="object_name_container" class="control-full">
+				{{ form.input('object_name',
+								label=_("Object Name"),
+								id='field-object_name',
+								placeholder=_(''),
+								value=data.object_name,
+								error=errors.object_name,
+								classes=['control-full']) }}
+
+		</div>
 	{% endif %}
 
 {% endblock %}

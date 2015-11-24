@@ -245,20 +245,6 @@
     	</div>
 	{% endblock %}
 
-	{% block data_quality_info %}
-    	{% if record_type == _('Geographic') %}
-    		<div id="object_name_container" class="control-full">
-        		{{ form.input('object_name',
-        						label=_("Object Name"),
-        						id='field-object_name',
-        						placeholder=_(''),
-        						value=data.object_name,
-        						error=errors.object_name,
-        						classes=['control-full']) }}
-
-    		</div>
-    	{% endif %}
-	{% endblock %}
 {% endblock %}
 
 {% block package_basic_fields_license %}
