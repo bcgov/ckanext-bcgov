@@ -1,5 +1,11 @@
 # Release Notes
 
+## 1.2.0
+
+Major changes
+
+- remove wet-boew templates and JS
+
 ## 1.1.0
 
 Major changes
