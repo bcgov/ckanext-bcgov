@@ -36,19 +36,6 @@
             </li>
         </ul>
         <div id="wb-pnl" class="wb-overlay-inited open"></div>
-        <div id="wb-srch">
-            {% block header_site_search %}
-                <form class="section site-search simple-input" action="http://www2.gov.bc.ca/gov/search" method="get" onsubmit="javascript:this.keywords.value=this.keywords.value.toLowerCase();">
-                  <div class="field">
-                    <label for="field-sitewide-search">{{ _('Search') }}</label>
-                    <input type="hidden" value="2E4C7D6BCAA4470AAAD2DCADF662E6A0" name="id">
-                    <input type="text" onkeyup="searchBoxKeypress(event)" autocomplete="off" value="" name="q" placeholder="Enter a keyword or phrase to search" class="searchbox" id="global-search">
-                    <button class="btn-search" type="submit"><i class="icon-search"></i></button>
-                  </div>
-                </form>
-
-            {% endblock %}
-        </div>
         <a href="http://www2.gov.bc.ca/gov/index.page" class="logo" title="B.C. Home"><img src="{{ g.site_url }}/assets/gov/images/bc_logo_blue.png"></a>
         <a href="{{ h.get_fqdn() }}"><h2>{{ g.site_title }}</h2></a>
     </div>

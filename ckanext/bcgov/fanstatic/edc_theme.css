@@ -176,20 +176,6 @@ a.tag:hover{
   border-bottom: none;
 }
 
-#header-banner #wb-srch {
-  float: right;
-  margin: 40px 0 0 0;
-}
-
-#header-banner #wb-srch input[type="text"] {
-  width: 260px;
-  border: 0;
-}
-
-#header-banner #wb-srch a {
-  color: #fff;
-  font-family: 'Verdana', 'Arial', sans-serif;
-}
 
 .main-navigation {
   background: #556072;
@@ -1206,10 +1192,6 @@ input.search.tt-hint {
     margin: 0;
     font-size: 18px;
     line-height: 52px;
-  }
-
-  #wb-srch {
-    display: none;
   }
 
   .pnl-btn {
