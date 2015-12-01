@@ -378,3 +378,6 @@ def get_bcgov_commit_id():
             _bcgov_commit_id = 'unknown'
 
     return _bcgov_commit_id
+
+def resource_prefix():
+    return config.get('googleanalytics_resource_prefix', '/downloads/')
