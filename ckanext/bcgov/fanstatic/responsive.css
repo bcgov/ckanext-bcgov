@@ -5,6 +5,16 @@
   display: none !important;
 }
 
+.module-content{
+  padding-left:15px !important;
+}
+
+@media (max-width: 768px) {
+  .module-content{
+    padding-left:30px !important;
+  }
+}
+
 @media (min-width: 992px) and (max-width:1199px){
   .visible-md {
     display: block !important;
@@ -90,7 +100,7 @@
   outline: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 769px) {
   .modal-content {
     -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
@@ -251,7 +261,7 @@ h3,
   padding-right: 15px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 769px) {
   .col-sm-6
   {
     float: left;
@@ -261,6 +271,21 @@ h3,
     width: 50%;
   }
 
+}
+
+@media (max-width: 768px) {
+  .nav-tabs li {
+    float:left!important;
+  }
+  .extent {
+    margin-left:-40px!important;
+    margin-right:10px!important;
+  }
+
+}
+
+.ckanext-datapreview {
+  margin-left:10px!important;
 }
 
 /*Glyphicons */
