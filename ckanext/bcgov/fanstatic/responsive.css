@@ -5,6 +5,16 @@
   display: none !important;
 }
 
+.module-content{
+  padding-left:15px !important;
+}
+
+@media (max-width: 768px) {
+  .module-content{
+    padding-left:30px !important;
+  }
+}
+
 @media (min-width: 992px) and (max-width:1199px){
   .visible-md {
     display: block !important;
@@ -90,7 +100,7 @@
   outline: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 769px) {
   .modal-content {
     -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
@@ -136,6 +146,7 @@
 .modal-body {
   position: relative;
   padding: 20px;
+  padding-top: 0px;
 }
 
 h3,
@@ -250,7 +261,7 @@ h3,
   padding-right: 15px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 769px) {
   .col-sm-6
   {
     float: left;
@@ -260,6 +271,21 @@ h3,
     width: 50%;
   }
 
+}
+
+@media (max-width: 768px) {
+  .nav-tabs li {
+    float:left!important;
+  }
+  .extent {
+    margin-left:-40px!important;
+    margin-right:10px!important;
+  }
+
+}
+
+.ckanext-datapreview {
+  margin-left:10px!important;
 }
 
 /*Glyphicons */
@@ -286,8 +312,6 @@ h3,
 }
 
 .wb-inv,
-#wb-srch h2,
-#wb-srch label,
 #wb-sec h2,
 #wb-lng h2,
 .wb-mm-ctrls .wb-mm-txtonly span {
@@ -438,6 +462,13 @@ fieldset[disabled] .btn-default.active {
 .btn-default .badge {
   color: #eaebed;
   background-color: #335075;
+}
+
+.btn-sm{
+  padding: 5px 10px;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 3px;
 }
 
 .btn-xs,

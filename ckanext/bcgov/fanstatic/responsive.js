@@ -16,16 +16,8 @@ $(document).ready(function(){
      var $menubar = $(".wb-menu").find(".menu"),
          $menu = $menubar.find("> li > a"),
          $secnav = $("#wb-sec"),
-         search = document.getElementById( "wb-srch"),
          panel = ""
          allProperties = [];
-     if ( search !== null ) {
- 			panel += "<section class='srch-pnl'>" +
- 				search.innerHTML
- 					.replace( /h2>/i, "h3>" )
- 					.replace( /(for|id)="([^"]+)"/gi, "$1='$2-imprt'" ) +
- 				"</section>";
- 		}
 
     //add secondary menu
     if ( $secnav.length !== 0 ) {
