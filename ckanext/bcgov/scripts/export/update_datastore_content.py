@@ -1,13 +1,14 @@
 import ckanapi
 # import ckanapi_exporter.exporter as exporter
+from sys import argv
 
-domain='http://cat.data.gov.bc.ca'
+domain='https://catalogue.data.gov.bc.ca'
+script, ak = argv
 
 action='resource_update'
-demo = ckanapi.RemoteCKAN(domain,
-   api_key)
+demo = ckanapi.RemoteCKAN(domain, ak)
 
-rec = demo.action.package_show(id='')
+rec = demo.action.package_show(id='42f7ca99-e7f3-40f7-93d7-f2500cccc315')
 
 types = ['Geographic.csv', 'Dataset.csv', 'Application.csv', 'WebService.csv']
 
