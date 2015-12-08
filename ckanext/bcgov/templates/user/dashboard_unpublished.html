@@ -6,7 +6,7 @@
 
 {% set is_editor = (admin_org or editor_org or c.userobj.sysadmin) %}
 {% block secondary_content %}
-  <aside class="secondary">
+  <aside class="secondary span3">
     {% for facet in c.facet_titles %}
         {{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet) }}
     {% endfor %}

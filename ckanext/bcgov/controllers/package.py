@@ -1,6 +1,6 @@
-# Copyright  2015, Province of British Columbia 
-# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
- 
+# Copyright  2015, Province of British Columbia
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
+
 #Author: Kahlegh Mamakani Highwaythree Solutions Inc.
 #Created on Jan 28 2014
 
@@ -41,7 +41,6 @@ from ckan.lib.mailer import MailerException
 
 from pylons import config
 
-#from ckanext.bcgov.util.util import edc_state_activity_create
 
 log = logging.getLogger('ckanext.edc_schema')
 
@@ -73,174 +72,6 @@ def add_msg_niceties(recipient_name, body, sender_name, sender_url):
            + u"\r\n\r\n%s\r\n\r\n" % body \
            + u"<br><br>--<br>\r\n%s (<a href=\"%s\">%s</a>)" % (sender_name, sender_url, sender_url)
 
-def send_email(user_display_name, user_email, email_dict):
-    subject = email_dict['subject']
-    body = email_dict['body']
-    recipient_name = user_display_name
-    recipient_email = user_email
-    sender_name = g.site_title
-    sender_url = g.site_url
-
-    mail_from = config.get('smtp.mail_from')
-    body = add_msg_niceties(recipient_name, body, sender_name, sender_url)
-    msg = MIMEText(body.encode('utf-8'), 'html', 'utf-8')
-    subject = Header(subject.encode('utf-8'), 'utf-8')
-    msg['Subject'] = subject
-    msg['From'] = _("%s <%s>") % (sender_name, mail_from)
-    recipient = u"%s <%s>" % (recipient_name, recipient_email)
-    msg['To'] = Header(recipient, 'utf-8')
-    msg['Date'] = Utils.formatdate(time())
-    #msg['X-Mailer'] = "CKAN %s" % ckan.__version__
-
-    # Send the email using Python's smtplib.
-    smtp_connection = smtplib.SMTP()
-    if 'smtp.test_server' in config:
-        # If 'smtp.test_server' is configured we assume we're running tests,
-        # and don't use the smtp.server, starttls, user, password etc. options.
-        smtp_server = config['smtp.test_server']
-        smtp_starttls = False
-        smtp_user = None
-        smtp_password = None
-    else:
-        smtp_server = config.get('smtp.server', 'localhost')
-        smtp_starttls = paste.deploy.converters.asbool(
-                config.get('smtp.starttls'))
-        smtp_user = config.get('smtp.user')
-        smtp_password = config.get('smtp.password')
-    smtp_connection.connect(smtp_server)
-    try:
-        #smtp_connection.set_debuglevel(True)
-
-        # Identify ourselves and prompt the server for supported features.
-        smtp_connection.ehlo()
-
-        # If 'smtp.starttls' is on in CKAN config, try to put the SMTP
-        # connection into TLS mode.
-        if smtp_starttls:
-            if smtp_connection.has_extn('STARTTLS'):
-                smtp_connection.starttls()
-                # Re-identify ourselves over TLS connection.
-                smtp_connection.ehlo()
-            else:
-                raise MailerException("SMTP server does not support STARTTLS")
-
-        # If 'smtp.user' is in CKAN config, try to login to SMTP server.
-        if smtp_user:
-            assert smtp_password, ("If smtp.user is configured then "
-                    "smtp.password must be configured as well.")
-            smtp_connection.login(smtp_user, smtp_password)
-
-        smtp_connection.sendmail(mail_from, [recipient_email], msg.as_string())
-        log.info("Sent email to {0}".format(recipient_email))
-
-    except smtplib.SMTPException, e:
-        msg = '%r' % e
-        log.exception(msg)
-        raise MailerException(msg)
-    finally:
-        smtp_connection.quit()
-
-
-def check_record_state(old_state, new_data, pkg_id):
-
-    '''
-    Checks if the dataset state has been changed during the update and
-    informs the users involving in package management.
-    '''
-
-    context = {'model': model, 'session': model.Session,
-               'user': c.user or c.author, 'auth_user_obj': c.userobj}
-
-    new_state = new_data['edc_state']
-
-    #If dataset's state has not been changed do nothing
-    if (not old_state) or (old_state == '') or (old_state == new_state):
-        return
-    # --------------------------------------- Emails on dataset update ---------------------------------------
-
-    # Do not send emails for "DRAFT" datasets
-    if new_state == "DRAFT":
-        return
-
-    # Get sub org info
-    sub_org_id = new_data['sub_org']
-    sub_org = get_action('organization_show')(context, {'id': sub_org_id })
-
-    org_id = new_data['org']
-    org = get_action('organization_show')(context, {'id': org_id })
-
-    # Basic dataset info
-    dataset_url = config.get('ckan.site_url') + h.url_for(controller='package', action="read", id = new_data['name'])
-    dataset_title = new_data['title']
-    org_title = org['title']
-    sub_org_title = sub_org['title']
-    orgs_titles = org_title + ' - ' + sub_org_title
-
-    # Prepare email
-    subject = ''
-    body = ''
-    role = 'admin'
-
-    # Change email based on new_state changes
-    if new_state == 'PENDING PUBLISH' :
-        subject = 'EDC - PENDING PUBLISH ' + dataset_title
-        body = 'The following record is "Pending Publication" for ' + orgs_titles + '<br><br>\
-Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
-Please review and act as required.'
-
-    elif new_state == 'REJECTED':
-        subject = 'EDC - REJECTED ' + new_data['title']
-        body = 'The following record is "REJECTED" for ' + orgs_titles + '<br><br>\
-Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
-Please review and act as required.'
-        role = 'editor'
-
-    elif new_state == 'PUBLISHED':
-        subject = 'EDC - PUBLISHED ' + new_data['title']
-        body = 'The following record is "PUBLISHED" for ' + orgs_titles + '<br><br>\
-Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
-Please review and act as required.'
-        role = 'editor'
-
-    elif new_state == 'PENDING ARCHIVE':
-        subject = 'EDC - PENDING ARCHIVE ' + new_data['title']
-        body = 'The following record is "Pending Archival" for ' + orgs_titles + '<br><br>\
-Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
-Please review and act as required.'
-
-    elif new_state == 'ARCHIVED':
-        subject = 'EDC - ARCHIVED ' + new_data['title']
-        body = 'The following record is "ARCHIVED" for ' + orgs_titles + '<br><br>\
-Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
-Please review and act as required.'
-        role = 'editor'
-    else :
-        pass
-
-    email_dict = { 'subject': subject, 'body': body }
-
-    # Get the entire list of users
-    users = get_user_list()
-
-    # Get list of sub org users and send emails
-    members = sub_org['users']
-    for member in members:
-        if 'capacity' in member:
-            member_role = member['capacity'].lower()
-        else:
-            member_role = ''
-
-        # If the user matches the role required for the email, then send it
-        if member_role == role:
-            # Rather than call API for each user, let's just go through our entire list
-            for user in users:
-                if user['name'] == member['name']:
-                    if 'email' in user and user['email'] != '':
-                        email_address = user['email']
-                        email_display_name = user['fullname'] or user['name']
-                        send_email(email_display_name, email_address, email_dict)
-
-    # ------------------------------------ END Emails on dataset update --------------------------------------
 
 def _encode_params(params):
     return [(k, v.encode('utf-8') if isinstance(v, basestring) else str(v))
@@ -339,51 +170,6 @@ class EDCPackageController(PackageController):
         else:
             redirect(toolkit.url_for(form_urls[dataset_type]))
 
-# 
-#     def edc_edit(self, id, data=None, errors=None, error_summary=None):
-#         '''
-#         Gets the latest package data saved before applying package update.
-#         It is used to get the previous dataset state and compare it with the current state
-#         to see if the state has been changed.
-#         '''
-# 
-#         c.form_style = 'edit'
-#         context = {'model': model, 'session': model.Session,
-#                    'user': c.user or c.author, 'auth_user_obj': c.userobj,
-#                    'save': 'save' in request.params}
-#         old_data = None
-# 
-#         if not context['save'] or data :
-#             old_data = get_action('package_show')(context, {'id': id})
-#             EDCPackageController.old_state = old_data['edc_state']
-# 
-#         result = super(EDCPackageController, self).edit(id, data, errors, error_summary)
-# 
-#         return result
-
-#     def _form_save_redirect(self, pkgname, action, package_type=None):
-#         '''This overrides ckan's _form_save_redirect method of package controller class
-#         so that it can be called after the data has been recorded and the package has been updated.
-#         '''
-# 
-#         context = {'model': model, 'session': model.Session,
-#                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
-# 
-#         new_data =  get_action('package_show')(context, {'id': pkgname})
-#         if new_data:
-#             check_record_state(EDCPackageController.old_state, new_data, pkgname)
-#             EDCPackageController.old_state = new_data['edc_state']
-# 
-#         assert action in ('new', 'edit')
-#         url = request.params.get('return_to') or \
-#             config.get('package_%s_return_url' % action)
-#         if url:
-#             url = url.replace('<NAME>', pkgname)
-#         else:
-#             url = h.url_for('dataset_read', id=pkgname)
-#         redirect(url)
-
-
 
     def read(self, id, format='html'):
         '''
@@ -396,9 +182,13 @@ class EDCPackageController(PackageController):
         from ckanext.bcgov.util.helpers import record_is_viewable
         if not record_is_viewable(c.pkg_dict, c.userobj) :
             abort(401, _('Unauthorized to read package %s') % id)
-        
+
+        #TODO: find out if/why comparing times is neccessary? - @deniszgonjanin
         metadata_modified_time = from_utc(c.pkg_dict['metadata_modified'])
-        revision_timestamp_time = from_utc(c.pkg_dict['revision_timestamp'])
+        revision = get_action('revision_show')(
+            {}, {'id': c.pkg_dict['revision_id']}
+        )
+        revision_timestamp_time = from_utc(revision['timestamp'])
 
         if (metadata_modified_time >= revision_timestamp_time):
             timestamp = metadata_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
@@ -474,6 +264,11 @@ class EDCPackageController(PackageController):
                    'api_version': 3, 'for_edit': True,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
         pkg_dict = get_action('package_show')(context, {'id': id})
+
+        # TODO: This is the first modified part of resource_edit from ckan's controller
+        # it includes a static list of the resource expected for each type.
+        # This is a workaroung for a core ckan issue that can be removed when
+        # the issue is resolved: https://github.com/ckan/ckan/issues/2649
         if pkg_dict['state'].startswith('draft'):
             # dataset has not yet been fully created
             resource_dict = get_action('resource_show')(context, {'id': resource_id})
@@ -512,6 +307,9 @@ class EDCPackageController(PackageController):
         errors = errors or {}
         error_summary = error_summary or {}
 
+        # TODO: This is the second modified part of resource_edit from ckan's controller
+        # It is a workaround for a core ckan issue that can be removed when the issue
+        # is resolved https://github.com/ckan/ckan/issues/2650
         '''
         ------------------------------------------------------------------------------------------
         If there are errors, then check if user has uploaded the resource.
@@ -537,8 +335,13 @@ class EDCPackageController(PackageController):
         ------------------------------------------------------------------------------------------
         '''
 
+        package_type = pkg_dict['type'] or 'dataset'
+
         vars = {'data': data, 'errors': errors,
-                'error_summary': error_summary, 'action': 'new'}
+                'error_summary': error_summary, 'action': 'new',
+                'resource_form_snippet': self._resource_form(package_type),
+                'dataset_type':package_type}
+
         return render('package/resource_edit.html', extra_vars=vars)
 
 
@@ -549,6 +352,8 @@ class EDCPackageController(PackageController):
         saved in upload directory. In that case the resource url must be reset to force the user
         to upload the resource again.
         '''
+        # TODO: This is a workaround for a core ckan issue that can be removed when the issue
+        # is resolved https://github.com/ckan/ckan/issues/2650
         errors = errors or {}
         if errors != {} :
             res_url = data.get('url')
@@ -570,6 +375,9 @@ class EDCPackageController(PackageController):
 
 
     def resource_delete(self, id, resource_id):
+        # TODO: This whole method is a workaround for a core ckan issue
+        # that can be removed when the issue is resolved
+        # https://github.com/ckan/ckan/issues/2651
 
         #Back to the resource edit if user has chosen cancel on delete confirmation
         if 'cancel' in request.params:
@@ -655,7 +463,7 @@ class EDCPackageController(PackageController):
         del data_dict['id']
 
         del data_dict['revision_id']
-        del data_dict['revision_timestamp']
+        data_dict.pop('revision_timestamp', None)
 
         # Create the tag_string if needed
         '''
@@ -673,11 +481,7 @@ class EDCPackageController(PackageController):
 
         c.is_duplicate = True
         #Create the duplicate record
-        from ckanext.bcgov.util.util import edc_package_create
-
-        (pkg_dict, errors) = edc_package_create(data_dict)
-
-        #pkg_dict = get_action('package_create')(context, new_dict)
+        pkg_dict = toolkit.get_action('package_create')(data_dict=data_dict)
 
         redirect(h.url_for(controller='package', action='edit', id=pkg_dict['id']))
 

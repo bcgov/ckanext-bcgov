@@ -28,6 +28,7 @@
         (_('Last Modified'), 'metadata_modified desc')
         ]
 	%}
+      {% resource 'edc_resource/search.js' %}
       {% snippet 'snippets/search_form.html', type='dataset', query=c.q, sorting=sorting, sorting_selected=c.sort_by_selected, count=c.page.item_count, facets=facets, fields = c.fields, placeholder=_('Search datasets...'), show_empty=request.params %}
     {% endblock %}
   {% block packages_list %}
@@ -43,10 +44,11 @@
 
 {% block organization_facets %}
   {% for facet in c.facet_titles %}
-  	{% if facet == 'resource_download_format' %}
-  		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_format_label, name=facet, extras={'id':c.group_dict.id}) }}
-  	{% else %}
-    	{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, extras={'id':c.group_dict.id}) }}
+    {% set more_button = 'more-'+facet+'-button' %}
+    {% if facet == 'resource_download_format' %}
+      {{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_format_label, name=facet, extras={'id':c.group_dict.id}, more_button=more_button) }}
+    {% else %}
+      {{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, extras={'id':c.group_dict.id}, more_button=more_button) }}
     {% endif %}
   {% endfor %}
 {% endblock %}

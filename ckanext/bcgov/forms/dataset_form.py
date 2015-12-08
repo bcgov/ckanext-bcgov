@@ -1,6 +1,6 @@
-# Copyright  2015, Province of British Columbia 
-# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
- 
+# Copyright  2015, Province of British Columbia
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
+
 import logging
 
 from ckan.logic import get_action, NotFound
@@ -12,6 +12,7 @@ import ckan.plugins.toolkit as toolkit
 from ckan.lib.navl.validators import (ignore_missing,
                                       not_empty,
                                       if_empty_same_as,
+                                      ignore,
                                       )
 from ckan.logic.validators import (url_validator,
                                    name_validator,
@@ -69,6 +70,8 @@ def more_info_schema():
               }
     return schema
 
+def remove_free_extras(value):
+    return []
 
 class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
@@ -104,7 +107,6 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     #Customize schema for EDC Application Dataset
     def _modify_package_schema(self, schema):
         schema.update({
-                        'tag_string' : [not_empty],
                         'title' : [not_empty, check_dashes, check_duplicates, unicode],
                         'notes' : [not_empty, unicode],
                         'org' : [not_empty, convert_to_extras],
@@ -136,7 +138,9 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                         'metadata_language' : [ignore_missing, convert_to_extras],
                         'metadata_character_set' : [ignore_missing, convert_to_extras],
                         'metadata_standard_name' : [ignore_missing, convert_to_extras],
-                        'metadata_standard_version' : [ignore_missing, convert_to_extras]
+                        'metadata_standard_version' : [ignore_missing, convert_to_extras],
+                        'extras': {},
+                        '__junk': [ignore],
                       })
         schema['resources'].update( {
                                      'supplemental_info' : [ignore_missing, convert_to_extras]
