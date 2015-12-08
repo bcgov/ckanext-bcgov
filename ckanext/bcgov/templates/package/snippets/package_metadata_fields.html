@@ -80,7 +80,7 @@
 
 {% block geographic_extent %}
 
-	{% if record_type=='Geographic' %}	
+	{% if record_type=='Geographic' %}
 		<h3 class="module-sub-heading">Geographic extent</h3>
 		<div class="control-list form-horizontal">
 			<div class="row-fluid">
@@ -154,7 +154,7 @@
 						{% set west_longitude = data.west_bound_longitude %}
 						{% set west_longitude_error = errors.west_bound_longitude %}
 					{% else %}
-						{% set west_longitude =  data.west_bound_longitude or '-139.5' %}					
+						{% set west_longitude =  data.west_bound_longitude or '-139.5' %}
 						{% set west_longitude = '%0.1f' % west_longitude|float %}
 					{% endif %}
 					<div class="control-group control-medium">
@@ -173,33 +173,16 @@
 			</div>
 		<input id="field-spatial" name="spatial" type="hidden" value='{"type": "Polygon", "coordinates": [[[{{west_longitude}}, {{south_latitude}}], [{{west_longitude}}, {{north_latitude}}], [{{east_longitude}}, {{north_latitude}}], [{{east_longitude}}, {{south_latitude}}], [{{west_longitude}}, {{south_latitude}}]]]}'/>
 		</div>
-	{% endif %}
-	
-{% endblock %}
+		<div id="object_name_container" class="control-full">
+				{{ form.input('object_name',
+								label=_("Object Name"),
+								id='field-object_name',
+								placeholder=_(''),
+								value=data.object_name,
+								error=errors.object_name,
+								classes=['control-full']) }}
 
-{% block data_quality_info %}
-	{% if record_type=='Geographic' or record_type == 'Dataset' %}
-	
-	<h3 class="module-sub-heading">Data Quality information</h2>
-		<div class="control-list">
-      	{{ form.markdown('data_quality',
-      					id='field-data_quality',
-      					label=_('Data Quality'),
-      					placeholder=_('Descriptive text that can include info about issues, completeness, consistency etc.'),
-      					value=data.data_quality,
-      					error=errors.data_quality)
-      					}}
 		</div>
-	<div class="control-list">
-      	{{ form.markdown('lineage_statement',
-      					id='field-lineage_statement',
-      					label=_('Lineage Statement'),
-      					placeholder=_("Information about the events or source data used in constructing the data."),
-      					value=data.lineage_statement,
-      					error=errors.lineage_statement)
-      					}}
-
-	</div>
 	{% endif %}
 
 {% endblock %}

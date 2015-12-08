@@ -315,6 +315,7 @@ function select_branch(org_branches) {
 	if (branches.length > 0)
 		branch_available = true;
 
+	branches.sort(function(a, b) {return a.title < b.title ? -1 : 1});
 	var options = "<option></option>";
 	for (var i = 0; i < branches.length; i++) {
 		options += '<option value="' + branches[i].id + '"';

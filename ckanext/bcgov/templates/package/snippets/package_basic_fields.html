@@ -33,7 +33,26 @@
             {{ form.markdown('notes', id='field-notes', label=_('Description'), placeholder=_('eg. Some useful notes about the data'), value=data.notes, error=errors.notes, is_required=true) }}
             {% if record_type != 'Application' and record_type != 'WebService' %}
             {{ form.markdown('purpose', label=_('Purpose'), placeholder=_('Summary of the intentions for which the dataset was developed.'), value=data.purpose, error=errors.purpose, classes=['purpose']) }}
-            {% endif %}
+						<div class="control-list">
+								{{ form.markdown('data_quality',
+												id='field-data_quality',
+												label=_('Data Quality'),
+												placeholder=_('Descriptive text that can include info about issues, completeness, consistency etc.'),
+												value=data.data_quality,
+												error=errors.data_quality)
+												}}
+						</div>
+						<div class="control-list">
+								{{ form.markdown('lineage_statement',
+												id='field-lineage_statement',
+												label=_('Lineage Statement'),
+												placeholder=_("Information about the events or source data used in constructing the data."),
+												value=data.lineage_statement,
+												error=errors.lineage_statement)
+												}}
+
+						</div>
+						{% endif %}
             {% block more_info_links %}
                 <div class="control-group control-medium form-horizontal">
                     {% block online_reference %}
@@ -68,7 +87,7 @@
                         <span class="error-block">{{ topic_error|join(', ') }}</span>
                     {% endif %}
                 </div>
-            </div> 
+            </div>
             {% endif %}
         </div>
 
@@ -226,20 +245,6 @@
     	</div>
 	{% endblock %}
 
-	{% block data_quality_info %}
-    	{% if record_type == _('Geographic') %}
-    		<div id="object_name_container" class="control-full">
-        		{{ form.input('object_name',
-        						label=_("Object Name"),
-        						id='field-object_name',
-        						placeholder=_(''),
-        						value=data.object_name,
-        						error=errors.object_name,
-        						classes=['control-full']) }}
-
-    		</div>
-    	{% endif %}
-	{% endblock %}
 {% endblock %}
 
 {% block package_basic_fields_license %}

@@ -1,6 +1,6 @@
-# Copyright  2015, Province of British Columbia 
-# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
- 
+# Copyright  2015, Province of British Columbia
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
+
 import pprint
 import logging
 import ckan.lib.helpers
@@ -169,7 +169,10 @@ def is_license_open(license_id):
     '''
     edc_license = get_license_data(license_id)
 
-    if edc_license and edc_license['is_open'] == True :
+    if (edc_license and
+        'is_open' in edc_license and
+        edc_license['is_open'] == True):
+
         return True
 
     #License doesn't exist or it is not an open license
@@ -185,31 +188,6 @@ def get_record_type_label(rec_type):
     if rec_type in type_dict :
         return type_dict[rec_type]
     return rec_type
-
-
-
-###################################################
-#
-## JER - Aug. 15, 2014.
-#    The two functions below are related to JIRA CITZEDC-296 - Turn off Gravatar
-#    Greg had concerns about email being passed to Gravatar, but it turns out
-#    that a hash of the email is being sent, so he is ok with that for now...
-#    So these two functions are not being used.
-#
-###################################################
-
-def edc_linked_gravatar(email_hash, size=100, default=None):
-    return literal(
-        '<a href="https://gravatar.com/" target="_blank" ' +
-        'title="%s" alt="">' % _('Update your avatar at gravatar.com') +
-        'monsterid</a>' % edc_gravatar(email_hash, size)
-    )
-
-def edc_gravatar(email_hash, size=100, default=None):
-    return literal('''<img src="//gravatar.com/avatar/?s=%d&amp;d=monsterid"
-        class="gravatar" width="%s" height="%s" />'''
-                   % (size, size, size)
-                   )
 
 
 def get_facets_unselected(facet, limit=None):
@@ -258,6 +236,8 @@ def get_facets_selected(facet):
     return facets
 
 
+_sectors_list = None
+
 def get_sectors_list():
     '''
     Returns a list of sectors available in the file specified by sectors_file_url in ini file.
@@ -265,6 +245,10 @@ def get_sectors_list():
     in order to assign a new sector to the sub-organization.
     '''
     from pylons import config
+    global _sectors_list
+
+    if _sectors_list is not None:
+        return _sectors_list
 
     #Get the url for the sectors file.
     sectors_url = config.get('sectors_file_url', None)
@@ -288,6 +272,7 @@ def get_sectors_list():
         '''
         sectors_list = ["Natural Resources", "Service", "Transportation", "Education", "Economy", "Social Services", "Health and Safety", "Justice", "Finance" ]
 
+    _sectors_list = sectors_list
     return sectors_list
 
 
@@ -316,11 +301,6 @@ def get_organizations():
 
     return top_level_orgs
 
-def get_org_title(id):
-    org = model.Group.get(id)
-    if org :
-        return org.title
-    return None
 
 def get_edc_org(id):
     return model.Group.get(id)
@@ -398,3 +378,6 @@ def get_bcgov_commit_id():
             _bcgov_commit_id = 'unknown'
 
     return _bcgov_commit_id
+
+def resource_prefix():
+    return config.get('googleanalytics_resource_prefix', '/downloads/')

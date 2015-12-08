@@ -1,6 +1,6 @@
-# Copyright  2015, Province of British Columbia 
-# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
- 
+# Copyright  2015, Province of British Columbia
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
+
 import ckan.plugins.toolkit as toolkit
 
 import logging
@@ -58,14 +58,14 @@ def add_msg_niceties(recipient_name, body, sender_name, sender_url):
 
 def send_state_change_notifications(members, email_dict, sender_name, sender_url):
     '''
-    Sends state change notifications to sub-org members. 
+    Sends state change notifications to sub-org members.
     Updated by Khalegh Mamakani on March 5 2015.
     List of changes :
         - Creating the smtp connection once for all notifications instead of connecting and disconnecting for
           every single recipient.
-        - Using a thread to send the notifications in the background. 
+        - Using a thread to send the notifications in the background.
     '''
-    
+
     #Email common fields
     subject = email_dict['subject']
 
@@ -108,14 +108,14 @@ def send_state_change_notifications(members, email_dict, sender_name, sender_url
             assert smtp_password, ("If smtp.user is configured then "
                     "smtp.password must be configured as well.")
             smtp_connection.login(smtp_user, smtp_password)
-        
-        
+
+
         '''
         Adding extra email fields and Sending notification for each individual member.
         '''
-        
+
         for member in members :
-            if member.email : 
+            if member.email :
                 body = email_dict['body']
                 msg = MIMEText(body.encode('utf-8'), 'html', 'utf-8')
                 msg['Subject'] = subject
@@ -130,25 +130,25 @@ def send_state_change_notifications(members, email_dict, sender_name, sender_url
                     smtp_connection.sendmail(mail_from, [recipient_email], msg.as_string())
                     log.info("Sent state change email to user {0} with email {1}".format(recipient_name, recipient_email))
                 except Exception, e:
-                    log.error('Failed to send notification to user {0} email address : {1}'.format(recipient_email, recipient_email))    
-        
+                    log.error('Failed to send notification to user {0} email address : {1}'.format(recipient_email, recipient_email))
+
     except smtplib.SMTPException, e:
         msg = '%r' % e
         log.exception(msg)
         log.error('Failed to connect to smtp server')
     finally:
         smtp_connection.quit()
-    
+
 
 def check_record_state(context, old_state, new_data, site_title, site_url, dataset_url):
 
     '''
     Checks if the dataset state has been changed during the update and
     informs the users involving in package management.
-    
+
     Updated by Khalegh Mamakani on MArch 5th 2015.
-    
-    List of changes : 
+
+    List of changes :
         - replaced get_user_list with a model query to get the list of all members of the org with the given role
           ( Preventing action functions calls  and multiple for loops)
         - Removed the nested for loops for finding and sending notification to members (Replaced by a single for loop).
@@ -165,14 +165,14 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
     '''
     org_id = new_data.get('org')
     sub_org_id = new_data.get('sub_org')
-   
+
     org = model.Group.get(org_id)
     sub_org = model.Group.get(sub_org_id)
-    
+
     # Do not send emails for "DRAFT" datasets
     if new_state == "DRAFT":
         return
-    
+
     # Basic dataset info
     dataset_title = new_data['title']
     org_title = org.title
@@ -223,24 +223,23 @@ Please review and act as required.'
     email_dict = { 'subject': subject, 'body': body }
 
     # Get the entire list of users
-    
+
     '''
     Get the list of sub-organization users with the given role; Added by Khalegh Mamakani
     '''
-    
+
     log.info('Sending state change notification to organization users with role %s' %(role,))
-    
+
     query = model.Session.query(model.User) \
             .join(model.Member, model.User.id == model.Member.table_id) \
             .filter(model.Member.capacity == role) \
             .filter(model.Member.group_id == sub_org.id)
-    
-    members = query.all()
-    
-    send_state_change_notifications(members, email_dict, site_title, site_url)
-            
 
-@toolkit.side_effect_free
+    members = query.all()
+
+    send_state_change_notifications(members, email_dict, site_title, site_url)
+
+
 def edc_package_update(context, input_data_dict):
     '''
     Find a package, from the given object_name, and update it with the given fields.
@@ -284,7 +283,7 @@ def edc_package_update(context, input_data_dict):
         return_dict['results'] = query
         return_dict['success'] = False
         return_dict['error'] = True
-        
+
     #results[0]['imap_layer_key'] = input_data_dict.get("imap_layer_key")
     # JER - the line below was removed because we don't use the data, and getting it into the query was a nightmare
     #
@@ -299,24 +298,24 @@ def edc_package_update(context, input_data_dict):
             return_dict['success'] = False
             return_dict['error'] = True
             return return_dict
-        
+
         current_imap_link = package_dict.get('link_to_imap', None)
         visibility = package_dict['metadata_visibility']
-        
+
         #pprint.pprint('package_dict:')
         #pprint.pprint(package_dict)
         #package_dict['imap_layer_key'] = input_data_dict.get("imap_layer_key")
-        
+
         public_map_link = config.get('edc.imap_url_pub')
         private_map_link = config.get('edc.imap_url_gov')
         update = {}
         #don't update archived records
-        
+
         #Upadted by Khalegh Mamakani to update the i-map link only if it has not been done already.
         new_imap_link = None
         if (package_dict['edc_state'] != 'ARCHIVED'):
             if (visibility == 'Public'):
-                if (input_data_dict.get("imap_layers_pub")): 
+                if (input_data_dict.get("imap_layers_pub")):
                     new_imap_link = public_map_link + input_data_dict.get("imap_layers_pub")
             else:
                 if (input_data_dict.get("imap_layers_gov")):
@@ -334,7 +333,7 @@ def edc_package_update(context, input_data_dict):
 
     return response_dict
 
-@toolkit.side_effect_free
+
 def edc_package_update_bcgw(context, input_data_dict):
     '''
     Find a package, from the given object_name, and update it with the given fields.
@@ -345,15 +344,15 @@ def edc_package_update_bcgw(context, input_data_dict):
     '''
     from ckan.lib.search import SearchError
 
-    
+
     '''
-    Fixed unicode characters decoding problem. 
+    Fixed unicode characters decoding problem.
     '''
     import json
     input_dict_str = json.dumps(input_data_dict, ensure_ascii=False)
-    
-    input_data_dict = json.loads(input_dict_str, encoding="cp1252")    
-    
+
+    input_data_dict = json.loads(input_dict_str, encoding="cp1252")
+
     update = {}
     # first, do the search
     q = 'object_name:' + input_data_dict.get("object_name")
@@ -379,7 +378,7 @@ def edc_package_update_bcgw(context, input_data_dict):
 
     #check the search results - there can be only 1!!
     the_count = query['count']
-    if the_count != 1: 
+    if the_count != 1:
         #raise SearchError('Search returned 0 or more than 1 item')
         return_dict = {}
         return_dict['results'] = query
@@ -389,69 +388,65 @@ def edc_package_update_bcgw(context, input_data_dict):
     results = query['results']
     results[0]['details'] = input_data_dict.get("details")
     update = None
-    try :
-        
-        #need the right data package
-        package_dict = get_action('package_show')(context, {'id': results[0]['id']})
 
-        if package_dict['edc_state'] == 'ARCHIVED' :
-            response_dict['results'] = None
-            return response_dict
+    #need the right data package
+    package_dict = get_action('package_show')(context, {'id': results[0]['id']})
 
-        if not package_dict :
-            return_dict = {}
-            return_dict['success'] = False
-            return_dict['error'] = True
-            return return_dict
+    if package_dict['edc_state'] == 'ARCHIVED' :
+        return_dict = {}
+        return_dict['results'] = None
+        return return_dict
 
-        #Check if input_data has been modified and is not the same as package data
-        data_changed = False
-        current_details = package_dict.get('details')
-        curent_obj_short_name = package_dict.get('object_short_name')
-        current_obj_table_comments = package_dict.get('object_table_comments')
-        
-        if current_details != input_data_dict.get('details') :
-            log.info('Dataset details have been changed for dataset {0}.'.format(package_dict.get('title')))
-            log.info('Current Details : ')
-            log.info(current_details)
-            log.info('New details :')
-            log.info(input_data_dict.get('details'))
+    if not package_dict :
+        return_dict = {}
+        return_dict['success'] = False
+        return_dict['error'] = True
+        return return_dict
 
-            package_dict['details'] = input_data_dict.get('details')
-            data_changed = True
-        
-        if curent_obj_short_name != input_data_dict.get('object_short_name') :
-            log.info('Dataset object_short_name has been changed for dataset {0}.'.format(package_dict.get('title')))
-            log.info('Current object_short_name :')
-            log.info(curent_obj_short_name)
-            log.info('New object_short_name :')
-            log.info(input_data_dict.get('object_short_name'))
-            package_dict['object_short_name'] = input_data_dict.get('object_short_name')
-            data_changed = True
-            
-        if current_obj_table_comments != input_data_dict.get('object_table_comments') :
-            log.info('Dataset current_obj_table_comments has been changed for dataset {0}.'.format(package_dict.get('title')))
-            log.info('Current object_table_comments :')
-            log.info(current_obj_table_comments)
-            log.info('New object_table_comments :')
-            log.info(input_data_dict.get('object_table_comments'))
-            package_dict['object_table_comments'] = input_data_dict.get('object_table_comments')
-            data_changed = True
-        
-        if data_changed :
-            log.info('Updating data dictionary for dataset {0}'.format(package_dict.get('title')))
+    #Check if input_data has been modified and is not the same as package data
+    data_changed = False
+    current_details = package_dict.get('details')
+    curent_obj_short_name = package_dict.get('object_short_name')
+    current_obj_table_comments = package_dict.get('object_table_comments')
 
-            update = get_action('package_update')(context, package_dict)
-        
-    except Exception, ue:
-        raise Exception(str(ue))
+    if current_details != input_data_dict.get('details') :
+        log.info('Dataset details have been changed for dataset {0}.'.format(package_dict.get('title')))
+        log.info('Current Details : ')
+        log.info(current_details)
+        log.info('New details :')
+        log.info(input_data_dict.get('details'))
+
+        package_dict['details'] = input_data_dict.get('details')
+        data_changed = True
+
+    if curent_obj_short_name != input_data_dict.get('object_short_name') :
+        log.info('Dataset object_short_name has been changed for dataset {0}.'.format(package_dict.get('title')))
+        log.info('Current object_short_name :')
+        log.info(curent_obj_short_name)
+        log.info('New object_short_name :')
+        log.info(input_data_dict.get('object_short_name'))
+        package_dict['object_short_name'] = input_data_dict.get('object_short_name')
+        data_changed = True
+
+    if current_obj_table_comments != input_data_dict.get('object_table_comments') :
+        log.info('Dataset current_obj_table_comments has been changed for dataset {0}.'.format(package_dict.get('title')))
+        log.info('Current object_table_comments :')
+        log.info(current_obj_table_comments)
+        log.info('New object_table_comments :')
+        log.info(input_data_dict.get('object_table_comments'))
+        package_dict['object_table_comments'] = input_data_dict.get('object_table_comments')
+        data_changed = True
+
+    if data_changed :
+        log.info('Updating data dictionary for dataset {0}'.format(package_dict.get('title')))
+
+        update = get_action('package_update')(context, package_dict)
 
     response_dict = {}
     response_dict['results'] = update
     return response_dict
 
 
-@toolkit.side_effect_free
 def package_update(context, data_dict):
 
     '''Update a dataset (package).
@@ -474,8 +469,8 @@ def package_update(context, data_dict):
     :rtype: dictionary
 
     '''
-    
-    
+
+
     model = context['model']
     user = context['user']
     name_or_id = data_dict.get("id") or data_dict['name']
@@ -487,12 +482,16 @@ def package_update(context, data_dict):
     context["package"] = pkg
     data_dict["id"] = pkg.id
 
+    # FIXME: first modifications to package_updade begin here:
+    # tag strings are reconstructed because validators are stripping
+    # tags passed and only taking taks as tag_string values
+    # image upload support has also been added here
     old_data = get_action('package_show')(context, {'id': pkg.id})
-    
+
     '''
     Constructing the tag_string from the given tags.
-    There must be at least one tag, otherwise the tag_string will be empty and a validation error 
-    will be raised. 
+    There must be at least one tag, otherwise the tag_string will be empty and a validation error
+    will be raised.
     '''
     if not data_dict.get('tag_string'):
         data_dict['tag_string'] = ', '.join(
@@ -502,17 +501,17 @@ def package_update(context, data_dict):
     for key, value in old_data.iteritems() :
         if key not in data_dict :
             data_dict[key] = value
-            
+
     #data_dict['resources'] = data_dict.get('resources', old_data.get('resources'))
-    
-        
+
+
 #     iso_topic_cat = data_dict.get('iso_topic_string', [])
-#     if isinstance(iso_topic_cat, basestring):  
-#         iso_topic_cat = [iso_topic_cat]  
-#                   
+#     if isinstance(iso_topic_cat, basestring):
+#         iso_topic_cat = [iso_topic_cat]
+#
 #     data_dict['iso_topic_string'] = ','.join(iso_topic_cat)
-    
-            
+
+
     #Set the package last modified date
     data_dict['record_last_modified'] = str(datetime.date.today())
 
@@ -562,6 +561,7 @@ def package_update(context, data_dict):
                 # Old plugins do not support passing the schema so we need
                 # to ensure they still work.
                 package_plugin.check_data_dict(data_dict)
+    # FIXME: modifications to package_update end here^
 
     data, errors = _validate(data_dict, schema, context)
 #     log.debug('package_update validate_errs=%r user=%s package=%s data=%r',
@@ -604,6 +604,25 @@ def package_update(context, data_dict):
 
     upload.upload(uploader.get_max_image_size())
 
+    #TODO the next two blocks are copied from ckan/ckan/logic/action/update.py
+    # This codebase is currently hard to maintain because large chunks of the
+    # CKAN action API and the CKAN controllers are simply overriden. This is
+    # probably worse than just forking CKAN would have been, because in that
+    # case at least we could track changes. - @deniszgonjanin
+
+    # Needed to let extensions know the new resources ids
+    model.Session.flush()
+    if data.get('resources'):
+        for index, resource in enumerate(data['resources']):
+            resource['id'] = pkg.resources[index].id
+
+    # Create default views for resources if necessary
+    if data.get('resources'):
+        logic.get_action('package_create_default_resource_views')(
+            {'model': context['model'], 'user': context['user'],
+             'ignore_auth': True},
+            {'package': data})
+
     if not context.get('defer_commit'):
         model.repo.commit()
 
@@ -624,21 +643,21 @@ def package_update(context, data_dict):
     Send state change notifications if required; Added by Khalegh Mamakani
     Using a thread to run the job in the background so that package_update will not wait for notifications sending.
     '''
-    
+
     old_state = old_data.get('edc_state')
-    
+
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
 
     dataset_url = config.get('ckan.site_url') + h.url_for(controller='package', action="read", id = data_dict['name'])
     import threading
-    
+
     notify_thread = threading.Thread(target=check_record_state, args=(context, old_state, data_dict, g.site_title, g.site_url, dataset_url) )
     notify_thread.start()
-                        
+
     return output
 
-@toolkit.side_effect_free
+
 def post_disqus_comment(context, comment_dict):
     '''
     Uses Disqus api to post a guest comment.
@@ -768,7 +787,7 @@ def package_autocomplete(context, data_dict):
     :rtype: list of dictionaries
 
     '''
-    
+
     _check_access('package_autocomplete', context, data_dict)
 
     limit = data_dict.get('limit', 10)

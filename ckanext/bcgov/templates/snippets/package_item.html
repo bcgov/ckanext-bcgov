@@ -42,19 +42,17 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
           {% set package_type = package.type|lower %}
           {% set icon_type = package_type|replace('geographic', 'globe')|replace('dataset', 'table')|replace('webservice', 'code')|replace('application', 'cogs') %}
           {% set title_text = package_type|replace('geographic', 'Geographic Datasets')|replace('dataset', 'Datasets')|replace('webservice', 'APIs')|replace('application', 'Applications') %}
-          {% if org_id or user_id %}
-          	{% set href = h.add_url_param(new_params={'type': package.type}, extras={'id' : org_id }) %}
-          {% else %}                   
-          	{% set href = h.add_url_param(new_params={'type': package.type}) %}
+          {% if org_id or user_id or group_id %}
+            {% set href = h.add_url_param(new_params={'type': package.type}, extras={'id' : org_id or user_id or group_id }) %}
+          {% else %}
+            {% set href = h.add_url_param(new_params={'type': package.type}) %}
           {% endif %}
           <div class="dataset-marker-type-icon">
          
-            {# <a href="{{ h.url_for(controller='package', action='search', type=package.type) }}" title="{{ title_text }}"><i class="icon icon-2x icon-{{ icon_type }}"></i></a> #}
             <a href="{{ href }}" title="{{ title_text }}"><i class="icon icon-2x icon-{{ icon_type }}"></i></a>
           </div>
         {% endblock %}
 
-		{# Check if the user is a member of the package orgs #}
         {% if logged_in and is_editor %}
           {% set edc_state_class = package.edc_state|lower|replace(" ", "") %}
           <div class="edc-state {{ edc_state_class }}">
@@ -75,16 +73,10 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
             {% block heading_title %}
               {{ h.link_to(h.truncate(title, truncate_title), h.url_for(controller='package', action='read', id=package.name)) }}
             {% endblock %}
-            {{ h.popular('recent views', package.tracking_summary.total, min=10) if package.tracking_summary }}
+            {{ h.popular('recent views', package.tracking_summary.recent, min=10) if package.tracking_summary }}
             {% if package.org and package.sub_org %}
             {% block heading_orgs %}
               <div class="dataset-heading-orgs">
-              {# 
-                  	{% set org = h.get_edc_org(package.org) %}
-    				{% set branch = h.get_edc_org(package.sub_org) %}
-              
-              #}
-              {# snippet 'package/snippets/org_view.html', org=org, branch=branch #}
               </div>
             {% endblock %}
             {% endif %}
