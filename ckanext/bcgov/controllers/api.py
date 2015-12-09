@@ -265,6 +265,7 @@ class EDCApiController(ApiController):
         org_list = get_action('organization_list')(context, data_dict)
 
         if (all_fields):
+
             #add the child orgs to the response:
             for org in org_list:
                 children = []

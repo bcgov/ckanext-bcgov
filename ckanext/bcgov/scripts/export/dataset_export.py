@@ -9,13 +9,12 @@ def parseString(input):
     for x in csv.reader(StringIO.StringIO(input), delimiter=','):
         return x[i]
 
-data_type = ['geographic', 'dataset', 'application', 'webservice']
+data_type = ['Geographic', 'Dataset', 'Application', 'WebService']
 
 groups = {}
 
 for d in data_type:
     print(d)
-
     with open('catalogue.csv','rb') as w:
         reader = csv.reader(w)
         with open(d + '.csv', 'wb') as f:
@@ -42,7 +41,7 @@ for d in data_type:
                     if sub_org in groups:
                         org = groups[sub_org].replace("-"," ").title() + ", "+sub_org
                     else:
-                        org_url = 'http://catalogue.data.gov.bc.ca/api/3/action/organization_show?id='+row[4].lower().replace(" ","-").replace(",","").replace("---","-").replace("'","-")
+                        org_url = 'https://catalogue.data.gov.bc.ca/api/3/action/organization_show?id='+row[4].lower().replace(" ","-").replace(",","").replace("---","-").replace("'","-")
                         request = requests.get(org_url).json()["result"]["groups"][0]["name"]
                         groups[sub_org] = request
                         org = groups[sub_org].replace("-"," ").title() + ", "+sub_org
