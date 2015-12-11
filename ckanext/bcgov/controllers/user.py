@@ -225,5 +225,19 @@ class EDCUserController(UserController):
         return render('user/dashboard_organizations.html')
 
     def register(self):
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user or c.author,
+                   'auth_user_obj': c.userobj,
+                   'schema': self._new_form_to_db_schema(),
+                   'save': 'save' in request.params}
+
+        try:
+            check_access('user_create', context)
+        except NotAuthorized:
+            abort(401, _('Unauthorized to create a user'))
+
+        if c.user:
+            # #1799 Don't offer the registration form if already logged in
+            return render('user/logout_first.html')
+
         return render('user/new.html')
-        
