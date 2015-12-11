@@ -1,6 +1,6 @@
-# Copyright  2015, Province of British Columbia 
-# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
- 
+# Copyright  2015, Province of British Columbia
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
+
 import logging
 from ckan.controllers.user import UserController
 from ckan.common import OrderedDict,_,g, request
@@ -34,25 +34,25 @@ def _encode_params(params):
 
 
 class EDCUserController(UserController):
-            
+
     def dashboard_unpublished(self):
-        
+
         user_id = c.userobj.id
         fq = ' +edc_state:("DRAFT" OR "PENDING PUBLISH" OR "REJECTED")'
             #Get the list of organizations that this user is the admin
-        if not c.userobj.sysadmin :            
+        if not c.userobj.sysadmin :
             user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
-            user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]  
-            if len(user_orgs) > 0 :      
+            user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
+            if len(user_orgs) > 0 :
                 fq += ' +owner_org:(' + ' OR '.join(user_orgs) + ')'
         self._user_datasets('dashboard_unpublished', c.userobj.id, fq)
         return render('user/dashboard_unpublished.html')
-    
+
     def dashboard_datasets(self):
         fq = ' +author:("%s")' % (c.userobj.id)
         self._user_datasets('dashboard_datasets', c.userobj.id, fq)
         return render('user/dashboard_datasets.html')
-    
+
     def read(self, id=None):
         user_id = c.userobj.id
         if c.userobj and c.userobj.sysadmin == True:
@@ -66,10 +66,10 @@ class EDCUserController(UserController):
             fq += ')'
         self._user_datasets('read',id, fq)
         return render('user/read.html')
- 
+
     def _user_datasets(self, action, id=None, filter_query=None):
         from ckan.lib.search import SearchError
-                 
+
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj,
                    'for_view': True}
@@ -79,14 +79,14 @@ class EDCUserController(UserController):
         # unicode format (decoded from utf8)
         q = c.q = request.params.get('q', u'')
 #        q += ' author:"%s"' %c.userobj.id
-        
+
         context['return_query'] = True
-        
+
         try:
             page = int(request.params.get('page', 1))
         except ValueError, e:
             abort(400, ('"page" parameter must be an integer'))
-            
+
         limit = 10000000
 
         # most search operations should reset the page counter:
@@ -94,17 +94,17 @@ class EDCUserController(UserController):
                          if k != 'page']
 
         sort_by = request.params.get('sort', None)
-        
+
         def search_url(params):
             if action == 'read':
                 url = h.url_for(controller='user', action=action, id=id)
             else:
-                url = h.url_for(controller='user', action=action)                
+                url = h.url_for(controller='user', action=action)
 
             params = [(k, v.encode('utf-8') if isinstance(v, basestring)
                        else str(v)) for k, v in params]
             return url + u'?' + urlencode(params)
-        
+
         def drill_down_url(alternative_url=None, **by):
             return h.add_url_param(alternative_url=alternative_url,
                                    controller='user', action=action,
@@ -151,10 +151,10 @@ class EDCUserController(UserController):
 
 
             c.facet_titles = facets
-            
-            fq = filter_query or '' 
-            
-            
+
+            fq = filter_query or ''
+
+
             data_dict = {
                 'q': q,
                 'fq': fq.strip(),
@@ -164,9 +164,9 @@ class EDCUserController(UserController):
                 'sort': sort_by,
                 'extras': search_extras
             }
-            
+
             query = get_action('package_search')(context, data_dict)
-            
+
             c.page = h.Page(
                 collection=query['results'],
                 page=page,
@@ -178,7 +178,7 @@ class EDCUserController(UserController):
             c.facets = query['facets']
             maintain.deprecate_context_item('facets',
                                             'Use `c.search_facets` instead.')
-                                            
+
             c.search_facets = query['search_facets']
             c.search_facets_limits = {}
             for facet in c.facets.keys():
@@ -186,9 +186,9 @@ class EDCUserController(UserController):
                                                 g.facets_default_number))
                 c.search_facets_limits[facet] = limit
             c.page.items = query['results']
-                                            
+
             c.sort_by_selected = sort_by
-                        
+
         except SearchError, se:
             log.error('User search error: %r', se.args)
             c.query_error = True
@@ -196,17 +196,17 @@ class EDCUserController(UserController):
             c.page = h.Page(collection=[])
 
         self._setup_template_variables(context, user_dict)
-        
+
 
     def dashboard_organizations(self):
         context = {'model': model, 'session': model.Session,
                    'for_view': True, 'user': c.user or c.author,
                    'auth_user_obj': c.userobj}
-        
+
         data_dict = {'user_obj': c.userobj}
         self._setup_template_variables(context, data_dict)
-        (user_orgs, usr_suborgs) = get_user_toporgs(c.userobj.id) 
-        
+        (user_orgs, usr_suborgs) = get_user_toporgs(c.userobj.id)
+
         facets = OrderedDict()
 
         #Add the organization facet to get the number of records for each organization
@@ -220,7 +220,9 @@ class EDCUserController(UserController):
         c.org_pkg_count = query['facets'].get('organization')
         c.top_orgs_items = user_orgs
         c.suborgs_items = usr_suborgs
-        
-               
+
+
         return render('user/dashboard_organizations.html')
-                    
+
+    def register(self):
+        return render('user/new.html')
