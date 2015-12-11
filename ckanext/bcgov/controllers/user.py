@@ -226,3 +226,4 @@ class EDCUserController(UserController):
 
     def register(self):
         return render('user/new.html')
+        
