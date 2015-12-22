@@ -54,15 +54,16 @@ class EDCUserController(UserController):
         return render('user/dashboard_datasets.html')
 
     def read(self, id=None):
-        user_id = c.userobj.id
         if c.userobj and c.userobj.sysadmin == True:
             fq = ''
-        else :
+        else:
             fq = ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
-            user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
-            user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
-            if len(user_orgs) > 0:
-                fq += ' OR owner_org:(' + ' OR '.join(user_orgs) + ')'
+            if c.userobj:
+                user_id = c.userobj.id
+                user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
+                user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
+                if len(user_orgs) > 0:
+                    fq += ' OR owner_org:(' + ' OR '.join(user_orgs) + ')'
             fq += ')'
         self._user_datasets('read',id, fq)
         return render('user/read.html')
@@ -87,7 +88,7 @@ class EDCUserController(UserController):
         except ValueError, e:
             abort(400, ('"page" parameter must be an integer'))
 
-        limit = 10000000
+        limit = g.datasets_per_page
 
         # most search operations should reset the page counter:
         params_nopage = [(k, v) for k, v in request.params.items()

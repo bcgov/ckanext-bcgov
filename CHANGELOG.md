@@ -1,5 +1,19 @@
 # Release Notes
 
+## 1.2.0
+
+Major changes
+
+- remove wet-boew templates and JS
+
+Steps required for upgrade
+
+- While not a code change, this version also introduced changes to the 
+virtualenv on delivery, test, and production servers. Specifically, the 
+virtualenv is now located in a different location. This requires that the path
+to the licenses file in the .ini file be updated to point to the new and correct
+location.
+
 ## 1.1.0
 
 Major changes

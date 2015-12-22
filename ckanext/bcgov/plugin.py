@@ -42,6 +42,7 @@ from ckanext.bcgov.util.helpers import (get_suborg_sector,
                                              get_environment_name,
                                              get_version,
                                              get_bcgov_commit_id,
+                                             resource_prefix,
                                              )
 
 
@@ -93,6 +94,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "get_environment_name": get_environment_name,
                 "get_version": get_version,
                 "get_bcgov_commit_id": get_bcgov_commit_id,
+                "googleanalytics_resource_prefix": resource_prefix,
                 }
 
 
@@ -239,8 +241,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
         and user roles.
         '''
 
-        #Change the default sort order
-        if search_params.get('sort') in (None, 'rank'):
+        #Change the default sort order when no query passed
+        if not search_params.get('q') and search_params.get('sort') in (None, 'rank'):
             search_params['sort'] = 'record_publish_date desc, metadata_modified desc'
 
 

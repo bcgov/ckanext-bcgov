@@ -388,62 +388,59 @@ def edc_package_update_bcgw(context, input_data_dict):
     results = query['results']
     results[0]['details'] = input_data_dict.get("details")
     update = None
-    try :
 
-        #need the right data package
-        package_dict = get_action('package_show')(context, {'id': results[0]['id']})
+    #need the right data package
+    package_dict = get_action('package_show')(context, {'id': results[0]['id']})
 
-        if package_dict['edc_state'] == 'ARCHIVED' :
-            response_dict['results'] = None
-            return response_dict
+    if package_dict['edc_state'] == 'ARCHIVED' :
+        return_dict = {}
+        return_dict['results'] = None
+        return return_dict
 
-        if not package_dict :
-            return_dict = {}
-            return_dict['success'] = False
-            return_dict['error'] = True
-            return return_dict
+    if not package_dict :
+        return_dict = {}
+        return_dict['success'] = False
+        return_dict['error'] = True
+        return return_dict
 
-        #Check if input_data has been modified and is not the same as package data
-        data_changed = False
-        current_details = package_dict.get('details')
-        curent_obj_short_name = package_dict.get('object_short_name')
-        current_obj_table_comments = package_dict.get('object_table_comments')
+    #Check if input_data has been modified and is not the same as package data
+    data_changed = False
+    current_details = package_dict.get('details')
+    curent_obj_short_name = package_dict.get('object_short_name')
+    current_obj_table_comments = package_dict.get('object_table_comments')
 
-        if current_details != input_data_dict.get('details') :
-            log.info('Dataset details have been changed for dataset {0}.'.format(package_dict.get('title')))
-            log.info('Current Details : ')
-            log.info(current_details)
-            log.info('New details :')
-            log.info(input_data_dict.get('details'))
+    if current_details != input_data_dict.get('details') :
+        log.info('Dataset details have been changed for dataset {0}.'.format(package_dict.get('title')))
+        log.info('Current Details : ')
+        log.info(current_details)
+        log.info('New details :')
+        log.info(input_data_dict.get('details'))
 
-            package_dict['details'] = input_data_dict.get('details')
-            data_changed = True
+        package_dict['details'] = input_data_dict.get('details')
+        data_changed = True
 
-        if curent_obj_short_name != input_data_dict.get('object_short_name') :
-            log.info('Dataset object_short_name has been changed for dataset {0}.'.format(package_dict.get('title')))
-            log.info('Current object_short_name :')
-            log.info(curent_obj_short_name)
-            log.info('New object_short_name :')
-            log.info(input_data_dict.get('object_short_name'))
-            package_dict['object_short_name'] = input_data_dict.get('object_short_name')
-            data_changed = True
+    if curent_obj_short_name != input_data_dict.get('object_short_name') :
+        log.info('Dataset object_short_name has been changed for dataset {0}.'.format(package_dict.get('title')))
+        log.info('Current object_short_name :')
+        log.info(curent_obj_short_name)
+        log.info('New object_short_name :')
+        log.info(input_data_dict.get('object_short_name'))
+        package_dict['object_short_name'] = input_data_dict.get('object_short_name')
+        data_changed = True
 
-        if current_obj_table_comments != input_data_dict.get('object_table_comments') :
-            log.info('Dataset current_obj_table_comments has been changed for dataset {0}.'.format(package_dict.get('title')))
-            log.info('Current object_table_comments :')
-            log.info(current_obj_table_comments)
-            log.info('New object_table_comments :')
-            log.info(input_data_dict.get('object_table_comments'))
-            package_dict['object_table_comments'] = input_data_dict.get('object_table_comments')
-            data_changed = True
+    if current_obj_table_comments != input_data_dict.get('object_table_comments') :
+        log.info('Dataset current_obj_table_comments has been changed for dataset {0}.'.format(package_dict.get('title')))
+        log.info('Current object_table_comments :')
+        log.info(current_obj_table_comments)
+        log.info('New object_table_comments :')
+        log.info(input_data_dict.get('object_table_comments'))
+        package_dict['object_table_comments'] = input_data_dict.get('object_table_comments')
+        data_changed = True
 
-        if data_changed :
-            log.info('Updating data dictionary for dataset {0}'.format(package_dict.get('title')))
+    if data_changed :
+        log.info('Updating data dictionary for dataset {0}'.format(package_dict.get('title')))
 
-            update = get_action('package_update')(context, package_dict)
-
-    except Exception, ue:
-        raise Exception(str(ue))
+        update = get_action('package_update')(context, package_dict)
 
     response_dict = {}
     response_dict['results'] = update

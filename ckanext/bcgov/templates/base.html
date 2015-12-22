@@ -191,8 +191,8 @@
 
     {% block googleanalytics_event_tracking %}
       {% resource 'ckanext-googleanalytics/googleanalytics_event_tracking.js' %}
-      <div class="js-hide" data-module="google-analytics"
-        data-module-googleanalytics_resource_prefix="{{ g.googleanalytics_resource_prefix }}">
+      <div class="js-hide" data-module="google-analytics" 
+        data-module-googleanalytics_resource_prefix="{{ h.googleanalytics_resource_prefix() }}">
       </div>
     {% endblock %}
 
