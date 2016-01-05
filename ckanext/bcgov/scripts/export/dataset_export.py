@@ -12,6 +12,7 @@ def parseString(input,i):
 def export_type(env):
     data_type = ['Geographic', 'Dataset', 'Application', 'WebService']
 
+
     groups = {}
 
     for d in data_type:
@@ -37,8 +38,9 @@ def export_type(env):
                         recs = row[15] # get urls
                         # get urls as list
                         # print 'REC: ', recs
-                        urls=re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', recs)
-                        # print urls
+                        # print recs
+                        urls=re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),#]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', recs)
+                        print urls
                         # print ' '
                         sub_org = row[5]
 
@@ -53,6 +55,7 @@ def export_type(env):
 
                         # cycle through each url and collect each corresponding entry in other columns
                         for i, url in enumerate(urls):
+                            print(url)
                             format = parseString(row[-4],i)
                             res_name = parseString(row[-3],i)
                             res_id = parseString(row[-2],i)
