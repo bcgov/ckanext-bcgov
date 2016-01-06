@@ -4,17 +4,15 @@
 import sys
 import argparse
 
-# import ckanapi
+import ckanapi
 import losser.losser
 import losser.cli
-import remoteckan
 # added by mb
 import requests
 
 VERSION = '0.0.5'
  
-
-
+ 
 # TODO: Make this more generic, accept search params as param.
 def get_datasets_from_ckan(url, apikey):
     user_agent = ('ckanapi-exporter/{version} '
@@ -26,7 +24,7 @@ def get_datasets_from_ckan(url, apikey):
     full_record_result_list = []
     for i in range(0, total_records_count / 1000 + 1):
         full_url = base_url + "&rows=1000&start=" + str(i) + "000"
-        api = remoteckan.RemoteCKAN(full_url, apikey=apikey, user_agent=user_agent)
+        api = ckanapi.RemoteCKAN(full_url, apikey=apikey, user_agent=user_agent)
         request = requests.get(full_url)
         results_list = request.json()["result"]["results"]
         for record in results_list:
@@ -38,7 +36,7 @@ def get_datasets_from_ckan(url, apikey):
 #     user_agent = ('ckanapi-exporter/{version} '
 #                   '(+https://github.com/ckan/ckanapi-exporter)').format(
 #                           version=VERSION)
-#     api = remoteckan.RemoteCKAN(url, apikey=apikey, user_agent=user_agent)
+#     api = ckanapi.RemoteCKAN(url, apikey=apikey, user_agent=user_agent)
 #     response = api.action.package_search(rows=1000000)
 #     return response["results"]
 
