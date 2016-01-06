@@ -23,7 +23,9 @@
       	{% set map_service_url = pkg.preview_map_service_url %}
         	{% if map_service_url %}
       		{% set wmsservice_url = map_service_url + "&wmslayers=" + pkg.layer_name + "&ll=" + pkg.preview_latitude + "," + pkg.preview_longitude + "&z=" + pkg.preview_zoom_level %}
+
       		{% set resource_url = "https://apps.gov.bc.ca/pub/dmf-viewer/?siteid=7535188336326689232&maponly&wmsservices=" + wmsservice_url %}
+
       			<iframe src="{{resource_url}}" frameborder="0" width="100%" data-module="data-viewer" height="400px"></iframe>
        	{% endif %}
       {% endif %}

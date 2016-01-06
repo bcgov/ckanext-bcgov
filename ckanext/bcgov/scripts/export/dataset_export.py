@@ -38,8 +38,10 @@ def export_type(env):
                         recs = row[15] # get urls
                         # get urls as list
                         # print 'REC: ', recs
+
                         # print recs
                         urls=re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),#]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', recs)
+
                         # print ' '
                         sub_org = row[5]
 
