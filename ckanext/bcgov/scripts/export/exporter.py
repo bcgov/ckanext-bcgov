@@ -11,7 +11,7 @@ import losser.cli
 import requests
 
 VERSION = '0.0.5'
- 
+
 
 # TODO: Make this more generic, accept search params as param.
 def get_datasets_from_ckan(url, apikey):
