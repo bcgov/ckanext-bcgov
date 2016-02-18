@@ -233,7 +233,8 @@
                 "EPSG_32610 - WGS 84 UTM zone 10N",
                 "EPSG_32611 - WGS 84 UTM zone 11N",
                 "EPSG_32612 - WGS 84 UTM zone 12N",
-                "UTM"
+                "UTM",
+                "N/A"
             ]
 }
 ]

@@ -59,5 +59,8 @@
   },
   "Resource Type": {
       "pattern": ["^resources$", "^edc_resource_type$"]
+  },
+  "Object Name": {
+      "pattern": ["^object_name$"]
   }
 }
