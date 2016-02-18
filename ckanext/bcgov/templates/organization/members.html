@@ -1,0 +1,6 @@
+{% ckan_extends %}
+
+{% block primary_content_inner %}
+	{{ super() }}
+	{% resource 'edc_resource/edc_restrict_browser.js' %}
+{% endblock %}
