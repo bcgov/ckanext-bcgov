@@ -27,6 +27,8 @@ def export_type(env):
                 for row in reader:
                     if firstline:
                         if d == "Application" or d == 'WebService':
+                            writer.writerow(row[:-2])
+                        elif d == "Dataset":
                             writer.writerow(row[:-1])
                         else:
                             writer.writerow(row)
@@ -56,13 +58,16 @@ def export_type(env):
 
                         # cycle through each url and collect each corresponding entry in other columns
                         for i, url in enumerate(urls):
-                            format = parseString(row[-4],i)
-                            res_name = parseString(row[-3],i)
-                            res_id = parseString(row[-2],i)
-                            res_ty = parseString(row[-1],i)
+                            format = parseString(row[-5],i)
+                            res_name = parseString(row[-4],i)
+                            res_id = parseString(row[-3],i)
+                            res_ty = parseString(row[-2],i)
                             
-                            # rows hardcoded. Not ideal...   
-                            writer.writerow([row[0],row[1],row[2],row[3],row[4],org,row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13]+'...',row[14],url,format,res_name,res_id,res_ty])
+                            if d != "Geographic": 
+                                # rows hardcoded. Not ideal...   
+                                writer.writerow([row[0],row[1],row[2],row[3],row[4],org,row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13]+'...',row[14],url,format,res_name,res_id,res_ty])
+                            else:
+                                writer.writerow([row[0],row[1],row[2],row[3],row[4],org,row[6],row[7],row[8],row[9],row[10],row[11],row[12],row[13]+'...',row[14],url,format,res_name,res_id,res_ty,row[-1]])
 
 if __name__ == "__main__":
     export_type(env)

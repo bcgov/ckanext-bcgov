@@ -4,6 +4,7 @@
 from ckan.common import  c, _
 
 import pylons.config as config
+import ckan.lib.base as base
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 
@@ -44,6 +45,8 @@ from ckanext.bcgov.util.helpers import (get_suborg_sector,
                                              get_bcgov_commit_id,
                                              resource_prefix,
                                              )
+
+abort = base.abort
 
 
 class SchemaPlugin(plugins.SingletonPlugin):
@@ -294,6 +297,13 @@ class SchemaPlugin(plugins.SingletonPlugin):
         search_params['fq'] = fq
 
         return search_params
+
+    def before_view(self, pkg_dict):
+        # CITZEDC808
+        if not record_is_viewable(pkg_dict, c.userobj):
+            abort(401, _('Unauthorized to read package %s') % pkg_dict.get("title"))
+
+        return pkg_dict
 
     def dataset_facets(self, facet_dict, package_type):
         '''
