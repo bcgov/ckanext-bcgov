@@ -1,6 +1,9 @@
 {% extends "admin/base.html" %}
 
 {% block primary_content_inner %}
+
+	{% resource 'edc_resource/edc_restrict_browser.js' %}
+
     <h3>Deleted Revisions</h3>
 	<form method="POST" id="form-purge-revisions" class="form-horizontal">
 		<div class="control-group control-full">
