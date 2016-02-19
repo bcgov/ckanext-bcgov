@@ -69,6 +69,10 @@ a.tag:hover{
   margin-right: 0;
 }
 
+.cursor-help {
+    cursor: help;
+}
+
 /* Header */
 #services-header {
   background: #394559;
@@ -610,7 +614,8 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
   border-right-color: #22303d;
 }
 
-.dataset-markers .marker a {
+.dataset-markers .marker a,
+.dataset-markers .marker div {
   display: block;
   padding: 5px 8px;
   color: #fff;
