@@ -50,6 +50,12 @@ then itself be extended to add/remove blocks of functionality. #}
         			{% endif %}
         		{% else %}
         			{% set len1 = error_list|length %}
+
+                    {# CITZEDC824 - Rename notes to description when the decription box is empty #}
+                    {% if key == "notes" %}
+                        {% set key = "description" %}
+                    {% endif %}
+
         			<li date-field-label="{{ key }}"> {{ key }} :
         			{% for err_val in error_list %}
         				{{ err_val }}
