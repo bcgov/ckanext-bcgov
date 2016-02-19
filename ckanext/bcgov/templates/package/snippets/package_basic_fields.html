@@ -3,6 +3,7 @@
 
 {% block package_basic_fields_title %}
 	{% resource 'edc_resource/edc_dataset.js' %}
+    {% resource 'edc_resource/edc_restrict_browser.js' %}
 
 	<div class="form-horizontal">
   	{{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], is_required=true) }}

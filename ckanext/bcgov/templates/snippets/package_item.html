@@ -36,7 +36,9 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
             {% set marker_strlen = 12 %}
             {% set sector_length = package.sector|truncate(marker_strlen+1, False, '')|length %}
             <ul class="dataset-markers">
-              <li class="marker dataset-sector {{ package.sector|lower|replace(' ', '-')|replace('.', '-')  }}{% if sector_length >= marker_strlen or sector_length == 0 %} small{% endif %}"><a href="{{ h.url_for(controller='package', action='search', sector=package.sector) }}">{{ package.sector }}</a></li>
+              <li class="marker dataset-sector {{ package.sector|lower|replace(' ', '-')|replace('.', '-')  }}{% if sector_length >= marker_strlen or sector_length == 0 %} small{% endif %}">
+                  <div title="Sector" class="cursor-help">{{ package.sector }}</div>
+              </li>
             </ul>
           {% endif %}
           {% set package_type = package.type|lower %}
@@ -48,8 +50,8 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
             {% set href = h.add_url_param(new_params={'type': package.type}) %}
           {% endif %}
           <div class="dataset-marker-type-icon">
-         
-            <a href="{{ href }}" title="{{ title_text }}"><i class="icon icon-2x icon-{{ icon_type }}"></i></a>
+
+            <div title="{{ title_text }}" class="cursor-help"><i class="icon icon-2x icon-{{ icon_type }}"></i></div>
           </div>
         {% endblock %}
 
@@ -109,7 +111,7 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
               {% block resources_inner %}
                 {% for resource in h.dict_list_reduce(package.resources, 'format') %}
                 <li>
-                  <a href="{{ h.url_for(controller='package', action='read', id=package.name) }}" class="label" data-format="{{ resource.lower() }}" >{{ resource.lower() }}</a>
+                  <div class="label cursor-help" data-format="{{ resource.lower() }}" title="Data Format">{{ resource.lower() }}</a>
                 </li>
                 {% endfor %}
               {% endblock %}
