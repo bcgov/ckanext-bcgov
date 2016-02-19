@@ -10,6 +10,15 @@
 	{% if h.check_access('package_create') and (admin_org or editor_org or c.userobj.sysadmin == True) %}
 		<div class="page_primary_action">
 			{% link_for _('Add Dataset'), controller='ckanext.bcgov.controllers.package:EDCPackageController', action='typeSelect', class_='btn btn-primary', icon='plus-sign-alt' %}
+			<script id="change-add-dataset-button">
+			// This adds the id attribute to the Add Dataset button
+			//  because link_for doesn't have a way to add an id attribute
+			//  to the element it creates
+			// IE doesn't support document.currentScript
+			var me = document.currentScript || document.getElementById('change-add-dataset-button');
+			var addDataset = me.previousElementSibling;
+			addDataset.id = "add-dataset";
+			</script>
 		</div>
 	{% endif %}
 {% endblock %}
@@ -51,23 +60,27 @@
   {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, admin_org=admin_org, editor_org=editor_org, mem_org=mem_org, controller=c.controller) }}
 {% endblock %}
 
-{% block secondary_content %}
-  {# snippet "spatial/snippets/spatial_query.html" , default_extent="[[47.55, -139.9], [59.8, -119.6]]" #}
+{% block secondary %}
+  <aside id="filters-panel" class="secondary span3">
+	{% block secondary_content %}
+	  {# snippet "spatial/snippets/spatial_query.html" , default_extent="[[47.55, -139.9], [59.8, -119.6]]" #}
 
-  {% for facet in c.facet_titles %}
-   {% set more_button = 'more-'+facet+'-button' %}
-  	{% if facet == 'type' %}
-  		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_type_label, name=facet, more_button = more_button) }}
-  	{% else %}
-    	{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, more_button = more_button) }}
-    {% endif %}
-  {% endfor %}
+	  {% for facet in c.facet_titles %}
+	   {% set more_button = 'more-'+facet+'-button' %}
+	  	{% if facet == 'type' %}
+	  		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_type_label, name=facet, more_button = more_button, id=c.facet_titles[facet].lower() ) }}
+	  	{% else %}
+	    	{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, more_button = more_button, id=c.facet_titles[facet].lower() ) }}
+	    {% endif %}
+	  {% endfor %}
 
-  {% block rss_feeds %}
-    {% snippet "package/snippets/rss_feeds.html" %}
-  {% endblock %}
+	  {% block rss_feeds %}
+	  	{{ h.snippet('package/snippets/rss_feeds.html', id='rss-feeds') }}
+	  {% endblock %}
 
-  {% block request_data %}
-    {% snippet "package/snippets/request_data.html" %}
-  {% endblock %}
-{% endblock %}
+	  {% block request_data %}
+	    {{ h.snippet('package/snippets/request_data.html', id='request-data') }}
+	  {% endblock %}
+	{% endblock %}
+  </aside>
+{% endblock secondary %}
