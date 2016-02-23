@@ -2,17 +2,17 @@
   {% set hide_empty = hide_empty or false %}
   {% set selected_items = selected_items or h.get_facets_selected(name) %}
   {% set unselected_items = unselected_items or h.get_facets_unselected(name) %}
-  
+
   {% if selected_items or unselected_items or not hide_empty %}
-  
+
       {% if within_tertiary %}
         {% set nav_class = 'nav nav-pills nav-stacked' %}
         {% set nav_item_class = ' ' %}
         {% set wrapper_class = 'nav-facet nav-facet-tertiary' %}
       {% endif %}
-      
+
       {% block facet_list_item %}
-        <section class="{{ wrapper_class or 'module module-narrow module-shallow' }}">
+        <section id="{{ "%s %s"|format(id, "filter")|replace(' ','-') }}" class="{{ wrapper_class or 'module module-narrow module-shallow' }}">
           {% block facet_list_heading %}
             <h2 class="module-heading">
               <i class="icon-medium icon-filter"></i>
@@ -23,7 +23,7 @@
           {% block facet_list_items %}
   			{% set selected_items = selected_items or h.get_facets_selected(name) %}
   			{% set unselected_items = unselected_items or h.get_facets_unselected(name) %}
-  
+
           	{% if selected_items or unselected_items %}
             	<nav>
                 	<ul class="{{ nav_class or 'unstyled nav nav-simple nav-facet' }}">
@@ -57,7 +57,7 @@
                       		</li>
                 		{% endfor %}
                 	</ul>
-				</nav>          	
+				</nav>
                 	{% if unselected_items|length > 5 %}
                 		<a id="{{ more_button }}" class="facet-expand-collapse" >
                 			<div class="expander">
@@ -70,9 +70,9 @@
                 	{% endif %}
             {% else %}
             	<p class="module-content empty">{{ _('There are no {facet_type} that match this search').format(facet_type=title) }}</p>
-          	{% endif %}          
+          	{% endif %}
           {% endblock %}
         </section>
-      {% endblock %}  
+      {% endblock %}
   {% endif %}
 {% endblock %}
