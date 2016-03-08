@@ -457,6 +457,9 @@ class EDCPackageController(PackageController):
         data_dict['title'] = record_title
         data_dict['edc_state'] = 'DRAFT'
 
+        # CITZEDC755 - Remove publish date for duplicate datasets
+        data_dict['record_publish_date'] = None
+
         #Remove resources if there are any
         del data_dict['resources']
 
