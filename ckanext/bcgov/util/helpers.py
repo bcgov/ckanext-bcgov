@@ -118,16 +118,55 @@ def record_is_viewable(pkg_dict, userobj):
     #Anonymous user (visitor) can only view published public records
     published_state = ['PUBLISHED', 'PENDING ARCHIVE']
 
-    if pkg_dict['metadata_visibility'] == 'Public' and pkg_dict['edc_state'] in published_state:
+    # CITZEDC-832
+    # Checking in `extras` for custom schema fields
+    metadata_visibility = ''
+    edc_state = ''
+    owner_org = ''
+
+    if 'metadata_visibility' in pkg_dict:
+        metadata_visibility = pkg_dict['metadata_visibility']
+    else:
+        metadata_visibility = get_package_extras_by_key('metadata_visibility', pkg_dict)
+
+    if 'edc_state' in pkg_dict:
+        edc_state = pkg_dict['edc_state']
+    else:
+        edc_state = get_package_extras_by_key('edc_state', pkg_dict)
+
+    if 'owner_org' in pkg_dict:
+        owner_org = pkg_dict['owner_org']
+    else:
+        owner_org = get_package_extras_by_key('owner_org', pkg_dict)
+
+
+    if metadata_visibility == 'Public' and edc_state in published_state:
         return True
     if userobj  :
-        if pkg_dict['metadata_visibility'] == 'IDIR' and pkg_dict['edc_state'] in published_state:
+        if metadata_visibility == 'IDIR' and edc_state in published_state:
             return True
         user_orgs = [org.id for org in get_user_orgs(userobj.id, 'editor') ]
         user_orgs += [org.id for org in get_user_orgs(userobj.id, 'admin') ]
-        if pkg_dict['owner_org'] in user_orgs:
+        if owner_org in user_orgs:
             return True
     return False
+
+
+def get_package_extras_by_key(pkg_extra_key, pkg_dict):
+    '''
+    Gets the specified `extras` field by pkg_extra_key, if it exists
+    Returns False otherwise
+    '''
+
+    if 'extras' in pkg_dict:
+        for extras in pkg_dict['extras']:
+            if 'key' in extras:
+                if extras['key'] == pkg_extra_key:
+                    return extras['value']
+        return False
+    else:
+        return False
+
 
 
 def get_package_data(pkg_id):
