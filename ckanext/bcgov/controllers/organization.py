@@ -31,6 +31,8 @@ log = logging.getLogger('ckanext.edc_schema')
 class EDCOrganizationController(OrganizationController):
     
     def index(self):
+        # FIXME: index copied from GroupController and modified to
+        # show only parent groups
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'for_view': True,
                    'with_private': False}
@@ -70,6 +72,9 @@ class EDCOrganizationController(OrganizationController):
         return render('organization/index.html')
         
     def _read(self, id, limit):
+        # FIXME: copied and modified from GroupController to collect
+        # sub organizations, create c.fields_grouped and hard-code
+        # search facets
         ''' This is common code used by both read and bulk_process'''
         
         group_type = self._get_group_type(id.split('@')[0])
@@ -78,11 +83,20 @@ class EDCOrganizationController(OrganizationController):
                    'schema': self._db_to_form_schema(group_type=group_type),
                    'for_view': True, 'extras_as_string': True}
 
-        #Get the subgorgs of this org
+        # Get the subgorgs of this org
         org_id = c.group_dict.get('id')
         
         q = c.q = request.params.get('q', '')
-        
+
+        # XXX: unfortunate hack, copy sort default behaviour from
+        # before_search because we're using the q parameter below
+        # even when no text query was submitted
+        if not q and request.params.get('sort') in (None, 'rank'):
+            sort_by = 'record_publish_date desc, metadata_modified desc'
+        else:
+            sort_by = request.params.get('sort', None)
+
+
         suborgs = ['"' + org + '"' for org in get_suborgs(org_id)]
         if suborgs != []:
             q += ' owner_org:("' + org_id + '" OR ' + ' OR '.join(suborgs) + ')'
@@ -101,9 +115,7 @@ class EDCOrganizationController(OrganizationController):
         # most search operations should reset the page counter:
         params_nopage = [(k, v) for k, v in request.params.items()
                          if k != 'page']
-        
-        sort_by = request.params.get('sort', None)
-        
+
         def search_url(params):
             if group_type == 'organization':
                 if c.action == 'bulk_process':
@@ -227,7 +239,9 @@ class EDCOrganizationController(OrganizationController):
 
 
     def member_new(self, id):
-        
+        # FIXME: heavily customized version of GroupController.member_new
+        # that is tied to our particular auth mechanism and permissions
+        # This would be better in the idir extension
         import ckan.lib.navl.dictization_functions as dict_fns
         import ckan.new_authz as new_authz
         
@@ -296,36 +310,6 @@ class EDCOrganizationController(OrganizationController):
             h.flash_error(e.error_summary)
         return render('organization/member_new.html', extra_vars={'errors': errors})
 
-
-
-#     def delete(self, id):
-#         '''
-#         Deletes an organization.
-#         ToDo: Do we need to delete all organization members and records?
-#         '''
-#         
-#         if 'cancel' in request.params:
-#             self._redirect_to(controller='organization', action='edit', id=id)
-# 
-#         context = {'model': model, 'session': model.Session,
-#                    'user': c.user or c.author}
-# 
-#         try:
-#             self._check_access('organization_purge', context, {'id': id})
-#         except NotAuthorized:
-#             abort(401, _('Unauthorized to delete organization %s') % '')
-# 
-#         try:
-#             if request.method == 'POST':
-#                 self._action('organization_purge')(context, {'id': id})
-#                 h.flash_notice(_('Organization has been deleted.'))
-#                 self._redirect_to(controller='organization', action='index')
-#             c.group_dict = self._action('organization_show')(context, {'id': id})
-#         except NotAuthorized:
-#             abort(401, _('Unauthorized to delete organization %s') % '')
-#         except NotFound:
-#             abort(404, _('Organization not found'))
-#         return self._render_template('group/confirm_delete.html')
 
     def about(self, id):
         c.group_dict = self._get_group_dict(id)

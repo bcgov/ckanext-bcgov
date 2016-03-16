@@ -64,7 +64,7 @@
           {% block resource_read_title %}<h1 class="page-heading">{{ h.resource_display_name(res) | truncate(50) }}</h1>{% endblock %}
           {% block resource_read_url %}
             {% if res.url %}
-              <p class="muted ellipsis">{{ _('URL:') }} <a href="{{ res.url }}" title="{{ res.url }}">{{ res.url }}</a></p>
+              <p class="muted ellipsis">{{ _('URL:') }} <a href="{{ res.url }}" class="resource-url-analytics" title="{{ res.url }}">{{ res.url }}</a></p>
             {% endif %}
           {% endblock %}
           <div class="prose notes" property="rdfs:label">
@@ -79,9 +79,16 @@
           {% endblock %}
         </div>
       </div>
-      {% block data_preview %}
-        {{ super() }}
-      {% endblock %}
+      {# CITZEDC769 - xls/xlsx previews not being identified
+            Solution for now is to check the resource type for xls/xlsx and don't
+            display the preview element at all, data preview doesn't have any option
+            to prevent the preview automatically display for specific types
+       #}
+      {% if not (res.format == 'xlsx' or res.format == 'xls') %}
+        {% block data_preview %}
+            {{ super() }}
+        {% endblock %}
+      {% endif %}
     </section>
   {% endblock %}
 {% endblock %}

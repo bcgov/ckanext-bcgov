@@ -30,24 +30,12 @@
     <div class="wrap">
         <ul class="pnl-btn list-inline text-right hidden-md hidden-lg">
             <li>
-                <a href="#wb-pnl" title="Menu" aria-controls="wb-pnl" class="overlay-lnk btn btn-xs btn-default" role="button">
+                <a href="#wb-pnl" id="hidden-btn" onclick="return false" title="Menu" class="overlay-lnk btn btn-xs btn-default">
                     <span class="glyphicon glyphicon-th-list"><span class="wb-inv">Menu</span></span>
                 </a>
             </li>
         </ul>
-        <div id="wb-pnl"></div>
-        <div id="wb-srch">        
-            {% block header_site_search %}
-                <form class="section site-search simple-input" action="http://www2.gov.bc.ca/gov/search/results.page" method="get" onsubmit="javascript:this.keywords.value=this.keywords.value.toLowerCase();">
-                  <div class="field">
-                    <label for="field-sitewide-search">{{ _('Search') }}</label>
-                    <input id="field-sitewide-search" type="text" name="keywords" placeholder="{{ _('Search gov.bc.ca') }}" />
-                    <input type="hidden" value="gov" name="config" /> 
-                    <button class="btn-search" type="submit"><i class="icon-search"></i></button>
-                  </div>
-                </form>
-            {% endblock %}
-        </div>
+        <div id="wb-pnl" class="wb-overlay-inited open"></div>
         <a href="http://www2.gov.bc.ca/gov/index.page" class="logo" title="B.C. Home"><img src="{{ g.site_url }}/assets/gov/images/bc_logo_blue.png"></a>
         <a href="{{ h.get_fqdn() }}"><h2>{{ g.site_title }}</h2></a>
     </div>

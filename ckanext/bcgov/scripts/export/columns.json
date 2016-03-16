@@ -1,0 +1,66 @@
+{
+  "Title": {
+      "pattern": ["^title$"]
+  },
+  "Name": {
+      "pattern": ["^name$"]
+  },
+  "Type": {
+      "pattern": ["^type$"]
+  },
+  "ID": {
+      "pattern": ["^id$"]
+  },
+  "Sub. Organization": {
+      "pattern": ["^sub_org$"]
+  },
+  "Full Organization Name": {
+      "pattern": ["^organization$", "^title$"]
+  },
+  "Sector": {
+      "pattern": ["^sector$"]
+  },
+    "License": {
+      "pattern": ["^license_title$"]
+  },
+    "Security Class": {
+      "pattern": ["^security_class$"]
+  },
+  "View Audience": {
+      "pattern": ["^view_audience$"]
+  },
+  "Download": {
+      "pattern": "^download_audience$"
+  },
+  "Record Publish date": {
+      "pattern": ["^record_publish_date$"]
+  },
+  "Record Last Modified": {
+      "pattern": ["^record_last_modified$"]
+  },
+  "Description": {
+      "pattern": "^notes$",
+      "max_length": 50
+  },
+  "Resource Status": {
+      "pattern": ["^resource_status$"]
+  },
+  "Resource URL": {
+      "pattern": ["^resources$", "^url$"]
+  },
+  "Format": {
+      "pattern": ["^resources$", "^format$"]
+  },
+  "Resource Name": {
+      "pattern": ["^resources$", "^name$"]
+  },
+  "Resource ID": {
+      "pattern": ["^resources$", "^id$"]
+  },
+  "Resource Type": {
+      "pattern": ["^resources$", "^edc_resource_type$"]
+  },
+  "Object Name": {
+      "pattern": ["^object_name$"]
+  }
+}

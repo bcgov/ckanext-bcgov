@@ -1,9 +1,10 @@
-# Copyright  2015, Province of British Columbia 
-# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
- 
+# Copyright  2015, Province of British Columbia
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
+
 from ckan.common import  c, _
 
 import pylons.config as config
+import ckan.lib.base as base
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 
@@ -27,8 +28,6 @@ from ckanext.bcgov.util.helpers import (get_suborg_sector,
                                              is_license_open,
                                              get_record_type_label,
                                              get_suborgs,
-                                             edc_linked_gravatar,
-                                             edc_gravatar,
                                              record_is_viewable,
                                              get_facets_selected,
                                              get_facets_unselected,
@@ -37,7 +36,6 @@ from ckanext.bcgov.util.helpers import (get_suborg_sector,
                                              get_organizations,
                                              get_organization_title,
                                              get_espg_id,
-                                             get_org_title,
                                              get_edc_org,
                                              get_iso_topic_values,
                                              get_eas_login_url,
@@ -45,7 +43,10 @@ from ckanext.bcgov.util.helpers import (get_suborg_sector,
                                              get_environment_name,
                                              get_version,
                                              get_bcgov_commit_id,
+                                             resource_prefix,
                                              )
+
+abort = base.abort
 
 
 class SchemaPlugin(plugins.SingletonPlugin):
@@ -82,8 +83,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "is_license_open" : is_license_open,
                 "record_type_label" : get_record_type_label,
                 "get_suborgs": get_suborgs,
-                "edc_linked_gravatar": edc_linked_gravatar,
-                "edc_gravatar": edc_gravatar,
                 "record_is_viewable": record_is_viewable,
                 "get_espg_id" : get_espg_id,
                 "get_user_role_orgs" : get_user_role_orgs,
@@ -91,7 +90,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "get_facets_selected": get_facets_selected,
                 "get_facets_unselected" : get_facets_unselected,
                 "get_sectors_list": get_sectors_list,
-                "get_org_title" : get_org_title,
                 "get_edc_org" : get_edc_org,
                 "get_iso_topic_values" : get_iso_topic_values,
                 "get_eas_login_url": get_eas_login_url,
@@ -99,6 +97,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "get_environment_name": get_environment_name,
                 "get_version": get_version,
                 "get_bcgov_commit_id": get_bcgov_commit_id,
+                "googleanalytics_resource_prefix": resource_prefix,
                 }
 
 
@@ -245,8 +244,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
         and user roles.
         '''
 
-        #Change the default sort order
-        if search_params.get('sort') in (None, 'rank'):
+        #Change the default sort order when no query passed
+        if not search_params.get('q') and search_params.get('sort') in (None, 'rank'):
             search_params['sort'] = 'record_publish_date desc, metadata_modified desc'
 
 
@@ -299,6 +298,13 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
         return search_params
 
+    def before_view(self, pkg_dict):
+        # CITZEDC808
+        if not record_is_viewable(pkg_dict, c.userobj):
+            abort(401, _('Unauthorized to read package %s') % pkg_dict.get("title"))
+
+        return pkg_dict
+
     def dataset_facets(self, facet_dict, package_type):
         '''
         Customizes search facet list.
@@ -318,6 +324,12 @@ class SchemaPlugin(plugins.SingletonPlugin):
             facet_dict['edc_state'] = _('States')
 
         return facet_dict
+
+    def group_facets(self, facet_dict, group_type, package_type):
+        '''
+        Use the same facets for filtering datasets within group pages
+        '''
+        return self.dataset_facets(facet_dict, package_type)
 
     def get_actions(self):
         import ckanext.bcgov.logic.action as edc_action

@@ -29,7 +29,7 @@
     <div class="row row-fluid">
         {% if not no_title %}
             <div class="col-sm-6">
-                <h2>{% snippet 'snippets/search_result_text.html', query=query, count=count, type=type %}</h2>
+                <h2 id="record-count">{% snippet 'snippets/search_result_text.html', query=query, count=count, type=type %}</h2>
             </div>
         {% endif %}
   {% endblock %}
@@ -88,4 +88,3 @@
     <p><strong>There was an error while searching.</strong> Please try again.</p>
   {% endtrans %}
 {% endif %}
-

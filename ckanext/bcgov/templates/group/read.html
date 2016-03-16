@@ -1,0 +1,10 @@
+{% ckan_extends %}
+
+{% block packages_list %}
+{# pass the group id in so that links generated
+   in the package list will work properly #}
+  {% if c.page.items %}
+    {{ h.snippet('snippets/package_list.html', packages=c.page.items,
+      group_id=c.group_dict.id) }}
+  {% endif %}
+{% endblock %}

@@ -6,6 +6,7 @@
 {% set record_type = h.dataset_type(pkg_name) %}
 
 {% resource 'edc_resource/edc_schema.css' %}
+{% resource 'edc_resource/edc-file-upload.js' %}
 {% set archived = (state == 'ARCHIVED') %}
 <form class="dataset-form dataset-resource-form form-horizontal {% if archived %} archived {% endif %}" method="post" action="{{ action }}" data-module="basic-form resource-form" enctype="multipart/form-data">
   {% block stages %}
@@ -34,7 +35,7 @@
       {% set is_upload = (data.url_type == 'upload') %}
       {{ form.image_upload(data, errors, field_url='url', field_upload='upload', field_clear='clear_upload',
          is_upload_enabled=h.uploads_enabled(), is_url=data.url and not is_upload, is_upload=is_upload,
-         upload_label=_('File'), url_label=_('URL')) }}
+         upload_label=_('File'), url_label=_('File')) }}
     {% endblock %}
 
     {% block basic_fields_name %}
@@ -48,6 +49,7 @@
 		{% resource 'edc_resource/jquery-ui.js' %}
 		{% resource 'edc_resource/jquery-ui.css' %}
 		{% resource 'edc_resource/edc_resource.js' %}
+    {% resource 'edc_resource/edc_restrict_browser.js' %}
 
 	{% if record_type == 'Geographic' or record_type=='Dataset'  %}
     	{% block basic_fields_description %}
@@ -114,7 +116,7 @@
     {% block again_button %}
       <button class="btn" name="save" value="again" type="submit">{{ _('Save & add another') }}</button>
     {% endblock %}
-    <button class="btn btn-primary" name="save" value="go-metadata" type="submit">{% block save_button_text %}{{ _('Next: Additional Info') }}{% endblock %}</button>
+    <button class="btn btn-primary" name="save" value="go-metadata" type="submit">{% block save_button_text %}{{ _('Finished') }}{% endblock %}</button>
     {% else %}
       <button class="btn btn-primary" name="save" value="go-dataset-complete" type="submit">{{ _('Add') }}</button>
     {% endif %}

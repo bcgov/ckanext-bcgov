@@ -21,13 +21,15 @@
     {
     	"name" : "resource_format",
     	"tags" : [
+                "arcgis_rest",
                 "atom",
                 "cded",
- 				"csv",
+ 	        "csv",
                 "e00",
                 "fgdb",
                 "geojson",
                 "georss",
+                "gft",
                 "html",
                 "json",
                 "kml",
@@ -37,6 +39,7 @@
                 "shp",
                 "txt",
                 "wms",
+                "wmts",
                 "xls",
                 "xlsx",
                 "xml",
@@ -230,7 +233,8 @@
                 "EPSG_32610 - WGS 84 UTM zone 10N",
                 "EPSG_32611 - WGS 84 UTM zone 11N",
                 "EPSG_32612 - WGS 84 UTM zone 12N",
-                "UTM"
+                "UTM",
+                "N/A"
             ]
 }
 ]

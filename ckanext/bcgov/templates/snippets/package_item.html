@@ -36,25 +36,25 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
             {% set marker_strlen = 12 %}
             {% set sector_length = package.sector|truncate(marker_strlen+1, False, '')|length %}
             <ul class="dataset-markers">
-              <li class="marker dataset-sector {{ package.sector|lower|replace(' ', '-')|replace('.', '-')  }}{% if sector_length >= marker_strlen or sector_length == 0 %} small{% endif %}"><a href="{{ h.url_for(controller='package', action='search', sector=package.sector) }}">{{ package.sector }}</a></li>
+              <li class="marker dataset-sector {{ package.sector|lower|replace(' ', '-')|replace('.', '-')  }}{% if sector_length >= marker_strlen or sector_length == 0 %} small{% endif %}">
+                  <div title="Sector" class="cursor-help">{{ package.sector }}</div>
+              </li>
             </ul>
           {% endif %}
           {% set package_type = package.type|lower %}
           {% set icon_type = package_type|replace('geographic', 'globe')|replace('dataset', 'table')|replace('webservice', 'code')|replace('application', 'cogs') %}
           {% set title_text = package_type|replace('geographic', 'Geographic Datasets')|replace('dataset', 'Datasets')|replace('webservice', 'APIs')|replace('application', 'Applications') %}
-          {% if org_id or user_id %}
-          	{% set href = h.add_url_param(new_params={'type': package.type}, extras={'id' : org_id }) %}
-          {% else %}                   
-          	{% set href = h.add_url_param(new_params={'type': package.type}) %}
+          {% if org_id or user_id or group_id %}
+            {% set href = h.add_url_param(new_params={'type': package.type}, extras={'id' : org_id or user_id or group_id }) %}
+          {% else %}
+            {% set href = h.add_url_param(new_params={'type': package.type}) %}
           {% endif %}
           <div class="dataset-marker-type-icon">
-         
-            {# <a href="{{ h.url_for(controller='package', action='search', type=package.type) }}" title="{{ title_text }}"><i class="icon icon-2x icon-{{ icon_type }}"></i></a> #}
-            <a href="{{ href }}" title="{{ title_text }}"><i class="icon icon-2x icon-{{ icon_type }}"></i></a>
+
+            <div title="{{ title_text }}" class="cursor-help"><i class="icon icon-2x icon-{{ icon_type }}"></i></div>
           </div>
         {% endblock %}
 
-		{# Check if the user is a member of the package orgs #}
         {% if logged_in and is_editor %}
           {% set edc_state_class = package.edc_state|lower|replace(" ", "") %}
           <div class="edc-state {{ edc_state_class }}">
@@ -79,12 +79,6 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
             {% if package.org and package.sub_org %}
             {% block heading_orgs %}
               <div class="dataset-heading-orgs">
-              {# 
-                  	{% set org = h.get_edc_org(package.org) %}
-    				{% set branch = h.get_edc_org(package.sub_org) %}
-              
-              #}
-              {# snippet 'package/snippets/org_view.html', org=org, branch=branch #}
               </div>
             {% endblock %}
             {% endif %}
@@ -117,7 +111,7 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
               {% block resources_inner %}
                 {% for resource in h.dict_list_reduce(package.resources, 'format') %}
                 <li>
-                  <a href="{{ h.url_for(controller='package', action='read', id=package.name) }}" class="label" data-format="{{ resource.lower() }}" >{{ resource.lower() }}</a>
+                  <div class="label cursor-help" data-format="{{ resource.lower() }}" title="Data Format">{{ resource.lower() }}</a>
                 </li>
                 {% endfor %}
               {% endblock %}
