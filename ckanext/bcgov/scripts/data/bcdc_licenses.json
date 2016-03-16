@@ -82,5 +82,33 @@
         "is_open": false,
         "title": "Queen's Printer License - British Columbia",
         "url": "http://www.bclaws.ca/standards/2014/QP-License_1.0.html"
+    },
+    {
+        "domain_content": false,
+        "domain_data": true,
+        "domain_software": false,
+        "family": "",
+        "id": "42",
+        "is_okd_compliant": false,
+        "is_osi_compliant": false,
+        "maintainer": "",
+        "status": "active",
+        "is_open": false,
+        "title": "Elections BC Open Data License",
+        "url": "http://www.elections.bc.ca/docs/EBC-Open-Data-Licence.pdf"
+    },
+    {
+        "domain_content": false,
+        "domain_data": true,
+        "domain_software": false,
+        "family": "",
+        "id": "43",
+        "is_okd_compliant": false,
+        "is_osi_compliant": false,
+        "maintainer": "",
+        "status": "active",
+        "is_open": false,
+        "title": "Open Government License - Destination BC",
+        "url": "http://www5.hellobc.com/pdf/ogl_dbc.pdf"
     }
 ]
