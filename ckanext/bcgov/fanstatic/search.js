@@ -22,7 +22,7 @@
         // kicks off the loading/processing of `local` and `prefetch`
         engine.initialize();
 
-        $('.search').typeahead({
+        $('.search:not(.gov)').typeahead({
           hint: true,
           highlight: true,
           minLength: 4

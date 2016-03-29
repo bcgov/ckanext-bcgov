@@ -245,20 +245,6 @@ h3,
   text-decoration: underline;
 }
 
-.row {
-  margin-right: -15px;
-}
-
-.row:before,
-.row:after {
-  content: " ";
-  display: table;
-}
-
-.row:after {
-  clear: both;
-}
-
 .col-sm-6
 {
   position: relative;
@@ -519,4 +505,23 @@ a:visited {
   color: #fff;
   background-color: #2572b4;
   border-color: #143d5f;
+}
+
+/* Bootstrap 3 helper classes */
+@media (min-width: 1200px) {
+  .hidden-lg {
+    display: none!important;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 992px) {
+  .hidden-md {
+    display: none!important;
+  }
+}
+
+@media (max-width: 767px) {
+  .hidden-xs {
+    display: none!important;
+  }
 }
