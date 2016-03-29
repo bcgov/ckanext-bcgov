@@ -7,64 +7,148 @@
 {# % snippet 'snippets/sub-navigation.html', userobj = c.userobj %}
 {% snippet 'snippets/main-navigation.html', userobj = c.userobj % #}
 
-<div id="footer-navigation">
-    <div class="wrap">
-      <div class="visible-md visible-lg">
-        <div class="left footer-links">
-            <h3><a href="http://www2.gov.bc.ca/gov/theme.page?id=8CB0A2C5DC3B19401323F1A3F22D5769">Government</a></h3>
-        </div>
+    <div id="footer">
+        <img src="/assets/gov/images/back-to-top.png" alt="Back to top" title="Back to top" class="back-to-top" style="display: none;">
+        <div id="footerWrapper">
+            <div id="footerToggle">
+                <a class="footerExpand" href="http://www2.gov.bc.ca/#"><img src="/assets/gov/images/footer_expandbutton.png" alt="Expand footer" title="Expand footer"></a>
+                <a class="footerCollapse" href="http://www2.gov.bc.ca/#" style="display:none"><img src="/assets/gov/images/footer_collapsebutton.png" alt="Collapse footer" title="Collapse footer"></a>     
+            </div>
+        
+            <div id="footerCollapsible">
+        
+                <div id="footerContainer" class="container">
+                    
+                    <div id="footerMediaLinks" class="row">
+                        <div class="span12">
+                            <div class="connect">
+                                <h2 class="pull-left">Connect With Us</h2>
+                            </div>
+                            <div class="">
+                                <ul class="inline">
+                                    <li data-order="0"><a href="https://news.gov.bc.ca/" target="_blank">BC Gov News</a></li>
+                                    <li data-order="1"><a href="https://www.facebook.com/BCProvincialGovernment" target="_blank">Facebook</a></li>
+                                    <li data-order="2"><a href="https://twitter.com/BCGovNews" target="_blank">Twitter</a></li>
+                                    <li data-order="3"><a href="https://www.flickr.com/photos/bcgovphotos/" target="_blank">Photos</a></li>
+                                    <li data-order="4"><a href="https://www.youtube.com/user/ProvinceofBC" target="_blank">Videos</a></li>
+                                    <li data-order="5"><a href="https://news.gov.bc.ca/newsletters" target="_blank">Newsletters</a></li>
+                                    <li data-order="6"><a href="https://news.gov.bc.ca/connect#rss" target="_blank">RSS Feeds</a></li>
+                                </ul>
+                            </div>
+                        
+                            <hr class="span12">
+                        </div>
+                    </div>
+                
+                    <div id="footerAZLinks" class="row hidden-xs">
+                        <div class="span12">            
+                            <h2>Government A-Z</h2>
+                            <div class="row">
+                                <div class="span4">
+                                <ul class="bulleted">
+                                    <li id="replicantData_461EB6AD9D76408B82B694E9FBDEFE32" data-order="0">
+                                                <a href="http://www2.gov.bc.ca/gov/content/home/services-a-z" target="_self">Services A-Z</a>
 
-        <div class="footer-links">
-            <h3><a href="http://www2.gov.bc.ca/gov/theme.page?id=B7D67ECD8DD382E2A9F6E8F8149011E4">Residents</a></h3>
-        </div>
+        </li>
+                                        </ul>
+                            </div>
+                            <div class="span4">
+                                <ul class="bulleted">
+                                    <li id="replicantData_F0EA3631778F4368BC0987587A9985B7" data-order="1">
+                                                <a href="http://www2.gov.bc.ca/gov/content/home/organizations-a-z" target="_self">Organizations A-Z</a>
 
-        <div class="footer-links">
-            <h3><a href="http://www2.gov.bc.ca/gov/theme.page?id=F5415B90D214B10A6245D30D397A05A1">Education</a></h3>
-        </div>
+        </li>
+                                        </ul>
+                            </div>
+                            <div class="span4">
+                                <ul class="bulleted">
+                                    <li id="replicantData_4DC9D94C2FFD4FFBAEA035FE68828407" data-order="2">
+                                                <a href="http://www2.gov.bc.ca/gov/content/home/forms-a-z" target="_self">Forms A-Z</a>
 
-        <div class="right footer-links">
-            <h3><a href="http://www2.gov.bc.ca/gov/theme.page?id=1629C69A7117AC65E91C018EA07D7E44">Business</a></h3>
-        </div>
+        </li>
+                                        </ul>
+                                
+                            </div>
+                            </div>
+                            
+                            <hr class="hidden-md hidden-lg span12">
+                        </div>
+                    </div>
+                
+                    <div id="footerThemeLinks" class="row hidden-xs">
+                        <div class="span12">
+                            <h2>Services and Information Topics</h2>
 
-        <div class="left footer-links">
-            <h3><a href="http://www2.gov.bc.ca/gov/theme.page?id=E0EA3A213DB57A098786BF9F390CA86A">Environment</a></h3>
-        </div>
+                            <div class="row">
+                                
+                                <div class="span4">
+                                    <ul class="bulleted">
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/governments">British Columbians &amp; Our Governments</a></li>
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/health">Health</a></li>
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/life-events">Birth, Adoption, Death, Marriage &amp; Divorce</a></li>
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/education-training">Education &amp; Training</a></li>
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/transportation">Driving &amp; Transportation</a></li>
+                                    </ul>
+                                </div>
+                                <div class="span4">
+                                    <ul class="bulleted">
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/safety">Public Safety &amp; Emergency Services</a></li>
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/justice">Law, Crime &amp; Justice</a></li>
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/taxes">Taxes &amp; Tax Credits</a></li>
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/housing-tenancy">Housing &amp; Tenancy</a></li>
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/sports-culture">Sports, Recreation, Arts &amp; Culture</a></li>
+                                    </ul>
+                                </div>
+                                <div class="span4">
+                                    <ul class="bulleted">
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/environment">Environmental Protection &amp; Sustainability</a></li>
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/industry">Farming, Natural Resources &amp; Industry</a></li>
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/employment-business">Employment, Business &amp; Economic Development</a></li>
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/tourism-immigration">Tourism &amp; Immigration</a></li>
+                                        <li><a href="http://www2.gov.bc.ca/gov/content/family-social-supports">Family &amp; Social Supports</a></li>
+                                    </ul>
+                                </div>
 
-        <div class="footer-links">
-            <h3><a href="http://www2.gov.bc.ca/gov/theme.page?id=D5340F7BFE2793E612F265125067E05C">Health &amp; Safety</a></h3>
-        </div>
+                            </div>
+                            
+                            <hr class="span12">
+                        </div>
+                    </div>  
+                    
+                </div>  
+            </div>
+        
+            <div id="footerAdminSection">
+                <div id="footerAdminLinksContainer" class="container">
+                    <div id="footerAdminLinks" class="row">
+                        <div class="span12">
+                            <ul class="inline">
+                                <li data-order="0"><a href="http://www2.gov.bc.ca/gov/content/home" target="_self">Home</a></li>              
+                                <li data-order="1"><a href="http://www2.gov.bc.ca/gov/content/about-gov-bc-ca" target="_self">About gov.bc.ca</a></li>      
+                                <li data-order="2"><a href="http://www2.gov.bc.ca/gov/content/home/disclaimer" target="_self">Disclaimer</a></li>
+                                <li data-order="3"><a href="http://www2.gov.bc.ca/gov/content/home/privacy" target="_self">Privacy</a></li>   
+                                <li data-order="4"><a href="http://www2.gov.bc.ca/gov/content/home/accessibility" target="_self">Accessibility</a></li>
+                                <li data-order="5"><a href="http://www2.gov.bc.ca/gov/content/home/copyright" target="_self">Copyright</a></li>
+                                <li data-order="6"><a href="http://www2.gov.bc.ca/gov/content/home/contact-us" target="_self">Contact Us</a></li>                                                       
+                                <!-- viewport toggle - set view port cookie and reload current page -->
+                                <li class="mobileToggle  hidden-lg hidden-md"><a target="_self" href="javascript:location.reload();" onclick="document.cookie = &#39;forseLargeViewport=true; path=/&#39;;">Desktop View</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>  
+            </div>
+            <div id="version">
+                <div class="container">
+                    {% if h.get_environment_name() %}
+                        {{ h.get_environment_name() }}:
+                    {% endif %}
 
-        <div class="footer-links">
-            <h3><a href="http://www2.gov.bc.ca/gov/theme.page?id=154F929B67DE04862F97AAA8EB273445">Employment</a></h3>
-        </div>
+                    {% if h.get_version() %}
+                        v{{ h.get_version() }}
+                    {% endif %}
 
-        <div class="right footer-links">
-            <h3><a href="http://www2.gov.bc.ca/gov/theme.page?id=F9A8A09A65CE26DDE77E10C5CB32A392">About B.C.</a></h3>
-        </div>
-      </div>
-
-        <div id="media-links">
-          <div id="media-links-img">
-            <a href="{{ h.url('home') }}"><img alt="B.C. Home" src="{{ g.site_url }}/assets/gov/images/bc_logo.gif" /></a>
-          </div>
-          <ul>
-            <li><a href="http://www2.gov.bc.ca/gov/admin/disclaimer.page">Disclaimer</a></li>
-            <li><a href="http://www2.gov.bc.ca/gov/admin/privacy.page">Privacy</a></li>
-            <li><a href="http://www2.gov.bc.ca/gov/admin/accessibility.page">Accessibility</a></li>
-            <li><a href="http://www2.gov.bc.ca/gov/admin/copyright.page">Copyright</a></li>
-            <li><a href="https://extranet.gov.bc.ca/forms/gov/contact/index.html">Contact Us</a></li>
-          </ul>
-        </div>
-        <div id="version">
-            {% if h.get_environment_name() %}
-                {{ h.get_environment_name() }}:
-            {% endif %}
-
-            {% if h.get_version() %}
-                v{{ h.get_version() }}
-            {% endif %}
-
-            {{ h.get_bcgov_commit_id() }}
-        </div>
-    </div>
-</div>
+                    {{ h.get_bcgov_commit_id() }}
+                </div>
+            </div>
+        </div> 
+    </div>   
