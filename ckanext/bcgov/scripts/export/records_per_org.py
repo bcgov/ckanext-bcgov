@@ -5,7 +5,11 @@ import requests
 import json
 import csv
 
-domain ='https://catalogue.data.gov.bc.ca'
+from sys import argv
+
+script, env, api_key, rec_id = argv
+
+domain ='https://' + env + '.data.gov.bc.ca'
 url = domain + '/api/3/action/organization_list'
 
 request = requests.get(url)
@@ -31,7 +35,7 @@ print o_list
 #upload to package
 demo = ckanapi.RemoteCKAN(domain, api_key)
 action='resource_update'
-rec = demo.action.package_show(id='42f7ca99-e7f3-40f7-93d7-f2500cccc315')
+rec = demo.action.package_show(id = rec_id)
 
 with open('packagesperorg' + '.csv', 'wb') as f:
 	writer = csv.writer(f)
