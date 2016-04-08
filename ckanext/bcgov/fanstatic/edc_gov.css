@@ -6,7 +6,8 @@
 }
 
 #header,
-#footer {
+#footer,
+nav#sub {
 	font-family: Myriad-Pro, Calibri, Arial, sans serif;
 }
 
@@ -159,7 +160,7 @@
 .navigationRibbon a,
 .navigationRibbon .dropdown {
 	color: #fff;
-	display: table-cell;
+	display: inline-block;
 	text-align: center;
 	vertical-align: middle;
 	position: relative;
@@ -230,10 +231,6 @@
 
 #header.collapsed-header #header-main > .container {
     position: relative;
-}
-
-#header.collapsed-header .hidden-xs {
-    display: none !important;
 }
 
 #header.collapsed-header #header-main-row1 {
@@ -424,6 +421,10 @@
 	width: auto;
 	float: none;	
 	background-color: #036;
+}
+
+#header.collapsed-header #govNavMenu .hidden-xs {
+	display: none;
 }
 
 /* full size css */
@@ -710,12 +711,14 @@
 	
 	.mobile-menu-search .homepage-tile .tile-search-flyout {
 		background-color: #fff;
-		height: 40px;
+		height: 38px;
 		border-bottom: 1px solid #5f79a2;
 	}	
 
 	.mobile-menu-search .homepage-tile .tile-search-flyout input {
 		border: 0;
+		height: 37px;
+		border-radius: 0;
 	}
 
 /* mobil size css */
@@ -1045,6 +1048,10 @@
     background: #fff;				
 }
 
+nav#sub {
+	margin-top: 103px;
+}
+
 
 
 #footer {
@@ -1133,7 +1140,7 @@
 		padding-right: 40px;
 	}
 	.homepage-tile .tile-search {
-		height: 40px;
+		height: 38px;
 		line-height: normal;
 		display: block;
 	}
@@ -1205,13 +1212,76 @@ img.back-to-top:hover {
     filter: alpha(opacity=90); /* For IE8 and earlier */
 }
 
+.hidden-xs {
+	display: inline-block;
+}
+
+.visible-xs-inline-block {
+	display: none;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+}
+
 @media (max-width: 767px) {
-	#header .navbar-brand .logo {
-		padding-left: 15px;
+
+	#header.collapsed-header #header-main-row1 .header-search .search-boarder-arror::after {
+		right: 82px;
+	}
+
+	#header .navbar-brand .logo img {
+		margin-right: 5px;
+	}
+
+	#header.collapsed-header .menu-button.mini-menu-trigger, #header.collapsed-header .search-button.mini-menu-trigger {
+		width: 50px;
+	}
+
+	#header.collapsed-header .search-button.mini-menu-trigger {
+		right: 65px;
 	}
 	
 	.navigationRibbon a,
 	.navigationRibbon .dropdown {
 		display: inline-block;
+	}
+
+	.hidden-xs {
+		display: none;
+	}
+
+	.visible-xs-inline-block {
+		display: inline-block;
+	}
+
+	nav#sub {
+		margin: 0 -20px 10px -20px;
+	}
+
+	.toolbar .breadcrumb,
+	.toolbar .breadcrumb a {
+		color: #505050;
+	}
+}
+
+@media (max-width: 979px) {
+	#header .navbar-brand .logo {
+		padding-left: 15px;
+	}
+
+	nav#sub {
+		margin-top: 0;
+	}
+
+	nav#sub .container {
+		width: auto;
 	}
 }

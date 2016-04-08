@@ -7,8 +7,8 @@
 
         <div id="header-main" class="navbar navbar-default navbar-fixed-top">   
             
-            <div class="container" style="display: block;">             
-                <div id="header-main-row1" class="row">
+            <div class="container" >             
+                <div id="header-main-row1">
                     <div class="navbar-brand">
                         <a href="http://www2.gov.bc.ca/" class="logo">
                             <img src="/assets/gov/images/gov3_bc_logo.png" class="hidden-xs">
@@ -25,18 +25,12 @@
                         <div class="search-boarder-arror visible-xs-block"></div>
                         <div class="header-main-right">
                             <div class="gov search"> 
-                             <form role="form" class="" method="get" action="http://www2.gov.bc.ca/gov/search" id="suggestion_form">                         
-                                    <label style="display:none;" for="global-search">Search</label>
-                                        <input type="hidden" value="2E4C7D6BCAA4470AAAD2DCADF662E6A0" name="id">
-                                        <input type="text" onkeyup="searchBoxKeypress(event, 500)" autocomplete="off" value="" name="q" placeholder="Search BC Gov" class="searchbox" id="global-search"> 
-                                        <div style="display:none" id="hiddenVals">
-                                            <span id="site">default_collection</span>
-                                            <span id="client">default_frontend</span>
-                                        </div> 
-                                        <table id="search_suggest" class="search-suggestion-full ss-gac-m"></table>
-                                        <div class="search-trigger"> </div>
-                                    </form>
-                                </div>   
+                                <form role="form" class="" method="get" action="https://catalogue.data.gov.bc.ca/dataset" id="form-dataset-search-header">
+                                    <label class="sr-only" for="dataset-search">Search</label>
+                                    <input type="text" autocomplete="off" value="" name="q" placeholder="Search BC Data Catalogue" class="searchbox" id="dataset-search"> 
+                                    <div class="search-trigger"> </div>
+                                </form>
+                            </div>   
                         </div>
                     </div>
                 </div>
@@ -66,8 +60,8 @@
                                                 <span class="tile-content">
                                                     <span class="tile-search"></span>                       
                                                     <span class="tile-search-flyout">
-                                                        <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_279">
-                                                            <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 279)">
+                                                        <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_279">
+                                                            <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 279)">
                                                             <div id="hiddenVals" style="display:none">                                                                      
                                                                 <span id="site">theme_1_collection</span>
                                                                     <span id="client">theme_1_frontend</span>
@@ -81,7 +75,7 @@
                                         </span>
                                         <span class="level-trigger"></span>
                                         <div class="British Columbians &amp; Our Governments issub" style="z-index: 1008; display: none;">
-                                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_279" class="menu_suggestion_form"> 
+                                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_279" class="menu_suggestion_form"> 
                                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 279)">
                                                     <div class="search-trigger"></div>                                  
                                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -140,8 +134,8 @@
                             <span class="tile-content">
                                 <span class="tile-search"></span>                       
                                 <span class="tile-search-flyout">
-                                    <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_291">
-                                        <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 291)">
+                                    <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_291">
+                                        <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 291)">
                                         <div id="hiddenVals" style="display:none">                                                                      
                                             <span id="site">theme_3_collection</span>
                                                 <span id="client">theme_3_frontend</span>
@@ -157,7 +151,7 @@
                     <span class="level-trigger"></span>
                                                     
                             <div class="Health issub" style="background-image:url('/StaticWebResources/static/gov3/images/theme/menu/thememenu_health.png')">
-                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_291" class="menu_suggestion_form"> 
+                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_291" class="menu_suggestion_form"> 
                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 291)">
                                     <div class="search-trigger"></div>                                  
                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -221,8 +215,8 @@
                             <span class="tile-content">
                                 <span class="tile-search"></span>                       
                                 <span class="tile-search-flyout">
-                                    <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_299">
-                                        <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 299)">
+                                    <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_299">
+                                        <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 299)">
                                         <div id="hiddenVals" style="display:none">                                                                      
                                             <span id="site">theme_2_collection</span>
                                                 <span id="client">theme_2_frontend</span>
@@ -238,7 +232,7 @@
                     <span class="level-trigger"></span>
                                                     
                             <div class="Birth, Adoption, Death, Marriage &amp; Divorce issub" style="background-image:url('/StaticWebResources/static/gov3/images/theme/menu/thememenu_births.png')">
-                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_299" class="menu_suggestion_form"> 
+                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_299" class="menu_suggestion_form"> 
                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 299)">
                                     <div class="search-trigger"></div>                                  
                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -297,8 +291,8 @@
                             <span class="tile-content">
                                 <span class="tile-search"></span>                       
                                 <span class="tile-search-flyout">
-                                    <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_304">
-                                        <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 304)">
+                                    <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_304">
+                                        <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 304)">
                                         <div id="hiddenVals" style="display:none">                                                                      
                                             <span id="site">theme_4_collection</span>
                                                 <span id="client">theme_4_frontend</span>
@@ -314,7 +308,7 @@
                     <span class="level-trigger"></span>
                                                     
                             <div class="Education &amp; Training issub" style="background-image:url('/StaticWebResources/static/gov3/images/theme/menu/thememenu_education.png')">
-                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_304" class="menu_suggestion_form"> 
+                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_304" class="menu_suggestion_form"> 
                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 304)">
                                     <div class="search-trigger"></div>                                  
                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -373,8 +367,8 @@
                             <span class="tile-content">
                                 <span class="tile-search"></span>                       
                                 <span class="tile-search-flyout">
-                                    <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_310">
-                                        <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 310)">
+                                    <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_310">
+                                        <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 310)">
                                         <div id="hiddenVals" style="display:none">                                                                      
                                             <span id="site">theme_5_collection</span>
                                                 <span id="client">theme_5_frontend</span>
@@ -390,7 +384,7 @@
                     <span class="level-trigger"></span>
                                                     
                             <div class="Driving &amp; Transportation issub" style="background-image:url('/StaticWebResources/static/gov3/images/theme/menu/thememenu_driving.png')">
-                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_310" class="menu_suggestion_form"> 
+                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_310" class="menu_suggestion_form"> 
                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 310)">
                                     <div class="search-trigger"></div>                                  
                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -444,8 +438,8 @@
                             <span class="tile-content">
                                 <span class="tile-search"></span>                       
                                 <span class="tile-search-flyout">
-                                    <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_319">
-                                        <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 319)">
+                                    <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_319">
+                                        <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 319)">
                                         <div id="hiddenVals" style="display:none">                                                                      
                                             <span id="site">theme_6_collection</span>
                                                 <span id="client">theme_6_frontend</span>
@@ -461,7 +455,7 @@
                     <span class="level-trigger"></span>
                                                     
                             <div class="Public Safety &amp; Emergency Services issub" style="background-image:url('/StaticWebResources/static/gov3/images/theme/menu/thememenu_publicsafety.png')">
-                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_319" class="menu_suggestion_form"> 
+                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_319" class="menu_suggestion_form"> 
                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 319)">
                                     <div class="search-trigger"></div>                                  
                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -505,8 +499,8 @@
                             <span class="tile-content">
                                 <span class="tile-search"></span>                       
                                 <span class="tile-search-flyout">
-                                    <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_321">
-                                        <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 321)">
+                                    <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_321">
+                                        <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 321)">
                                         <div id="hiddenVals" style="display:none">                                                                      
                                             <span id="site">theme_7_collection</span>
                                                 <span id="client">theme_7_frontend</span>
@@ -522,7 +516,7 @@
                     <span class="level-trigger"></span>
                                                     
                             <div class="Law, Crime &amp; Justice issub" style="background-image:url('/StaticWebResources/static/gov3/images/theme/menu/thememenu_lawcrime.png')">
-                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_321" class="menu_suggestion_form"> 
+                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_321" class="menu_suggestion_form"> 
                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 321)">
                                     <div class="search-trigger"></div>                                  
                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -571,8 +565,8 @@
                             <span class="tile-content">
                                 <span class="tile-search"></span>                       
                                 <span class="tile-search-flyout">
-                                    <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_326">
-                                        <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 326)">
+                                    <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_326">
+                                        <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 326)">
                                         <div id="hiddenVals" style="display:none">                                                                      
                                             <span id="site">theme_8_collection</span>
                                                 <span id="client">theme_8_frontend</span>
@@ -588,7 +582,7 @@
                     <span class="level-trigger"></span>
                                                     
                             <div class="Taxes &amp; Tax Credits issub" style="background-image:url('/StaticWebResources/static/gov3/images/theme/menu/thememenu_taxes.png')">
-                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_326" class="menu_suggestion_form"> 
+                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_326" class="menu_suggestion_form"> 
                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 326)">
                                     <div class="search-trigger"></div>                                  
                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -642,8 +636,8 @@
                             <span class="tile-content">
                                 <span class="tile-search"></span>                       
                                 <span class="tile-search-flyout">
-                                    <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_330">
-                                        <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 330)">
+                                    <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_330">
+                                        <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 330)">
                                         <div id="hiddenVals" style="display:none">                                                                      
                                             <span id="site">theme_9_collection</span>
                                                 <span id="client">theme_9_frontend</span>
@@ -659,7 +653,7 @@
                     <span class="level-trigger"></span>
                                                     
                             <div class="Housing &amp; Tenancy issub" style="background-image:url('/StaticWebResources/static/gov3/images/theme/menu/thememenu_housing.png')">
-                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_330" class="menu_suggestion_form"> 
+                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_330" class="menu_suggestion_form"> 
                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 330)">
                                     <div class="search-trigger"></div>                                  
                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -723,8 +717,8 @@
                             <span class="tile-content">
                                 <span class="tile-search"></span>                       
                                 <span class="tile-search-flyout">
-                                    <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_335">
-                                        <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 335)">
+                                    <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_335">
+                                        <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 335)">
                                         <div id="hiddenVals" style="display:none">                                                                      
                                             <span id="site">theme_10_collection</span>
                                                 <span id="client">theme_10_frontend</span>
@@ -740,7 +734,7 @@
                     <span class="level-trigger"></span>
                                                     
                             <div class="Sports, Recreation, Arts &amp; Culture issub" style="background-image:url('/StaticWebResources/static/gov3/images/theme/menu/thememenu_sportsrec.png')">
-                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_335" class="menu_suggestion_form"> 
+                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_335" class="menu_suggestion_form"> 
                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 335)">
                                     <div class="search-trigger"></div>                                  
                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -784,8 +778,8 @@
                             <span class="tile-content">
                                 <span class="tile-search"></span>                       
                                 <span class="tile-search-flyout">
-                                    <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_337">
-                                        <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 337)">
+                                    <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_337">
+                                        <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 337)">
                                         <div id="hiddenVals" style="display:none">                                                                      
                                             <span id="site">theme_11_collection</span>
                                                 <span id="client">theme_11_frontend</span>
@@ -801,7 +795,7 @@
                     <span class="level-trigger"></span>
                                                     
                             <div class="Environmental Protection &amp; Sustainability issub" style="background-image:url('/StaticWebResources/static/gov3/images/theme/menu/thememenu_environment.png')">
-                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_337" class="menu_suggestion_form"> 
+                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_337" class="menu_suggestion_form"> 
                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 337)">
                                     <div class="search-trigger"></div>                                  
                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -860,8 +854,8 @@
                             <span class="tile-content">
                                 <span class="tile-search"></span>                       
                                 <span class="tile-search-flyout">
-                                    <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_343">
-                                        <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 343)">
+                                    <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_343">
+                                        <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 343)">
                                         <div id="hiddenVals" style="display:none">                                                                      
                                             <span id="site">theme_12_collection</span>
                                                 <span id="client">theme_12_frontend</span>
@@ -877,7 +871,7 @@
                     <span class="level-trigger"></span>
                                                     
                             <div class="Farming, Natural Resources &amp; Industry issub" style="background-image:url('/StaticWebResources/static/gov3/images/theme/menu/thememenu_farmingindustry.png')">
-                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_343" class="menu_suggestion_form"> 
+                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_343" class="menu_suggestion_form"> 
                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 343)">
                                     <div class="search-trigger"></div>                                  
                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -941,8 +935,8 @@
                             <span class="tile-content">
                                 <span class="tile-search"></span>                       
                                 <span class="tile-search-flyout">
-                                    <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_351">
-                                        <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 351)">
+                                    <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_351">
+                                        <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 351)">
                                         <div id="hiddenVals" style="display:none">                                                                      
                                             <span id="site">theme_13_collection</span>
                                                 <span id="client">theme_13_frontend</span>
@@ -958,7 +952,7 @@
                     <span class="level-trigger"></span>
                                                     
                             <div class="Employment, Business &amp; Economic Development issub" style="background-image:url('/StaticWebResources/static/gov3/images/theme/menu/thememenu_employment.png')">
-                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_351" class="menu_suggestion_form"> 
+                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_351" class="menu_suggestion_form"> 
                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 351)">
                                     <div class="search-trigger"></div>                                  
                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -1017,8 +1011,8 @@
                             <span class="tile-content">
                                 <span class="tile-search"></span>                       
                                 <span class="tile-search-flyout">
-                                    <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_355">
-                                        <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 355)">
+                                    <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_355">
+                                        <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 355)">
                                         <div id="hiddenVals" style="display:none">                                                                      
                                             <span id="site">theme_14_collection</span>
                                                 <span id="client">theme_14_frontend</span>
@@ -1034,7 +1028,7 @@
                     <span class="level-trigger"></span>
                                                     
                             <div class="Tourism &amp; Immigration issub" style="background-image:url('/StaticWebResources/static/gov3/images/theme/menu/thememenu_tourism.png')">
-                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_355" class="menu_suggestion_form"> 
+                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_355" class="menu_suggestion_form"> 
                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 355)">
                                     <div class="search-trigger"></div>                                  
                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -1073,8 +1067,8 @@
                             <span class="tile-content">
                                 <span class="tile-search"></span>                       
                                 <span class="tile-search-flyout">
-                                    <form action="/gov/search" method="get" role="form" id="mobile_menu_search_form_356">
-                                        <input name="q" class="mobile-menu-searchbox placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 356)">
+                                    <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="mobile_menu_search_form_356">
+                                        <input name="q" class="mobile-menu-searchbox placeholder" placeholder="Search within this topic" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 356)">
                                         <div id="hiddenVals" style="display:none">                                                                      
                                             <span id="site">theme_15_collection</span>
                                                 <span id="client">theme_15_frontend</span>
@@ -1090,7 +1084,7 @@
                     <span class="level-trigger"></span>
                                                     
                             <div class="Family &amp; Social Supports issub" style="background-image:url('/StaticWebResources/static/gov3/images/theme/menu/thememenu_familysocial.png')">
-                            <form action="/gov/search" method="get" role="form" id="menu_suggestion_form_356" class="menu_suggestion_form"> 
+                            <form action="http://www2.gov.bc.ca/gov/search" method="get" role="form" id="menu_suggestion_form_356" class="menu_suggestion_form"> 
                                     <input name="q" class="searchbox menu-searchbox form-control placeholder" type="text" autocomplete="off" onkeyup="searchBoxKeypress(event, 500, 356)">
                                     <div class="search-trigger"></div>                                  
                                     <div id="hiddenVals" style="display:none">                                                                      
@@ -1151,11 +1145,12 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {% snippet 'snippets/main-navigation.html', userobj=c.userobj %}
-                        
+            </div>      
         </div>
     </div>
+
+    <nav id="sub">
+    {% snippet 'snippets/main-navigation.html', userobj=c.userobj %}
+    </nav>
 
 {% endblock %}
