@@ -10,13 +10,26 @@
     {% endif %}
 	{% if view_audience %}
     <tr>
-        <td><strong>Who can view this dataset?</strong></td><td>{{ view_audience }}</td>
+        <td>
+            <strong>
+                {# CITZEDC-525 - Application record template label update and field removal  #}
+                {% if c.pkg_dict['type'] == 'Application' %}
+                    Who can access this application?
+                {% else %}
+                    Who can view this dataset?
+                {% endif %}
+            </strong>
+        </td>
+        <td>{{ view_audience }}</td>
     </tr>
     {% endif %}
 	{% if download_audience %}
-    <tr>
-        <td><strong>Who can download this dataset?</strong></td><td>{{ download_audience }}</td>
-    </tr>
+        {# CITZEDC-525 - Application record template label update and field removal  #}
+        {% if not c.pkg_dict['type'] == 'Application' %}
+        <tr>
+            <td><strong>Who can download this dataset?</strong></td><td>{{ download_audience }}</td>
+        </tr>
+        {% endif %}
     {% endif %}
     {% if logged_in %}
     	{% if metadata_visibility %}
