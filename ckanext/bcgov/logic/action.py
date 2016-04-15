@@ -233,7 +233,8 @@ Please review and act as required.'
     query = model.Session.query(model.User) \
             .join(model.Member, model.User.id == model.Member.table_id) \
             .filter(model.Member.capacity == role) \
-            .filter(model.Member.group_id == sub_org.id)
+            .filter(model.Member.group_id == sub_org.id) \
+            .filter(model.User.state == 'active')
 
     members = query.all()
 
