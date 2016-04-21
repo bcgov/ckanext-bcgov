@@ -1,0 +1,69 @@
+<div class="account-container__mobile">
+    {% block header_account_container_content %}
+        {% if userobj %}
+            <div class="account avatar authed" data-module="me" data-me="{{ userobj.id }}">
+                {% block header_account_logged %}
+                    {% if userobj.sysadmin %}
+                        <a href="{{ h.url_for(controller='admin', action='index') }}" title="{{ _('Sysadmin settings') }}">
+                            Admin
+                        </a>
+                    {% endif %}
+
+                    <a href="{{ h.url_for(controller='user', action='read', id=userobj.name) }}" class="image" title="{{ _('View profile') }}">
+                        <span class="username">{{ userobj.display_name }}</span>
+                     </a>
+
+                    {% set new_activities = h.new_activities() %}
+
+                    {# <a class="notifications {% if new_activities > 0 %}notifications-important{% endif %}"> #}
+                    {% set notifications_tooltip = ngettext('Dashboard (%(num)d new item)', 'Dashboard (%(num)d new items)', new_activities) %}
+
+                    <a href="{{ h.url_for(controller='user', action='dashboard') }}" title="{{ notifications_tooltip }}">
+                        ({{ new_activities }}) Activities
+                    </a>
+                    {# </a> #}
+
+                    {# % block header_account_settings_link %}
+                        <a href="{{ h.url_for(controller='user', action='edit', id=userobj.name) }}" title="{{ _('Edit settings') }}">
+                        <i class="icon-cog"></i>
+                    </a>
+                    {% endblock % #}
+
+                    {% block header_account_log_out_link %}
+                        <a href="{{ h.url_for('/user/_logout') }}" title="{{ _('Log out') }}">
+                            Log out
+                        </a>
+                    {% endblock %}
+                {% endblock %}
+            </div>
+        {% else %}
+            <nav class="account not-authed">
+                {% block header_account_notlogged %}
+                    {% block header_account_notlogged_login %}
+                        {% if h.get_eas_login_url() %}
+                            <a href="{{ h.get_eas_login_url() }}">Log in</a>
+                        {% else %}
+                            <a href="{{ h.url_for('/user/login') }}">Log in</a>
+                        {% endif %}
+                    {% endblock %}
+                {% endblock %}
+            </nav>
+        {% endif %}
+    {% endblock %}
+</div>
+
+<ul id="mobile-nav-list" class="inline nav navbar-nav">
+    <li><a href="http://www2.gov.bc.ca/gov/content/governments/about-the-bc-government/databc">What is DataBC?</a></li>
+    <li><a href="{{ h.url('/dataset') }}" title="{{ g.site_title }} Home">Data Catalogue</a></li>
+    <li><a href="http://www2.gov.bc.ca/gov/content/governments/about-the-bc-government/databc/geographic-data-and-services">Geographic Services</a></li>
+    <li><a href="http://blog.data.gov.bc.ca/">Blog</a></li>
+    <li><a href="http://developer.gov.bc.ca/">Developers</a></li>
+    <li><a href="https://forms.gov.bc.ca/databc-contact-us/">Contact</a></li>
+    <li><a href="{{ h.url('/dataset') }}">Datasets</a></li>
+    <li><a href="{{ h.url('/organization') }}">Organizations</a></li>
+    <li><a href="{{ h.url('/groups') }}">Groups</a></li>
+    <li><a href="{{ h.url('/about') }}">About</a></li>
+    <li><a href="{{ h.url_for(controller='ckanext.edc_rss.controllers.rss:RSSController', action='recent') }}" title="Subscribe to New data"><span>Subscribe to New Data</span></a></li>
+    <li><a href="http://{{ h.disqus_get_forum_name() }}.disqus.com/latest.rss">Subscribe to Comments</a></li>
+    <li><a href="http://blog.data.gov.bc.ca/feed/" target="_blank">Subscribe to Blog Posts</a></li>
+</ul>

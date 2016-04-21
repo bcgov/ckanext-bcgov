@@ -11,9 +11,8 @@
                 <div id="header-main-row1">
                     <div class="navbar-brand">
                         <a href="http://www2.gov.bc.ca/" class="logo">
-                            <img src="/assets/gov/images/gov3_bc_logo.png" class="hidden-xs">
-                            <img src="/assets/gov/images/gov3_bc_logo_mobile.png" class="visible-xs-inline-block">
-                            DataBC
+                            <img src="/assets/gov/images/gov3_bc_logo.png">
+                            <span class="hidden-xs">Data Catalogue</span>
                         </a>
                     </div>
                     <div class="navbar-header">
@@ -38,6 +37,8 @@
                 <div id="header-main-row2" class="collapse">
                     <div class="header-main-right">
                         <div id="header-links">
+                            {% snippet 'snippets/mobile-main-navigation.html', userobj=c.userobj %}
+
                             <ul class="inline nav navbar-nav">
                                 <li data-order="0"><a href="http://www2.gov.bc.ca/gov/content/governments/careers" target="_self">Careers</a></li>
                                 <li data-order="1"><a href="http://www2.gov.bc.ca/gov/content/home/services-a-z" target="_self">Services A-Z</a></li>
@@ -1150,7 +1151,11 @@
     </div>
 
     <nav id="sub">
-    {% snippet 'snippets/main-navigation.html', userobj=c.userobj %}
+        {% snippet 'snippets/main-navigation.html', userobj=c.userobj %}
+        
+        <div class="site-title visible-xs-inline-block">
+            <h1 class="">Data Catalogue</h1>
+        </div>
     </nav>
 
 {% endblock %}

@@ -249,6 +249,10 @@ a.tag:hover{
   padding: 0 10px;
 }
 
+.site-title {
+    padding: 0 30px;
+}
+
 .share-this-record .dropdown-menu {
   border-top-color: transparent;
   margin-top: -1px;
@@ -288,6 +292,13 @@ li.select2-results-dept-0.select2-result.select2-result-unselectable.select2-dis
 li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disabled {
 	display: none;
 }
+
+/* Don't display when in desktop/wider view */
+.account-container__mobile,
+#mobile-nav-list {
+  display: none;
+}
+
 /* Content */
 
 .module-content.page-header:first-child {
@@ -1233,6 +1244,47 @@ input.search.tt-hint {
 
 /* Phone only */
 @media (max-width: 767px) {
+  /* navigation bar */
+  nav#sub {
+    margin: 0 -20px;
+  }
+
+  #sub .navigationRibbon {
+    display: none;
+  }
+
+  .account-container__mobile {
+    padding: 12px 5px;
+  }
+
+  .account-container__mobile,
+  #mobile-nav-list {
+    display: block;
+  }
+
+  .account-container__mobile .account a {
+    display: inline-block;
+    width: 48%;
+    padding: 12px 20px;
+    text-align: center;
+  }
+  .account-container__mobile .account a:only-child,
+  .account-container__mobile .account a:last-child:nth-child(2n+1) {
+    width: 100%;
+  }
+
+  /* Hack for the list menu in mobile view because ul are getting in the way of clicking on links */
+  #header.collapsed-header #header-links > ul {
+    visibility: hidden;
+  }
+  #header.collapsed-header #header-links > ul > * {
+    visibility: visible;
+  }
+
+  /* breadcumb */
+  #wb-core #content .toolbar {
+    display: none;
+  }
 
   /* Content */
   .search-form .control-order-by {
