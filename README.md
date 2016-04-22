@@ -1,5 +1,5 @@
 [![Stories in Ready](https://badge.waffle.io/bcgov/ckanext-bcgov.png?label=ready&title=Ready)](https://waffle.io/bcgov/ckanext-bcgov)
-[![Build Status](https://sandbox1.apis.gov.bc.ca/cis/job/bcdc-dlv/badge/icon)](https://sandbox1.apis.gov.bc.ca/cis/job/bcdc-dlv/)
+[![Build Status](https://sandbox.api.gov.bc.ca/cis/job/bcdc-dlv/badge/icon)](https://sandbox.api.gov.bc.ca/cis/job/bcdc-dlv/)
 [![License](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/bcgov/ckanext-bcgov/master/license)
 <a rel="Delivery" href="https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md"><img alt="In production, but maybe in Alpha or Beta. Intended to persist and be supported." style="border-width:0" src="http://bcdevexchange.org/badge/3.svg" title="In production, but maybe in Alpha or Beta. Intended to persist and be supported." /></a>
 
