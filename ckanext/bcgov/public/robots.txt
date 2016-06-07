@@ -1,9 +1,13 @@
 User-agent: *
-Allow: /
-Disallow: /api
-Disallow: /tag
-Disallow: /user
+Disallow: /api/
 Disallow: /dataset/activity
-Disallow: /group
-Disallow: /organization
+Disallow: /dataset/*/history
+Disallow: /dataset/rate/
+Disallow: /group/
+Disallow: /organization/
+Disallow: /revision/
+Disallow: /tag/
+Disallow: /user/
 
+User-agent: *
+Crawl-Delay: 10
