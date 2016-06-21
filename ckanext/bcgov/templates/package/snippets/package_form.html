@@ -56,6 +56,10 @@ then itself be extended to add/remove blocks of functionality. #}
                         {% set key = "description" %}
                     {% endif %}
 
+                    {% if key == "tag_string" %}
+                        {% set key = "keywords" %}
+                    {% endif %}
+
         			<li date-field-label="{{ key }}"> {{ key }} :
         			{% for err_val in error_list %}
         				{{ err_val }}

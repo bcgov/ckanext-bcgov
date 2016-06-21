@@ -16,7 +16,8 @@ from ckan.lib.navl.validators import (ignore_missing,
                                       )
 from ckan.logic.validators import (url_validator,
                                    name_validator,
-                                   package_name_validator)
+                                   package_name_validator,
+                                   tag_string_convert)
 
 from converters import (convert_to_extras,
                         convert_from_extras)
@@ -29,7 +30,8 @@ from validators import (check_empty,
                         check_branch,
                         duplicate_pkg,
                         check_duplicates,
-                        check_dashes)
+                        check_dashes,
+                        keywords_not_empty)
 
 log = logging.getLogger(__name__)
 
@@ -109,6 +111,7 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         schema.update({
                         'title' : [not_empty, check_dashes, check_duplicates, unicode],
                         'notes' : [not_empty, unicode],
+                        'tag_string': [keywords_not_empty],
                         'org' : [not_empty, convert_to_extras],
                         'sub_org' : [check_branch, convert_to_extras],
                         'sector': [get_org_sector, ignore_missing, convert_to_extras],

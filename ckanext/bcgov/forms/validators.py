@@ -3,6 +3,8 @@
 
 import re
 
+import pprint
+
 import ckan.lib.navl.dictization_functions as df
 from ckan.common import _
 
@@ -79,12 +81,21 @@ def check_empty(key, data, errors, context):
             errors[key].append(_('Missing value'))
             raise StopOnError
 
-def license_not_empty(key, data, errors, content):
+def license_not_empty(key, data, errors, context):
 
     value = data.get(key)
 
     if(value == '0'):
         errors[key].append(_('License is not specified'))
+
+def keywords_not_empty(key, data, errors, context):
+
+    value = data.get(key)
+
+    if (not value or value == ''):
+        data[key] = ''
+        errors[key].append(_('No keyword is given. Please provide at least one keyword.'))
+        raise StopOnError
 
 def valid_email(key, data, errors, context):
 
