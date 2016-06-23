@@ -302,7 +302,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         # CITZEDC808
         if not record_is_viewable(pkg_dict, c.userobj):
             abort(401, _('Unauthorized to read package %s') % pkg_dict.get("title"))
-
+            
         return pkg_dict
 
     def dataset_facets(self, facet_dict, package_type):

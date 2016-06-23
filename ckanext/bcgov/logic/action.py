@@ -32,6 +32,7 @@ from ckanext.bcgov.util.util import get_user_list
 
 import pprint
 
+
 # shortcuts
 get_action = logic.get_action
 _check_access = logic.check_access
@@ -50,6 +51,20 @@ _or_ = sqlalchemy.or_
 '''
 Checking package status and sending a notification if the state is changed.
 '''
+
+def get_msg_content(msg_dict):
+
+    from string import Template
+
+    msg = ('<p>As a BC Data Catalogue $user_role for the $org - $sub_org, ' 
+            'please be advised that the publication state of this record: ' 
+            '<a href="$dataset_url">$dataset_url</a> is now "$dataset_state".<br><br>' 
+            'If you are no longer an $user_role for $org - $sub_org or if you have a question or concern regarding this message ' 
+            'please contact DataBC Catalogue Services <a href="&quot;mailto:datacat@gov.bc.ca">datacat@gov.bc.ca</a> .<br><br>Thanks.</p>')
+
+    msg_template = Template(msg)
+
+    return msg_template.substitute(msg_dict)
 
 def add_msg_niceties(recipient_name, body, sender_name, sender_url):
     return "Dear %s,<br><br>" % recipient_name \
@@ -177,50 +192,28 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
     dataset_title = new_data['title']
     org_title = org.title
     sub_org_title = sub_org.title
-    orgs_titles = org_title + ' - ' + sub_org_title
 
     # Prepare email
     subject = ''
-    body = ''
+    msg_body = ''
     role = 'admin'
 
     # Change email based on new_state changes
-    if new_state == 'PENDING PUBLISH' :
-        subject = 'EDC - PENDING PUBLISH ' + dataset_title
-        body = 'The following record is "Pending Publication" for ' + orgs_titles + '<br><br>\
-Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
-Please review and act as required.'
 
-    elif new_state == 'REJECTED':
-        subject = 'EDC - REJECTED ' + new_data['title']
-        body = 'The following record is "REJECTED" for ' + orgs_titles + '<br><br>\
-Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
-Please review and act as required.'
+    if new_state in ['REJECTED', 'PUBLISHED', 'ARCHIVED'] :
         role = 'editor'
 
-    elif new_state == 'PUBLISHED':
-        subject = 'EDC - PUBLISHED ' + new_data['title']
-        body = 'The following record is "PUBLISHED" for ' + orgs_titles + '<br><br>\
-Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
-Please review and act as required.'
-        role = 'editor'
+    if new_state in ['PENDING PUBLISH', 'REJECTED', 'PUBLISHED', 'PENDING ARCHIVE', 'ARCHIVED'] :
+        subject = 'EDC - ' + new_state  +  ' ' + dataset_title
 
-    elif new_state == 'PENDING ARCHIVE':
-        subject = 'EDC - PENDING ARCHIVE ' + new_data['title']
-        body = 'The following record is "Pending Archival" for ' + orgs_titles + '<br><br>\
-Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
-Please review and act as required.'
+    #Prepare the dictionary for email content template
 
-    elif new_state == 'ARCHIVED':
-        subject = 'EDC - ARCHIVED ' + new_data['title']
-        body = 'The following record is "ARCHIVED" for ' + orgs_titles + '<br><br>\
-Record <a href="' + dataset_url + '">' + dataset_url + '</a>, ' + dataset_title  + '<br><br>\
-Please review and act as required.'
-        role = 'editor'
-    else :
-        pass
+    msg_dict = dict(org=org_title, sub_org=sub_org_title, user_role=role, dataset_url=dataset_url, dataset_state=new_state)
+    msg_body = get_msg_content(msg_dict)
+    pprint.pprint(msg_body)
 
-    email_dict = { 'subject': subject, 'body': body }
+    email_dict = { 'subject': subject, 'body': msg_body }
+
 
     # Get the entire list of users
 

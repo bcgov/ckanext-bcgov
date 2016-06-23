@@ -12,6 +12,7 @@ from urllib import urlencode
 from ckan.logic import get_action
 import ckan.lib.maintain as maintain
 import ckan.plugins.toolkit as toolkit
+from pylons import config
 
 from ckanext.bcgov.util.util import (get_user_orgs, get_user_toporgs)
 
@@ -27,6 +28,7 @@ render = base.render
 
 log = logging.getLogger('ckanext.edc_schema')
 
+import pprint
 
 def _encode_params(params):
     return [(k, v.encode('utf-8') if isinstance(v, basestring) else str(v))
@@ -37,7 +39,11 @@ class EDCUserController(UserController):
 
     def dashboard_unpublished(self):
 
-        user_id = c.userobj.id
+        if not c.userobj :
+            abort(401, _('You must be logged-in to access the dashboard.'))
+
+        user_id = c.userobj.id 
+
         fq = ' +edc_state:("DRAFT" OR "PENDING PUBLISH" OR "REJECTED")'
             #Get the list of organizations that this user is the admin
         if not c.userobj.sysadmin :
@@ -49,6 +55,8 @@ class EDCUserController(UserController):
         return render('user/dashboard_unpublished.html')
 
     def dashboard_datasets(self):
+        if not c.userobj :
+            abort(401, _('You must be logged-in to access the dashboard.'))
         fq = ' +author:("%s")' % (c.userobj.id)
         self._user_datasets('dashboard_datasets', c.userobj.id, fq)
         return render('user/dashboard_datasets.html')
@@ -65,6 +73,7 @@ class EDCUserController(UserController):
                 if len(user_orgs) > 0:
                     fq += ' OR owner_org:(' + ' OR '.join(user_orgs) + ')'
             fq += ')'
+
         self._user_datasets('read',id, fq)
         return render('user/read.html')
 
@@ -97,9 +106,14 @@ class EDCUserController(UserController):
         sort_by = request.params.get('sort', None)
 
         def search_url(params):
-            if action == 'read':
+            base_url = config.get('ckan.site_url')
+            if action == 'dashboard_datasets':
+                url = base_url + '/dashboard/datasets'
+            elif action == 'dashboard_unpublished':
+                url = base_url + '/dashboard/unpublished'
+            elif action == 'read':
                 url = h.url_for(controller='user', action=action, id=id)
-            else:
+            else :
                 url = h.url_for(controller='user', action=action)
 
             params = [(k, v.encode('utf-8') if isinstance(v, basestring)
