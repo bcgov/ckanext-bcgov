@@ -17,7 +17,7 @@ Example:
 {% if packages %}
   <ul class="dataset-list unstyled">
     {% for package in packages %}
-    	{% set is_editor = (package.owner_org in admin_org) or (package.owner_org in editor_org) %}
+    	{% set is_editor = user.sysadmin or (package.owner_org in admin_org) or (package.owner_org in editor_org) %}
     	{% set is_member = is_editor or (package.owner_org in mem_org) %}
         {% snippet 'snippets/package_item.html', package=package,
           item_class=item_class, hide_resources=hide_resources,
