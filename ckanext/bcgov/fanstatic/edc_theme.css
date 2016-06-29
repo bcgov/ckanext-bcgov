@@ -28,6 +28,11 @@
 
 /* End Fonts */
 
+html {
+    height: 100%;
+    background-color: #003366;
+}
+
 body {
   font-size: 13px;
   background-color: #fff;
