@@ -92,6 +92,10 @@ nav#sub {
 	cursor: pointer;
 }
 
+#header .navbar-toggle {
+	display: none;
+}
+
 #header .menu-button:hover {
 	background-color: #5475A7;
 }
@@ -266,9 +270,8 @@ nav#sub {
     margin-bottom: 4px;
     position: absolute;
     right: 10px;
-    top: 21px;
+    top: 5px;
     width: 60px;
-    display: block;
 }
 
 #header.collapsed-header .mini-menu-trigger + .mini-menu-trigger {
@@ -358,7 +361,7 @@ nav#sub {
     width: 440px;
     padding: 0;
     right: 6px;
-	top: 80px;
+	top: 65px;
 	z-index: 9999;
 }
 
@@ -984,7 +987,7 @@ nav#sub {
 
 #header-main,
 #header-main #header-main-row1 {
-	height: 103px;
+	height: 68px;
 }
 
 #header.collapsed-header #govNavMenu ul li {
@@ -1011,7 +1014,7 @@ nav#sub {
 	display: block;
     color: #fff;
     font-size: 2.5em;
-    padding-top: 22px;
+    padding-top: 6px;
 }
 
 #header .navbar-brand .logo:hover,
@@ -1054,10 +1057,8 @@ nav#sub {
 }
 
 nav#sub {
-	margin-top: 103px;
+	margin-top: 68px;
 }
-
-
 
 #footer {
 	background-color: transparent;
@@ -1172,6 +1173,10 @@ nav#sub {
 	#header.collapsed-header #header-main-row1 .header-search {
 		width: 100%;
 		right: 0;
+	}
+
+	#header .navbar-toggle {
+		display: block!important;
 	}
 
 	#footer {
