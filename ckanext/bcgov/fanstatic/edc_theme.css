@@ -1410,3 +1410,10 @@ input.search.tt-hint {
 .trash-actions .btn {
 	background-color: #87D4F5;
 }
+
+@media (max-width: 979px) and (min-width: 768px) {
+    #header .container {
+        width: 724px;
+    }
+
+}
