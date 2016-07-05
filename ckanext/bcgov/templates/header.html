@@ -9,15 +9,40 @@
 
             <div class="container" >
                 <div id="header-main-row1">
-                    <div class="navbar-brand">
-                        <a href="http://www2.gov.bc.ca/" class="logo">
-                            <img src="/assets/gov/images/gov3_bc_logo.png">
-                            <span class="hidden-xs">Data Catalogue</span>
-                        </a>
+                    <div class="row">
+                        <div class="span8 navbar-brand">
+                            <div href="http://www2.gov.bc.ca/" class="logo">
+                                <a href="http://www2.gov.bc.ca/"><img src="/assets/gov/images/gov3_bc_logo.png"></a>
+                                <a href="{{ h.url('/dataset') }}" class="hidden-xs">Data Catalogue</a>
+                            </div>
+                            <div class="navbar-header">
+                                <button data-target="#header-main-row2" data-toggle="collapse" class="menu-button navbar-toggle mini-menu-trigger collapsed" type="button"></button>
+                                <button data-target="#header-main-row1 .header-search.collapse" data-toggle="collapse" class="search-button navbar-toggle mini-menu-trigger collapsed" type="button"></button>
+                            </div>
+                        </div>
+                        <div class="span4 header-main-right hidden-xs">
+                            <div class="header-main-search">
+                              <form role="form" class="" method="get" action="{{ h.url('/dataset') }}" id="suggestion_form">
+                                <label style="display:none;" for="global-search">Search</label>
+                                <input type="text" autocomplete="off" value="" name="q" placeholder="Search datasets..." class="searchbox">
+                                <i class="icon-search"></i>
+                                <div class="search-trigger"> </div>
+                            </form>
+                          </div>
+                        </div>
                     </div>
-                    <div class="navbar-header">
-                        <button data-target="#header-main-row2" data-toggle="collapse" class="menu-button navbar-toggle mini-menu-trigger collapsed" type="button"></button>
-                    </div>
+                    <div class="header-search collapse">
+                       <div class="search-boarder-arror visible-xs-block"></div>
+                       <div class="header-main-right">
+                           <div class="gov search">
+                               <form role="form" class="" method="get" action="https://catalogue.data.gov.bc.ca/dataset" id="form-dataset-search-header">
+                                   <label class="sr-only" for="dataset-search">Search</label>
+                                   <input type="text" autocomplete="off" value="" name="q" placeholder="Search BC Data Catalogue" class="searchbox" id="dataset-search">
+                                   <div class="search-trigger"> </div>
+                               </form>
+                           </div>
+                       </div>
+                   </div>
                 </div>
 
                 <div id="header-main-row2" class="collapse">

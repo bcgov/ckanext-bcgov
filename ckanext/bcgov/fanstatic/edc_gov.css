@@ -269,7 +269,7 @@ nav#sub {
     margin-top: 4px;
     margin-bottom: 4px;
     position: absolute;
-    right: 10px;
+    right: 20px;
     top: 5px;
     width: 60px;
 }
@@ -301,7 +301,9 @@ nav#sub {
     position: absolute;
     right: 20px;
     width: 440px;
-    top: 80px;
+    top: 65px;
+
+	max-height: 55px;
 }
 
 #header.collapsed-header .visible-xs-block {
@@ -327,7 +329,7 @@ nav#sub {
 }
 
 #header.collapsed-header #header-main-row1 .header-search .header-main-right {
-    margin: 0 0 8px 0;
+    margin: 0;
     padding: 10px;
     position: static;
 }
@@ -433,6 +435,35 @@ nav#sub {
 
 #header.collapsed-header #govNavMenu .hidden-xs {
 	display: none;
+}
+
+#header [class*="span"] {
+	margin-left: 15px;
+}
+
+#header .header-main-search {
+	margin-top: 15px;
+}
+
+#header .header-main-search form {
+	margin: 0;
+}
+
+#header .header-main-search form input {
+	border: 0;
+	color: #494949;
+	height: 25px;
+	outline: 0;
+	padding: 3px 10px;
+	width: 100%;
+	border-radius: 0;
+}
+
+#header .header-main-search .icon-search {
+	position: absolute;
+	right: 10px;
+	top: 25px;
+	color: #cccccc;
 }
 
 /* full size css */
@@ -1017,6 +1048,16 @@ nav#sub {
     padding-top: 6px;
 }
 
+#header .navbar-brand .logo a {
+	color: #fff;
+}
+
+#header .navbar-brand .logo a:hover,
+#header .navbar-brand .logo a:active,
+#header .navbar-brand .logo a:focus {
+	text-decoration: none;
+}
+
 #header .navbar-brand .logo:hover,
 #header .navbar-brand .logo:focus,
 #header .navbar-brand .logo:active {
@@ -1244,7 +1285,7 @@ img.back-to-top:hover {
 @media (max-width: 767px) {
 
 	#header.collapsed-header #header-main-row1 .header-search .search-boarder-arror::after {
-		right: 82px;
+		right: 68px;
 	}
 
 	#header .navbar-brand .logo img {
@@ -1256,7 +1297,7 @@ img.back-to-top:hover {
 	}
 
 	#header.collapsed-header .search-button.mini-menu-trigger {
-		right: 65px;
+		right: 75px;
 	}
 
 	.navigationRibbon a,
@@ -1285,6 +1326,10 @@ img.back-to-top:hover {
 @media (max-width: 979px) {
 	#header .navbar-brand .logo {
 		padding-left: 15px;
+	}
+
+	#header .header-main-search .icon-search {
+		right: 15px;
 	}
 
 	nav#sub {
