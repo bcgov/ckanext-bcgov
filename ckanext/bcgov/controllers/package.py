@@ -28,7 +28,6 @@ from urlparse import urljoin
 from time import time
 
 from wsgiref.handlers import format_date_time
-from ckanext.bcgov.util.util import get_user_list
 
 import ckan.lib.render as lib_render
 
@@ -96,9 +95,6 @@ class EDCPackageController(PackageController):
             dataset_types = get_action('tag_list')(context,
                                                      {'vocabulary_id': EDC_DATASET_TYPE_VOCAB})
             c.dataset_types = [tag for tag in dataset_types]
-#             for key, value in data_dict.iteritems() :
-#                 if key == 'state' :
-#                     c.old_state = data_dict['state']
         except NotFound:
             c.dataset_types = []
 
@@ -171,12 +167,12 @@ class EDCPackageController(PackageController):
             redirect(toolkit.url_for(form_urls[dataset_type]))
 
 
-    def read(self, id, format='html'):
+    def read(self, id):
         '''
         First calls ckan's default read to get package data.
         Then it checks if the package can be viewed by the user
         '''
-        result = super(EDCPackageController, self).read(id, format)
+        result = super(EDCPackageController, self).read(id)
 
         #Check if user can view this record
         from ckanext.bcgov.util.helpers import record_is_viewable
@@ -267,7 +263,7 @@ class EDCPackageController(PackageController):
 
         # TODO: This is the first modified part of resource_edit from ckan's controller
         # it includes a static list of the resource expected for each type.
-        # This is a workaroung for a core ckan issue that can be removed when
+        # This is a workaround for a core ckan issue that can be removed when
         # the issue is resolved: https://github.com/ckan/ckan/issues/2649
         if pkg_dict['state'].startswith('draft'):
             # dataset has not yet been fully created

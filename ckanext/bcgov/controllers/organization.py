@@ -71,7 +71,7 @@ class EDCOrganizationController(OrganizationController):
         c.top_orgs_items = top_results
         return render('organization/index.html')
         
-    def _read(self, id, limit):
+    def _read(self, id, limit, group_type='organization'):
         # FIXME: copied and modified from GroupController to collect
         # sub organizations, create c.fields_grouped and hard-code
         # search facets
@@ -117,17 +117,8 @@ class EDCOrganizationController(OrganizationController):
                          if k != 'page']
 
         def search_url(params):
-            if group_type == 'organization':
-                if c.action == 'bulk_process':
-                    url = self._url_for(controller='organization',
-                                        action='bulk_process',
-                                        id=id)
-                else:
-                    url = self._url_for(controller='organization',
-                                        action='read',
-                                        id=id)
-            else:
-                url = self._url_for(controller='organization', action='read', id=id)
+            action = 'bulk_process' if c.action == 'bulk_process' else 'read'
+            url = h.url_for(controller='organization', action=action, id=id)
             params = [(k, v.encode('utf-8') if isinstance(v, basestring)
                        else str(v)) for k, v in params]
             return url + u'?' + urlencode(params)
@@ -235,7 +226,7 @@ class EDCOrganizationController(OrganizationController):
             c.page = h.Page(collection=[])
 
         self._setup_template_variables(context, {'id':id},
-            group_type=group_type)
+            group_type='organization')
 
 
     def member_new(self, id):
@@ -243,7 +234,7 @@ class EDCOrganizationController(OrganizationController):
         # that is tied to our particular auth mechanism and permissions
         # This would be better in the idir extension
         import ckan.lib.navl.dictization_functions as dict_fns
-        import ckan.new_authz as new_authz
+        import ckan.authz as authz
         
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author}
@@ -251,6 +242,9 @@ class EDCOrganizationController(OrganizationController):
         errors = {}
         try:
             group_type = 'organization'
+            data_dict = {'id': id}
+            data_dict['include_datasets'] = False
+            c.group_dict = self._action('organization_show')(context, {'id' : data_dict['id']})
             c.roles = self._action('member_roles_list')(context, {'group_type': group_type})
             if request.method == 'POST':
                 data_dict = clean_dict(dict_fns.unflatten(
@@ -267,7 +261,6 @@ class EDCOrganizationController(OrganizationController):
 
                     name_match = re.compile('[a-z0-9_\-]*$')
                     if not name_match.match(idir_account) :
-                        c.group_dict = self._action('organization_show')(context, {'id' : data_dict['id']})
                         errors['idir'] = _('must be purely lower case alphanumeric (ascii) characters and these symbols: -_')
                         
                         vars = {'data': data_dict, 'errors': errors}
@@ -293,15 +286,14 @@ class EDCOrganizationController(OrganizationController):
                     data_dict['role'] = data_dict.get('role', 'editor')
  
                 c.group_dict = self._action('group_member_create')(context, data_dict)
-                self._redirect_to(controller='group', action='members', id=id)
+                self._redirect_to_this_controller(action='members', id=id)
             else:
                 user = request.params.get('user')
                 if user:
                     c.user_dict = get_action('user_show')(context, {'id': user})
-                    c.user_role = new_authz.users_role_for_group_or_org(id, user) or 'member'
+                    c.user_role = authz.users_role_for_group_or_org(id, user) or 'member'
                 else:
                     c.user_role = 'member'
-                c.group_dict = self._action('group_show')(context, {'id': id})
         except NotAuthorized:
             abort(401, _('Unauthorized to add member to group %s') % '')
         except NotFound:
