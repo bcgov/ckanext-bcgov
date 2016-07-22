@@ -1,5 +1,12 @@
 # Release Notes
 
+## 1.3.0
+
+Major changes
+ - upgrade CKAN to version 2.3.4 
+ - remove forked version of geoview and use v0.0.11 PyPi 
+ - update header and footer for Government update
+
 ## 1.2.0
 
 Major changes

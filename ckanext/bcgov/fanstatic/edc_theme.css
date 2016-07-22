@@ -301,6 +301,10 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
 
 /* Content */
 
+#wb-main {
+    margin-top: 134px;
+}
+
 .module-content.page-header:first-child {
   padding-top: 0;
 }
@@ -692,6 +696,7 @@ section.tags {
   padding-bottom: 0;
   margin-top: 10px;
   padding: 0 15px;
+  margin-bottom: 0;
 }
 
 .module-content.disqus-comments {
@@ -1099,6 +1104,10 @@ input.search.tt-hint {
     width: auto;
   }
 
+  #wb-main {
+      margin-top: 0;
+  }
+
   /* Header */
 
   #header-banner .logo {
@@ -1400,4 +1409,11 @@ input.search.tt-hint {
 
 .trash-actions .btn {
 	background-color: #87D4F5;
+}
+
+@media (max-width: 979px) and (min-width: 768px) {
+    #header .container {
+        width: 724px;
+    }
+
 }

@@ -59,11 +59,4 @@
     <li><a href="http://blog.data.gov.bc.ca/">Blog</a></li>
     <li><a href="http://developer.gov.bc.ca/">Developers</a></li>
     <li><a href="https://forms.gov.bc.ca/databc-contact-us/">Contact</a></li>
-    <li><a href="{{ h.url('/dataset') }}">Datasets</a></li>
-    <li><a href="{{ h.url('/organization') }}">Organizations</a></li>
-    <li><a href="{{ h.url('/groups') }}">Groups</a></li>
-    <li><a href="{{ h.url('/about') }}">About</a></li>
-    <li><a href="{{ h.url_for(controller='ckanext.edc_rss.controllers.rss:RSSController', action='recent') }}" title="Subscribe to New data"><span>Subscribe to New Data</span></a></li>
-    <li><a href="http://{{ h.disqus_get_forum_name() }}.disqus.com/latest.rss">Subscribe to Comments</a></li>
-    <li><a href="http://blog.data.gov.bc.ca/feed/" target="_blank">Subscribe to Blog Posts</a></li>
 </ul>
