@@ -7,6 +7,31 @@ Major changes
 	- Optimzed dataset search, view and edit for all user roles
 	- Rewrite helper functions to get top level orgnizations and orgnizations for different user roles.
 
+### Upgrade to Ckan 2.5.2 instructions
+1. Preform the necessary backup of all data
+	- db, datastore, uploads, etc.
+
+2. Install Ckan from pip
+		pip install ckan==2.5.2
+
+3. Before installing ckanext-googleanalytics, comment out authz import
+		sed -i 's/from ckan.model.authz/#from ckan.model.authz/' /apps/ckan/dlv/src/ckanext-googleanalytics/ckanext/googleanalytics/dbutil.py
+
+4. Upgrade the `bleach` module
+		pip install bleach --upgrade
+
+5. Upgrade the DB
+	- run paster command to upgrade the db
+		paster --plugin=ckan db upgrade -c /etc/ckan/dlv/edcdlv.ini	
+
+6. Update the Solr schema
+	- should be included with the ckan install
+
+7. Rebuild the Solr Index
+	- run paster command to re-index solr
+		paster --plugin=ckan search-index rebuild -c /etc/ckan/dlv/edcdlv.ini
+
+
 ## 1.3.0
 
 Major changes
