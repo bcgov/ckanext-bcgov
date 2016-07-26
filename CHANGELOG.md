@@ -12,21 +12,21 @@ Major changes
 	- db, datastore, uploads, etc.
 
 2. Install Ckan from pip
-		pip install ckan==2.5.2
+		`pip install ckan==2.5.2`
 
 3. Upgrade the `bleach` module
-		pip install bleach --upgrade
+		`pip install bleach --upgrade`
 
 4. Upgrade the DB
 	- run paster command to upgrade the db
-		paster --plugin=ckan db upgrade -c /etc/ckan/dlv/edcdlv.ini	
+		`paster --plugin=ckan db upgrade -c /etc/ckan/dlv/edcdlv.ini`	
 
 5. Update the Solr schema
 	- should be included with the ckan install
 
 6. Rebuild the Solr Index
 	- run paster command to re-index solr
-		paster --plugin=ckan search-index rebuild -c /etc/ckan/dlv/edcdlv.ini
+		`paster --plugin=ckan search-index rebuild -c /etc/ckan/dlv/edcdlv.ini`
 
 
 ## 1.3.0
