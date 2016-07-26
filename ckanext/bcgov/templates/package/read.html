@@ -62,7 +62,7 @@
 
     {% block package_markers %}
       {% set iso_topic_values = h.get_iso_topic_values(pkg.get('iso_topic_string')) %}
-      {% snippet 'package/snippets/markers.html', type=pkg.type, iso_topic_cat=iso_topic_values, org=pkg.org, branch=pkg.sub_org %}
+      {% snippet 'package/snippets/markers.html', type=pkg.type, iso_topic_cat=iso_topic_values, branch=pkg.sub_org %}
     {% endblock %}
 
     <h1>
@@ -75,21 +75,22 @@
     </h1>
 
     {# Displaying Organization and Branch names #}
+    
     {% block package_org %}
-    	{% set org = h.get_edc_org(pkg.org) %}
-    	{% set branch = h.get_edc_org(pkg.sub_org) %}
-        Published by the {% snippet 'package/snippets/org_view.html', org=org, branch=branch %}
+      {% set org = h.get_edc_org(pkg.org) %}
+      {% set branch = h.get_edc_org(pkg.sub_org) %}  
+      Published by the {% snippet 'package/snippets/org_view.html', org=org, branch=branch %}
     {% endblock %}
     {% block package_license %}
       <br/>
       Licensed under
       {% snippet "snippets/license.html", pkg_dict=pkg %}
     {% endblock %}
-
+    
     {% block package_notes %}
-      {% if c.pkg_notes_formatted %}
+      {% if pkg.notes %}
         <div class="notes embedded-content">
-          {{ c.pkg_notes_formatted }}
+          {{ h.render_markdown(pkg.notes) }}
         </div>
       {% endif %}
     {% endblock %}
@@ -103,8 +104,7 @@
 
   {% set dataset_extent = c.pkg_dict['spatial'] or '' %}
   {% if dataset_extent %}
-    {# snippet "spatial/snippets/dataset_map.html", extent=dataset_extent #}
-    {% snippet "package/snippets/dataset_extent.html", pkg=pkg %}
+     {% snippet "package/snippets/dataset_extent.html", pkg=pkg %}
   {% endif %}
 
 
@@ -121,192 +121,12 @@
   {% endblock %}
 
   {% block package_additional_info %}
-    <h3>Additional Information</h3>
-    <div id="additional-information">
-      {% block pakage_purpose %}
-        {% if pkg.purpose %}
-        <h2>Purpose</h2>
-        <div id="purpose">
-          {{ pkg.purpose }}
-        </div>
-        {% endif %}
-      {% endblock %}
-
-      {% block more_info_links %}
-          {% snippet "package/snippets/more_info_links.html", links=pkg.get('more_info',[]) %}
-      {% endblock %}
-
-      {# Displaying contact info #}
-      {% block package_contacts %}
-      	{% if c.userobj %}
-        	{% set user_orgs =  c.userobj.get_group_ids('organization', 'admin') + c.userobj.get_group_ids('organization', 'editor') %}
-        	{% set is_editor = (pkg.owner_org in user_orgs) %}
-        {% else %}
-        	{% set is_editor = False %}
-        {% endif %}
-        {% snippet 'package/snippets/contacts_view.html', contacts=pkg.contacts, userobj=c.userobj, is_editor = is_editor %}
-      {% endblock %}
-
-      {% block security_classification %}
-        {% snippet 'package/snippets/security_classification.html', security_class=pkg.security_class, bc_ocio=pkg.bc_ocio, view_audience=pkg.view_audience, download_audience=pkg.download_audience, metadata_visibility=pkg.metadata_visibility, logged_in=c.user %}
-      {% endblock %}
-    <h2>Metadata Information</h2>
-    <table class="table dataset_view">
-
-	{% block record_state %}
-  {% if c.user %}
-		<tr>
-			<td><strong>Record state</strong></td><td> {{ pkg.edc_state }} </td>
-		</tr>
-  {% endif %}
-	{% endblock %}
-
-    {# Add our custom country_code field to the dataset read page. #}
-    {#
-        {% if pkg.get('security_class') %}
-        <section id="dataset-security_code" class="resources module-content">
-            <p><strong>Security class</strong>: {{ pkg.security_class }}</p>
-        </section>
-        {% endif %}
-    #}
-
-    {# Showing dates #}
-    {% block package_dates %}
-        {% snippet 'package/snippets/dates_view.html', pkg=pkg, last_modified = pkg.get('record_last_modified', '') %}
-    {% endblock %}
-
-
-    {% block package_resource_status %}
-    	{% if pkg.resource_status %}
-            <tr>
-                <td><strong>Resource Status</strong></td><td> {{ pkg.resource_status }} </td>
-            </tr>
-            {% if pkg.resource_status == _('historicalArchive')%}
-            	{% if pkg.retention_expiry_date %}
-            	<tr>
-                	<td><strong>Retention Expiry Date </strong></td><td> {{ pkg.retention_expiry_date }} </td>
-            	</tr>
-            	{% endif %}
-            	{% if pkg.source_data_path %}
-            	<tr>
-                	<td><strong>Source Data Path </strong></td><td> {{ pkg.source_data_path }} </td>
-            	</tr>
-            	{% endif %}
-            {% endif %}
-        {% endif %}
-        {% if pkg.replacement_record %}
-            <tr>
-                <td><strong>Replacement Record</strong></td><td><a href="{{ pkg.replacement_record }}">{{ pkg.replacement_record }}</a></td>
-            </tr>
-        {% endif %}
-    {% endblock %}
-
-    {% block package_extra_info %}
-        {% if h.check_access('package_update', {'id':pkg.id }) %}
-            {% if pkg.metadata_language %}
-                <tr>
-                    <td><strong>Metadata Language</strong></td><td>{{ pkg.metadata_language }}</td>
-                </tr>
-            {% endif %}
-            {% if pkg.metadata_character_set %}
-                <tr>
-                    <td><strong>Metadata Character Set</strong></td><td>{{ pkg.metadata_character_set }}</td>
-                </tr>
-            {% endif %}
-            {% if pkg.metadata_standard_name %}
-                <tr>
-                    <td><strong>Metadata Standard Name</strong></td><td>{{ pkg.metadata_standard_name }}</td>
-                </tr>
-            {% endif %}
-            {% if pkg.metadata_standard_version %}
-                <tr>
-                    <td><strong>Metadata Standard Version</strong></td><td>{{ pkg.metadata_standard_version }}</td>
-                </tr>
-            {% endif %}
-            <tr>
-                <td><strong>Data Quality</strong></td><td>{{ pkg.data_quality }}</td>
-            </tr>
-            <tr>
-                <td><strong>Lineage Statement</strong></td><td>{{ pkg.lineage_statement }}</td>
-            </tr>
-        {% else %}
-            {% if pkg.data_quality %}
-                <tr>
-                    <td><strong>Data Quality</strong></td><td>{{ pkg.data_quality }}</td>
-                </tr>
-            {% endif %}
-            {% if pkg.lineage_statement %}
-                <tr>
-                    <td><strong>Lineage Statement</strong></td><td>{{ pkg.lineage_statement }}</td>
-                </tr>
-            {% endif %}
-        {% endif %}
-
-    {% endblock %}
-
-    </table>
-
-  </div>
-
+    {% snippet "package/snippets/additional_info.html", pkg=pkg, user=c.user, userobj=c.userobj %}
   {% endblock %}
 
   {% block bcgw_data %}
-    {% if pkg.type == 'Geographic' %}
-
-      {% set object_name = pkg.object_name or '' %}
-      {% set object_short_name = pkg.object_short_name or '' %}
-      {% set object_table_comments = pkg.object_table_comments or '' %}
-      {% set object_details = pkg.details or '' %}
-
-      {% if object_name or object_short_name or object_table_comments or object_details %}
-        <h3>Object Description</h3>
-        <div id="object-description">
-          {% if object_name %}
-          <p><strong>Object Name: {{ object_name }}</strong></p>
-          {% endif %}
-          <p>
-            {% if object_short_name %}
-            <strong>Short Name</strong>: {{ object_short_name }}<br/>
-            {% endif %}
-
-            {% if object_table_comments %}
-            <strong>Comments</strong>: {{ object_table_comments }}
-            {% endif %}
-          </p>
-          {% if object_details %}
-          <table class="table details">
-            <thead>
-              <tr>
-                <th class="column-name">Column Name</th>
-                <th class="short-name">Short Name</th>
-                <th class="data-type">Data Type</th>
-                <th class="data-precision">Data Precision</th>
-                <th class="data-comments">Comments</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for detail in object_details %}
-              <tr>
-                <td class="column-name">{{ detail['column_name'] }}</td>
-                <td class="short-name">{{ detail['short_name'] }}</td>
-                <td class="data-type">{{ detail['data_type'] }}</td>
-                <td class="data-precision">{{ detail['data_precision'] }}</td>
-                <td class="data-comments">{{ detail['column_comments'] }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          {% endif %}
-        </div>
-      {% endif %}
-    {% endif %}
+    {% snippet "package/snippets/bcgw_data.html", pkg=pkg %}
   {% endblock %}
-
-  {% if (pkg.edc_state.upper() == 'PUBLISHED' or pkg.edc_state.upper() == 'PENDING ARCHIVE') %}
-      {% block edc_disqus_comments %}
-          {{ h.comments_block() }}
-      {% endblock %}
-  {% endif %}
 {% endblock %}
 
 

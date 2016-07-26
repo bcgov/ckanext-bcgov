@@ -38,14 +38,14 @@
             {% if h.check_access('package_update', {'id':pkg.id }) %}
               <li>{% link_for _('Manage'), controller='package', action='resource_edit', id=pkg.name, resource_id=res.id, class_='btn', icon='wrench' %}</li>
             {% endif %}
-            {% if res.url %}
+            {% if res.url and h.is_url(res.url) %}
               <li>
                 <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}">
                   {% if res.resource_type in ('listing', 'service') %}
                     <i class="icon-eye-open"></i> {{ _('View') }}
                   {% elif  res.resource_type == 'api' %}
                     <i class="icon-key"></i> {{ _('API Endpoint') }}
-                  {% elif not res.can_be_previewed %}
+                  {% elif not res.has_views or not res.can_be_previewed %}
                     <i class="icon-external-link"></i> {{ _('Go to resource') }}
                   {% else %}
                     <i class="icon-download"></i> {{ _('Download') }}
@@ -63,7 +63,7 @@
         {% block resource_content %}
           {% block resource_read_title %}<h1 class="page-heading">{{ h.resource_display_name(res) | truncate(50) }}</h1>{% endblock %}
           {% block resource_read_url %}
-            {% if res.url %}
+            {% if res.url and h.is_url(res.url) %}
               <p class="muted ellipsis">{{ _('URL:') }} <a href="{{ res.url }}" class="resource-url-analytics" title="{{ res.url }}">{{ res.url }}</a></p>
             {% endif %}
           {% endblock %}
@@ -76,8 +76,8 @@
               <blockquote>{{ h.markdown_extract(c.package.get('notes')) }}</blockquote>
               <p>{% trans dataset=c.package.title, url=h.url_for(controller='package', action='read', id=c.package['name']) %}Source: <a href="{{ url }}">{{ dataset }}</a>{% endtrans %}
             {% endif %}
-          {% endblock %}
-        </div>
+          </div>
+        {% endblock %}
       </div>
       {# CITZEDC769 - xls/xlsx previews not being identified
             Solution for now is to check the resource type for xls/xlsx and don't

@@ -14,7 +14,7 @@ import ckan.lib.maintain as maintain
 import ckan.plugins.toolkit as toolkit
 from pylons import config
 
-from ckanext.bcgov.util.util import (get_user_orgs, get_user_toporgs)
+from ckanext.bcgov.util.util import (get_user_orgs, get_user_toporgs, get_orgs_user_can_edit)
 
 c = toolkit.c
 
@@ -47,8 +47,9 @@ class EDCUserController(UserController):
         fq = ' +edc_state:("DRAFT" OR "PENDING PUBLISH" OR "REJECTED")'
             #Get the list of organizations that this user is the admin
         if not c.userobj.sysadmin :
-            user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
-            user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
+            user_orgs = get_orgs_user_can_edit(c.userobj)#['"' + org + '"' for org in get_orgs_user_can_edit()]
+            #user_orgs = ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'admin')]
+            #user_orgs += ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'editor')]
             if len(user_orgs) > 0 :
                 fq += ' +owner_org:(' + ' OR '.join(user_orgs) + ')'
         self._user_datasets('dashboard_unpublished', c.userobj.id, fq)
@@ -61,6 +62,7 @@ class EDCUserController(UserController):
         self._user_datasets('dashboard_datasets', c.userobj.id, fq)
         return render('user/dashboard_datasets.html')
 
+
     def read(self, id=None):
         if c.userobj and c.userobj.sysadmin == True:
             fq = ''
@@ -68,8 +70,9 @@ class EDCUserController(UserController):
             fq = ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
             if c.userobj:
                 user_id = c.userobj.id
-                user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
-                user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
+                user_orgs = get_orgs_user_can_edit(c.userobj)#['"' + org + '"' for org in get_orgs_user_can_edit()]
+                #user_orgs = ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'admin')]
+                #user_orgs += ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'editor')]
                 if len(user_orgs) > 0:
                     fq += ' OR owner_org:(' + ' OR '.join(user_orgs) + ')'
             fq += ')'
@@ -84,11 +87,11 @@ class EDCUserController(UserController):
                    'user': c.user or c.author, 'auth_user_obj': c.userobj,
                    'for_view': True}
         user_dict = {'id': id,
-                     'user_obj': c.userobj}
+                     'user_obj': c.userobj,
+                     'include_datasets': False}
 
         # unicode format (decoded from utf8)
         q = c.q = request.params.get('q', u'')
-#        q += ' author:"%s"' %c.userobj.id
 
         context['return_query'] = True
 

@@ -1,10 +1,9 @@
 {% extends "user/read_base.html" %}
 
 {% block dashboard_activity_stream_context %}{% endblock %}
-{% set (admin_org, editor_org, mem_org) = h.get_user_role_orgs(c.userobj.id, c.userobj.sysadmin) %}
 
 {% block page_primary_action %}
-	{% if h.check_access('package_create') and (admin_org or editor_org or c.userobj.sysadmin == True) %}
+	{% if h.check_access('package_create') %}
     {% link_for _('Add Dataset'), controller='ckanext.bcgov.controllers.package:EDCPackageController', action='typeSelect', class_="btn btn-primary", icon="plus-sign-alt" %}
   {% endif %}
 {% endblock %}
@@ -33,7 +32,7 @@
 
   {% block packages_list %}
     {% if c.page.items %}
-      {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, admin_org=admin_org, editor_org=editor_org, mem_org=mem_org, user_id = user.id) }}
+      {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, user_id = user.id) }}
     {% endif %}
   {% endblock %}
   {% block page_pagination %}
@@ -44,7 +43,7 @@
 
 {% block user_facets %}
   {% for facet in c.facet_titles %}
-    	{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, extras={'id':c.userobj.id}) }}
+    	{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, extras={'id':c.userobj.id}, hide_empty=True) }}
   {% endfor %}
 {% endblock %}
 

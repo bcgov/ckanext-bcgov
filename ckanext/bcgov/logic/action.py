@@ -28,7 +28,6 @@ import paste.deploy.converters
 
 from ckan.lib.mailer import MailerException
 import ckan.model as model
-from ckanext.bcgov.util.util import get_user_list
 
 import pprint
 
@@ -210,7 +209,6 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
 
     msg_dict = dict(org=org_title, sub_org=sub_org_title, user_role=role, dataset_url=dataset_url, dataset_state=new_state)
     msg_body = get_msg_content(msg_dict)
-    pprint.pprint(msg_body)
 
     email_dict = { 'subject': subject, 'body': msg_body }
 
@@ -296,9 +294,6 @@ def edc_package_update(context, input_data_dict):
         current_imap_link = package_dict.get('link_to_imap', None)
         visibility = package_dict['metadata_visibility']
 
-        #pprint.pprint('package_dict:')
-        #pprint.pprint(package_dict)
-        #package_dict['imap_layer_key'] = input_data_dict.get("imap_layer_key")
 
         public_map_link = config.get('edc.imap_url_pub')
         private_map_link = config.get('edc.imap_url_gov')

@@ -1,13 +1,8 @@
 {% ckan_extends %}
 
-{% if c.user %}
-	{% set (admin_org, editor_org, mem_org) = h.get_user_role_orgs(c.userobj.id, c.userobj.sysadmin) %}
-{% endif %}
-
-
 {% block page_primary_action %}
   {% resource 'edc_resource/search.js' %}
-	{% if h.check_access('package_create') and (admin_org or editor_org or c.userobj.sysadmin == True) %}
+	{% if h.check_access('package_create') %}
 		<div class="page_primary_action">
 			{% link_for _('Add Dataset'), controller='ckanext.bcgov.controllers.package:EDCPackageController', action='typeSelect', class_='btn btn-primary', icon='plus-sign-alt' %}
 			<script id="change-add-dataset-button">
@@ -57,7 +52,7 @@
 {% endblock %}
 
 {% block package_search_results_list %}
-  {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, admin_org=admin_org, editor_org=editor_org, mem_org=mem_org, controller=c.controller) }}
+  {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, controller=c.controller) }}
 {% endblock %}
 
 {% block secondary %}
@@ -68,9 +63,9 @@
 	  {% for facet in c.facet_titles %}
 	   {% set more_button = 'more-'+facet+'-button' %}
 	  	{% if facet == 'type' %}
-	  		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_type_label, name=facet, more_button = more_button, id=c.facet_titles[facet].lower() ) }}
+	  		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_type_label, name=facet, more_button = more_button, id=c.facet_titles[facet].lower(), hide_empty=True ) }}
 	  	{% else %}
-	    	{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, more_button = more_button, id=c.facet_titles[facet].lower() ) }}
+	    	{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, more_button = more_button, id=c.facet_titles[facet].lower(), hide_empty=True ) }}
 	    {% endif %}
 	  {% endfor %}
 

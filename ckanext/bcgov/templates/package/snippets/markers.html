@@ -1,12 +1,7 @@
 {% set marker_strlen = 12 %}
 {% set dataset_title = h.record_type_label(type) %}
 
-{% if org %}
-    {% set org_title = h.edc_org_title(org) %}
-{% endif %}
-
 {% if branch %}
-    {% set branch_title = h.edc_org_title(branch) %}
     {% set sector = h.get_suborg_sector(branch) %}
 {% endif %}
 

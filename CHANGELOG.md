@@ -1,5 +1,12 @@
 # Release Notes
 
+## 1.4.0
+
+Major changes
+	- upgrade CKAN to version 2.5.2
+	- Optimzed dataset search, view and edit for all user roles
+	- Rewrite helper functions to get top level orgnizations and orgnizations for different user roles.
+
 ## 1.3.0
 
 Major changes

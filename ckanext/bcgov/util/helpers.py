@@ -63,7 +63,7 @@ def get_suborg_sector(sub_org_id):
 def get_user_dataset_num(userobj):
     from ckan.lib.base import model
     from ckan.lib.search import SearchError
-    from ckanext.bcgov.util.util import get_user_orgs
+    from ckanext.bcgov.util.util import get_user_orgs, get_orgs_user_can_edit
 
     user_id = userobj.id
 
@@ -74,8 +74,9 @@ def get_user_dataset_num(userobj):
         #Include only datsset created by this user or those from the orgs that the user has the admin role.
         fq = ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
 
-        user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
-        user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
+        user_orgs = get_orgs_user_can_edit(userobj) #['"' + org + '"' for org in get_orgs_user_can_edit()]
+        #user_orgs = ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'admin')]
+        #user_orgs += ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'editor')]
         if len(user_orgs) > 0:
             fq += ' OR owner_org:(' + ' OR '.join(user_orgs) + ')'
         fq += ')'
@@ -109,7 +110,7 @@ def record_is_viewable(pkg_dict, userobj):
     Editors and admins can see all the records of their organizations in addition to what government users can see.
     '''
 
-    from ckanext.bcgov.util.util import get_user_orgs
+    from ckanext.bcgov.util.util import get_user_orgs, get_orgs_user_can_edit
 
     #Sysadmin can view all records
     if userobj and userobj.sysadmin == True :
@@ -143,12 +144,17 @@ def record_is_viewable(pkg_dict, userobj):
     if metadata_visibility == 'Public' and edc_state in published_state:
         return True
     if userobj  :
+        
         if metadata_visibility == 'IDIR' and edc_state in published_state:
             return True
-        user_orgs = [org.id for org in get_user_orgs(userobj.id, 'editor') ]
-        user_orgs += [org.id for org in get_user_orgs(userobj.id, 'admin') ]
+
+        user_orgs = get_orgs_user_can_edit(userobj)
+        #user_orgs = [org.get('id') for org in get_user_orgs(userobj.id, 'editor') ]
+        #user_orgs += [org.get('id') for org in get_user_orgs(userobj.id, 'admin') ]
         if owner_org in user_orgs:
             return True
+        
+        return True
     return False
 
 
@@ -335,30 +341,35 @@ def get_organizations():
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
     org_model = context['model']
+
     #Get the list of all groups of type "organization" that have no parents.
     top_level_orgs = org_model.Group.get_top_level_groups(type="organization")
 
     return top_level_orgs
 
 
-def get_edc_org(id):
-    return model.Group.get(id)
-
-def get_organization_title(org_id):
-    '''
-    Returns the title of an organization with the given organization id.
+def get_edc_org(org_id):
+    return model.Group.get(org_id)
     '''
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
 
     try:
-        orgs = get_action('organization_list')(context, {'all_fields': True})
+        org = get_action('organization_show')(context, {'id': org_id, 'include_datasets': False})
     except NotFound:
-        orgs = []
-    for org in orgs:
+        org = None
 
-        if org['id'] == org_id:
-            return org['title']
+    '''
+    return org
+
+def get_organization_title(org_id):
+    '''
+    Returns the title of an organization with the given organization id.
+    '''
+    org = get_edc_org(org_id)
+
+    if org :
+        return org.title
     return None
 
 
@@ -381,8 +392,6 @@ def get_iso_topic_values(iso_topic_str):
 
 def get_eas_login_url():
     '''Return the value of the eas login url config setting.
-
-
 
     '''
     value = config.get('edc.eas_url')
