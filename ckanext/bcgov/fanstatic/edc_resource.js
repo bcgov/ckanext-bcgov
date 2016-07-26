@@ -24,6 +24,20 @@ $('#field-image-upload').change(function() {
 	
 });
 
+// workaround for firefox page caching when clicking the back button after adding a resource
+window.onunload = function() {
+	document.querySelector('.overlay-wrap').classList.remove('enable');
+};
+
+/**
+ *  Issue #99 - Prevent user from clicking the add button more then one time	
+ *	Disable the form and show a spinner when clicking the add button
+**/
+$('button[type="submit"]').click(function() {
+	$(this).attr('disabled');
+	$('.overlay-wrap').addClass('enable');	
+});
+
 $(function() {
 	check_storage_location();
 	$("#field-data_collection_start_date").datepicker({ dateFormat: "yy-mm-dd", showOtherMonths: true, selectOtherMonths: true });
