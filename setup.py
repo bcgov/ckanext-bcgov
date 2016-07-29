@@ -24,7 +24,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'ckan==2.5.3b',
+        'ckan==2.5.3-bcgov',
         'pycurl==7.19.5',
         'validate_email==1.2',
     ],
