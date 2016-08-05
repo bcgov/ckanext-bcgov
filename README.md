@@ -35,8 +35,8 @@ Installation
         ...
 
         # Path for licenses and sectors JSON files, e.g.:
-        licenses_group_url = file:///etc/ckan/dlv/edc_licenses.json
-        sectors_file_url = file:///etc/ckan/dlv/edc_sectors.json
+        licenses_group_url = https://$GOGS_URL/bcdc-licenses-data/edc_licenses.json
+        sectors_file_url = https://$GOGS_URL/bcdc-licenses-data/edc_sectors.json
 
         ...
 
