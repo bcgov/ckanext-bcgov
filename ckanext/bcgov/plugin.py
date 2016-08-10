@@ -308,6 +308,11 @@ class SchemaPlugin(plugins.SingletonPlugin):
             abort(401, _('Unauthorized to read package %s') % pkg_dict.get("title"))
             
         return pkg_dict
+        
+    def after_update(self, context, pkg_dict):
+        # If there are no resources added, redirect to the "add resource" page after saving
+        if len(pkg_dict['resources']) == 0:
+            toolkit.redirect_to(controller='package', action='new_resource', id=pkg_dict['id'])
 
     def dataset_facets(self, facet_dict, package_type):
         '''
