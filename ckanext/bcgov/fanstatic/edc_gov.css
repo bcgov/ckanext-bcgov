@@ -1322,7 +1322,6 @@ img.back-to-top:hover {
 		color: #505050;
 	}
 }
-
 @media (max-width: 979px) {
 	#header .navbar-brand .logo {
 		padding-left: 15px;
@@ -1338,5 +1337,13 @@ img.back-to-top:hover {
 
 	nav#sub .container {
 		width: auto;
+	}
+}
+@media screen and (max-width: 767px) {
+	#header .navbar-brand {
+		margin-left: 0;
+	}
+	#header .navbar-brand .logo {
+		padding-left: 30px;
 	}
 }

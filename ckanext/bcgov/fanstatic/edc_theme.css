@@ -546,6 +546,8 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
 
 .dataset-markers .marker.small a {
   font-size: 12px;
+  overflow: hidden;
+  text-overflow: clip;
 }
 
 .dataset-list .dataset-markers {
@@ -859,6 +861,14 @@ menu li {
   top: 7px;
 }
 
+.resource-item .heading {
+  word-wrap: break-word;
+}
+
+#object-description strong {
+  word-wrap: break-word;
+}
+
 /* Wet-boew overrides
 a:visited {
   color: inherit;
@@ -1123,7 +1133,7 @@ input.search.tt-hint {
   visibility: visible;
 }
 
-.add-data-loader { 
+.add-data-loader {
   overflow: hidden;
   margin: 60px auto;
   font-size: 10px;
