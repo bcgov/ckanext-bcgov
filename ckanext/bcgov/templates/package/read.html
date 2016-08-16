@@ -2,6 +2,15 @@
 
 {% block wrapper_class %}{{ super() }} dataset-view{% endblock %}
 
+{% block breadcrumb_content %}
+  {% set parent_org = h.get_parent_org(c.pkg_dict.sub_org) %}
+  <li>{% link_for _('Organizations'), controller='organization', action='index' %}</li>
+  {% if parent_org %}
+  <li>{% link_for parent_org.title|truncate(35), controller='organization', action='read', id=parent_org.name %}</li>
+  {% endif %}
+  <li class="active">{% link_for c.pkg_dict.organization.title|truncate(35), controller='organization', action='read', id=c.pkg_dict.organization.name %}</li>
+{% endblock %}
+
 
 {% block content_primary_nav %}
   {{ super() }}
