@@ -44,6 +44,22 @@ def get_suborgs(org_id):
     suborgs = [branch.id for branch in branches]
 
     return suborgs
+    
+def get_org_parent(org_id):
+    '''
+    Returns the parent of an organization
+    '''
+    
+    context = {'model': model, 'session':model.Session, 'user':c.user}
+    org_model = context['model']
+    
+    group = org_model.Group.get(org_id)
+    parent_org = group.get_parent_groups(type="organization")
+    
+    if parent_org and len(parent_org) > 0:
+        return parent_org[0]
+    else:
+        return False
 
 def get_suborg_sector(sub_org_id):
     '''

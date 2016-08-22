@@ -330,17 +330,22 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
 }
 
 .dataset-view h3 {
-  background: #394559;
+  background: #38598a;
   color: #fff;
   padding: 5px;
 }
 
 .btn.btn-primary {
-  background-color: #394559;
+  background-color: #38598a;
 }
 
 .btn.btn-primary:hover {
-  background-color: #47556e;
+  background-color: #5475a7;
+}
+
+.btn-default,
+.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active {
+    color: #38598a;
 }
 
 .btn-group.open .btn-primary.dropdown-toggle {
@@ -395,7 +400,7 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
 }
 
 .search-form .search-input.search-giant input {
-  border: 2px solid #556072;
+  border: 2px solid #003366;
 }
 
 .dataset-markers {
@@ -966,6 +971,11 @@ label:after {
   color: #fff;
 }
 
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-submenu:hover > a, .dropdown-submenu:focus > a {
+    background-image: none;
+    background-color: #38598a;
+}
+
 .navbar.navbar-default {
   border: 0;
 }
@@ -984,12 +994,9 @@ label:after {
   margin-bottom: 10px;
 }
 
-.org-hierarchy .organization .btn.js-expand {
-  background-color: #394559;
-}
-
+.org-hierarchy .organization .btn.js-expand,
 .org-hierarchy.no-search .organization.expanded > .js-collapse {
-  background-color: #47556e;
+  background-color: #38598a;
 }
 
 .extent h4 {

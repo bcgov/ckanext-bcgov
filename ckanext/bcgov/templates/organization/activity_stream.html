@@ -1,0 +1,10 @@
+{% ckan_extends %}
+
+{% block breadcrumb_content %}
+  {% set parent_org = h.get_parent_org(c.group_dict.id) %}
+  <li>{% link_for _('Organizations'), controller='organization', action='index' %}</li>
+  {% if parent_org %}
+  <li>{% link_for parent_org.title|truncate(35), controller='organization', action='read', id=parent_org.name %}</li>
+  {% endif %}
+  <li class="active">{% link_for c.group_dict.title|truncate(35), controller='organization', action='read', id=c.group_dict.name %}</li>
+{% endblock %}

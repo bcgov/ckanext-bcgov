@@ -107,9 +107,11 @@
             <tbody>
 			{% set dates = pkg.dates %}
 			{% for date in dates %}
+                {% if date.type != 'Created' %}
 				<tr>
 					<td><strong> Data {{ date.type }} </strong></td><td> {{ date.date }} </td>
 				</tr>
+                {% endif %}
 			{% endfor %}
 			{#
               <tr>
