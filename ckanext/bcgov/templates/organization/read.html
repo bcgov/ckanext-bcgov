@@ -1,12 +1,19 @@
 {% ckan_extends %}
 
-{% set (admin_org, editor_org, mem_org) = h.get_user_role_orgs(c.userobj.id, c.userobj.sysadmin) %}
-
 {% block page_primary_action %}
   {% set org_id = c.group_dict.id %}
-  {% if h.check_access('package_create', {'owner_org': c.group_dict.id}) and ((org_id in admin_org) or (org_id in editor_org) or (c.userobj.sysadmin == True)) %}
+  {% if h.check_access('package_create', {'owner_org': c.group_dict.id}) %}
     {% link_for _('Add Dataset'), controller='ckanext.bcgov.controllers.package:EDCPackageController', action='typeSelect', group=org_id, class_='btn btn-primary', icon='plus-sign-alt' %}
   {% endif %}
+{% endblock %}
+
+{% block breadcrumb_content %}
+  {% set parent_org = h.get_parent_org(c.group_dict.id) %}
+  <li>{% link_for _('Organizations'), controller='organization', action='index' %}</li>
+  {% if parent_org %}
+  <li>{% link_for parent_org.title|truncate(35), controller='organization', action='read', id=parent_org.name %}</li>
+  {% endif %}
+  <li class="active">{% link_for c.group_dict.title|truncate(35), controller='organization', action='read', id=c.group_dict.name %}</li>
 {% endblock %}
 
 
@@ -33,7 +40,7 @@
     {% endblock %}
   {% block packages_list %}
     {% if c.page.items %}
-      {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, admin_org=admin_org, editor_org=editor_org, mem_org=mem_org, org_id = c.group_dict.id) }}
+      {{ h.snippet('snippets/package_list.html', packages=c.page.items, logged_in=c.user, user=c.userobj, org_id = c.group_dict.id) }}
     {% endif %} 
   {% endblock %}
   {% block page_pagination %}
@@ -48,7 +55,7 @@
     {% if facet == 'resource_download_format' %}
       {{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_format_label, name=facet, extras={'id':c.group_dict.id}, more_button=more_button) }}
     {% else %}
-      {{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, extras={'id':c.group_dict.id}, more_button=more_button) }}
+      {{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, extras={'id':c.group_dict.id}, more_button=more_button, hide_empty=True) }}
     {% endif %}
   {% endfor %}
 {% endblock %}

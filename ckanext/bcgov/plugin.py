@@ -15,11 +15,10 @@ from ckanext.bcgov.util.util import (get_edc_tags,
                                           get_state_values,
                                           get_username,
                                           get_user_orgs,
-                                          get_user_role_orgs,
+                                          get_orgs_user_can_edit,
                                           get_user_orgs_id,
                                           get_user_toporgs,
-                                          get_organization_branches,
-                                          get_all_orgs
+                                          get_organization_branches
                                           )
 
 from ckanext.bcgov.util.helpers import (get_suborg_sector,
@@ -44,6 +43,7 @@ from ckanext.bcgov.util.helpers import (get_suborg_sector,
                                              get_version,
                                              get_bcgov_commit_id,
                                              resource_prefix,
+                                             get_org_parent
                                              )
 
 abort = base.abort
@@ -62,6 +62,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IFacets, inherit=True)
 
     plugins.implements(plugins.IActions, inherit=True)
+
+    plugins.implements(plugins.IAuthFunctions)
 
     def get_helpers(self):
         return {
@@ -85,8 +87,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "get_suborgs": get_suborgs,
                 "record_is_viewable": record_is_viewable,
                 "get_espg_id" : get_espg_id,
-                "get_user_role_orgs" : get_user_role_orgs,
-                "get_all_orgs" : get_all_orgs,
+                "orgs_user_can_edit" : get_orgs_user_can_edit,
                 "get_facets_selected": get_facets_selected,
                 "get_facets_unselected" : get_facets_unselected,
                 "get_sectors_list": get_sectors_list,
@@ -98,6 +99,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "get_version": get_version,
                 "get_bcgov_commit_id": get_bcgov_commit_id,
                 "googleanalytics_resource_prefix": resource_prefix,
+                "get_parent_org": get_org_parent
                 }
 
 
@@ -273,16 +275,20 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 fq += ' '
             else:
                 if user_name != 'visitor':
-                    fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
+                    if 'edc_state' not in fq :
+                        fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
 
-                    #IDIR users can also see private records of their organizations
-                    user_id = c.userobj.id
-                    #Get the list of orgs that the user is an admin or editor of
-                    user_orgs = ['"' + org.id + '"' for org in get_user_orgs(user_id, 'admin')]
-                    user_orgs += ['"' + org.id + '"' for org in get_user_orgs(user_id, 'editor')]
-                    if user_orgs != []:
-                        fq += ' OR ' + 'owner_org:(' + ' OR '.join(user_orgs) + ')'
-                    fq += ')'
+                        if 'owner_org' not in fq :
+                            #IDIR users can also see private records of their organizations
+                            user_id = c.userobj.id
+                            #Get the list of orgs that the user is an admin or editor of
+                            user_orgs = get_orgs_user_can_edit(c.userobj) #['"' + org + '"' for org in get_orgs_user_can_edit()]
+                            #user_orgs = ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'admin')]
+                            #user_orgs += ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'editor')]
+                            if user_orgs != []:
+                                fq += ' OR ' + 'owner_org:(' + ' OR '.join(user_orgs) + ')'
+
+                        fq += ')'
                 #Public user can only view public and published records
                 else:
                     fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
@@ -337,6 +343,12 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 'edc_package_update_bcgw' : edc_action.edc_package_update_bcgw,
                 'package_update' : edc_action.package_update,
                 'package_autocomplete' : edc_action.package_autocomplete }
+
+    def get_auth_functions(self):
+        from ckanext.bcgov.logic.auth import create as edc_auth_create
+        return {
+            'package_create': edc_auth_create.package_create
+        }
 
 
 class EDCDisqusPlugin(plugins.SingletonPlugin):

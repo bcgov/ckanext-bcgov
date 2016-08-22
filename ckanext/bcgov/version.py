@@ -1,4 +1,4 @@
 # Copyright  2015, Province of British Columbia
 # License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
 
-version = '1.3.0'
+version = '1.4.0'

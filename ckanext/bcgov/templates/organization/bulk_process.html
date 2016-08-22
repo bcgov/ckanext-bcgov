@@ -16,7 +16,7 @@
   		{% if facet == 'resource_download_format' %}
   			{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], label_function=h.edc_format_label, name=facet, extras={'id':c.group_dict.id}) }}
   		{% else %}
-    		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, extras={'id':c.group_dict.id}) }}
+    		{{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet, extras={'id':c.group_dict.id}, hide_empty=True) }}
     	{% endif %}
 	{% endfor %}
 {% endblock %}

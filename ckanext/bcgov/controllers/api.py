@@ -20,9 +20,7 @@ import ckan.logic as logic
 import ckan.lib.navl.dictization_functions
 
 from ckan.common import _, c, request, response
-from ckanext.bcgov.util.util import (get_all_orgs,
-                                          get_organization_branches,
-                                          get_parent_orgs)
+from ckanext.bcgov.util.util import (get_organization_branches, get_parent_orgs)
 
 log = logging.getLogger('ckanext.edc_schema')
 
@@ -183,13 +181,8 @@ class EDCApiController(ApiController):
 
             #add the top-level org to the organization
             #'organization, branch'
-#            orgs = get_all_orgs()
             org = model.Group.get(pkg['org'])
-#            org=orgs[pkg['org']]
             branch = model.Group.get(pkg['sub_org'])
-#            branch=orgs[pkg['sub_org']]
-#            org_title = org['title']
-#            branch_title = branch['title']
             org_title = ''
             branch_title = ''
             if org :

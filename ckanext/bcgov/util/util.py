@@ -13,7 +13,8 @@ from ckan.common import  c
 import ckan.logic as logic
 
 from ckanext.bcgov.util.helpers import get_record_type_label
-from sqlalchemy import and_
+from sqlalchemy import and_, distinct
+from sqlalchemy.orm import aliased
 
 ValidationError = logic.ValidationError
 
@@ -76,57 +77,145 @@ def get_username(id):
     except toolkit.ObjectNotFound:
         return None
 
-def get_user_toporgs(user_id, role=None):
+def get_orgs_user_can_edit(userobj) :
     '''
-    Returns the list of orgs that the given user belongs to and has the given role('admin', 'member', 'editor', ...)
+    Returns the list of id's of organizations that the current logged in user
+    can edit. The user must have an admin or editor role in the organization.
+    '''
+
+    if not userobj :
+        return []
+
+    orgs = []
+
+    '''
+    context = {'model': model, 'session': model.Session,
+               'user': c.user or c.author, 'auth_user_obj': c.userobj}
+
+    perm_dict = {'permission' : 'create_dataset'}
+    orgs = toolkit.get_action('organization_list_for_user')(data_dict=perm_dict)
+
+    orgs = [org['id'] for org in orgs]
+    
+    '''
+    orgs =  userobj.get_group_ids('organization', 'editor') +  c.userobj.get_group_ids('organization', 'admin')
+    return orgs
+
+
+def get_user_toporgs(user_id, role=None):
+
+    '''
+    Optimized by Khalegh Mamakani to use SqlAlchemy queries
+    to get the user top-orgs/sub-orgs instead of looping over
+    ckan member_list action which, could result in very long response times.
+
     '''
 
     orgs = []
-    context = {'model': model, 'session': model.Session,
-               'user': c.user or c.author, 'auth_user_obj': c.userobj}
-    org_model = context['model']
     sub_orgs = []
 
-    #Get the list of all first level organizations.
-    all_orgs = org_model.Group.get_top_level_groups(type="organization")
+
+    user_mem = aliased(model.Member);
+    group_mem = aliased(model.Member);
+
+    # Query to get the list of all top organizations
+    top_orgs_query = model.Session.query(model.Group)\
+                        .join(model.Member, 
+                            and_(model.Member.table_id == model.Group.id,
+                                model.Member.table_name == 'group',
+                                model.Member.state == 'active'
+                            )
+                        )
 
 
-    for org in all_orgs:
-        members = []
-        try:
-            member_dict = {'id': org.id, 'object_type': 'user', 'capacity': role}
-            #Get the list of id's of all admins of the organization
-            members = [member[0] for member in toolkit.get_action('member_list')(data_dict=member_dict)]
-        except toolkit.ObjectNotFound:
-            members = []
+    # Query for the list of all sub-organizations
+    sub_orgs_query = model.Session.query(model.Group)\
+                        .join(model.Member, 
+                            and_(model.Member.group_id == model.Group.id,
+                                model.Member.table_name == 'group',
+                                model.Member.state == 'active'
+                            )
+                        )
 
-        #Add the org if user is a member of at least one suborg.
-        group = org_model.Group.get(org.id)
-        suborgs = group.get_children_groups(type = 'organization')
+    if not c.userobj.sysadmin :
+        # Restricting the top-orgs query to get user's top organizations 
+        top_orgs_query = top_orgs_query.join(user_mem, 
+                            and_(user_mem.group_id == model.Group.id,
+                                user_mem.table_name == 'user',
+                                user_mem.state == 'active',
+                                user_mem.table_id == user_id
+                            )
+                        )\
+                        .filter(model.Group.type == 'organization')\
+                        .filter(model.Group.state == 'active')
 
-        #If the user id in the list of org's admins then add the org to the final list.
-        if user_id in members or c.userobj.sysadmin :
-            orgs.append(org)
-            for suborg in suborgs :
-                sub_orgs.append(suborg)
-        else :
-            found = False
-            for suborg in suborgs :
-                members = []
-                try:
-                    member_dict = {'id': suborg.id, 'object_type': 'user', 'capacity': role}
-                    #Get the list of id's of all admins of the organization
-                    members = [member[0] for member in toolkit.get_action('member_list')(data_dict=member_dict)]
-                except toolkit.ObjectNotFound:
-                    members = []
+        # Including all remaining top-organizations that user is a member of at least one of their sub-organizations
+        top_2nd_q = model.Session.query(model.Group)\
+                        .join(group_mem, 
+                            and_(group_mem.table_id == model.Group.id,
+                                group_mem.table_name == 'group',
+                                group_mem.state == 'active'
+                            )
+                        )\
+                        .join(user_mem, 
+                            and_(user_mem.group_id == group_mem.group_id,
+                                user_mem.table_name == 'user',
+                                user_mem.state == 'active',
+                                user_mem.table_id == user_id
+                            )
+                        )\
+                        .filter(model.Group.type == 'organization')\
+                        .filter(model.Group.state == 'active')
 
-                #If the user id in the list of org's admins then add the org to the final list.
-                if user_id in members:
-                    sub_orgs.append(suborg)
-                    found = True
-            if found :
-                orgs.append(org)
+        # Restritcting sub-orgs query to get the list of user's sub-organizations.
+        sub_orgs_query = sub_orgs_query.join(user_mem, 
+                            and_(user_mem.group_id == model.Group.id,
+                                user_mem.table_name == 'user',
+                                user_mem.state == 'active',
+                                user_mem.table_id == user_id
+                            )
+                        )\
+                        .filter(model.Group.type == 'organization')\
+                        .filter(model.Group.state == 'active')
 
+        # Including all sub-organiztions that user is member of their top-organization
+        sub_2nd_q = model.Session.query(model.Group)\
+                        .join(group_mem, 
+                            and_(group_mem.group_id == model.Group.id,
+                                group_mem.table_name == 'group',
+                                group_mem.state == 'active'
+                            )
+                        )\
+                        .join(user_mem, 
+                            and_(user_mem.group_id == group_mem.table_id,
+                                user_mem.table_name == 'user',
+                                user_mem.state == 'active',
+                                user_mem.table_id == user_id
+                            )
+                        )\
+                        .filter(model.Group.type == 'organization')\
+                        .filter(model.Group.state == 'active')
+
+        # Filtering the query results by user role.
+        if role :
+            top_orgs_query = top_orgs_query.filter(user_mem.capacity == role)
+            top_2nd_q = top_2nd_q.filter(user_mem.capacity == role)
+            sub_orgs_query = sub_orgs_query.filter(user_mem.capacity == role)
+            sub_2nd_q = sub_2nd_q.filter(user_mem.capacity == role)
+
+        top_orgs_query = top_orgs_query.union(top_2nd_q)
+        sub_orgs_query = sub_orgs_query.union(sub_2nd_q)
+
+    else :
+        top_orgs_query = top_orgs_query.filter(model.Group.type == 'organization')\
+                                        .filter(model.Group.state == 'active')
+
+        sub_orgs_query = sub_orgs_query.filter(model.Group.type == 'organization')\
+                                        .filter(model.Group.state == 'active')
+
+
+    orgs = top_orgs_query.distinct()
+    sub_orgs = sub_orgs_query.distinct()
 
 
     return (orgs, sub_orgs)
@@ -136,84 +225,85 @@ def get_user_orgs(user_id, role=None):
     Returns the list of orgs and suborgs that the given user belongs to and has the given role('admin', 'member', 'editor', ...)
     '''
                 
+    '''
+    Optimized by Khalegh Mamakani to use SqlAlchemy queries
+    to get the user organizations instead of looping over
+    ckan's member_list action. This makes a huge saving in response time
+    for non-sysadmin users.     
+    '''
+
+    
+    user_mem = aliased(model.Member);
+    group_mem = aliased(model.Member);
+
+    member_query = model.Session.query(model.Member.group_id.label('id')) \
+                   .filter(model.Member.table_name == 'user') \
+                   .filter(model.Member.state == 'active') \
+                   .filter(model.Member.table_id == user_id) \
+                   .filter(model.Member.capacity == role)
+
+    
+    
+    '''
+    This second query is required only if we want to add all sub-organizations that
+    user is not a member, but he/she is a member of the top-level orgnization. This has
+    been an assumption decided by bcgov but it must be removed if we want to get only 
+    the list of orgs/sub-orgs that the user has the given role in the org/sub-org in database. 
+    '''
+
+    
+    mem_2nd_q = model.Session.query(model.Group.id)\
+                    .join(group_mem, 
+                        and_(group_mem.group_id == model.Group.id,
+                            group_mem.table_name == 'group',
+                            group_mem.state == 'active'
+                        )
+                    )\
+                    .join(user_mem, 
+                        and_(user_mem.group_id == group_mem.table_id,
+                            user_mem.table_name == 'user',
+                            user_mem.state == 'active',
+                            user_mem.table_id == user_id
+                        )
+                    )\
+                    .filter(model.Group.type == 'organization')\
+                    .filter(model.Group.state == 'active')
+
+    # Filtering the query results by user role.
+    if role :
+        mem_2nd_q = mem_2nd_q.filter(user_mem.capacity == role)
+
+    member_query = member_query.union(mem_2nd_q)
+    
+    org_ids = member_query.distinct();
+
+    orgs_dict = [org.__dict__ for org in org_ids.all()]
+
+    '''
+    user_orgs =  c.userobj.get_group_ids('organization', role)   
+
+
+    pprint.pprint(orgs_dict)
+
+    pprint.pprint(user_orgs)
+    '''
+
+    return orgs_dict
+    
+
+
+    '''    
     orgs = []
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
-    org_model = context['model']
 
-    #Get the list of all first level organizations.
-    all_orgs = org_model.Group.get_top_level_groups(type="organization")
+    perm_role = {'admin' : 'admin', 'editor' : 'create_dataset', 'member' : 'read'}
+    permission = perm_role.get(role)
+    perm_dict = {'permission' : permission}
+    orgs = toolkit.get_action('organization_list_for_user')(data_dict=perm_dict)
 
-    
-    
-    for org in all_orgs:
-        members = []
-        try:
-            member_dict = {'id': org.id, 'object_type': 'user', 'capacity': role}
-            #Get the list of id's of all admins of the organization
-            members = [member[0] for member in toolkit.get_action('member_list')(data_dict=member_dict)]
-        except toolkit.ObjectNotFound:
-            members = []
-
-        #Add the org if user is a member of at least one suborg.
-        group = org_model.Group.get(org.id)
-        suborgs = group.get_children_groups(type = 'organization')
-        
-        #If the user id in the list of org's admins then add the org to the final list.
-        if user_id in members:
-            orgs.append(org)
-            for suborg in suborgs :
-                orgs.append(suborg)
-        else :
-            for suborg in suborgs :
-                members = []
-                try:
-                    member_dict = {'id': suborg.id, 'object_type': 'user', 'capacity': role}
-                    #Get the list of id's of all admins of the organization
-                    members = [member[0] for member in toolkit.get_action('member_list')(data_dict=member_dict)]
-                except toolkit.ObjectNotFound:
-                    members = []
-
-                #If the user id in the list of org's admins then add the org to the final list.
-                if user_id in members:
-                    orgs.append(suborg)
-    
     return orgs
-
-def get_user_role_orgs(user_id, sysadmin):
     '''
-        Returns the list of all  organizations that the given user is a member of.
-        The organizations are splitted in three lists depending of the user role.
-        
-        Modified by Khalegh Mamakani on March 5 2015.
-            -Replaced organization_list and member_list calls with sqlAlchemy queries
-             to get the list faster
-    '''
-    
-    if not user_id :
-        return ([], [], [])
-    
-    #Get the list of all organizations (only org id's)
-    
-    org_query = model.Session.query(model.Group.id).filter(model.Group.type == 'organization')
-    
-    admin_orgs = [org[0] for org in org_query.all()]
-    if sysadmin :
-        return (admin_orgs, [], [])
-    
-    member_query = model.Session.query(model.Member.group_id) \
-                   .filter(model.Member.table_name == 'user') \
-                   .filter(model.Member.table_id == user_id)
-                   
-    admin_orgs = member_query.filter(model.Member.capacity == 'admin').distinct(model.Member.group_id).all()
-    editor_orgs = member_query.filter(model.Member.capacity == 'editor').distinct(model.Member.group_id).all()
-    member_orgs = member_query.filter(model.Member.capacity == 'member').distinct(model.Member.group_id).all()
-
-    admin_orgs = [org[0] for org in admin_orgs]
-    editor_orgs = [org[0] for org in editor_orgs]
-    member_orgs = [org[0] for org in member_orgs]
-
-    return (admin_orgs, editor_orgs, member_orgs)
 
 
 def get_user_orgs_id(user_id, role=None):
@@ -276,7 +366,6 @@ def get_org_users(org_id, role=None):
         members = []
     return members
 
-
 def get_state_values(userobj, pkg):
     '''
     This methods creates a list of possible values for the state of given dataset
@@ -336,23 +425,6 @@ def get_state_values(userobj, pkg):
 
     return states
 
-def get_user_list():
-    '''
-    Returns the list of available users.
-    '''
-    request = urllib2.Request(site_url + '/api/3/action/user_list')
-    request.add_header('Authorization', api_key)
-
-    try:
-        response = urllib2.urlopen(request)
-        assert response.code == 200
-
-        response_dict = json.loads(response.read())
-        assert response_dict['success'] is True
-        user_list = response_dict['result']
-    except:
-        return []
-    return user_list
 
 def get_all_orgs():
     '''
@@ -360,16 +432,7 @@ def get_all_orgs():
     and the value is a tuple of (name, title)
     '''
     orgs_dict = {}
- 
-#     data_string = urllib.quote(json.dumps({'all_fields': True}))
-#     request = urllib2.Request(site_url + '/api/3/action/organization_list')
-#     request.add_header('Authorization', api_key)
-#     response = urllib2.urlopen(request, data_string)
-#     response_dict = json.loads(response.read())
-# 
-#     for org in response_dict['result']:
-#         orgs_dict[org['id']] = {'name': org['name'], 'title': org['title']}
-    
+
     all_orgs = model.Group.all('organization')
     
     for org in all_orgs:
