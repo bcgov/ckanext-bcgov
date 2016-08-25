@@ -446,11 +446,17 @@ def get_bcgov_commit_id():
 def resource_prefix():
     return config.get('googleanalytics_resource_prefix', '/downloads/')
 
-def format_size(size):
-    '''Takes an int, returns a localised unicode representation of a
-    number in bytes, MiB etc.
+def size_or_link(upload, size):
+    '''Returns a string with a localised filesize or an external link
     From ckan/lib/formatters.py localised_filesize()
     '''
     import ckan.lib.formatters as f
 
-    return f.localised_filesize(size)
+    size = int(size)
+
+    if upload and size > 0:
+        return f.localised_filesize(size)
+    elif not upload:
+        return 'external link'
+    else:
+        return ''

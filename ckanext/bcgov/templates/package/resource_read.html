@@ -40,7 +40,7 @@
             {% endif %}
             {% if res.url and h.is_url(res.url) %}
               <li>
-                <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}" title="{% if res.size and res.size > 0 %}{{ h.format_size(res.size|int) }}{% endif %}">
+                <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}" title="{{ h.size_or_link(res.url_type=='upload', res.size) }}">
                   {% if res.resource_type in ('listing', 'service') %}
                     <i class="icon-eye-open"></i> {{ _('View') }}
                   {% elif  res.resource_type == 'api' %}
@@ -135,11 +135,17 @@
                 </tr>
               {% endif %}
 
-              {% for key, value in h.format_resource_items(res.items()) %}
+              {% for key, value in res.items() %}
                 {% if key == "size" or key == "mimetype" %}
-                  <tr>
-                    <td><strong>{{ key|capitalize }}</strong></td><td>{{ value }}</td>
-                  </tr>
+                  {# template tom-foolry to keep size_or_link consistency for all use cases #}
+                  {% if value %}
+                    {% if key == "size" %}
+                      {% set value = h.size_or_link(res.url_type=="upload", value) %}
+                    {% endif %}
+                    <tr>
+                      <td><strong>{{ key|capitalize }}</strong></td><td>{{ value }}</td>
+                    </tr>
+                  {% endif %}
                 {% endif %}
               {% endfor %}
 
