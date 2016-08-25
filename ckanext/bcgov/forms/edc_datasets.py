@@ -1,18 +1,18 @@
-# Copyright  2015, Province of British Columbia 
-# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
- 
+# Copyright  2015, Province of British Columbia
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
+
 
 import ckanext.bcgov.forms.dataset_form as edc_form
 
 from ckan.lib.navl.validators import (ignore_missing,
                                       not_empty
                                       )
-from converters import (convert_to_extras, 
+from converters import (convert_to_extras,
                         convert_from_extras,
                         remove_whitespace,
                         convert_iso_topic)
-from validators import (valid_date, 
-                        check_empty, 
+from validators import (valid_date,
+                        check_empty,
                         check_extension,
                         latitude_validator,
                         longitude_validator)
@@ -27,37 +27,37 @@ def dates_to_db_schema():
               'delete' :[ignore_missing, convert_to_extras],
               }
     return schema
-    
+
 class EDC_ApplicationForm(edc_form.EDC_DatasetForm):
-    
+
     #Setting dataset type associated to edc Application dataset type
     def package_types(self):
-        
+
         return ['Application']
-    
+
     #Adding custom variable to Pylons c object, so that they can be accessed in package templates.
     def setup_template_variables(self, context, data_dict=None):
         from ckan.lib.base import c
         super(EDC_ApplicationForm, self).setup_template_variables(context, data_dict)
-         
+
         c.record_type = 'Application'
-    
+
     def _update_application_schema(self, schema):
         schema['resources'].update({
                                     'url': [not_empty, unicode, remove_whitespace, check_extension],
                                     'format':[ignore_missing, unicode]})
         return schema
-        
+
     def create_package_schema(self):
         schema = super(EDC_ApplicationForm, self).create_package_schema()
         schema = self._update_application_schema(schema)
         return schema
-    
+
     def update_package_schema(self):
         schema = super(EDC_ApplicationForm, self).update_package_schema()
         schema = self._update_application_schema(schema)
         return schema
-    
+
     def show_package_schema(self):
         schema = super(EDC_ApplicationForm, self).show_package_schema()
         schema['resources'].update({
@@ -65,7 +65,7 @@ class EDC_ApplicationForm(edc_form.EDC_DatasetForm):
                                     'format':[ignore_missing, unicode]})
         return schema
 
-    
+
 def details_schema():
     schema = {
               'column_name' : [ignore_missing, convert_to_extras],
@@ -79,10 +79,10 @@ def details_schema():
 
 
 class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
-    
+
     #Setting dataset type associated to edc Application dataset type
     def package_types(self):
-        
+
         return ['Geographic']
 
 
@@ -90,13 +90,13 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
     def setup_template_variables(self, context, data_dict=None):
         from ckan.lib.base import c
         super(EDC_GeoSpatialForm, self).setup_template_variables(context, data_dict)
-         
+
         c.record_type = 'Geographic'
 
-        
+
     #Customize schema for EDC Application Dataset
     def _update_geospatial_schema(self, schema):
-        
+
         cnvrt_to_tags = toolkit.get_converter('convert_to_tags')
         schema.update({
                         'purpose': [ ignore_missing, convert_to_extras ],
@@ -132,23 +132,23 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                                     'format' : [not_empty, unicode],
                                     'edc_resource_type': [ not_empty, convert_to_extras ],
                                     'resource_storage_access_method': [ not_empty, convert_to_extras ],
-                                    'resource_storage_location': [not_empty, unicode, convert_to_extras],
+                                    'resource_storage_location': [ignore_missing, unicode, convert_to_extras],
                                     'data_collection_start_date' : [ignore_missing, valid_date, convert_to_extras ],
                                     'data_collection_end_date' : [ignore_missing, valid_date, convert_to_extras ],
                                     })
-        return schema      
+        return schema
 
 
     def create_package_schema(self):
         schema = super(EDC_GeoSpatialForm, self).create_package_schema()
         schema = self._update_geospatial_schema(schema)
         return schema
-    
+
     def update_package_schema(self):
         schema = super(EDC_GeoSpatialForm, self).update_package_schema()
         schema = self._update_geospatial_schema(schema)
         return schema
-    
+
     def show_package_schema(self):
         cnvrt_from_tags = toolkit.get_converter('convert_from_tags')
         schema = super(EDC_GeoSpatialForm, self).show_package_schema()
@@ -186,27 +186,27 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                                     'format' : [not_empty, unicode],
                                     'edc_resource_type': [ convert_from_extras, not_empty ],
                                     'resource_storage_access_method': [ convert_from_extras],
-                                    'resource_storage_location': [convert_from_extras, unicode, not_empty],
+                                    'resource_storage_location': [convert_from_extras, ignore_missing, unicode],
                                     'data_collection_start_date' : [convert_from_extras, ignore_missing ],
-                                    'data_collection_end_date' : [convert_from_extras, ignore_missing ],               
+                                    'data_collection_end_date' : [convert_from_extras, ignore_missing ],
                                     'projection_name' : [convert_from_extras, not_empty ]
                                     })
         return schema
 
-        
+
 
 class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
-    
+
     #Setting dataset type associated to edc Application dataset type
     def package_types(self):
-        
+
         return ['Dataset']
 
     #Adding custom variable to Pylons c object, so that they can be accessed in package templates.
     def setup_template_variables(self, context, data_dict=None):
         from ckan.lib.base import c
         super(EDC_NonGeoSpatialForm, self).setup_template_variables(context, data_dict)
-         
+
         c.record_type = 'Dataset'
 
     #Customize schema for EDC Application Dataset
@@ -223,30 +223,30 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
                         'north_bound_latitude' : [ignore_missing, convert_to_extras],
                         'dates' : dates_to_db_schema()
                      })
-         
+
         schema['resources'].update({
                                     'url': [not_empty, unicode, remove_whitespace, check_extension],
                                     'resource_update_cycle' : [ not_empty, convert_to_extras ],
                                     'format' : [not_empty, unicode],
                                     'edc_resource_type': [ not_empty, convert_to_extras ],
                                     'resource_storage_access_method': [ not_empty, convert_to_extras ],
-                                    'resource_storage_location': [not_empty, unicode, convert_to_extras],
+                                    'resource_storage_location': [ignore_missing, unicode, convert_to_extras],
                                     'data_collection_start_date' : [ignore_missing, valid_date, convert_to_extras ],
                                     'data_collection_end_date' : [ignore_missing, valid_date, convert_to_extras ],
                                     })
-        return schema      
+        return schema
 
-        
+
     def create_package_schema(self):
         schema = super(EDC_NonGeoSpatialForm, self).create_package_schema()
         schema = self._update_nongeospatial_schema(schema)
         return schema
-    
+
     def update_package_schema(self):
         schema = super(EDC_NonGeoSpatialForm, self).update_package_schema()
         schema = self._update_nongeospatial_schema(schema)
         return schema
-    
+
     def show_package_schema(self):
         cnvrt_from_tags = toolkit.get_converter('convert_from_tags')
         schema = super(EDC_NonGeoSpatialForm, self).show_package_schema()
@@ -269,46 +269,46 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
                                     'format' : [not_empty, unicode],
                                     'edc_resource_type': [ convert_from_extras, not_empty ],
                                     'resource_storage_access_method': [ convert_from_extras],
-                                    'resource_storage_location': [convert_from_extras, unicode, not_empty],
+                                    'resource_storage_location': [convert_from_extras, ignore_missing, unicode],
                                     'data_collection_start_date' : [convert_from_extras, ignore_missing ],
-                                    'data_collection_end_date' : [convert_from_extras, ignore_missing ],               
+                                    'data_collection_end_date' : [convert_from_extras, ignore_missing ],
                                     })
         return schema
 
 
-    
-    
+
+
 class EDC_WebServiceForm(edc_form.EDC_DatasetForm):
-    
+
     #Setting dataset type associated to edc Application dataset type
     def package_types(self):
-        
+
         return ['WebService']
-    
+
     #Adding custom variable to Pylons c object, so that they can be accessed in package templates.
     def setup_template_variables(self, context, data_dict=None):
         from ckan.lib.base import c
         super(EDC_WebServiceForm, self).setup_template_variables(context, data_dict)
-         
+
         c.record_type = 'WebService'
-        
+
     def _update_webservice_schema(self, schema):
         schema['resources'].update({
                                     'url': [not_empty, unicode, remove_whitespace, check_extension],
                                     'format' : [not_empty, unicode]
                                     })
         return schema
-    
+
     def create_package_schema(self):
         schema = super(EDC_WebServiceForm, self).create_package_schema()
         self._update_webservice_schema(schema)
         return schema
-    
+
     def update_package_schema(self):
         schema = super(EDC_WebServiceForm, self).update_package_schema()
         self._update_webservice_schema(schema)
         return schema
-    
+
     def show_package_schema(self):
         schema = super(EDC_WebServiceForm, self).show_package_schema()
         schema['resources'].update({
@@ -316,7 +316,3 @@ class EDC_WebServiceForm(edc_form.EDC_DatasetForm):
                                     'format' : [not_empty, unicode]
                                     })
         return schema
-
-    
-    
-    

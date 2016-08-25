@@ -271,10 +271,10 @@ class EDCPackageController(PackageController):
             fields = ['url', 'resource_type', 'format', 'name', 'description', 'id']
             fields_dict = {'Application' : ['url', 'resource_type', 'name', 'description', 'id'],
                            'Geographic' : ['resource_update_cycle', 'projection_name', 'edc_resource_type', 'resource_storage_access_method',
-                                           'resource_storage_location', 'data_collection_start_date', 'data_collection_end_date',
+                                           'data_collection_start_date', 'data_collection_end_date',
                                            'url', 'resource_type', 'format', 'name', 'description', 'id', 'supplemental_info'],
                            'Dataset' : ['resource_update_cycle', 'edc_resource_type', 'resource_storage_access_method',
-                                           'resource_storage_location', 'data_collection_start_date', 'data_collection_end_date',
+                                           'data_collection_start_date', 'data_collection_end_date',
                                            'url', 'resource_type', 'format', 'name', 'description', 'id', 'supplemental_info'],
                            'WebService' : ['url', 'resource_type', 'format', 'name', 'description', 'id'] }
 
