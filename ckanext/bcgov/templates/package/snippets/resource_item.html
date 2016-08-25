@@ -11,6 +11,11 @@
     {{ h.popular('views', res.tracking_summary.recent, min=10) }}
   </a>
   {% endblock %}
+
+  <p class="size">
+    ({{ h.size_or_link(res.url_type=='upload', res.size) }})
+  </p>
+
   <p class="description">
     {% if res.description %}
       {{ h.markdown_extract(res.description, extract_length=80) }}
