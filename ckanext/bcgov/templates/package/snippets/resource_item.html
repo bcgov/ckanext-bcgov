@@ -11,6 +11,13 @@
     {{ h.popular('views', res.tracking_summary.recent, min=10) }}
   </a>
   {% endblock %}
+
+  <p class="size">
+    {% if res.size %}
+      ({{ h.format_size(res.size|int) }})
+    {% endif %}
+  </p>
+
   <p class="description">
     {% if res.description %}
       {{ h.markdown_extract(res.description, extract_length=80) }}

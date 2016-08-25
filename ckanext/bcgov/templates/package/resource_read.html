@@ -40,7 +40,7 @@
             {% endif %}
             {% if res.url and h.is_url(res.url) %}
               <li>
-                <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}">
+                <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}" title="{% if res.size and res.size > 0 %}{{ h.format_size(res.size|int) }}{% endif %}">
                   {% if res.resource_type in ('listing', 'service') %}
                     <i class="icon-eye-open"></i> {{ _('View') }}
                   {% elif  res.resource_type == 'api' %}
@@ -105,15 +105,15 @@
           <h2>{{ _('Additional Information') }}</h2>
           <table class="table">
             <tbody>
-			{% set dates = pkg.dates %}
-			{% for date in dates %}
+              {% set dates = pkg.dates %}
+              {% for date in dates %}
                 {% if date.type != 'Created' %}
-				<tr>
-					<td><strong> Data {{ date.type }} </strong></td><td> {{ date.date }} </td>
-				</tr>
+                  <tr>
+                    <td><strong> Data {{ date.type }} </strong></td><td> {{ date.date }} </td>
+                  </tr>
                 {% endif %}
-			{% endfor %}
-			{#
+              {% endfor %}
+              {#
               <tr>
                 <th scope="row">{{ _('Data Last Updated') }}</th>
                 <td>{{ h.render_datetime(res.last_modified, '%Y-%m-%d') or h.render_datetime(res.revision_timestamp, '%Y-%m-%d') or h.render_datetime(res.created, '%Y-%m-%d') or _('unknown') }}</td>
@@ -129,12 +129,21 @@
               </tr>
 
               {% if res.resource_update_cycle %}
-            	<tr  class="toggle-more">
+                <tr  class="toggle-more">
                   <th scope="row">{{ _('Resource Update Cycle') }}</th>
-                	<td> {{ res.resource_update_cycle }} </td>
-            	</tr>
-    		  {% endif %}
-			  {% if pkg.type == 'Geographic' or pkg.type == 'Dataset' %}
+                    <td> {{ res.resource_update_cycle }} </td>
+                </tr>
+              {% endif %}
+
+              {% for key, value in h.format_resource_items(res.items()) %}
+                {% if key == "size" or key == "mimetype" %}
+                  <tr>
+                    <td><strong>{{ key|capitalize }}</strong></td><td>{{ value }}</td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+
+              {% if pkg.type == 'Geographic' or pkg.type == 'Dataset' %}
                 {% snippet 'package/snippets/resource_geospatial_fields.html', record_type = pkg.type, res=res, object_name = pkg.object_name %}
               {% endif %}
             </tbody>
