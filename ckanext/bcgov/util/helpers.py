@@ -452,6 +452,9 @@ def size_or_link(upload, size):
     '''
     import ckan.lib.formatters as f
 
+    if not size:
+        return ''
+
     size = int(size)
 
     if upload and size > 0:
