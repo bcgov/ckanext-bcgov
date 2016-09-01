@@ -13,7 +13,9 @@
   {% endblock %}
 
   <p class="size">
-    ({{ h.size_or_link(res.url_type=='upload', res.size) }})
+    {% if res.size %}
+      ({{ h.size_or_link(res.url_type=='upload', res.size) }})
+    {% endif %}
   </p>
 
   <p class="description">
