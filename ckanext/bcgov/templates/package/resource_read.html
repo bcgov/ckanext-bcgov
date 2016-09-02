@@ -113,16 +113,12 @@
                   </tr>
                 {% endif %}
               {% endfor %}
-              {#
+
               <tr>
-                <th scope="row">{{ _('Data Last Updated') }}</th>
-                <td>{{ h.render_datetime(res.last_modified, '%Y-%m-%d') or h.render_datetime(res.revision_timestamp, '%Y-%m-%d') or h.render_datetime(res.created, '%Y-%m-%d') or _('unknown') }}</td>
+                <th scope="row">{{ _('Resource Last Modified') }}</th>
+                <td>{{ h.render_datetime(res.last_modified, '%Y-%m-%d %I:%M:%S %p') or h.render_datetime(res.created, '%Y-%m-%d %I:%M:%S %p') or _('unknown') }}</td>
               </tr>
-              <tr>
-                <th scope="row">{{ _('Data Created') }}</th>
-                <td>{{ h.render_datetime(res.created, '%Y-%m-%d') or _('unknown') }}</td>
-              </tr>
-              #}
+
               <tr>
                 <th scope="row">{{ _('License') }}</th>
                 <td>{% snippet "snippets/license.html", pkg_dict=pkg, text_only=True %}</td>
