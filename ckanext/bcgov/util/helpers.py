@@ -44,18 +44,18 @@ def get_suborgs(org_id):
     suborgs = [branch.id for branch in branches]
 
     return suborgs
-    
+
 def get_org_parent(org_id):
     '''
     Returns the parent of an organization
     '''
-    
+
     context = {'model': model, 'session':model.Session, 'user':c.user}
     org_model = context['model']
-    
+
     group = org_model.Group.get(org_id)
     parent_org = group.get_parent_groups(type="organization")
-    
+
     if parent_org and len(parent_org) > 0:
         return parent_org[0]
     else:
@@ -160,7 +160,7 @@ def record_is_viewable(pkg_dict, userobj):
     if metadata_visibility == 'Public' and edc_state in published_state:
         return True
     if userobj  :
-        
+
         if metadata_visibility == 'IDIR' and edc_state in published_state:
             return True
 
@@ -169,7 +169,7 @@ def record_is_viewable(pkg_dict, userobj):
         #user_orgs += [org.get('id') for org in get_user_orgs(userobj.id, 'admin') ]
         if owner_org in user_orgs:
             return True
-        
+
         return True
     return False
 
@@ -445,3 +445,21 @@ def get_bcgov_commit_id():
 
 def resource_prefix():
     return config.get('googleanalytics_resource_prefix', '/downloads/')
+
+def size_or_link(upload, size):
+    '''Returns a string with a localised filesize or an external link
+    From ckan/lib/formatters.py localised_filesize()
+    '''
+    import ckan.lib.formatters as f
+
+    if not size:
+        return ''
+
+    size = int(size)
+
+    if upload and size > 0:
+        return f.localised_filesize(size)
+    elif not upload:
+        return 'external link'
+    else:
+        return ''

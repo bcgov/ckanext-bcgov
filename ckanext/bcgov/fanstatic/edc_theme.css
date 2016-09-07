@@ -866,6 +866,10 @@ menu li {
   top: 7px;
 }
 
+.resource-item .size {
+  display: inline-block;
+}
+
 .resource-item .heading {
   word-wrap: break-word;
 }
