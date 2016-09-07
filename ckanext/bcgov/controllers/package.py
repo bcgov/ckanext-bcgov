@@ -423,7 +423,6 @@ class EDCPackageController(PackageController):
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
 
-
         if (request.method == 'POST') :
             return self._save_new(context, package_type=package_type)
 
@@ -452,7 +451,6 @@ class EDCPackageController(PackageController):
 
         record_name = '__duplicate__' + record_name
 
-
         data_dict['name'] = record_name
         data_dict['title'] = record_title
         data_dict['edc_state'] = 'DRAFT'
@@ -462,9 +460,7 @@ class EDCPackageController(PackageController):
 
         #Remove resources if there are any
         del data_dict['resources']
-
         del data_dict['id']
-
         del data_dict['revision_id']
         data_dict.pop('revision_timestamp', None)
 
@@ -478,17 +474,10 @@ class EDCPackageController(PackageController):
             data_dict['tag_string'] = ', '.join(
                     h.dict_list_reduce(data_dict.get('tags', {}), 'name'))
 
-
         #To do - Image upload issues : Use a single copy for the original and duplicate record
         #        Create a new copy of the original record or remove the image link and let the user upload a new image.
 
         c.is_duplicate = True
-        #c.form_action = 'new'
-        #Create the duplicate record
-        #pkg_dict = toolkit.get_action('package_create')(data_dict=data_dict)
-
-        #redirect(h.url_for(controller='package', action='edit', id=pkg_dict['id']))
-
 
         errors =  {}
         error_summary =  {}
@@ -522,11 +511,8 @@ class EDCPackageController(PackageController):
                                   'form_snippet': form_snippet,
                                   'dataset_type': package_type})
 
-
-
     def auth_error(self):
         return render('package/auth_error.html')
-
 
 
 def removekey(d, key):
