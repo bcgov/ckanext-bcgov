@@ -552,11 +552,12 @@ def package_update(context, data_dict):
                 package_plugin.check_data_dict(data_dict)
     # FIXME: modifications to package_update end here^
 
-    data, errors = _validate(data_dict, schema, context)
-#     log.debug('package_update validate_errs=%r user=%s package=%s data=%r',
-#               errors, context.get('user'),
-#               context.get('package').name if context.get('package') else '',
-#               data)
+    data, errors = lib_plugins.plugin_validate(
+        package_plugin, context, data_dict, schema, 'package_update')
+    log.debug('package_update validate_errs=%r user=%s package=%s data=%r',
+              errors, context.get('user'),
+              context.get('package').name if context.get('package') else '',
+              data)
 
     if errors:
         model.Session.rollback()

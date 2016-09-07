@@ -32,8 +32,9 @@
 
   	{% if h.check_access('package_update', {'id':pkg.id }) %}
     	{% if record_visibility == 'Public' %}
+        {% set record_type = pkg.type or c.record_type %}
     		{% link_for _(''), controller='ckanext.bcgov.controllers.package:EDCPackageController',
-    									action='duplicate', id=pkg.name, class_='btn hidden-sm hidden-xs', icon='copy' %}
+    									action='duplicate', id=pkg.name, package_type=record_type, class_='btn hidden-sm hidden-xs', icon='copy' %}
     	{% endif %}
     	{% link_for _(''), controller='package', action='edit', id=pkg.name, class_='btn hidden-sm hidden-xs', icon='wrench' %}
   	{% endif %}
