@@ -414,7 +414,7 @@ class EDCPackageController(PackageController):
         return render('package/confirm_delete_resource.html')
 
 
-    def duplicate(self, id):
+    def duplicate(self, id, package_type=None):
         '''
         Creates a duplicate of the record with the given id.
         The content of the duplicate record is the same as the original except
@@ -422,6 +422,10 @@ class EDCPackageController(PackageController):
         '''
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
+
+
+        if (request.method == 'POST') :
+            return self._save_new(context, package_type=package_type)
 
         # Check if the user is authorized to create a new dataset
         try:
@@ -479,10 +483,46 @@ class EDCPackageController(PackageController):
         #        Create a new copy of the original record or remove the image link and let the user upload a new image.
 
         c.is_duplicate = True
+        #c.form_action = 'new'
         #Create the duplicate record
-        pkg_dict = toolkit.get_action('package_create')(data_dict=data_dict)
+        #pkg_dict = toolkit.get_action('package_create')(data_dict=data_dict)
 
-        redirect(h.url_for(controller='package', action='edit', id=pkg_dict['id']))
+        #redirect(h.url_for(controller='package', action='edit', id=pkg_dict['id']))
+
+
+        errors =  {}
+        error_summary =  {}
+        # in the phased add dataset we need to know that
+        # we have already completed stage 1
+        stage = ['active']
+        if data_dict.get('state', '').startswith('draft'):
+            stage = ['active', 'complete']
+
+        # if we are creating from a group then this allows the group to be
+        # set automatically
+        data_dict['group_id'] = request.params.get('group') or \
+            request.params.get('groups__0__id')
+
+        c.record_type = package_type or c.record_type
+
+        form_snippet = self._package_form(package_type=package_type)
+        form_vars = {'data': data_dict, 'errors': errors,
+                     'error_summary': error_summary,
+                     'action': 'new', 'stage': stage,
+                     'dataset_type': package_type,
+                     }
+        c.errors_json = h.json.dumps(errors)
+
+        self._setup_template_variables(context, { },
+                                       package_type=package_type)
+
+        new_template = self._new_template(package_type)
+        return render(new_template,
+                      extra_vars={'form_vars': form_vars,
+                                  'form_snippet': form_snippet,
+                                  'dataset_type': package_type})
+
+
 
     def auth_error(self):
         return render('package/auth_error.html')
