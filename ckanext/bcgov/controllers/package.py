@@ -423,7 +423,7 @@ class EDCPackageController(PackageController):
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'auth_user_obj': c.userobj}
 
-        if (request.method == 'POST') :
+        if (request.method == 'POST'):
             return self._save_new(context, package_type=package_type)
 
         # Check if the user is authorized to create a new dataset
