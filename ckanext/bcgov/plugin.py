@@ -132,7 +132,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             #m.connect('dataset_edit', '/dataset/edit/{id}', action='edc_edit',ckan_icon='edit')
             m.connect('search', '/dataset', action='search', highlight_actions='index search')
             m.connect('dataset_read', '/dataset/{id}', action='read', ckan_icon='sitemap')
-            m.connect('duplicate', '/dataset/duplicate/{id}', action='duplicate')
+            #m.connect('/dataset/duplicate/new', action='new')
+            m.connect('duplicate', '/dataset/duplicate/{id}/{package_type}', action='duplicate')
             m.connect('/dataset/{id}/resource/{resource_id}', action='resource_read')
             m.connect('/dataset/{id}/resource_delete/{resource_id}', action='resource_delete')
             m.connect('/authorization-error', action='auth_error')
@@ -315,7 +316,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     def after_update(self, context, pkg_dict):
         # If there are no resources added, redirect to the "add resource" page after saving
-        if len(pkg_dict['resources']) == 0:
+        if len(pkg_dict.get(['resources'], [])) == 0:
             toolkit.redirect_to(controller='package', action='new_resource', id=pkg_dict['id'])
 
     def dataset_facets(self, facet_dict, package_type):
