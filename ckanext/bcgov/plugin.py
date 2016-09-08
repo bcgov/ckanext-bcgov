@@ -316,7 +316,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     def after_update(self, context, pkg_dict):
         # If there are no resources added, redirect to the "add resource" page after saving
-        if len(pkg_dict.get(['resources'], [])) == 0:
+        if len(pkg_dict.get('resources', [])) == 0:
             toolkit.redirect_to(controller='package', action='new_resource', id=pkg_dict['id'])
 
     def dataset_facets(self, facet_dict, package_type):
