@@ -1,5 +1,6 @@
 {% set links_len = links|length %}
-{% if links_len > 0 %}
+{% set is_not_empty = links[0].link != '' %}
+{% if links_len > 0 and is_not_empty %}
     <h2>More Information</h2>
     <ul class="more-info-links">
     {% for info in links %}
