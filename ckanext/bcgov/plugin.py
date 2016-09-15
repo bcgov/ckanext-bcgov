@@ -191,8 +191,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
                    action='activity', ckan_icon='time')
             m.connect('organization_about', '/organization/about/{id}',
                   action='about', ckan_icon='info-sign')
-            m.connect('organization_read', '/organization/{id}', action='read',
-                  ckan_icon='sitemap')
             m.connect('organization_edit', '/organization/edit/{id}',
                    action='edit', ckan_icon='edit')
             m.connect('organization_members', '/organization/members/{id}',
@@ -200,6 +198,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('organization_bulk_process',
                    '/organization/bulk_process/{id}',
                    action='bulk_process', ckan_icon='sitemap')
+            m.connect('organization_read', '/organization/{id}',
+                   action='read', ckan_icon='sitemap')
 
         map.connect('sitemap','/sitemap.html', controller=site_map_controller, action='view')
         map.connect('sitemap','/sitemap.xml', controller=site_map_controller, action='read')
