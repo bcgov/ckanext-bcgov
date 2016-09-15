@@ -1,6 +1,51 @@
 {% ckan_extends %}
 
+{% set can_edit = h.check_access('group_member_create', {'id': c.id}) %}
+
+{% block page_primary_action %}
+	{% if can_edit %}
+		{{ super() }}
+	{% endif %}
+{% endblock %}
+
 {% block primary_content_inner %}
-	{{ super() }}
+	<h3 class="page-heading">{{ _('{0} members'.format(c.members|length)) }}</h3>
+	<table class="table table-header table-hover table-bordered">
+		<col width="70" />
+		<col width="40" />
+		{% if can_edit %}
+			<col width="20" />
+		{% endif %}
+		<thead>
+			<tr>
+				<th scope="col">{{ _('User') }}</th>
+				<th scope="col">{{ _('Role') }}</th>
+				{% if can_edit %}
+					<th scope="col"></th>
+				{% endif %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for user_id, user, role in c.members %}
+				<tr>
+					<td class="media">
+						{{ h.linked_user(user_id, maxlength=20) }}
+					</td>
+					<td>{{ role }}</td>
+					{% if can_edit %}
+						<td>
+							{% set locale = h.dump_json({'content': _('Are you sure you want to delete this member?')}) %}
+							<div class="btn-group pull-right">
+								<a class="btn btn-small" href="{% url_for controller='organization', action='member_new', id=c.group_dict.id, user=user_id %}" title="{{ _('Edit') }}">
+									<i class="icon-wrench"></i>
+								</a>
+								<a class="btn btn-danger btn-small" href="{% url_for controller='organization', action='member_delete', id=c.group_dict.id, user=user_id %}" data-module="confirm-action" data-module-i18n="{{ locale }}" title="{{ _('Delete') }}">{% block delete_button_text %}<i class="icon-remove"></i>{% endblock %}</a>
+							</div>
+						</td>
+					{% endif %}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 	{% resource 'edc_resource/edc_restrict_browser.js' %}
 {% endblock %}

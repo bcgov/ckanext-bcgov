@@ -4,19 +4,17 @@
 
 {% block subtitle %}{{ c.group_dict.title }} - {{ _('Organizations') }}{% endblock %}
 
-
-
 {% block breadcrumb_content %}
   <li>{% link_for _('Organizations'), controller='organization', action='index' %}</li>
   {% set parent_org = h.get_parent_org(c.group_dict.id) %}
-  
+
   {% if parent_org %}
   <li>{% link_for parent_org.title|truncate(35), controller='organization', action='read', id=parent_org.name %}</li>
   {% endif %}
   {% block breadcrumb_content_inner %}
-    
+
     <li>{% link_for organization.title|truncate(35), controller='organization', action='read', id=organization.name %}</li>
-    <li class="active">{% link_for _('Manage'), controller='organization', action='edit', id=organization.name %}</li>
+    <li class="active">{% link_for _('Members'), controller='organization', action='edit', id=organization.name %}</li>
   {% endblock %}
 {% endblock %}
 
@@ -27,9 +25,10 @@
 {% endblock %}
 
 {% block content_primary_nav %}
-  {{ h.build_nav_icon('organization_edit', _('Edit'), id=c.group_dict.name) }}
+  {% if h.check_access('group_member_create', {'id': c.id}) %}
+    {{ h.build_nav_icon('organization_edit', _('Edit'), id=c.group_dict.name) }}
+  {% endif %}
   {{ h.build_nav_icon('organization_bulk_process', _('Datasets'), id=c.group_dict.name) }}
-  {{ h.build_nav_icon('organization_members', _('Members'), id=c.group_dict.name) }}
 {% endblock %}
 
 {% block secondary_content %}
