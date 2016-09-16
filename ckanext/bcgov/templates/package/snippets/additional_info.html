@@ -7,6 +7,21 @@
         {{ pkg.purpose }}
       </div>
       {% endif %}
+
+      {% if pkg.data_quality or pkg.lineage_statement %}
+        <table class="table dataset_view">
+          {% if pkg.data_quality %}
+              <tr>
+                  <td><strong>Data Quality</strong></td><td>{{ pkg.data_quality }}</td>
+              </tr>
+          {% endif %}
+          {% if pkg.lineage_statement %}
+              <tr>
+                  <td><strong>Lineage Statement</strong></td><td>{{ pkg.lineage_statement }}</td>
+              </tr>
+          {% endif %}
+        </table>
+      {% endif %}
     {% endblock %}
 
     {% block more_info_links %}
@@ -85,4 +100,3 @@
   </table>
 
 </div>
-

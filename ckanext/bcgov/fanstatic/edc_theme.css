@@ -614,6 +614,10 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
   margin: 10px 0;
 }
 
+#purpose {
+  margin-bottom: 20px;
+}
+
 .purpose {
   display: block;
 }
