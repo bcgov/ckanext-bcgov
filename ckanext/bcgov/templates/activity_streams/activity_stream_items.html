@@ -4,7 +4,6 @@
 {% block activity_stream %}
 
   {% if activities %}
-	{% resource 'edc_resource/edc_activity.js' %}
     <ul class="activity" data-module="activity-stream" data-module-more="{{ has_more }}" data-module-context="{{ controller }}" data-module-id="{{ id }}" data-module-offset="{{ offset }}">
       {% block activity_stream_inner %}
         {% if offset > 0 %}
