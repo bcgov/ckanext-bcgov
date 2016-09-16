@@ -44,7 +44,8 @@ from ckanext.bcgov.util.helpers import (get_suborg_sector,
                                              get_bcgov_commit_id,
                                              resource_prefix,
                                              get_org_parent,
-                                             size_or_link
+                                             size_or_link,
+                                             remove_user_link
                                              )
 
 abort = base.abort
@@ -101,7 +102,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "get_bcgov_commit_id": get_bcgov_commit_id,
                 "googleanalytics_resource_prefix": resource_prefix,
                 "get_parent_org": get_org_parent,
-                "size_or_link": size_or_link
+                "size_or_link": size_or_link,
+                "remove_user_link": remove_user_link
                 }
 
 
