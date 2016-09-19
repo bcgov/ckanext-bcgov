@@ -106,17 +106,14 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "remove_user_link": remove_user_link
                 }
 
-
     def update_config(self, config):
         toolkit.add_public_directory(config, 'public')
         toolkit.add_template_directory(config, 'templates')
         toolkit.add_resource('fanstatic', 'edc_resource')
         toolkit.add_resource('public/scripts', 'theme_scripts')
 
-
     #Customizing action mapping
     def before_map(self, map):
-
         from routes.mapper import SubMapper
         package_controller = 'ckanext.bcgov.controllers.package:EDCPackageController'
         user_controller = 'ckanext.bcgov.controllers.user:EDCUserController'
@@ -124,17 +121,13 @@ class SchemaPlugin(plugins.SingletonPlugin):
         site_map_controller = 'ckanext.bcgov.controllers.site_map:GsaSitemapController'
         api_controller = 'ckanext.bcgov.controllers.api:EDCApiController'
 
-#        map.redirect('/', '/dataset')
         map.connect('package_index', '/', controller=package_controller, action='index')
 
-        map.connect('/dataset/add', controller=package_controller, action='typeSelect')
-
         with SubMapper(map, controller=package_controller) as m:
+            m.connect('/dataset/add', action='typeSelect')
             m.connect('add dataset', '/dataset/new', action='new')
-            #m.connect('dataset_edit', '/dataset/edit/{id}', action='edc_edit',ckan_icon='edit')
             m.connect('search', '/dataset', action='search', highlight_actions='index search')
             m.connect('dataset_read', '/dataset/{id}', action='read', ckan_icon='sitemap')
-            #m.connect('/dataset/duplicate/new', action='new')
             m.connect('duplicate', '/dataset/duplicate/{id}/{package_type}', action='duplicate')
             m.connect('/dataset/{id}/resource/{resource_id}', action='resource_read')
             m.connect('/dataset/{id}/resource_delete/{resource_id}', action='resource_delete')
@@ -242,8 +235,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
             res_format.extend(['shp', 'fgdb', 'e00'])
 
         return pkg_dict
-
-
 
     def before_search(self, search_params):
         '''
@@ -362,7 +353,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
 
 class EDCDisqusPlugin(plugins.SingletonPlugin):
-
     # Declare that this class implements IConfigurer.
     plugins.implements(plugins.IConfigurer)
 

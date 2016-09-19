@@ -82,12 +82,6 @@ def url_with_params(url, params):
     return url + u'?' + urlencode(params)
 
 class EDCPackageController(PackageController):
-
-
-    #Adding extra functionality to the Package Controller.
-
-#    old_state = ''
-
     def _setup_template_variables(self, context, data_dict, package_type=None):
         PackageController._setup_template_variables(self, context, data_dict, package_type)
         #Add the dataset type tags to the template variables.
