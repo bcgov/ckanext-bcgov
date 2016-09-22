@@ -1,0 +1,40 @@
+{% set object_name = pkg_dict.object_name %}
+
+<!-- Find a better spot -->
+<a href="#ofi-results" role="button" class="btn btn-primary" data-toggle="modal">View OFI Results</a>
+
+<div id="ofi-results" class="modal hide fade" tabindex="-1" role="dialog"
+  data-module="ofi_lookup"
+  data-module-config=""
+  data-module-object-name="{{ object_name }}">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>OFI Testing</h3>
+    <h4>Prototype</h4>
+  </div>
+
+  <div class="modal-body">
+    <div class="form-inline">
+      <label for="object-name">{{ _('Object Name') }}</label>
+      <input id="object-name" type="text" name="object_name" value="{{ object_name }}" />
+      <button id="search-object" type="button" class="btn btn-primary" data-loading-text="Searching...">Search</button>
+    </div>
+
+    <div id="resources">
+
+    </div>
+
+    {# TODO: stop animation when not visible #}
+    <div id="loading" class="overlay-wrap">
+      <div class="add-data-loader">Loading...</div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button id="add-resource" class="btn btn-primary">Add</button>
+  </div>
+</div>
+
+{% resource 'edc_resource/ofi/ofi_lookup.js' %}
+{% resource 'edc_resource/ofi/ofi_style.css' %}
