@@ -24,13 +24,10 @@ this.ckan.module('ofi_lookup', function($, _) {
       resources_show = this.$('#resources');
       spinner = this.$('#loading');
       object_name = this.options.objectName;
+
       this.$('#object-name').val(object_name);
-
-      var add_resource_btn = this.$('#add-resource');
-      var search_object_btn = this.$('#search-object');
-
-      search_object_btn.on('click', this.searchForObject);
-      add_resource_btn.on('click', this.copyResourceToForm);
+      this.$('#search-object').on('click', this.searchForObject);
+      this.$('#add-resource').on('click', this.copyResourceToForm);
 
       if (object_name) {
         this._callOFIService("security/productAllowedByFeatureType/" + object_name, true);
@@ -86,7 +83,7 @@ this.ckan.module('ofi_lookup', function($, _) {
           } else {
             self._showResults(`Please open dev tools, api call did not work.
               <br /><br />
-              Expecting:
+              Expecting error:
               <br />
               * Cross-Origin Request Blocked -> Reason: CORS header 'Access-Control-Allow-Origin' does not mach '*'
               `);
