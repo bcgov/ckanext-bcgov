@@ -19,6 +19,9 @@
   font-size: 18px;
   line-height: 1.2;
 }
+#ofi-results .form-actions {
+  margin: 0;
+}
 #ofi-results #resources {
   padding: 15px 0;
 }

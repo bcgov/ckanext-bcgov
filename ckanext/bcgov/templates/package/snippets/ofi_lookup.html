@@ -1,7 +1,7 @@
 {% set object_name = pkg_dict.object_name %}
 
-<!-- Find a better spot -->
-<a href="#ofi-results" role="button" class="btn btn-primary" data-toggle="modal">View OFI Results</a>
+{# button for modal is in snippets/resource_form.html #}
+{#<a href="#ofi-results" role="button" class="btn btn-primary" data-toggle="modal">View OFI Results</a>#}
 
 <div id="ofi-results" class="modal hide fade" tabindex="-1" role="dialog"
   data-module="ofi_lookup"
@@ -14,11 +14,28 @@
   </div>
 
   <div class="modal-body">
-    <div class="form-inline">
-      <label for="object-name">{{ _('Object Name') }}</label>
-      <input id="object-name" type="text" name="object_name" value="{{ object_name }}" />
-      <button id="search-object" type="button" class="btn btn-primary" data-loading-text="Searching...">Search</button>
-    </div>
+    <form id="ofi-lookup-form" class="form-horizontal">
+      <div class="control-group">
+        <label for="object-name" class="control-label">{{ _('Object Name') }}</label>
+        <div class="controls">
+          <input id="object-name" type="text" name="object_name" value="{{ object_name }}" required />
+        </div>
+        <div class="controls">
+          <label class="checkbox inline">
+            <input id="secure" type="checkbox" name="secure" checked />
+            {{ _('Secure')}}
+          </label>
+          <label class="checkbox inline">
+            <input id="include-creds" type="checkbox" name="include_creds" checked />
+            {{ _('Credentials')}}
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button id="search-object" type="submit" for="ofi-lookup-form" class="btn btn-primary" data-loading-text="Searching...">Search</button>
+      </div>
+    </form>
 
     <div id="resources">
 
