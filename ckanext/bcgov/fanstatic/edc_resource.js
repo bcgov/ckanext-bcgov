@@ -33,7 +33,7 @@ window.onunload = function() {
  *  Issue #99 - Prevent user from clicking the add button more then one time	
  *	Disable the form and show a spinner when clicking the add button
 **/
-$('button[type="submit"]').click(function() {
+$('dataset-form button[type="submit"]').click(function() {
 	$(this).attr('disabled');
 	$('.overlay-wrap').addClass('enable');	
 });
