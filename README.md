@@ -11,7 +11,7 @@ This extension provides the basic customized features on the [BC Data Catalogue]
 Installation
 ============
 
-1.  Activate virtual environment, e.g.
+1.  Activate virtual environment, e.g. 
 
         $ . /usr/lib/ckan/default/bin/activate
 
