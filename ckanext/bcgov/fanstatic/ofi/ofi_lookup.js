@@ -63,6 +63,9 @@ this.ckan.module('ofi_lookup', function($, _) {
       modal.modal('show');
     },
     _toggleSpinner: function(on_off) {
+      // TODO: Adjust spinner location
+      //       Disable 'Add' in modal when spinner is enabled
+      //       Include a 'Cancel' button for the api call
       resources_show.toggleClass('hidden', on_off);
       spinner.toggleClass('enable', on_off);
     },
