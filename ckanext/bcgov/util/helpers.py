@@ -52,6 +52,8 @@ def get_org_parent(org_id):
     '''
     Returns the parent of an organization
     '''
+    if not org_id:
+        return False
 
     context = {'model': model, 'session':model.Session, 'user':c.user}
     org_model = context['model']
