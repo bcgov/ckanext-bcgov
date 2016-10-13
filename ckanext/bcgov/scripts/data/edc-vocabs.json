@@ -212,6 +212,7 @@
     "name": "projection_name",
     "tags": [
                 "EPSG_3005 - NAD83 BC Albers",
+                "EPSG_3153 - NAD83(CSRS) BC Albers",
                 "EPSG_3857 - WGS84 Pseudo-Mercator -- Spherical Mercator",
                 "EPSG_4326 - WGS84 - World Geodetic System 1984",
                 "EPSG_26907 - NAD83 UTM zone 7N",
