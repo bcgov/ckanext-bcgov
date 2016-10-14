@@ -1,4 +1,4 @@
-![https://gitter.im/bcdc-devops/Lobby](https://img.shields.io/gitter/room/TechnologyAdvice/Stardust.svg?style=flat-square)
+[![Join in us on Gitter](https://img.shields.io/gitter/room/TechnologyAdvice/Stardust.svg?style=flat-square)](https://gitter.im/bcdc-devops/Lobby)
 [![Build Status](https://cis.data.gov.bc.ca/job/bcdc/job/bcdc-dlv/badge/icon)](https://cis.data.gov.bc.ca/job/bcdc/job/bcdc-dlv/)
 [![License](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/bcgov/ckanext-bcgov/master/license)
 <a rel="Delivery" href="https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md"><img alt="In production, but maybe in Alpha or Beta. Intended to persist and be supported." style="border-width:0" src="http://bcdevexchange.org/badge/3.svg" title="In production, but maybe in Alpha or Beta. Intended to persist and be supported." /></a>
