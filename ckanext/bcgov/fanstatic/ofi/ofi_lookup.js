@@ -15,7 +15,7 @@ this.ckan.module('ofi_lookup', function($, _) {
       // defaults
       protocol: 'https',
       hostname: 'delivery.apps.gov.bc.ca',
-      port: '80',
+      port: '',
       order_path: '/pub/dwds-ofi/',
       order_secure_path: '/pub/dwds-ofi/secure/',
     },
