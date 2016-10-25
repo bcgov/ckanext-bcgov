@@ -45,7 +45,8 @@ from ckanext.bcgov.util.helpers import (get_suborg_sector,
                                              resource_prefix,
                                              get_org_parent,
                                              size_or_link,
-                                             remove_user_link
+                                             remove_user_link,
+                                             get_ofi_config
                                              )
 
 abort = base.abort
@@ -103,7 +104,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "googleanalytics_resource_prefix": resource_prefix,
                 "get_parent_org": get_org_parent,
                 "size_or_link": size_or_link,
-                "remove_user_link": remove_user_link
+                "remove_user_link": remove_user_link,
+                "get_ofi_config": get_ofi_config
                 }
 
     def update_config(self, config):

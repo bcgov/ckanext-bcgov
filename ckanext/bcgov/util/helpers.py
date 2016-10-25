@@ -468,3 +468,13 @@ def size_or_link(upload, size):
         return 'external link'
     else:
         return ''
+
+def get_ofi_config():
+    '''
+    Returns a dict with all configuration options related to the
+    OFI (ie those starting with 'bcgov.ofi.')
+    '''
+    namespace = 'bcgov.ofi.'
+    return dict([(k.replace(namespace, ''), v) for k, v in config.iteritems()
+                 if k.startswith(namespace)])
+    

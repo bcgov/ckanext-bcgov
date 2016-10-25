@@ -5,16 +5,17 @@
  * Author: Jared Smith <github@jrods>
  *
 **/
-'use strict';
+"use strict";
 
 this.ckan.module('ofi_lookup', function($, _) {
   var self, modal, ofi_form, resources_show, spinner, object_name;
 
   return {
     options: {
+      // defaults
       protocol: 'https',
-      host_name: 'delivery.apps.gov.bc.ca',
-      port: '',
+      hostname: 'delivery.apps.gov.bc.ca',
+      port: '80',
       order_path: '/pub/dwds-ofi/',
       order_secure_path: '/pub/dwds-ofi/secure/',
     },
@@ -24,7 +25,7 @@ this.ckan.module('ofi_lookup', function($, _) {
       ofi_form = this.$('#ofi-lookup-form');
       resources_show = this.$('#resources');
       spinner = this.$('#loading');
-      object_name = this.options.objectName;
+      object_name = this.options.object_name;
 
       // when the page refreshes, object_name go back to what's specified in the package
       this.$('#object-name').val(object_name);
@@ -41,7 +42,7 @@ this.ckan.module('ofi_lookup', function($, _) {
     _createURL: function(webService, isSecure) {
       var o = this.options;
       return o.protocol + "://"
-              + o.host_name
+              + o.hostname
               + ((o.port === "" || o.port === undefined) ? "" : ":" + o.port)
               + ((isSecure) ? o.order_secure_path : o.order_path)
               + webService;
@@ -100,6 +101,7 @@ this.ckan.module('ofi_lookup', function($, _) {
         }
       };
 
+      console.log(ofi_url);
       httpRequest.open('GET', ofi_url, true);
       httpRequest.setRequestHeader('Accept', '*/*');
       httpRequest.send();

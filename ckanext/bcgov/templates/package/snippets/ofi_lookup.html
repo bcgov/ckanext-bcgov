@@ -3,10 +3,19 @@
 {# button for modal is in snippets/resource_form.html #}
 {#<a href="#ofi-results" role="button" class="btn btn-primary" data-toggle="modal">View OFI Results</a>#}
 
+{% set ofi_config = h.get_ofi_config() %}
+
+{# TODO: deal with bcgov.ofi.enable = false #}
+
 <div id="ofi-results" class="modal hide fade" tabindex="-1" role="dialog"
   data-module="ofi_lookup"
-  data-module-config=""
-  data-module-object-name="{{ object_name }}">
+  data-module-object_name="{{ object_name }}"
+  data-module-protocol="{{ ofi_config['protocol'] or 'https' }}"
+  data-module-hostname="{{ ofi_config['hostname'] or 'delivery.apps.gov.bc.ca' }}"
+  data-module-port="{{ ofi_config['port'] or '80' }}"
+  data-module-order_path="{{ ofi_config['order_path'] or '/pub/dwds-ofi/' }}"
+  data-module-order_secure_path="{{ ofi_config['order_secure_path'] or '/pub/dwds-ofi/secure/' }}">
+
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3>OFI Testing</h3>
