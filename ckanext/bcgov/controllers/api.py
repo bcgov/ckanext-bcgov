@@ -46,8 +46,6 @@ class EDCApiController(ApiController):
 
     _actions = {}
 
-
-
     def i18n_js_translations(self, lang):
         ''' translation strings for front end '''
         ckan_path = os.path.join(os.path.dirname(__file__), '..')

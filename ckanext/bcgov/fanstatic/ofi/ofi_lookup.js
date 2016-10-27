@@ -4,6 +4,15 @@
  * HighwayThree Solutions Inc.
  * Author: Jared Smith <github@jrods>
  *
+ *
+ * OFI Prototype
+ *
+ * config options:
+ *   bcgov.ofi.protocol          - The protocol to use eg. 'https' or 'http'
+ *   bcgov.ofi.hostname          - Specifies the host to call for OFI
+ *   bcgov.ofi.port              - Specify the port to use
+ *   bcgov.ofi.order_path        - Specify the order path for OFI
+ *   bcgov.ofi.order_secure_path - Specify the secure order path
 **/
 "use strict";
 
@@ -88,6 +97,7 @@ this.ckan.module('ofi_lookup', function($, _) {
 
           // testing, TODO: use http status codes for error handling
           if (httpRequest.responseText) {
+            console.log(httpRequest.responseText);
             var data = JSON.parse(httpRequest.responseText);
             self._showResults(data);
           } else {
