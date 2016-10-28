@@ -9,9 +9,9 @@ from ckan.controllers.api import ApiController
 import cgi
 import logging
 import requests as reqs
-from pprint import pformat
+from pprint import pformat, pprint
 
-#import ckan
+# import ckan
 import ckan.lib.base as base
 import ckan.lib.helpers as h
 import ckan.logic as logic
@@ -20,7 +20,12 @@ import ckan.plugins.toolkit as toolkit
 import ckanext.bcgov.util.helpers as edc_h
 
 from ckan.common import _, c, request, response
-from pylons import config
+try:
+    # CKAN 2.7 and later
+    from ckan.common import config
+except ImportError:
+    # CKAN 2.6 and earlier
+    from pylons import config
 
 # shortcuts
 get_action = logic.get_action
@@ -38,16 +43,27 @@ def log_response(resp, call_type):
         u'status': resp.status_code,
         u'reason': resp.reason,
         u'headers': resp.headers,
+        u'cookies': resp.cookies,
         u'elapsed': str(resp.elapsed.total_seconds()) + u's'
     }))
-    log.debug(u'OFI api content: %s', pformat(resp.text))   
+    log.debug(u'OFI api content: %s', pformat(resp.text))
 
 
 class EDCOfiController(ApiController):
     def __init__(self):
         self._config = edc_h.get_ofi_config()
+        self.ofi_url = self._build_url()
+        self.cookies = {}
+        self.cookies[u'SMSESSION'] = request.cookies.get(u'SMSESSION', '')
+        self.query_params = {}
+#       for key, value in request.cookies.iteritems():
+#            self.cookies[key] = value
 
-    def ofi(self, call_action, ver=None, id=None, object_name=None):
+    def ofi(self, call_action, object_name=None, ver=None):
+        '''
+        API Entry
+        TODO
+        '''
         context = {
             u'model': model,
             u'session': model.Session,
@@ -57,27 +73,45 @@ class EDCOfiController(ApiController):
             u'auth_user_obj': c.userobj
         }
 
-        cookies = {}
-        for key, value in request.cookies.iteritems():
-            cookies[key] = value
-
-        log.debug(u'OFI user cookie: %s', pformat(cookies))
+        log.debug(u'OFI user cookie: %s', pformat(self.cookies))
 
         log.debug(u'OFI config:\n %s \n', pformat(self._config))
 
         log.debug(u'OFI api context:\n %s\n', pformat(context))
 
-        extra_vars = {}
+        try:
+            self.query_params = self._get_request_data(try_url_params=True)
+        except ValueError, inst:
+            log.info('Bad Action API request data: %s', inst)
+            return self._finish_bad_request(_('JSON Error: %s') % inst)
 
         if call_action == 'check_object_name':
-            pub_response = reqs.get(u'https://delivery.apps.gov.bc.ca/pub/dwds-ofi/security/productAllowedByFeatureType/WHSE_MINERAL_TENURE.MINPOT_MINERAL_POTENTIAL')
-            #pub_response = reqs.get(u'https://catalogue.data.gov.bc.ca/api/action/package_show?id=consolidated-revenue-fund-detailed-schedules-of-payments-order-in-council-other-appointees-and-emplo')
-            log_response(pub_response, u'public')
+            return self._check_object_name()
+        else:
+            return base.abort(400, _('Bad call action: %s') % call_action)
 
-            sec_response = reqs.get(u'https://delivery.apps.gov.bc.ca/pub/dwds-ofi/secure/security/productAllowedByFeatureType/WHSE_MINERAL_TENURE.MINPOT_MINERAL_POTENTIAL', cookies=cookies)
-            #sec_response = reqs.get(u'https://catalogue.data.gov.bc.ca/api/action/package_show?id=consolidated-revenue-fund-detailed-schedules-of-payments-order-in-council-other-appointees-and-empl')
-            log_response(sec_response, u'secure')
+    def _check_object_name(self):
+        '''
+        OFI API Call:
+        TODO
+        '''
+        resp = reqs.get(self.ofi_url, cookies=self.cookies)
+        content_type = resp.headers.get(u'content-type').split(';')[0]
 
-            #return self._finish(ofi_response.status_code, ofi_response.json(), content_type='json' )
+        log_response(resp, u'secure')
 
-        return base.render(u'ofi/ofi_test.html', extra_vars=extra_vars)
+        log.debug(u'Inital SMSESSION: %s', request.cookies.get(u'SMSESSION', u''))
+        log.debug(u'OFI api cookie SMSESSION: %s', resp.cookies.get(u'SMSESSION', u''))
+
+        if self.ofi_url != resp.url or content_type == 'text/html':
+            return self._finish_not_authz(_('Need valid IDIR Login session'))
+        else:
+            return self._finish(resp.status_code, resp.json(), content_type='json')
+
+    def _build_url(self):
+        '''
+        TODO
+        '''
+        url = u'https://delivery.apps.gov.bc.ca/pub/dwds-ofi/secure/security/productAllowedByFeatureType/WHSE_MINERAL_TENURE.MINPOT_MINERAL_POTENTIAL'
+        log.debug(u'OFI API URL: %s', url)
+        return url
