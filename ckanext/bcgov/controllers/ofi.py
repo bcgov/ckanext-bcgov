@@ -116,14 +116,17 @@ class EDCOfiController(ApiController):
         '''
         secure = 'secure' in self.query_params
 
-        protocol = self.config.get(u'api.protocol')
-        domain = self.config.get(u'api.hostname')
+        protocol = self.config.get(u'api.protocol', 'https')
+        domain = self.config.get(u'api.hostname', 'delivery.apps.gov.bc.ca')
         port = self.config.get(u'api.port', '')
 
         if port != '':
             domain = u'{}:{}'.format(domain, port)
 
-        order_path = self.config.get(u'api.order_secure_path') if secure else self.config.get(u'api.order_path')
+        if secure:
+            order_path = self.config.get(u'api.order_secure_path', '/pub/dwds-ofi/secure')
+        else:
+            order_path = self.config.get(u'api.order_path', '/pub/dwds-ofi')
 
         url = urlparse.urlunparse((protocol, domain, order_path, '', '', ''))
         log.debug(u'OFI API URL: %s', url)
