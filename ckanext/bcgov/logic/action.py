@@ -222,10 +222,10 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
     log.info('Sending state change notification to organization users with role %s' %(role,))
 
     query = model.Session.query(model.User) \
-            .join(model.Member, model.User.id == model.Member.table_id) \
-            .filter(model.Member.capacity == role) \
-            .filter(model.Member.group_id == sub_org.id) \
-            .filter(model.User.state == 'active')
+        .join(model.Member, model.User.id == model.Member.table_id) \
+        .filter(model.Member.capacity == role) \
+        .filter(model.Member.group_id == sub_org.id) \
+        .filter(model.Member.state == 'active')
 
     members = query.all()
 
