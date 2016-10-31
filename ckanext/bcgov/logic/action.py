@@ -45,30 +45,32 @@ log = logging.getLogger('ckanext.edc_schema')
 _or_ = sqlalchemy.or_
 
 
-
-
 '''
 Checking package status and sending a notification if the state is changed.
 '''
+
 
 def get_msg_content(msg_dict):
 
     from string import Template
 
-    msg = ('<p>As a BC Data Catalogue $user_role for the $org - $sub_org, ' 
-            'please be advised that the publication state of this record: ' 
-            '<a href="$dataset_url">$dataset_url</a> is now "$dataset_state".<br><br>' 
-            'If you are no longer an $user_role for $org - $sub_org or if you have a question or concern regarding this message ' 
-            'please contact DataBC Catalogue Services <a href="&quot;mailto:datacat@gov.bc.ca">datacat@gov.bc.ca</a> .<br><br>Thanks.</p>')
+    msg = ('<p>As a BC Data Catalogue $user_role for the $org - $sub_org, '
+           'please be advised that the publication state of this record: '
+           '<a href="$dataset_url">$dataset_url</a> is now "$dataset_state".<br><br>'
+           'If you are no longer an $user_role for $org - $sub_org or if you have a question or concern regarding this message '
+           'please contact DataBC Catalogue Services <a href="&quot;mailto:datacat@gov.bc.ca">datacat@gov.bc.ca</a> .<br><br>Thanks.</p>')
 
     msg_template = Template(msg)
 
     return msg_template.substitute(msg_dict)
 
+
 def add_msg_niceties(recipient_name, body, sender_name, sender_url):
     return "Dear %s,<br><br>" % recipient_name \
            + "\r\n\r\n%s\r\n\r\n" % body \
-           + "<br><br>--<br>\r\n%s (<a href=\"%s\">%s</a>)" % (sender_name, sender_url, sender_url)
+           + "<br><br>--<br>\r\n%s (<a href=\"%s\">%s</a>)" % (
+               sender_name, sender_url, sender_url)
+
 
 def send_state_change_notifications(members, email_dict, sender_name, sender_url):
     '''
@@ -80,7 +82,7 @@ def send_state_change_notifications(members, email_dict, sender_name, sender_url
         - Using a thread to send the notifications in the background.
     '''
 
-    #Email common fields
+    # Email common fields
     subject = email_dict['subject']
 
     mail_from = config.get('smtp.mail_from')
@@ -98,7 +100,7 @@ def send_state_change_notifications(members, email_dict, sender_name, sender_url
     else:
         smtp_server = config.get('smtp.server', 'localhost')
         smtp_starttls = paste.deploy.converters.asbool(
-                config.get('smtp.starttls'))
+            config.get('smtp.starttls'))
         smtp_user = config.get('smtp.user')
         smtp_password = config.get('smtp.password')
     smtp_connection.connect(smtp_server)
@@ -120,16 +122,15 @@ def send_state_change_notifications(members, email_dict, sender_name, sender_url
         # If 'smtp.user' is in CKAN config, try to login to SMTP server.
         if smtp_user:
             assert smtp_password, ("If smtp.user is configured then "
-                    "smtp.password must be configured as well.")
+                                   "smtp.password must be configured as well.")
             smtp_connection.login(smtp_user, smtp_password)
-
 
         '''
         Adding extra email fields and Sending notification for each individual member.
         '''
 
-        for member in members :
-            if member.email :
+        for member in members:
+            if member.email:
                 body = email_dict['body']
                 msg = MIMEText(body.encode('utf-8'), 'html', 'utf-8')
                 msg['Subject'] = subject
@@ -137,14 +138,18 @@ def send_state_change_notifications(members, email_dict, sender_name, sender_url
                 msg['Date'] = Utils.formatdate(time())
                 recipient_email = member.email
                 recipient_name = member.fullname or member.name
-                body = add_msg_niceties(recipient_name, body, sender_name, sender_url)
+                body = add_msg_niceties(
+                    recipient_name, body, sender_name, sender_url)
                 recipient = u"%s <%s>" % (recipient_name, recipient_email)
                 msg['To'] = Header(recipient, 'utf-8')
-                try :
-                    smtp_connection.sendmail(mail_from, [recipient_email], msg.as_string())
-                    log.info("Sent state change email to user {0} with email {1}".format(recipient_name, recipient_email))
+                try:
+                    smtp_connection.sendmail(
+                        mail_from, [recipient_email], msg.as_string())
+                    log.info("Sent state change email to user {0} with email {1}".format(
+                        recipient_name, recipient_email))
                 except Exception, e:
-                    log.error('Failed to send notification to user {0} email address : {1}'.format(recipient_email, recipient_email))
+                    log.error('Failed to send notification to user {0} email address : {1}'.format(
+                        recipient_email, recipient_email))
 
     except smtplib.SMTPException, e:
         msg = '%r' % e
@@ -155,7 +160,6 @@ def send_state_change_notifications(members, email_dict, sender_name, sender_url
 
 
 def check_record_state(context, old_state, new_data, site_title, site_url, dataset_url):
-
     '''
     Checks if the dataset state has been changed during the update and
     informs the users involving in package management.
@@ -170,7 +174,7 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
 
     new_state = new_data['edc_state']
 
-    #If dataset's state has not been changed do nothing
+    # If dataset's state has not been changed do nothing
     if (old_state == new_state):
         return
 
@@ -199,19 +203,19 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
 
     # Change email based on new_state changes
 
-    if new_state in ['REJECTED', 'PUBLISHED', 'ARCHIVED'] :
+    if new_state in ['REJECTED', 'PUBLISHED', 'ARCHIVED']:
         role = 'editor'
 
-    if new_state in ['PENDING PUBLISH', 'REJECTED', 'PUBLISHED', 'PENDING ARCHIVE', 'ARCHIVED'] :
-        subject = 'EDC - ' + new_state  +  ' ' + dataset_title
+    if new_state in ['PENDING PUBLISH', 'REJECTED', 'PUBLISHED', 'PENDING ARCHIVE', 'ARCHIVED']:
+        subject = 'EDC - ' + new_state + ' ' + dataset_title
 
-    #Prepare the dictionary for email content template
+    # Prepare the dictionary for email content template
 
-    msg_dict = dict(org=org_title, sub_org=sub_org_title, user_role=role, dataset_url=dataset_url, dataset_state=new_state)
+    msg_dict = dict(org=org_title, sub_org=sub_org_title, user_role=role,
+                    dataset_url=dataset_url, dataset_state=new_state)
     msg_body = get_msg_content(msg_dict)
 
-    email_dict = { 'subject': subject, 'body': msg_body }
-
+    email_dict = {'subject': subject, 'body': msg_body}
 
     # Get the entire list of users
 
@@ -219,7 +223,8 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
     Get the list of sub-organization users with the given role; Added by Khalegh Mamakani
     '''
 
-    log.info('Sending state change notification to organization users with role %s' %(role,))
+    log.info(
+        'Sending state change notification to organization users with role %s' % (role,))
 
     query = model.Session.query(model.User) \
         .join(model.Member, model.User.id == model.Member.table_id) \
@@ -249,43 +254,45 @@ def edc_package_update(context, input_data_dict):
     limit = 2
     sort = 'metadata_modified desc'
 
-    try :
+    try:
         data_dict = {
-                     'q' : q,
-                     'fq' : fq,
-                     'start' : offset,
-                     'rows' : limit,
-                     'sort' : sort
-                    }
+            'q': q,
+            'fq': fq,
+            'start': offset,
+            'rows': limit,
+            'sort': sort
+        }
 
-        #Use package_search to filter the list
+        # Use package_search to filter the list
         query = get_action('package_search')(context, data_dict)
 
-    except SearchError, se :
+    except SearchError, se:
         log.error('Search error : %s', str(se))
         raise SearchError(str(se))
 
-    #check the search results - there can be only 1!!
+    # check the search results - there can be only 1!!
     results = query['results']
     the_count = query['count']
     if the_count != 1:
-        log.error('Search for the dataset with q={0} returned 0 or more than 1 record.'.format(q))
+        log.error(
+            'Search for the dataset with q={0} returned 0 or more than 1 record.'.format(q))
 
         return_dict = {}
         return_dict['results'] = query
         return_dict['success'] = False
         return_dict['error'] = True
 
-    #results[0]['imap_layer_key'] = input_data_dict.get("imap_layer_key")
+    # results[0]['imap_layer_key'] = input_data_dict.get("imap_layer_key")
     # JER - the line below was removed because we don't use the data, and getting it into the query was a nightmare
     #
-    #results[0]['imap_display_name'] = input_data_dict.get("imap_display_name")
-    #results[0]['link_to_imap'] = input_data_dict.get("link_to_imap")
+    # results[0]['imap_display_name'] = input_data_dict.get("imap_display_name")
+    # results[0]['link_to_imap'] = input_data_dict.get("link_to_imap")
 
-    try :
-        package_dict = get_action('package_show')(context, {'id': results[0]['id']})
+    try:
+        package_dict = get_action('package_show')(
+            context, {'id': results[0]['id']})
 
-        if not package_dict :
+        if not package_dict:
             return_dict = {}
             return_dict['success'] = False
             return_dict['error'] = True
@@ -294,27 +301,31 @@ def edc_package_update(context, input_data_dict):
         current_imap_link = package_dict.get('link_to_imap', None)
         visibility = package_dict['metadata_visibility']
 
-
         public_map_link = config.get('edc.imap_url_pub')
         private_map_link = config.get('edc.imap_url_gov')
         update = {}
-        #don't update archived records
+        # don't update archived records
 
-        #Upadted by Khalegh Mamakani to update the i-map link only if it has not been done already.
+        # Upadted by Khalegh Mamakani to update the i-map link only if it has
+        # not been done already.
         new_imap_link = None
         if (package_dict['edc_state'] != 'ARCHIVED'):
             if (visibility == 'Public'):
                 if (input_data_dict.get("imap_layers_pub")):
-                    new_imap_link = public_map_link + input_data_dict.get("imap_layers_pub")
+                    new_imap_link = public_map_link + \
+                        input_data_dict.get("imap_layers_pub")
             else:
                 if (input_data_dict.get("imap_layers_gov")):
-                    new_imap_link = private_map_link + input_data_dict.get("imap_layers_gov")
-        if (new_imap_link != None) and (new_imap_link != current_imap_link) :
-            log.info('Updating IMAP Link to : {0} for dataset {1}'.format(new_imap_link, package_dict.get('title')))
+                    new_imap_link = private_map_link + \
+                        input_data_dict.get("imap_layers_gov")
+        if (new_imap_link is not None) and (new_imap_link is not current_imap_link):
+            log.info('Updating IMAP Link to : {0} for dataset {1}'.format(
+                new_imap_link, package_dict.get('title')))
             package_dict['link_to_imap'] = new_imap_link
             update = get_action('package_update')(context, package_dict)
     except Exception, ue:
-        log.error('Error raised when updating dataset imap_link for dataset {0}.'.format(package_dict.get('name')))
+        log.error('Error raised when updating dataset imap_link for dataset {0}.'.format(
+            package_dict.get('name')))
         raise Exception(str(ue))
 
     response_dict = {}
@@ -333,7 +344,6 @@ def edc_package_update_bcgw(context, input_data_dict):
     '''
     from ckan.lib.search import SearchError
 
-
     '''
     Fixed unicode characters decoding problem.
     '''
@@ -350,25 +360,25 @@ def edc_package_update_bcgw(context, input_data_dict):
     limit = 2
     sort = 'metadata_modified desc'
 
-    try :
+    try:
         data_dict = {
-                     'q' : q,
-                     'fq' : fq,
-                     'start' : offset,
-                     'rows' : limit,
-                     'sort' : sort
-                    }
+            'q': q,
+            'fq': fq,
+            'start': offset,
+            'rows': limit,
+            'sort': sort
+        }
 
-        #Use package_search to filter the list
+        # Use package_search to filter the list
         query = get_action('package_search')(context, data_dict)
-    except SearchError, se :
+    except SearchError, se:
         log.error('Search error : %s', str(se))
         raise SearchError(str(se))
 
-    #check the search results - there can be only 1!!
+    # check the search results - there can be only 1!!
     the_count = query['count']
     if the_count != 1:
-        #raise SearchError('Search returned 0 or more than 1 item')
+        # raise SearchError('Search returned 0 or more than 1 item')
         return_dict = {}
         return_dict['results'] = query
         return_dict['success'] = False
@@ -378,28 +388,30 @@ def edc_package_update_bcgw(context, input_data_dict):
     results[0]['details'] = input_data_dict.get("details")
     update = None
 
-    #need the right data package
-    package_dict = get_action('package_show')(context, {'id': results[0]['id']})
+    # need the right data package
+    package_dict = get_action('package_show')(
+        context, {'id': results[0]['id']})
 
-    if package_dict['edc_state'] == 'ARCHIVED' :
+    if package_dict['edc_state'] == 'ARCHIVED':
         return_dict = {}
         return_dict['results'] = None
         return return_dict
 
-    if not package_dict :
+    if not package_dict:
         return_dict = {}
         return_dict['success'] = False
         return_dict['error'] = True
         return return_dict
 
-    #Check if input_data has been modified and is not the same as package data
+    # Check if input_data has been modified and is not the same as package data
     data_changed = False
     current_details = package_dict.get('details')
     curent_obj_short_name = package_dict.get('object_short_name')
     current_obj_table_comments = package_dict.get('object_table_comments')
 
-    if current_details != input_data_dict.get('details') :
-        log.info('Dataset details have been changed for dataset {0}.'.format(package_dict.get('title')))
+    if current_details != input_data_dict.get('details'):
+        log.info('Dataset details have been changed for dataset {0}.'.format(
+            package_dict.get('title')))
         log.info('Current Details : ')
         log.info(current_details)
         log.info('New details :')
@@ -408,26 +420,31 @@ def edc_package_update_bcgw(context, input_data_dict):
         package_dict['details'] = input_data_dict.get('details')
         data_changed = True
 
-    if curent_obj_short_name != input_data_dict.get('object_short_name') :
-        log.info('Dataset object_short_name has been changed for dataset {0}.'.format(package_dict.get('title')))
+    if curent_obj_short_name != input_data_dict.get('object_short_name'):
+        log.info('Dataset object_short_name has been changed for dataset {0}.'.format(
+            package_dict.get('title')))
         log.info('Current object_short_name :')
         log.info(curent_obj_short_name)
         log.info('New object_short_name :')
         log.info(input_data_dict.get('object_short_name'))
-        package_dict['object_short_name'] = input_data_dict.get('object_short_name')
+        package_dict['object_short_name'] = input_data_dict.get(
+            'object_short_name')
         data_changed = True
 
-    if current_obj_table_comments != input_data_dict.get('object_table_comments') :
-        log.info('Dataset current_obj_table_comments has been changed for dataset {0}.'.format(package_dict.get('title')))
+    if current_obj_table_comments != input_data_dict.get('object_table_comments'):
+        log.info('Dataset current_obj_table_comments has been changed for dataset {0}.'.format(
+            package_dict.get('title')))
         log.info('Current object_table_comments :')
         log.info(current_obj_table_comments)
         log.info('New object_table_comments :')
         log.info(input_data_dict.get('object_table_comments'))
-        package_dict['object_table_comments'] = input_data_dict.get('object_table_comments')
+        package_dict['object_table_comments'] = input_data_dict.get(
+            'object_table_comments')
         data_changed = True
 
-    if data_changed :
-        log.info('Updating data dictionary for dataset {0}'.format(package_dict.get('title')))
+    if data_changed:
+        log.info('Updating data dictionary for dataset {0}'.format(
+            package_dict.get('title')))
 
         update = get_action('package_update')(context, package_dict)
 
@@ -437,7 +454,6 @@ def edc_package_update_bcgw(context, input_data_dict):
 
 
 def package_update(context, data_dict):
-
     '''Update a dataset (package).
 
     You must be authorized to edit the dataset and the groups that it belongs
@@ -458,7 +474,6 @@ def package_update(context, data_dict):
     :rtype: dictionary
 
     '''
-
 
     model = context['model']
     user = context['user']
@@ -484,14 +499,13 @@ def package_update(context, data_dict):
     '''
     if not data_dict.get('tag_string'):
         data_dict['tag_string'] = ', '.join(
-                h.dict_list_reduce(data_dict.get('tags', {}), 'name'))
+            h.dict_list_reduce(data_dict.get('tags', {}), 'name'))
 
-
-    for key, value in old_data.iteritems() :
-        if key not in data_dict :
+    for key, value in old_data.iteritems():
+        if key not in data_dict:
             data_dict[key] = value
 
-    #data_dict['resources'] = data_dict.get('resources', old_data.get('resources'))
+    # data_dict['resources'] = data_dict.get('resources', old_data.get('resources'))
 
 
 #     iso_topic_cat = data_dict.get('iso_topic_string', [])
@@ -500,8 +514,7 @@ def package_update(context, data_dict):
 #
 #     data_dict['iso_topic_string'] = ','.join(iso_topic_cat)
 
-
-    #Set the package last modified date
+    # Set the package last modified date
     data_dict['record_last_modified'] = str(datetime.date.today())
 
     # If the Created Date has not yet been set, then set it
@@ -528,15 +541,17 @@ def package_update(context, data_dict):
     image_url = old_data.get('image_url', None)
 
     upload = uploader.Upload('edc', image_url)
-    upload.update_data_dict(data_dict, 'image_url', 'image_upload', 'clear_upload')
+    upload.update_data_dict(data_dict, 'image_url',
+                            'image_upload', 'clear_upload')
 
-    #Adding image display url for the uploaded image
+    # Adding image display url for the uploaded image
     image_url = data_dict.get('image_url')
     data_dict['image_display_url'] = image_url
 
     if image_url and not image_url.startswith('http'):
         image_url = munge.munge_filename(image_url)
-        data_dict['image_display_url'] = h.url_for_static('uploads/edc/%s' % data_dict.get('image_url'), qualified=True)
+        data_dict['image_display_url'] = h.url_for_static(
+            'uploads/edc/%s' % data_dict.get('image_url'), qualified=True)
 
     if 'api_version' not in context:
         # check_data_dict() is deprecated. If the package_plugin has a
@@ -570,9 +585,7 @@ def package_update(context, data_dict):
     else:
         rev.message = _(u'REST API: Update object %s') % data.get("name")
 
-
-
-    #avoid revisioning by updating directly
+    # avoid revisioning by updating directly
     model.Session.query(model.Package).filter_by(id=pkg.id).update(
         {"metadata_modified": datetime.datetime.utcnow()})
     model.Session.refresh(pkg)
@@ -591,10 +604,9 @@ def package_update(context, data_dict):
 
         item.after_update(context, data)
 
-
     upload.upload(uploader.get_max_image_size())
 
-    #TODO the next two blocks are copied from ckan/ckan/logic/action/update.py
+    # TODO the next two blocks are copied from ckan/ckan/logic/action/update.py
     # This codebase is currently hard to maintain because large chunks of the
     # CKAN action API and the CKAN controllers are simply overriden. This is
     # probably worse than just forking CKAN would have been, because in that
@@ -626,8 +638,7 @@ def package_update(context, data_dict):
     # we could update the dataset so we should still be able to read it.
     context['ignore_auth'] = True
     output = data_dict['id'] if return_id_only \
-            else _get_action('package_show')(context, {'id': data_dict['id']})
-
+        else _get_action('package_show')(context, {'id': data_dict['id']})
 
     '''
     Send state change notifications if required; Added by Khalegh Mamakani
@@ -639,10 +650,12 @@ def package_update(context, data_dict):
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
 
-    dataset_url = config.get('ckan.site_url') + h.url_for(controller='package', action="read", id = data_dict['name'])
+    dataset_url = config.get(
+        'ckan.site_url') + h.url_for(controller='package', action="read", id=data_dict['name'])
     import threading
 
-    notify_thread = threading.Thread(target=check_record_state, args=(context, old_state, data_dict, g.site_title, g.site_url, dataset_url) )
+    notify_thread = threading.Thread(target=check_record_state, args=(
+        context, old_state, data_dict, g.site_title, g.site_url, dataset_url))
     notify_thread.start()
 
     return output
@@ -664,7 +677,6 @@ def post_disqus_comment(context, comment_dict):
 
     import pycurl
 
-
     from disqusapi import DisqusAPI
     import cStringIO
 
@@ -681,7 +693,7 @@ def post_disqus_comment(context, comment_dict):
     comment_dict['thread'] = 'ident:' + identifier
     # Set the fields string :
     fields_string = ''
-    url = 'http://disqus.com/api/3.0/posts/create.json';
+    url = 'http://disqus.com/api/3.0/posts/create.json'
 
 #    url= 'https://disqus.com/api/3.0/threads/list.json?api_secret=frFrznmdh6WlR5Xz9dvv6749Ong8l4hWprLdFItoa743d9SwGJ7koQLJuyhKZ7A0&forum=h3testblog'
 
@@ -703,21 +715,21 @@ def post_disqus_comment(context, comment_dict):
 #     except Exception:
 #         pass
 
-
-    #Get the thread id first :
-    thread_dict = {'api_secret' : secret_api,
-                   'forum' : 'h3testblog',
-                   'thread' : 'ident:' + identifier }
+    # Get the thread id first :
+    thread_dict = {'api_secret': secret_api,
+                   'forum': 'h3testblog',
+                   'thread': 'ident:' + identifier}
 
     thread_string = ''
-    #Construct the post fields string
-    for key, value in thread_dict.iteritems() :
+    # Construct the post fields string
+    for key, value in thread_dict.iteritems():
         thread_string += key + '=' + value + '&'
     thread_string = thread_string[:-1]
 
     buf = cStringIO.StringIO()
     c = pycurl.Curl()
-    c.setopt(pycurl.URL, 'https://disqus.com/api/3.0/threads/set.json?' + thread_string)
+    c.setopt(
+        pycurl.URL, 'https://disqus.com/api/3.0/threads/set.json?' + thread_string)
     c.setopt(pycurl.VERBOSE, 0)
     c.setopt(c.WRITEFUNCTION, buf.write)
 
@@ -726,7 +738,7 @@ def post_disqus_comment(context, comment_dict):
     response = json.loads(buf.getvalue()).get('response', [])
 
     thread = None
-    if len(response) > 0 :
+    if len(response) > 0:
         thread = response[0]
 
     if thread:
@@ -742,16 +754,15 @@ def post_disqus_comment(context, comment_dict):
 #     client = DisqusAPI(secret_api, public_api)
 #     client.posts.create(api_secret=public_api, **comment_dict)
 #
-    #Construct the post fields string
+    # Construct the post fields string
     fields_string = ''
-    for key, value in comment_dict.iteritems() :
+    for key, value in comment_dict.iteritems():
         fields_string += key + '=' + value + '&'
     fields_string = fields_string[:-1]
 
-
     buf = cStringIO.StringIO()
 
-    #Post the comment using curl
+    # Post the comment using curl
     c = pycurl.Curl()
     c.setopt(pycurl.URL, url)
     c.setopt(pycurl.VERBOSE, 0)
@@ -760,6 +771,7 @@ def post_disqus_comment(context, comment_dict):
     c.perform()
 
     buf.close()
+
 
 @toolkit.side_effect_free
 def package_autocomplete(context, data_dict):
@@ -786,7 +798,8 @@ def package_autocomplete(context, data_dict):
     q_lower = q.lower()
     pkg_list = []
 
-    pkg_dict = get_action('package_search')(context, {'fq': 'title:' + q, 'rows': limit})
+    pkg_dict = get_action('package_search')(
+        context, {'fq': 'title:' + q, 'rows': limit})
 
     pkg_dict = pkg_dict['results']
     for package in pkg_dict:
@@ -796,8 +809,8 @@ def package_autocomplete(context, data_dict):
         else:
             match_field = 'title'
             match_displayed = '%s (%s)' % (package['title'], package['name'])
-        result_dict = {'name':package['name'], 'title':package['title'],
-                       'match_field':match_field, 'match_displayed':match_displayed}
+        result_dict = {'name': package['name'], 'title': package['title'],
+                       'match_field': match_field, 'match_displayed': match_displayed}
         pkg_list.append(result_dict)
 
     return pkg_list
