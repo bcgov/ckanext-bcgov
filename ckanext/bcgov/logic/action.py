@@ -230,7 +230,8 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
         .join(model.Member, model.User.id == model.Member.table_id) \
         .filter(model.Member.capacity == role) \
         .filter(model.Member.group_id == sub_org.id) \
-        .filter(model.Member.state == 'active')
+        .filter(model.Member.state == 'active') \
+        .filter(model.User.state == 'active')
 
     members = query.all()
 
