@@ -123,7 +123,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         org_controller = 'ckanext.bcgov.controllers.organization:EDCOrganizationController'
         site_map_controller = 'ckanext.bcgov.controllers.site_map:GsaSitemapController'
         api_controller = 'ckanext.bcgov.controllers.api:EDCApiController'
-        ofi_controller = 'ckanext.bcgov.controllers.ofi:EDCOfiController'
+        # ofi_controller = 'ckanext.bcgov.controllers.ofi:EDCOfiController'
 
         GET_POST = dict(method=['GET', 'POST'])
 
@@ -210,7 +210,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('/i18n/{lang}', action='i18n_js_translations')
             m.connect('/')
 
-        map.connect('ofi api', '/api/ofi/{call_action}', controller=ofi_controller, action='ofi', conditions=GET_POST)
+        # map.connect('ofi api', '/api/ofi/{call_action}', controller=ofi_controller, action='ofi', conditions=GET_POST)
 
         m.connect('/action/organization_list_related', action='organization_list_related', conditions=GET_POST)
         m.connect('/action/{logic_function}', action='action', conditions=GET_POST)

@@ -1,7 +1,9 @@
 {% ckan_extends %}
 
 {% block secondary_content %}
+{#}
   {% if pkg_dict.type == 'Geographic' %}
     {% snippet 'package/snippets/ofi_lookup.html', pkg_dict=pkg_dict %}
   {% endif %}
+  #}
 {% endblock %}
