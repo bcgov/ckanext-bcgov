@@ -39,6 +39,9 @@ log = logging.getLogger(u'ckanext.bcgov.controllers.ofi')
 
 
 class EDCOfiController(ApiController):
+    def __init__(self):
+        self.config = edc_h.get_ofi_config()
+
     def action(self, call_action, object_name=None, ver=None):
         '''
         API Entry
@@ -59,22 +62,10 @@ class EDCOfiController(ApiController):
 
         side_effect_free = getattr(function, 'side_effect_free', False)
 
-        print(side_effect_free)
-
-        log.debug(u'OFI user cookie: %s', pformat(self.cookies))
-
-        log.debug(u'OFI config:\n %s \n', pformat(self.config))
-
+        log.debug(u'OFI api config:\n %s \n', pformat(self.config))
         log.debug(u'OFI api context:\n %s\n', pformat(context))
 
-        if call_action == 'check_object_name':
-            pass
-        elif call_action == 'file_formats':
-            pass
-        elif call_action == 'show':
-            pass
-        else:
-            return base.abort(501, _('TODO in OFI Controller: %s') % call_action)
+        return base.abort(501, _('TODO in OFI API Controller: %s') % call_action)
 
     def _call_action_show(self):
         action_map = {
