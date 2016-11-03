@@ -6,11 +6,8 @@
 
 from ckan.controllers.api import ApiController
 
-import cgi
 import logging
-import requests as reqs
 from pprint import pformat, pprint
-import urlparse
 
 # import ckan
 import ckan.lib.base as base
