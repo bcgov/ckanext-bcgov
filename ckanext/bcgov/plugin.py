@@ -346,10 +346,15 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     def get_actions(self):
         import ckanext.bcgov.logic.action as edc_action
-        return {'edc_package_update' : edc_action.edc_package_update,
-                'edc_package_update_bcgw' : edc_action.edc_package_update_bcgw,
-                'package_update' : edc_action.package_update,
-                'package_autocomplete' : edc_action.package_autocomplete }
+        import ckanext.bcgov.logic.ofi.call_action as ofi
+        return {
+            'edc_package_update': edc_action.edc_package_update,
+            'edc_package_update_bcgw': edc_action.edc_package_update_bcgw,
+            'package_update': edc_action.package_update,
+            'package_autocomplete': edc_action.package_autocomplete,
+            'check_object_name': ofi.check_object_name,
+            'file_formats': ofi.file_formats
+        }
 
     def get_auth_functions(self):
         from ckanext.bcgov.logic.auth import create as edc_auth_create
