@@ -8,6 +8,7 @@
 <div id="ofi-results" class="modal hide fade" tabindex="-1" role="dialog"
   data-module="ofi_lookup"
   data-module-ofi_results="{{ h.dump_json(ofi) }}"
+  data-module-ofi_populate_dataset="{{ h.url_for('ofi api', call_action='populate_dataset') }}"
 >
 
   <div class="modal-header">

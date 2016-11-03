@@ -2,10 +2,9 @@
  * DataBC CITZ EDC
  *
  * HighwayThree Solutions Inc.
- * Author: Jared Smith <github@jrods>
+ * Author: Jared Smith <jrods@github>
  *
- *
- * OFI Prototype
+ * OFI Modal Controller
  *
 **/
 "use strict";
@@ -25,6 +24,8 @@ this.ckan.module('ofi_lookup', function($, _) {
       spinner = this.$('#loading');
 
       this._toggleSpinner(true);
+
+      console.log(this.options);
 
       var open_modal = this.options.ofi_results.open_modal;
       var success = this.options.ofi_results.success;
@@ -53,7 +54,7 @@ this.ckan.module('ofi_lookup', function($, _) {
     },
     _addResources: function(event) {
       event.preventDefault();
-      console.log('hallo');
+      console.log(this.options.ofi_populate_dataset);
     },
     _toggleSpinner: function(on_off) {
       // TODO: Adjust spinner location
