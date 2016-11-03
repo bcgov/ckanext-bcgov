@@ -1,8 +1,9 @@
 # Copyright 2016, Province of British Columbia
 # License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
 #
+# HighwayThree Solutions Inc.
 # Author: Jared Smith <jrods@github>
-#
+
 from functools import wraps
 
 from ckan.common import request
@@ -41,6 +42,6 @@ def _prepare(secure=False):
         return {}
 
     ofi_vars[u'secure'] = secure
-    ofi_vars[u'ofi_url'] = edc_h._build_url(secure)
+    ofi_vars[u'ofi_url'] = edc_h._build_ofi_url(secure)
 
     return ofi_vars

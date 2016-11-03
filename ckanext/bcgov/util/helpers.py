@@ -480,7 +480,7 @@ def get_ofi_config():
                  if k.startswith(namespace)])
 
 
-def _build_url(secure=False):
+def _build_ofi_url(secure=False):
     '''
     TODO
     '''
