@@ -11,12 +11,11 @@
 "use strict";
 
 this.ckan.module('ofi_lookup', function($, _) {
-  var self, modal, ofi_form, resources_show, spinner, object_name;
+  var self, modal, ofi_form, resources_show, spinner;
 
   return {
     options: {
       // defaults
-
     },
     initialize: function() {
       self = this;
@@ -24,25 +23,31 @@ this.ckan.module('ofi_lookup', function($, _) {
       ofi_form = this.$('#ofi-lookup-form');
       resources_show = this.$('#resources');
       spinner = this.$('#loading');
-      object_name = this.options.object_name;
 
-      console.log(this.options.ofi_api);
+      console.log(this.options.ofi_results);
+      console.log(typeof this.options.ofi_results.open_modal);
 
-      // when the page refreshes, object_name go back to what's specified in the package
-      this.$('#object-name').val(object_name);
-      this.$('#add-resource').on('click', this._copyResourceToForm);
-      ofi_form.submit(this.searchForObject);
+      var open_modal = this.options.ofi_results.open_modal;
+      var success = this.options.ofi_results.success;
+      var content = this.options.ofi_results.content;
 
-      if (object_name) {
-        modal.modal('show');
+      if (success) {
+        if (content instanceof Object) {
+          var prompt;
+          if (content['allowed']) {
+            prompt = '<div>Object is avaiable, would you like to add all the resource links?</div>';
+          } else {
+            prompt = '<div>Object is not avaiable, please contact your administrator.</div>';
+          }
+          this._showResults(prompt);
+        } 
       } else {
-        console.log("No object name in package.");
+        this._showResults(content);
       }
-    },
-    searchForObject: function(event) {
-      event.preventDefault();
 
-      modal.modal('show');
+      if (open_modal) {
+        modal.modal('show');
+      }
     },
     _toggleSpinner: function(on_off) {
       // TODO: Adjust spinner location
@@ -52,7 +57,7 @@ this.ckan.module('ofi_lookup', function($, _) {
       spinner.toggleClass('enable', on_off);
     },
     _showResults: function(data) {
-      resources_show.html("");
+      resources_show.html(data);
 
       this._toggleSpinner(false); // turn off
     },

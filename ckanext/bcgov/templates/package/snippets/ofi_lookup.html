@@ -1,4 +1,4 @@
-{% set object_name = pkg_dict.object_name %}
+{% set ofi = data.ofi %}
 
 {# button for modal is in snippets/resource_form.html #}
 {#<a href="#ofi-results" role="button" class="btn btn-primary" data-toggle="modal">View OFI Results</a>#}
@@ -7,43 +7,21 @@
 
 <div id="ofi-results" class="modal hide fade" tabindex="-1" role="dialog"
   data-module="ofi_lookup"
-  data-module-object_name="{{ object_name }}"
-  data-module-ofi_api=""
+  data-module-ofi_results="{{ h.dump_json(ofi) }}"
 >
 
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3>OFI Testing</h3>
-    <h4>Prototype</h4>
+    <h3>OFI Service</h3>
+    <h4>Checking Availability</h4>
   </div>
 
   <div class="modal-body">
     <form id="ofi-lookup-form" class="form-horizontal">
-      <div class="control-group">
-        <label for="object-name" class="control-label">{{ _('Object Name') }}</label>
-        <div class="controls">
-          <input id="object-name" type="text" name="object_name" value="{{ object_name }}" required />
-        </div>
-        <div class="controls">
-          <label class="checkbox inline">
-            <input id="secure" type="checkbox" name="secure" checked />
-            {{ _('Secure')}}
-          </label>
-          <label class="checkbox inline">
-            <input id="include-creds" type="checkbox" name="include_creds" checked />
-            {{ _('Credentials')}}
-          </label>
-        </div>
-      </div>
-
-      <div class="form-actions">
-        <button id="search-object" type="submit" for="ofi-lookup-form" class="btn btn-primary" data-loading-text="Searching...">Search</button>
+      <div id="resources">
+      
       </div>
     </form>
-
-    <div id="resources">
-
-    </div>
 
     {# TODO: stop animation when not visible #}
     <div id="loading" class="overlay-wrap">
