@@ -10,7 +10,6 @@ from pprint import pprint, pformat
 import requests as reqs
 
 import ckan.logic as logic
-from ckan.common import _, c, request, response
 
 import ckanext.bcgov.logic.ofi as ofi_logic
 import ckanext.bcgov.util.helpers as edc_h
@@ -27,6 +26,11 @@ def file_formats(ofi_resp, ofi_vars):
     TODO
     '''
     return ofi_resp.json()
+
+
+@logic.side_effect_free
+def populate_dataset_with_ofi(context, data):
+    return {'good': True}
 
 
 @logic.side_effect_free

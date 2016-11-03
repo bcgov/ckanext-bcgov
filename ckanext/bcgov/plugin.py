@@ -353,7 +353,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'package_update': edc_action.package_update,
             'package_autocomplete': edc_action.package_autocomplete,
             'check_object_name': ofi.check_object_name,
-            'file_formats': ofi.file_formats
+            'file_formats': ofi.file_formats,
+            'populate_dataset': ofi.populate_dataset_with_ofi
         }
 
     def get_auth_functions(self):

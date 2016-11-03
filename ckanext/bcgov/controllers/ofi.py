@@ -53,16 +53,19 @@ class EDCOfiController(ApiController):
         }
 
         try:
-            function = get_action(call_action)
+            action_func = get_action(call_action)
         except KeyError:
             return self._finish_bad_request(_('Action name not known: %s') % call_action)
 
-        side_effect_free = getattr(function, 'side_effect_free', False)
+        side_effect_free = getattr(action_func, 'side_effect_free', False)
 
         log.debug(u'OFI api config:\n %s \n', pformat(self.config))
         log.debug(u'OFI api context:\n %s\n', pformat(context))
 
-        return base.abort(501, _('TODO in OFI API Controller: %s') % call_action)
+        if call_action == 'populate_dataset':
+            return self._finish_ok(action_func(context, {}))
+        else:
+            return base.abort(501, _('TODO in OFI API Controller: %s') % call_action)
 
     def _call_action_show(self):
         action_map = {
