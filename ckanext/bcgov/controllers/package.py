@@ -1,8 +1,8 @@
 # Copyright  2015, Province of British Columbia
 # License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
 
-#Author: Kahlegh Mamakani Highwaythree Solutions Inc.
-#Created on Jan 28 2014
+# Author: Kahlegh Mamakani Highwaythree Solutions Inc.
+# Created on Jan 28 2014
 
 import logging
 
@@ -10,7 +10,7 @@ import datetime
 import copy
 
 from ckan.controllers.package import PackageController
-from ckan.common import  _, request, c, response, g
+from ckan.common import _, request, c, response, g
 import ckan.lib.base as base
 import ckan.model as model
 import ckan.logic as logic
@@ -334,7 +334,6 @@ class EDCPackageController(PackageController):
 
         return render('package/resource_edit.html', extra_vars=vars)
 
-
     def new_resource(self, id, data=None, errors=None, error_summary=None):
         '''
         If there are errors, then it checks if user has uploaded the resource.
@@ -342,27 +341,41 @@ class EDCPackageController(PackageController):
         saved in upload directory. In that case the resource url must be reset to force the user
         to upload the resource again.
         '''
+        if data is None:
+            data = {}
+
+        errors = errors or {}
+
+        # Setup for OFI
+        pkg_dict = get_action('package_show')({}, {'id': id})
+
+        if 'type' in pkg_dict and pkg_dict[u'type'] == 'Geographic':
+            if 'object_name' in pkg_dict:
+                object_name = pkg_dict.get('object_name')
+                ofi_data = {
+                    u'object_name': object_name,
+                    u'secure': False
+                }
+
+                data[u'ofi'] = get_action('check_object_name')({}, ofi_data)
+
         # TODO: This is a workaround for a core ckan issue that can be removed when the issue
         # is resolved https://github.com/ckan/ckan/issues/2650
-        errors = errors or {}
-        if errors != {} :
+        if errors != {}:
             res_url = data.get('url')
             url_type = data.get('url_type')
-            if res_url and url_type and url_type == 'upload' :
+            if res_url and url_type and url_type == 'upload':
                 import urllib2
                 resource_not_found = False
-                try :
+                try:
                     res_file = urllib2.urlopen(urllib2.Request(res_url))
-                except :
+                except:
                     resource_not_found = True
-                if resource_not_found :
+                if resource_not_found:
                     data['url'] = ''
                     data['url_type'] = ''
 
-        result = super(EDCPackageController, self).new_resource(id, data, errors, error_summary)
-
-        return result
-
+        return super(EDCPackageController, self).new_resource(id, data, errors, error_summary)
 
     def resource_delete(self, id, resource_id):
         # TODO: This whole method is a workaround for a core ckan issue

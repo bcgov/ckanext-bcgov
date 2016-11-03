@@ -37,15 +37,21 @@ def check_object_name(ofi_resp, ofi_vars):
     TODO
     '''
     success = True if ofi_resp.status_code == 200 else False
-    open_dialog = True
-    if success:
-        content = ofi_resp.json()
-    else:
+    content_type = ofi_resp.headers.get(u'content-type').split(';')[0]
+
+    open_modal = True
+
+    if content_type == 'text/html':
+        success = False
+        # not sure yet, but if the content is the IDIR login page, it will try to redirect the user to log into IDIR
+        # if the page then displays 404, it's most likey the user isn't logged onto the vpn
         content = ofi_resp.content
+    else:
+        content = ofi_resp.json()
 
     results = {
         u'success': success,
-        u'open_dialog': open_dialog,
+        u'open_modal': open_modal,
         u'content': content
     }
 
