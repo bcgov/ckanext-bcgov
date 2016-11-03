@@ -11,7 +11,7 @@
 "use strict";
 
 this.ckan.module('ofi_lookup', function($, _) {
-  var self, modal, ofi_form, resources_show, spinner;
+  var self, modal, ofi_form, content_body, spinner;
 
   return {
     options: {
@@ -21,11 +21,10 @@ this.ckan.module('ofi_lookup', function($, _) {
       self = this;
       modal = this.el;
       ofi_form = this.$('#ofi-lookup-form');
-      resources_show = this.$('#resources');
+      content_body = this.$('#resources');
       spinner = this.$('#loading');
 
-      console.log(this.options.ofi_results);
-      console.log(typeof this.options.ofi_results.open_modal);
+      this._toggleSpinner(true);
 
       var open_modal = this.options.ofi_results.open_modal;
       var success = this.options.ofi_results.success;
@@ -36,28 +35,35 @@ this.ckan.module('ofi_lookup', function($, _) {
           var prompt;
           if (content['allowed']) {
             prompt = '<div>Object is avaiable, would you like to add all the resource links?</div>';
+            this.$('#add-resources').click(this._addResources);
           } else {
             prompt = '<div>Object is not avaiable, please contact your administrator.</div>';
+            this.$('#add-resources').remove();
           }
           this._showResults(prompt);
         } 
       } else {
         this._showResults(content);
+        this.$('#add-resources').remove();
       }
 
       if (open_modal) {
         modal.modal('show');
       }
     },
+    _addResources: function(event) {
+      event.preventDefault();
+      console.log('hallo');
+    },
     _toggleSpinner: function(on_off) {
       // TODO: Adjust spinner location
       //       Disable 'Add' in modal when spinner is enabled
       //       Include a 'Cancel' button for the api call
-      resources_show.toggleClass('hidden', on_off);
+      content_body.toggleClass('hidden', on_off);
       spinner.toggleClass('enable', on_off);
     },
     _showResults: function(data) {
-      resources_show.html(data);
+      content_body.html(data);
 
       this._toggleSpinner(false); // turn off
     },

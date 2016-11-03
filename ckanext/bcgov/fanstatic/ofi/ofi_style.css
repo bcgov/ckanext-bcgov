@@ -9,7 +9,7 @@
 
 }
 #ofi-results .modal-body {
-  min-height: 50vh;
+  /*min-height: 50vh;*/
   padding: 15px;
 }
 #ofi-results .modal-body label {
