@@ -64,6 +64,8 @@ class EDCOfiController(ApiController):
 
         if call_action == 'populate_dataset':
             return self._finish_ok(action_func(context, {}))
+        elif call_action == 'file_formats':
+            return self._finish_ok(action_func(context, {}))
         else:
             return base.abort(501, _('TODO in OFI API Controller: %s') % call_action)
 
