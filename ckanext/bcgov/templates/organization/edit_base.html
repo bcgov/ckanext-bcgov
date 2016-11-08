@@ -14,7 +14,7 @@
   {% block breadcrumb_content_inner %}
 
     <li>{% link_for organization.title|truncate(35), controller='organization', action='read', id=organization.name %}</li>
-    <li class="active">{% link_for _('Members'), controller='organization', action='edit', id=organization.name %}</li>
+    <li class="active">{% link_for _('Edit'), controller='organization', action='edit', id=organization.name %}</li>
   {% endblock %}
 {% endblock %}
 
