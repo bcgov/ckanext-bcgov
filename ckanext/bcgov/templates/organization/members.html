@@ -2,6 +2,11 @@
 
 {% set can_edit = h.check_access('group_member_create', {'id': c.id}) %}
 
+{% block breadcrumb_content_inner %}
+	<li>{% link_for organization.title|truncate(35), controller='organization', action='read', id=organization.name %}</li>
+	<li class="active">{% link_for _('Members'), controller='organization', action='members', id=organization.name %}</li>
+{% endblock %}
+
 {% block page_primary_action %}
 	{% if can_edit %}
 		{{ super() }}
