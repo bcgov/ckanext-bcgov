@@ -99,6 +99,7 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
 
         cnvrt_to_tags = toolkit.get_converter('convert_to_tags')
         schema.update({
+                        'download_audience' : [not_empty, convert_to_extras],
                         'purpose': [ ignore_missing, convert_to_extras ],
                         'layer_name' : [ignore_missing, convert_to_extras],
                         'preview_latitude': [ ignore_missing, convert_to_extras ],
@@ -154,6 +155,7 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
         schema = super(EDC_GeoSpatialForm, self).show_package_schema()
         schema['tags']['__extras'].append(toolkit.get_converter('free_tags_only'))
         schema.update( {
+                        'download_audience': [convert_from_extras, not_empty],
                         'purpose': [ convert_from_extras,ignore_missing ],
                         'layer_name' : [convert_from_extras, ignore_missing],
                         'preview_latitude': [ convert_from_extras, ignore_missing ],
@@ -213,6 +215,7 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
     def _update_nongeospatial_schema(self, schema):
         cnvrt_to_tags = toolkit.get_converter('convert_to_tags')
         schema.update({
+                        'download_audience' : [not_empty, convert_to_extras],
                         'object_name' : [ ignore_missing, convert_to_extras ],
                         'purpose': [ ignore_missing, convert_to_extras ],
                         'data_quality': [ignore_missing, convert_to_extras ],
@@ -252,6 +255,7 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
         schema = super(EDC_NonGeoSpatialForm, self).show_package_schema()
         schema['tags']['__extras'].append(toolkit.get_converter('free_tags_only'))
         schema.update( {
+                        'download_audience': [convert_from_extras, not_empty],
                         'url': [not_empty, unicode],
                         'purpose': [ convert_from_extras,ignore_missing ],
                         'data_quality': [ convert_from_extras, ignore_missing ],
@@ -264,6 +268,7 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
                         'dates' : [convert_from_extras, ignore_missing]
                          })
         schema['resources'].update({
+                                    'download_audience': [convert_from_extras, not_empty],
                                     'url': [not_empty, unicode, remove_whitespace, check_extension],
                                     'resource_update_cycle' : [ convert_from_extras, not_empty],
                                     'format' : [not_empty, unicode],
@@ -293,6 +298,9 @@ class EDC_WebServiceForm(edc_form.EDC_DatasetForm):
         c.record_type = 'WebService'
 
     def _update_webservice_schema(self, schema):
+        schema.update({
+                        'download_audience' : [not_empty, convert_to_extras]
+        })
         schema['resources'].update({
                                     'url': [not_empty, unicode, remove_whitespace, check_extension],
                                     'format' : [not_empty, unicode]
@@ -311,6 +319,9 @@ class EDC_WebServiceForm(edc_form.EDC_DatasetForm):
 
     def show_package_schema(self):
         schema = super(EDC_WebServiceForm, self).show_package_schema()
+        schema.update({
+            'download_audience': [convert_from_extras, not_empty]
+        })
         schema['resources'].update({
                                     'url': [not_empty, unicode, remove_whitespace, check_extension],
                                     'format' : [not_empty, unicode]
