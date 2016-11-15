@@ -34,13 +34,13 @@ this.ckan.module('ofi_lookup', function($, _) {
       if (success) {
         if (content instanceof Object) {
           var prompt;
-          if (content['allowed']) {
+          //if (content['allowed']) {
             prompt = '<div>Object is avaiable, would you like to add all the resource links?</div>';
-            this.$('#add-resources').click(this._addResources);
-          } else {
-            prompt = '<div>Object is not avaiable, please contact your administrator.</div>';
-            this.$('#add-resources').remove();
-          }
+            this.$('#add-resources').click(this._getResourceForm);
+          //} else {
+          //  prompt = '<div>Object is not avaiable, please contact your administrator.</div>';
+          //  this.$('#add-resources').remove();
+          //}
           this._showResults(prompt);
         } 
       } else {
@@ -52,9 +52,31 @@ this.ckan.module('ofi_lookup', function($, _) {
         modal.modal('show');
       }
     },
-    _addResources: function(event) {
+    _getResourceForm: function(event) {
       event.preventDefault();
-      console.log(this.options.ofi_populate_dataset);
+
+      self._toggleSpinner(true);
+
+      $.ajax({
+        'url': self.options.ofi_geo_resource_form_url,
+        'method': 'POST',
+        'data': JSON.stringify({
+          'pkg_id': self.options.package_id,
+          'object_name': self.options.object_name
+        }),
+        'contentType': 'application/json; charset=utf-8',
+        'dataType': 'html',
+        'success': function(data, status) {
+          //self._resizeModal();
+
+          self._showResults(data);
+
+          console.log(ofi_form);
+        },
+        'error': function() {
+
+        }
+      });
     },
     _toggleSpinner: function(on_off) {
       // TODO: Adjust spinner location
@@ -67,6 +89,13 @@ this.ckan.module('ofi_lookup', function($, _) {
       content_body.html(data);
 
       this._toggleSpinner(false); // turn off
+    },
+    _resizeModal: function(pos) {
+      if (pos.width)
+        modal.style.width = pos.width;
+
+      if (pos.height)
+        modal.style.height = pos.height;
     },
     teardown: function() {
 

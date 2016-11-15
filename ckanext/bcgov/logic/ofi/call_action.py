@@ -9,7 +9,7 @@ from pprint import pprint, pformat
 
 import requests as reqs
 
-import ckan.logic as logic
+import ckan.plugins.toolkit as toolkit
 
 import ckanext.bcgov.logic.ofi as ofi_logic
 import ckanext.bcgov.util.helpers as edc_h
@@ -18,7 +18,7 @@ import ckanext.bcgov.util.helpers as edc_h
 log = logging.getLogger(u'ckanext.bcgov.logic.ofi')
 
 
-@logic.side_effect_free
+@toolkit.side_effect_free
 @ofi_logic.setup_ofi_action(u'/info/fileFormats')
 def file_formats(ofi_resp, ofi_vars):
     '''
@@ -28,12 +28,17 @@ def file_formats(ofi_resp, ofi_vars):
     return ofi_resp.json()
 
 
-@logic.side_effect_free
+def geo_resource_form(context, data):
+    return toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=data)
+
+
 def populate_dataset_with_ofi(context, data):
+    pprint(context)
+    pprint(data)
     return {'good': True}
 
 
-@logic.side_effect_free
+@toolkit.side_effect_free
 @ofi_logic.setup_ofi_action(u'/security/productAllowedByFeatureType/')
 def check_object_name(ofi_resp, ofi_vars):
     '''

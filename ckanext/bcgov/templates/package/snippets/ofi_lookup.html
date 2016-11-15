@@ -8,13 +8,16 @@
 <div id="ofi-results" class="modal hide fade" tabindex="-1" role="dialog"
   data-module="ofi_lookup"
   data-module-ofi_results="{{ h.dump_json(ofi) }}"
-  data-module-ofi_populate_dataset="{{ h.url_for('ofi api', call_action='populate_dataset') }}"
+  data-module-package_id="{{ pkg_id }}"
+  data-module-object_name="{{ pkg_obj_name }}"
+  data-module-ofi_geo_resource_form_url="{{ h.url_for('ofi api', call_action='geo_resource_form') }}"
+  data-module-ofi_populate_dataset_url="{{ h.url_for('ofi api', call_action='populate_dataset') }}"
 >
 
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3>OFI Service</h3>
-    <h4>Checking Availability</h4>
+    <h4 id="modal-subtitle">Checking Availability</h4>
   </div>
 
   <div class="modal-body">

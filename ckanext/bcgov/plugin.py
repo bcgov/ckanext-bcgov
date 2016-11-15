@@ -346,7 +346,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     def get_actions(self):
         import ckanext.bcgov.logic.action as edc_action
-        import ckanext.bcgov.logic.ofi.call_action as ofi
+        from ckanext.bcgov.logic.ofi import call_action as ofi
         return {
             'edc_package_update': edc_action.edc_package_update,
             'edc_package_update_bcgw': edc_action.edc_package_update_bcgw,
@@ -354,13 +354,19 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'package_autocomplete': edc_action.package_autocomplete,
             'check_object_name': ofi.check_object_name,
             'file_formats': ofi.file_formats,
-            'populate_dataset': ofi.populate_dataset_with_ofi
+            'populate_dataset': ofi.populate_dataset_with_ofi,
+            'geo_resource_form': ofi.geo_resource_form
         }
 
     def get_auth_functions(self):
         from ckanext.bcgov.logic.auth import create as edc_auth_create
+        from ckanext.bcgov.logic.auth.ofi import call_action as ofi
         return {
-            'package_create': edc_auth_create.package_create
+            'package_create': edc_auth_create.package_create,
+            'check_object_name': ofi.check_object_name,
+            'file_formats': ofi.file_formats,
+            'populate_dataset': ofi.populate_dataset_with_ofi,
+            'geo_resource_form': ofi.geo_resource_form
         }
 
 
