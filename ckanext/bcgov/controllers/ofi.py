@@ -59,14 +59,10 @@ class EDCOfiController(ApiController):
 
             query_params = self._get_request_data(side_effect_free)
 
-            object_name = query_params.get('object_name', '')
-            secure = query_params.get('secure', False)
-            pkg_id = query_params.get('pkg_id', '')
-
             data.update({
-                'id': pkg_id,
-                'object_name': object_name,
-                'secure': secure
+                u'package_id': query_params.get(u'package_id', ''),
+                u'object_name': query_params.get(u'object_name', ''),
+                u'secure': query_params.get(u'secure', False)
             })
         except toolkit.NotAuthorized, e:
             return self._finish_not_authz(_('Not authorized to call %s') % call_action)
@@ -77,7 +73,17 @@ class EDCOfiController(ApiController):
         log.debug(u'OFI api context:\n %s\n', pformat(context))
 
         if call_action == 'populate_dataset':
-            return self._finish_ok(action_func(context, data))
+            data.update({
+                u'ofi_resource_info': query_params.get(u'ofi_resource_info', {})
+            })
+
+            populate_results = action_func(context, data)
+
+            if 'error' in populate_results and populate_results['error']:
+                return self._finish(400, populate_results, 'json')
+
+            return self._finish_ok(populate_results)
+
         if call_action == 'geo_resource_form':
             return action_func(context, data)
         elif call_action == 'file_formats':

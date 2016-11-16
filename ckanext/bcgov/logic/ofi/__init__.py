@@ -17,7 +17,7 @@ import ckanext.bcgov.util.helpers as edc_h
 log = logging.getLogger(u'ckanext.bcgov.logic.ofi')
 
 
-def setup_ofi_action(api_url):
+def setup_ofi_action(api_url=None):
     '''
     Decorator for call_action functions, macro for setting up all the vars for ofi call
     '''
@@ -30,16 +30,20 @@ def setup_ofi_action(api_url):
             if 'secure' not in data:
                 data[u'secure'] = False
 
-            ofi_vars = _prepare(data[u'secure'])
+            data.update(_prepare(data[u'secure']))
 
-            if 'object_name' in data:
-                url = ofi_vars[u'ofi_url'] + api_url + data[u'object_name']
+            if api_url is not None:
+                if not api_url.endswith(u'/'):
+                    url = data[u'ofi_url'] + api_url
+                elif 'object_name' in data:
+                    url = data[u'ofi_url'] + api_url + data[u'object_name']
+
+                call_type = u'Secure' if data[u'secure'] else u'Public'  # call_type is for logging purposes
+                ofi_resp = _make_api_call(url, call_type=call_type, cookies=data[u'cookies'])
             else:
-                url = ofi_vars[u'ofi_url'] + api_url
+                ofi_resp = {}
 
-            call_type = 'Secure' if data[u'secure'] else 'Public'  # call_type is for logging purposes
-            ofi_resp = _make_api_call(url, call_type=call_type, cookies=ofi_vars[u'cookies'])
-            return action(ofi_resp, ofi_vars)
+            return action(context, data, ofi_resp)
 
         return wrapper
     return action_decorator

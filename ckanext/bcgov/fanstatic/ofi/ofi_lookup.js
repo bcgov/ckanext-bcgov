@@ -10,17 +10,23 @@
 "use strict";
 
 this.ckan.module('ofi_lookup', function($, _) {
-  var self, modal, ofi_form, content_body, spinner;
+  var self, modal, modal_subtitle, ofi_form, content_body, modal_controls, spinner;
 
   return {
     options: {
       // defaults
     },
     initialize: function() {
+      if (!this.options.object_name) {
+        return;
+      }
+
       self = this;
       modal = this.el;
+      modal_subtitle = this.$('#modal-subtitle');
       ofi_form = this.$('#ofi-lookup-form');
       content_body = this.$('#resources');
+      modal_controls = this.$('.modal-footer');
       spinner = this.$('#loading');
 
       this._toggleSpinner(true);
@@ -35,8 +41,8 @@ this.ckan.module('ofi_lookup', function($, _) {
         if (content instanceof Object) {
           var prompt;
           //if (content['allowed']) {
-            prompt = '<div>Object is avaiable, would you like to add all the resource links?</div>';
-            this.$('#add-resources').click(this._getResourceForm);
+            prompt = '<h4 style="text-align:center;">Object is avaiable, would you like to add all the resource links?</h4>';
+            modal_controls.find('#ofi-confirm').on('click',this._getResourceForm);
           //} else {
           //  prompt = '<div>Object is not avaiable, please contact your administrator.</div>';
           //  this.$('#add-resources').remove();
@@ -54,27 +60,58 @@ this.ckan.module('ofi_lookup', function($, _) {
     },
     _getResourceForm: function(event) {
       event.preventDefault();
-
       self._toggleSpinner(true);
 
       $.ajax({
         'url': self.options.ofi_geo_resource_form_url,
         'method': 'POST',
         'data': JSON.stringify({
-          'pkg_id': self.options.package_id,
+          'package_id': self.options.package_id,
           'object_name': self.options.object_name
         }),
         'contentType': 'application/json; charset=utf-8',
         'dataType': 'html',
         'success': function(data, status) {
-          //self._resizeModal();
-
           self._showResults(data);
+          modal_controls.find('#ofi-confirm')
+            .off('click', self._getResourceForm)
+            .on('click', self._createResources)
+            .text('Submit');
+          modal_subtitle.text('Add OFI Resources');
 
-          console.log(ofi_form);
+          self.$("#ofi-field-data_collection_start_date").datepicker({ dateFormat: "yy-mm-dd", showOtherMonths: true, selectOtherMonths: true });
+          self.$("#ofi-field-data_collection_end_date").datepicker({ dateFormat: "yy-mm-dd", showOtherMonths: true, selectOtherMonths: true });
         },
         'error': function() {
 
+        }
+      });
+    },
+    _createResources: function(event) {
+      event.preventDefault();
+      self._toggleSpinner(true);
+
+      // makes a plain obj from the form
+      var form_as_obj = ofi_form.serializeArray()
+        .reduce(function(a, x) { a[x.name] = x.value; return a; }, {});
+
+      $.ajax({
+        'url': self.options.ofi_populate_dataset_url,
+        'method': 'POST',
+        'data': JSON.stringify({
+          'package_id': self.options.package_id,
+          'object_name': self.options.object_name,
+          'secure': true,
+          'ofi_resource_info': form_as_obj
+        }),
+        'contentType': 'application/json; charset=utf-8',
+        'success': function(data,status) {
+          console.log('todo');
+          console.log(data);
+        },
+        'error': function(jqXHR, textStatus, errorThrown) {
+          console.log('error todo');
+          console.log(jqXHR);
         }
       });
     },
@@ -82,8 +119,8 @@ this.ckan.module('ofi_lookup', function($, _) {
       // TODO: Adjust spinner location
       //       Disable 'Add' in modal when spinner is enabled
       //       Include a 'Cancel' button for the api call
-      content_body.toggleClass('hidden', on_off);
-      spinner.toggleClass('enable', on_off);
+      //content_body.toggleClass('hidden', on_off);
+      spinner.toggleClass('enable', on_off);      
     },
     _showResults: function(data) {
       content_body.html(data);
