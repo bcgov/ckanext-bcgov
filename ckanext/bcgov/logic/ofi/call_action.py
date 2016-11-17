@@ -36,6 +36,9 @@ def file_formats(context, ofi_vars, ofi_resp):
 
 
 def geo_resource_form(context, data):
+    '''
+    TODO
+    '''
     # Note: need to remove object_name because the decorator handles object_name if present
     #       and appends the object_name on the url, which in this case for fileFormats, is
     #       not required at this point in time
@@ -49,6 +52,9 @@ def geo_resource_form(context, data):
 
 @ofi_logic.setup_ofi_action()
 def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
+    '''
+    TODO
+    '''
     results = {}
 
     if 'ofi_resource_info' not in ofi_vars:
@@ -59,16 +65,17 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
         })
         return results
 
+    # TODO: check incoming resource cycle, send form template back with error
+
     resource_meta = {
+        u'package_id': ofi_vars[u'package_id'],
         u'resource_storage_access_method': u'Indirect Access',
         u'resource_storage_location': u'BCGW DataStore',
         u'projection_name': u'EPSG_3005 - NAD83 BC Albers',
-        u'edc_resource_type': u'Data'
+        u'edc_resource_type': u'Data',
+        u'ofi': True,
     }
     resource_meta.update(ofi_vars[u'ofi_resource_info'])
-    resource_meta.update({
-        'package_id': ofi_vars[u'package_id']
-    })
 
     file_formats = toolkit.get_action(u'file_formats')(context, ofi_vars)
 
@@ -81,8 +88,9 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
     failed_resources = []
     error = False
 
-    base_url = config.get('ckan.site_url');
+    base_url = config.get('ckan.site_url')
 
+    # Try to add all avaliable OFI formats
     for file_format in file_formats:
         resource_meta.update({
             u'name':  base_name + file_format[u'formatname'],

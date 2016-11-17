@@ -9,7 +9,7 @@
   data-module="ofi_lookup"
   data-module-ofi_results="{{ h.dump_json(ofi) }}"
   data-module-package_id="{{ pkg_id }}"
-  data-module-object_name="{{ pkg_obj_name }}"
+  data-module-object_name="{{ pkg_obj_name or false }}"
   data-module-ofi_geo_resource_form_url="{{ h.url_for('ofi api', call_action='geo_resource_form') }}"
   data-module-ofi_populate_dataset_url="{{ h.url_for('ofi api', call_action='populate_dataset') }}"
 >
