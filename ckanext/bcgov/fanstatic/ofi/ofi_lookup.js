@@ -40,13 +40,13 @@ this.ckan.module('ofi_lookup', function($, _) {
       if (success) {
         if (content instanceof Object) {
           var prompt;
-          //if (content['allowed']) {
+          if (content['allowed']) {
             prompt = '<h4 style="text-align:center;">Object is avaiable, would you like to add all the resource links?</h4>';
             modal_controls.find('#ofi-confirm').on('click',this._getResourceForm);
-          //} else {
-          //  prompt = '<div>Object is not avaiable, please contact your administrator.</div>';
-          //  this.$('#add-resources').remove();
-          //}
+          } else {
+            prompt = '<div>Object is not avaiable, please contact your administrator.</div>';
+            this.$('#add-resources').remove();
+          }
           this._showResults(prompt);
         } 
       } else {
@@ -90,6 +90,7 @@ this.ckan.module('ofi_lookup', function($, _) {
     _createResources: function(event) {
       event.preventDefault();
       self._toggleSpinner(true);
+      modal_subtitle.text('Popluating Dataset');
 
       // makes a plain obj from the form
       var form_as_obj = ofi_form.serializeArray()
@@ -106,12 +107,15 @@ this.ckan.module('ofi_lookup', function($, _) {
         }),
         'contentType': 'application/json; charset=utf-8',
         'success': function(data,status) {
-          console.log('todo');
-          console.log(data);
+          self._showResults(data);
+          modal_controls.find('#ofi-confirm')
+            .off('click', self._createResources)
+            .text('Finish');
+          self._toggleSpinner(false);
         },
         'error': function(jqXHR, textStatus, errorThrown) {
-          console.log('error todo');
-          console.log(jqXHR);
+          console.log(jqXHR.responseText);
+          self._toggleSpinner(false);
         }
       });
     },

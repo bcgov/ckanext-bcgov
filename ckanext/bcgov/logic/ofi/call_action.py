@@ -32,7 +32,6 @@ def geo_resource_form(context, data):
     # Note: need to remove object_name because the decorator handles object_name if present
     #       and appends the object_name on the url, which in this case for fileFormats, is
     #       not required at this point in time
-    data.pop(u'object_name', None)
     file_formats = toolkit.get_action(u'file_formats')(context, data)
     data.update({
         u'file_formats': file_formats
@@ -43,8 +42,6 @@ def geo_resource_form(context, data):
 
 @ofi_logic.setup_ofi_action()
 def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
-    pprint(ofi_vars)
-
     results = {}
 
     if 'ofi_resource_info' not in ofi_vars:
@@ -59,17 +56,14 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
         u'resource_storage_access_method': u'Indirect Access',
         u'resource_storage_location': u'BCGW DataStore',
         u'projection_name': u'EPSG_3005 - NAD83 BC Albers',
-        u'resource_type': u'data'
+        u'edc_resource_type': u'Data'
     }
     resource_meta.update(ofi_vars[u'ofi_resource_info'])
     resource_meta.update({
         'package_id': ofi_vars[u'package_id']
     })
 
-    secure = ofi_vars[u'secure']
-    ofi_vars[u'secure'] = False  # just for this one call
     file_formats = toolkit.get_action(u'file_formats')(context, ofi_vars)
-    ofi_vars[u'secure'] = secure
 
     pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
 
@@ -85,7 +79,6 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
             u'name':  base_name + file_format[u'formatname'],
             u'url': u'test-url-for-testing',
             u'format': file_format[u'formatname'],
-            u'edc_resource_type': file_format[u'formatname'],
         })
         try:
             resource = toolkit.get_action(u'resource_create')(context, resource_meta)

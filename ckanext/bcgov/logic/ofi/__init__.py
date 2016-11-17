@@ -30,8 +30,13 @@ def setup_ofi_action(api_url=None):
             if 'secure' not in data:
                 data[u'secure'] = False
 
-            data.update(_prepare(data[u'secure']))
+            # this api call doesn't need to be the secure url
+            if action.__name__ == 'file_formats':
+                data.update(_prepare(False))
+            else:
+                data.update(_prepare(data[u'secure']))
 
+            # allows the decorator to be used for just getting query params, cookies, etc.
             if api_url is not None:
                 if not api_url.endswith(u'/'):
                     url = data[u'ofi_url'] + api_url

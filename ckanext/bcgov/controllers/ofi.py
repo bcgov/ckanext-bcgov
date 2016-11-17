@@ -80,11 +80,11 @@ class EDCOfiController(ApiController):
             populate_results = action_func(context, data)
 
             if 'error' in populate_results and populate_results['error']:
-                return self._finish(400, populate_results, 'json')
+                return toolkit.render('ofi/snippets/populate_failed.html', extra_vars=populate_results)
 
-            return self._finish_ok(populate_results)
+            return toolkit.render('ofi/snippets/populate_success.html', extra_vars=populate_results)
 
-        if call_action == 'geo_resource_form':
+        elif call_action == 'geo_resource_form':
             return action_func(context, data)
         elif call_action == 'file_formats':
             return self._finish_ok(action_func(context, {}))
