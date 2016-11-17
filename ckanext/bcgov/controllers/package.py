@@ -353,9 +353,10 @@ class EDCPackageController(PackageController):
             # TODO need to test no object_name in dataset before deploying to cad
             if 'object_name' in pkg_dict:
                 object_name = pkg_dict.get('object_name')
+                # TODO figure out the mechanism for turning on secure calls for ofi
                 ofi_data = {
                     u'object_name': object_name,
-                    u'secure': False,
+                    u'secure': True,
                     u'open_modal': True
                 }
 

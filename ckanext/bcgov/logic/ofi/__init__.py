@@ -30,7 +30,7 @@ def setup_ofi_action(api_url=None):
             if 'secure' not in data:
                 data[u'secure'] = False
 
-            # this api call doesn't need to be the secure url
+            # this action call doesn't need to be the secure url
             if action.__name__ == 'file_formats':
                 data.update(_prepare(False))
             else:
