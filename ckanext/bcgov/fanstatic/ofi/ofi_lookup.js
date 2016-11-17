@@ -45,7 +45,7 @@ this.ckan.module('ofi_lookup', function($, _) {
             modal_controls.find('#ofi-confirm').on('click',this._getResourceForm);
           } else {
             prompt = '<div>Object is not avaiable, please contact your administrator.</div>';
-            modal_controls.find('#ofi-confirm').remove();
+            this.$('#add-resources').remove();
           }
           this._showResults(prompt);
         } 

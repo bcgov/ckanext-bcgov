@@ -355,7 +355,7 @@ class EDCPackageController(PackageController):
                 object_name = pkg_dict.get('object_name')
                 ofi_data = {
                     u'object_name': object_name,
-                    u'secure': False,
+                    u'secure': True,
                     u'open_modal': True
                 }
 
