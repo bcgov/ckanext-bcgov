@@ -123,7 +123,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         org_controller = 'ckanext.bcgov.controllers.organization:EDCOrganizationController'
         site_map_controller = 'ckanext.bcgov.controllers.site_map:GsaSitemapController'
         api_controller = 'ckanext.bcgov.controllers.api:EDCApiController'
-        # ofi_controller = 'ckanext.bcgov.controllers.ofi:EDCOfiController'
+        ofi_controller = 'ckanext.bcgov.controllers.ofi:EDCOfiController'
 
         GET_POST = dict(method=['GET', 'POST'])
 
@@ -210,7 +210,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('/i18n/{lang}', action='i18n_js_translations')
             m.connect('/')
 
-        # map.connect('ofi api', '/api/ofi/{call_action}', controller=ofi_controller, action='ofi', conditions=GET_POST)
+        map.connect('ofi api', '/api/ofi/{call_action}', controller=ofi_controller, action='action', conditions=GET_POST)
+        map.connect('ofi resource', '/api/ofi/{format}/{object_name}', action='action')
 
         m.connect('/action/organization_list_related', action='organization_list_related', conditions=GET_POST)
         m.connect('/action/{logic_function}', action='action', conditions=GET_POST)
@@ -346,15 +347,27 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     def get_actions(self):
         import ckanext.bcgov.logic.action as edc_action
-        return {'edc_package_update' : edc_action.edc_package_update,
-                'edc_package_update_bcgw' : edc_action.edc_package_update_bcgw,
-                'package_update' : edc_action.package_update,
-                'package_autocomplete' : edc_action.package_autocomplete }
+        from ckanext.bcgov.logic.ofi import call_action as ofi
+        return {
+            'edc_package_update': edc_action.edc_package_update,
+            'edc_package_update_bcgw': edc_action.edc_package_update_bcgw,
+            'package_update': edc_action.package_update,
+            'package_autocomplete': edc_action.package_autocomplete,
+            'check_object_name': ofi.check_object_name,
+            'file_formats': ofi.file_formats,
+            'populate_dataset': ofi.populate_dataset_with_ofi,
+            'geo_resource_form': ofi.geo_resource_form
+        }
 
     def get_auth_functions(self):
         from ckanext.bcgov.logic.auth import create as edc_auth_create
+        from ckanext.bcgov.logic.auth.ofi import call_action as ofi
         return {
-            'package_create': edc_auth_create.package_create
+            'package_create': edc_auth_create.package_create,
+            'check_object_name': ofi.check_object_name,
+            'file_formats': ofi.file_formats,
+            'populate_dataset': ofi.populate_dataset_with_ofi,
+            'geo_resource_form': ofi.geo_resource_form
         }
 
 

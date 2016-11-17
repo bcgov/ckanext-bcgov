@@ -1,54 +1,31 @@
-{% set object_name = pkg_dict.object_name %}
+{% set ofi = data.ofi %}
 
 {# button for modal is in snippets/resource_form.html #}
 {#<a href="#ofi-results" role="button" class="btn btn-primary" data-toggle="modal">View OFI Results</a>#}
-
-{% set ofi_config = h.get_ofi_config() %}
 
 {# TODO: deal with bcgov.ofi.enable = false #}
 
 <div id="ofi-results" class="modal hide fade" tabindex="-1" role="dialog"
   data-module="ofi_lookup"
-  data-module-object_name="{{ object_name }}"
-  data-module-protocol="{{ ofi_config['protocol'] or 'https' }}"
-  data-module-hostname="{{ ofi_config['hostname'] or 'delivery.apps.gov.bc.ca' }}"
-  {# data-module-port="{{ ofi_config['port'] or '' }}" #}
-  data-module-order_path="{{ ofi_config['order_path'] or '/pub/dwds-ofi/' }}"
-  data-module-order_secure_path="{{ ofi_config['order_secure_path'] or '/pub/dwds-ofi/secure/' }}">
+  data-module-ofi_results="{{ h.dump_json(ofi) }}"
+  data-module-package_id="{{ pkg_id }}"
+  data-module-object_name="{{ pkg_obj_name }}"
+  data-module-ofi_geo_resource_form_url="{{ h.url_for('ofi api', call_action='geo_resource_form') }}"
+  data-module-ofi_populate_dataset_url="{{ h.url_for('ofi api', call_action='populate_dataset') }}"
+>
 
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3>OFI Testing</h3>
-    <h4>Prototype</h4>
+    <h3>Manage OFI Resources</h3>
+    <h4 id="modal-subtitle">Checking Availability</h4>
   </div>
 
   <div class="modal-body">
     <form id="ofi-lookup-form" class="form-horizontal">
-      <div class="control-group">
-        <label for="object-name" class="control-label">{{ _('Object Name') }}</label>
-        <div class="controls">
-          <input id="object-name" type="text" name="object_name" value="{{ object_name }}" required />
-        </div>
-        <div class="controls">
-          <label class="checkbox inline">
-            <input id="secure" type="checkbox" name="secure" checked />
-            {{ _('Secure')}}
-          </label>
-          <label class="checkbox inline">
-            <input id="include-creds" type="checkbox" name="include_creds" checked />
-            {{ _('Credentials')}}
-          </label>
-        </div>
-      </div>
-
-      <div class="form-actions">
-        <button id="search-object" type="submit" for="ofi-lookup-form" class="btn btn-primary" data-loading-text="Searching...">Search</button>
+      <div id="resources">
+      
       </div>
     </form>
-
-    <div id="resources">
-
-    </div>
 
     {# TODO: stop animation when not visible #}
     <div id="loading" class="overlay-wrap">
@@ -58,7 +35,7 @@
 
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button id="add-resource" class="btn btn-primary">Add</button>
+    <button id="ofi-confirm" class="btn btn-primary">Yes</button>
   </div>
 </div>
 

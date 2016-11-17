@@ -1,0 +1,9 @@
+<div>
+	<h3>Failed</h3>
+	<h4>Failed Resources</h4>
+	<ul>
+		{% for resource in failed_resources %}
+			<li>{{ resource['resource']['name'] }} - {{ resource['error_msg'] }}</li>
+		{% endfor %}
+	</ul>
+</div>

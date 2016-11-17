@@ -1,0 +1,60 @@
+{% import 'macros/form.html' as form %}
+
+{% set errors = errors or {} %}
+
+<!--Snippet ofi/snippets/geo_resource_form.html start -->
+<div class="control-group control-full">
+	<label class="control-label">{{ _("Formats Aval.") }}</label>
+	<div>
+		{% for format in file_formats %}
+			{{ format.formatname }}
+		{% endfor %}
+	</div>
+</div>
+
+{{ form.markdown('description', id='field-description', label=_('Resource Description'), placeholder=_('Some useful notes about the data'), value='', error=errors.description) }}
+
+{% set update_cycle_error = errors.resource_update_cycle %}
+<div class="required control-group control-full{{ " error" if update_cycle_error }}">
+    <label class="control-label" for="field-update_cycle"><span class="control-required">*</span> {{ _("Resource Update Cycle") }}</label>
+    <div class="controls">
+    	{% set update_cycle_list = h.edc_tags(_('resource_update_cycle')) %}
+    	{% set current_update_cycle = '' %}
+    	<select id="field-update_cycle" name="resource_update_cycle" data-module="autocomplete" onchange="javascript:check_resource_stat();" class="required">
+        	<option value = '' {% if not selected_update_cycle %} selected="selected" {% endif %} disabled>Select an update cycle</option>
+           	{% for update_cycle in update_cycle_list %}
+            	{% set selected_update_cycle = (current_update_cycle and current_update_cycle == update_cycle) %}
+                <option value="{{ update_cycle }}"
+                	{% if selected_update_cycle %} selected="selected" {% endif %}>
+                    {{ update_cycle }}
+                </option>
+            {% endfor %}
+        </select>
+        {% if update_cycle_error and update_cycle_error is iterable %}
+            <span class="error-block">{{ update_cycle_error|join(', ') }}</span>
+        {% endif %}
+    </div>
+</div>
+
+{{ form.markdown('supplemental_info', id='field-supplemental_info', label=_('Supplemental information'), placeholder=_('Other descriptive information about the dataset'), value='', error=errors.supplemental_info) }}
+
+<h4 class="module-sub-heading">Temporal Extent</h4>
+<div class="control-list">
+	{{ form.input('data_collection_start_date',
+				label=_("Beginning Date"),
+				id='ofi-field-data_collection_start_date',
+				placeholder=_('YYYY-MM-DD'),
+				value='',
+				error=errors.data_collection_start_date,
+				classes=['control-medium']) }}
+
+	{{ form.input('data_collection_end_date',
+				label=_("End Date"),
+				id='ofi-field-data_collection_end_date',
+				placeholder=_('YYYY-MM-DD'),
+				value='',
+				error=errors.data_collection_end_date,
+				classes=['control-medium']) }}
+</div>
+
+<!--Snippet ofi/snippets/geo_resource_form.html end -->

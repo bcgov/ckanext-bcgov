@@ -1,0 +1,9 @@
+<div>
+	<h3>Success</h3>
+	<h4>Resources Added:</h4>
+	<ul>
+		{% for resource in added_resources %}
+			<li>{{ resource['name'] }}</li>
+		{% endfor %}
+	</ul>
+</div>

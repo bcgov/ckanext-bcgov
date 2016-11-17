@@ -469,6 +469,7 @@ def size_or_link(upload, size):
     else:
         return ''
 
+
 def get_ofi_config():
     '''
     Returns a dict with all configuration options related to the
@@ -477,4 +478,26 @@ def get_ofi_config():
     namespace = 'bcgov.ofi.'
     return dict([(k.replace(namespace, ''), v) for k, v in config.iteritems()
                  if k.startswith(namespace)])
-    
+
+
+def _build_ofi_url(secure=False):
+    '''
+    TODO
+    '''
+    import urlparse
+    ofi_config = get_ofi_config()
+    protocol = ofi_config.get(u'api.protocol', 'https')
+    domain = ofi_config.get(u'api.hostname', 'delivery.apps.gov.bc.ca')
+    port = ofi_config.get(u'api.port', '')
+
+    if port != '':
+        domain = u'{}:{}'.format(domain, port)
+
+    if secure:
+        order_path = ofi_config.get(u'api.order_secure_path', '/pub/dwds-ofi/secure')
+    else:
+        order_path = ofi_config.get(u'api.order_path', '/pub/dwds-ofi')
+
+    url = urlparse.urlunparse((protocol, domain, order_path, '', '', ''))
+    log.debug(u'OFI base API URL: %s', url)
+    return url

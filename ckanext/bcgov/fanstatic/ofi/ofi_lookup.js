@@ -2,127 +2,141 @@
  * DataBC CITZ EDC
  *
  * HighwayThree Solutions Inc.
- * Author: Jared Smith <github@jrods>
+ * Author: Jared Smith <jrods@github>
  *
+ * OFI Modal Controller
  *
- * OFI Prototype
- *
- * config options:
- *   bcgov.ofi.protocol          - The protocol to use eg. 'https' or 'http'
- *   bcgov.ofi.hostname          - Specifies the host to call for OFI
- *   bcgov.ofi.port              - Specify the port to use
- *   bcgov.ofi.order_path        - Specify the order path for OFI
- *   bcgov.ofi.order_secure_path - Specify the secure order path
 **/
 "use strict";
 
 this.ckan.module('ofi_lookup', function($, _) {
-  var self, modal, ofi_form, resources_show, spinner, object_name;
+  var self, modal, modal_subtitle, ofi_form, content_body, modal_controls, spinner;
 
   return {
     options: {
       // defaults
-      protocol: 'https',
-      hostname: 'delivery.apps.gov.bc.ca',
-      port: '',
-      order_path: '/pub/dwds-ofi/',
-      order_secure_path: '/pub/dwds-ofi/secure/',
     },
     initialize: function() {
+      if (!this.options.object_name) {
+        return;
+      }
+
       self = this;
       modal = this.el;
+      modal_subtitle = this.$('#modal-subtitle');
       ofi_form = this.$('#ofi-lookup-form');
-      resources_show = this.$('#resources');
+      content_body = this.$('#resources');
+      modal_controls = this.$('.modal-footer');
       spinner = this.$('#loading');
-      object_name = this.options.object_name;
 
-      // when the page refreshes, object_name go back to what's specified in the package
-      this.$('#object-name').val(object_name);
-      this.$('#add-resource').on('click', this._copyResourceToForm);
-      ofi_form.submit(this.searchForObject);
+      this._toggleSpinner(true);
 
-      if (object_name) {
-        this._callOFIService("security/productAllowedByFeatureType/" + object_name, true, true);
-        modal.modal('show');
+      console.log(this.options);
+
+      var open_modal = this.options.ofi_results.open_modal;
+      var success = this.options.ofi_results.success;
+      var content = this.options.ofi_results.content;
+
+      if (success) {
+        if (content instanceof Object) {
+          var prompt;
+          if (content['allowed']) {
+            prompt = '<h4 style="text-align:center;">Object is avaiable, would you like to add all the resource links?</h4>';
+            modal_controls.find('#ofi-confirm').on('click',this._getResourceForm);
+          } else {
+            prompt = '<div>Object is not avaiable, please contact your administrator.</div>';
+            modal_controls.find('#ofi-confirm').remove();
+          }
+          this._showResults(prompt);
+        } 
       } else {
-        console.log("No object name in package.");
+        this._showResults(content);
+        this.$('#add-resources').remove();
+      }
+
+      if (open_modal) {
+        modal.modal('show');
       }
     },
-    _createURL: function(webService, isSecure) {
-      var o = this.options;
-      return o.protocol + "://"
-              + o.hostname
-              + ((o.port === "" || o.port === undefined) ? "" : ":" + o.port)
-              + ((isSecure) ? o.order_secure_path : o.order_path)
-              + webService;
-    },
-    _copyResourceToForm: function() {
-      console.log("TODO add resource info to the form");
-
-      modal.modal('hide');
-    },
-    searchForObject: function(event) {
+    _getResourceForm: function(event) {
       event.preventDefault();
+      self._toggleSpinner(true);
 
-      console.log('Making secure call:', this.secure.checked);
-      console.log('Including credentials:', this.include_creds.checked);
+      $.ajax({
+        'url': self.options.ofi_geo_resource_form_url,
+        'method': 'POST',
+        'data': JSON.stringify({
+          'package_id': self.options.package_id,
+          'object_name': self.options.object_name
+        }),
+        'contentType': 'application/json; charset=utf-8',
+        'dataType': 'html',
+        'success': function(data, status) {
+          self._showResults(data);
+          modal_controls.find('#ofi-confirm')
+            .off('click', self._getResourceForm)
+            .on('click', self._createResources)
+            .text('Submit');
+          modal_subtitle.text('Add OFI Resources');
 
-      self._callOFIService("security/productAllowedByFeatureType/" + this.object_name.value,
-        this.secure.checked,
-        this.include_creds.checked);
-      modal.modal('show');
+          self.$("#ofi-field-data_collection_start_date").datepicker({ dateFormat: "yy-mm-dd", showOtherMonths: true, selectOtherMonths: true });
+          self.$("#ofi-field-data_collection_end_date").datepicker({ dateFormat: "yy-mm-dd", showOtherMonths: true, selectOtherMonths: true });
+        },
+        'error': function() {
+
+        }
+      });
+    },
+    _createResources: function(event) {
+      event.preventDefault();
+      self._toggleSpinner(true);
+      modal_subtitle.text('Popluating Dataset');
+
+      // makes a plain obj from the form
+      var form_as_obj = ofi_form.serializeArray()
+        .reduce(function(a, x) { a[x.name] = x.value; return a; }, {});
+
+      $.ajax({
+        'url': self.options.ofi_populate_dataset_url,
+        'method': 'POST',
+        'data': JSON.stringify({
+          'package_id': self.options.package_id,
+          'object_name': self.options.object_name,
+          'secure': true,
+          'ofi_resource_info': form_as_obj
+        }),
+        'contentType': 'application/json; charset=utf-8',
+        'success': function(data,status) {
+          self._showResults(data);
+          modal_controls.find('#ofi-confirm')
+            .off('click', self._createResources)
+            .text('Finish');
+          self._toggleSpinner(false);
+        },
+        'error': function(jqXHR, textStatus, errorThrown) {
+          console.log(jqXHR.responseText);
+          self._toggleSpinner(false);
+        }
+      });
     },
     _toggleSpinner: function(on_off) {
       // TODO: Adjust spinner location
       //       Disable 'Add' in modal when spinner is enabled
       //       Include a 'Cancel' button for the api call
-      resources_show.toggleClass('hidden', on_off);
-      spinner.toggleClass('enable', on_off);
-    },
-    _callOFIService: function(service_name, is_secure, include_creds) {
-      var httpRequest = new XMLHttpRequest();
-      var ofi_url = this._createURL(service_name, is_secure);
-
-      httpRequest.timeout = 30000; // ms
-      httpRequest.withCredentials = include_creds;
-
-      httpRequest.onreadystatechange = function () {
-        if (httpRequest.readyState == XMLHttpRequest.OPENED) {
-          console.log('Calling:', ofi_url);
-          self._toggleSpinner(true); // turn on
-        }
-
-        if (httpRequest.readyState == XMLHttpRequest.DONE) {
-          console.log(httpRequest);
-
-          // testing, TODO: use http status codes for error handling
-          if (httpRequest.responseText) {
-            console.log(httpRequest.responseText);
-            var data = JSON.parse(httpRequest.responseText);
-            self._showResults(data);
-          } else {
-            self._showResults(`Please open dev tools, api call did not work.
-              <br /><br />
-              Expecting error:
-              <br />
-              * Cross-Origin Request Blocked -> Reason: CORS header 'Access-Control-Allow-Origin' does not mach '*'
-              `);
-          }
-        }
-      };
-
-      console.log(ofi_url);
-      httpRequest.open('GET', ofi_url, true);
-      httpRequest.setRequestHeader('Accept', '*/*');
-      httpRequest.send();
+      //content_body.toggleClass('hidden', on_off);
+      spinner.toggleClass('enable', on_off);      
     },
     _showResults: function(data) {
-      if (typeof data == 'object') {
-        resources_show.html(object_name + " is " + ( !data['allowed'] ? "not" : "") + " available.");
-      } else {
-        resources_show.html('<div><p>' + data + '</p></div>');
-      }
+      content_body.html(data);
+
       this._toggleSpinner(false); // turn off
+    },
+    _resizeModal: function(pos) {
+      if (pos.width)
+        modal.style.width = pos.width;
+
+      if (pos.height)
+        modal.style.height = pos.height;
     },
     teardown: function() {
 
