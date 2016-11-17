@@ -9,11 +9,18 @@ from pprint import pprint, pformat
 
 import requests as reqs
 
+import ckan.lib.helpers as h
 import ckan.plugins.toolkit as toolkit
 
 import ckanext.bcgov.logic.ofi as ofi_logic
 import ckanext.bcgov.util.helpers as edc_h
 
+try:
+    # CKAN 2.7 and later
+    from ckan.common import config
+except ImportError:
+    # CKAN 2.6 and earlier
+    from pylons import config
 
 log = logging.getLogger(u'ckanext.bcgov.logic.ofi')
 
@@ -74,10 +81,12 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
     failed_resources = []
     error = False
 
+    base_url = config.get('ckan.site_url');
+
     for file_format in file_formats:
         resource_meta.update({
             u'name':  base_name + file_format[u'formatname'],
-            u'url': u'test-url-for-testing',
+            u'url': base_url + h.url_for('ofi resource', format=file_format[u'formatname'], object_name=ofi_vars[u'object_name']),
             u'format': file_format[u'formatname'],
         })
         try:

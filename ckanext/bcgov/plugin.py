@@ -211,6 +211,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('/')
 
         map.connect('ofi api', '/api/ofi/{call_action}', controller=ofi_controller, action='action', conditions=GET_POST)
+        map.connect('ofi resource', '/api/ofi/{format}/{object_name}', action='action')
 
         m.connect('/action/organization_list_related', action='organization_list_related', conditions=GET_POST)
         m.connect('/action/{logic_function}', action='action', conditions=GET_POST)
