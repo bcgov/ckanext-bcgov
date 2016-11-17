@@ -135,6 +135,7 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                                     'resource_storage_location': [ignore_missing, unicode, convert_to_extras],
                                     'data_collection_start_date' : [ignore_missing, valid_date, convert_to_extras ],
                                     'data_collection_end_date' : [ignore_missing, valid_date, convert_to_extras ],
+                                    'ofi': [ignore_missing, bool, convert_to_extras]
                                     })
         return schema
 
@@ -189,7 +190,8 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                                     'resource_storage_location': [convert_from_extras, ignore_missing, unicode],
                                     'data_collection_start_date' : [convert_from_extras, ignore_missing ],
                                     'data_collection_end_date' : [convert_from_extras, ignore_missing ],
-                                    'projection_name' : [convert_from_extras, not_empty ]
+                                    'projection_name' : [convert_from_extras, not_empty ],
+                                    'ofi': [convert_from_extras, ignore_missing, bool]
                                     })
         return schema
 

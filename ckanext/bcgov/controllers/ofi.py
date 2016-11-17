@@ -25,10 +25,6 @@ except ImportError:
 
 # shortcuts
 _ = toolkit._
-# get_action = toolkit.get_action
-# NotAuthorized = logic.NotAuthorized
-# NotFound = logic.NotFound
-# ValidationError = logic.ValidationError
 
 log = logging.getLogger(u'ckanext.bcgov.controllers.ofi')
 
@@ -53,14 +49,16 @@ class EDCOfiController(ApiController):
         data = {}
 
         try:
-            toolkit.check_access(call_action, context, {})
             action_func = toolkit.get_action(call_action)
             side_effect_free = getattr(action_func, 'side_effect_free', False)
 
             query_params = self._get_request_data(side_effect_free)
 
+            pkg_id = query_params.get(u'package_id', '')
+            toolkit.check_access(call_action, context, {u'id': pkg_id})
+
             data.update({
-                u'package_id': query_params.get(u'package_id', ''),
+                u'package_id': pkg_id,
                 u'object_name': query_params.get(u'object_name', ''),
                 u'secure': query_params.get(u'secure', False)
             })
@@ -86,7 +84,9 @@ class EDCOfiController(ApiController):
 
         elif call_action == 'geo_resource_form':
             return action_func(context, data)
+
         elif call_action == 'file_formats':
             return self._finish_ok(action_func(context, {}))
+
         else:
             return base.abort(501, _('TODO in OFI API Controller: %s') % call_action)
