@@ -143,10 +143,11 @@ this.ckan.module('ofi_modal', function($, _) {
       modal_controls.find('#ofi-delete').remove();
     },
     _editOFIResources: function(event) {
-      console.log('edit resources');
+      console.log('todo edit resources');
     },
     _actuallyRemoveResources: function(event) {
-      console.log('removing');
+      self._toggleSpinner(true);
+
       $.ajax({
         'url': self.options.ofi_remove_resources_url,
         'method': 'POST',
@@ -156,9 +157,16 @@ this.ckan.module('ofi_modal', function($, _) {
         }),
         'contentType': 'application/json; charset=utf-8',
         'success': function(data, status) {
-          console.log(data);
+          if(data.success) {
+            self._showResults('<h4>OFI resources have been removed from the dataset.</h4>');
+            modal_controls.find('#ofi-back').remove();
+            modal_controls.find('#ofi-confirm-remove').remove();
+          }
         },
         'error': function(jqXHR, textStatus, errorThrown) {
+          self._showResults('<div>There was an error with removing ofi resources.</div>');
+          modal_controls.find('#ofi-back').remove();
+          modal_controls.find('#ofi-confirm-remove').remove();
           console.log(jqXHR);
         }
       });
