@@ -346,41 +346,44 @@ class EDCPackageController(PackageController):
 
         errors = errors or {}
 
-        # Setup for OFI
-        pkg_dict = get_action('package_show')({}, {'id': id})
+        if request.method == 'GET':
+            # Setup for OFI
+            pkg_dict = get_action('package_show')({}, {'id': id})
 
-        if 'type' in pkg_dict and pkg_dict[u'type'] == 'Geographic':
-            # TODO need to test no object_name in dataset before deploying to cad
-            ofi_resources = []
-            for resource in pkg_dict[u'resources']:
-                if 'ofi' in resource and resource[u'ofi']:
-                    ofi_resources.append(resource)
+            if 'type' in pkg_dict and pkg_dict[u'type'] == 'Geographic':
+                # TODO need to test no object_name in dataset before deploying to cad
+                ofi_resources = []
+                for resource in pkg_dict[u'resources']:
+                    if 'ofi' in resource and resource[u'ofi']:
+                        ofi_resources.append(resource)
 
-            if len(ofi_resources) > 0:
-                ofi_data = {
-                    u'object_name': pkg_dict[u'object_name'],
-                    u'ofi_resources': ofi_resources,
-                    u'ofi_exists': True,
-                    u'secure': True,
-                    u'open_modal': True
-                }
+                if len(ofi_resources) > 0:
+                    ofi_data = {
+                        u'object_name': pkg_dict[u'object_name'],
+                        u'ofi_resources': ofi_resources,
+                        u'ofi_exists': True,
+                        u'secure': True,
+                        u'open_modal': True
+                    }
 
-            elif 'object_name' in pkg_dict and pkg_dict[u'object_name']:
-                # TODO figure out the mechanism for turning on secure calls for ofi
-                ofi_data = {
-                    u'object_name': pkg_dict[u'object_name'],
-                    u'secure': True,
-                    u'open_modal': True
-                }
+                    data[u'ofi'] = ofi_data
 
-                data[u'ofi'] = get_action('check_object_name')({}, ofi_data)
+                elif 'object_name' in pkg_dict and pkg_dict[u'object_name']:
+                    # TODO figure out the mechanism for turning on secure calls for ofi
+                    ofi_data = {
+                        u'object_name': pkg_dict[u'object_name'],
+                        u'secure': False,
+                        u'open_modal': True
+                    }
 
-            else:
-                data[u'ofi'] = {
-                    u'object_name': '',
-                    u'secure': False,
-                    u'open_modal': False
-                }
+                    data[u'ofi'] = get_action('check_object_name')({}, ofi_data)
+
+                else:
+                    data[u'ofi'] = {
+                        u'object_name': '',
+                        u'secure': False,
+                        u'open_modal': False
+                    }
 
         # TODO: This is a workaround for a core ckan issue that can be removed when the issue
         # is resolved https://github.com/ckan/ckan/issues/2650
