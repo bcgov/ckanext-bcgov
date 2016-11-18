@@ -88,5 +88,13 @@ class EDCOfiController(ApiController):
         elif call_action == 'file_formats':
             return self._finish_ok(action_func(context, {}))
 
+        elif call_action == 'remove_ofi_resources':
+            remove_results = action_func(context, data)
+
+            if 'error' in remove_results and remove_results[u'error']:
+                return self._finish_bad_request(_(remove_results[u'error_msg']))
+
+            return self._finish_ok(remove_results)
+
         else:
             return base.abort(501, _('TODO in OFI API Controller: %s') % call_action)

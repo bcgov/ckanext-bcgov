@@ -22,6 +22,10 @@ except ImportError:
     # CKAN 2.6 and earlier
     from pylons import config
 
+# shortcuts
+NotFound = toolkit.ObjectNotFound
+ValidationError = toolkit.ValidationError
+
 log = logging.getLogger(u'ckanext.bcgov.logic.ofi')
 
 
@@ -148,5 +152,37 @@ def check_object_name(context, ofi_vars, ofi_resp):
         u'open_modal': open_modal,
         u'content': content
     }
+
+    return results
+
+
+@ofi_logic.setup_ofi_action()
+def remove_ofi_resources(context, ofi_vars, ofi_resp):
+    '''
+    TODO
+    '''
+    pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
+
+    resources_to_keep = []
+    for resource in pkg_dict[u'resources']:
+        if u'ofi' not in resource or resource[u'ofi'] is False:
+            resources_to_keep.append(resource)
+
+    pkg_dict[u'resources'] = resources_to_keep
+
+    results = {}
+
+    try:
+        package_id = toolkit.get_action(u'package_update')(context, pkg_dict)
+        results.update({
+            u'success': True,
+            u'package_id': package_id
+        })
+    except (NotFound, ValidationError) as e:
+        results.update({
+            u'success': False,
+            u'error': True,
+            u'error_msg': unicode(e)
+        })
 
     return results
