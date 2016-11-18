@@ -25,3 +25,7 @@
 #ofi-results #resources {
   padding: 15px 0;
 }
+#ofi-results #loading .add-data-loader {
+	bottom: calc(50% - 10em);
+	z-index: 100;
+}

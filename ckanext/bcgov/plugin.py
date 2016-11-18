@@ -356,7 +356,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'check_object_name': ofi.check_object_name,
             'file_formats': ofi.file_formats,
             'populate_dataset': ofi.populate_dataset_with_ofi,
-            'geo_resource_form': ofi.geo_resource_form
+            'geo_resource_form': ofi.geo_resource_form,
+            'remove_ofi_resources': ofi.remove_ofi_resources
         }
 
     def get_auth_functions(self):
@@ -367,7 +368,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'check_object_name': ofi.check_object_name,
             'file_formats': ofi.file_formats,
             'populate_dataset': ofi.populate_dataset_with_ofi,
-            'geo_resource_form': ofi.geo_resource_form
+            'geo_resource_form': ofi.geo_resource_form,
+            'remove_ofi_resources': ofi.remove_ofi_resources
         }
 
 
