@@ -7,7 +7,7 @@
 {# TODO: deal with bcgov.ofi.enable = false #}
 
 <div id="ofi-results" class="modal hide fade" tabindex="-1" role="dialog"
-  data-module="ofi_lookup"
+  data-module="ofi_modal"
   data-module-ofi_results="{{ h.dump_json(ofi) }}"
   data-module-package_id="{{ pkg_id }}"
   data-module-object_name="{{ pkg_obj_name or false }}"
@@ -18,13 +18,29 @@
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3>Manage OFI Resources</h3>
-    <h4 id="modal-subtitle">Checking Availability</h4>
+    <h4 id="modal-subtitle">
+    {% if ofi['ofi_exists'] %}
+      Manage
+    {% elif pkg_obj_name == '' %}
+      No Object Name
+    {% else %}
+      Checking Availability
+    {% endif %}
+    </h4>
   </div>
 
   <div class="modal-body">
     <form id="ofi-lookup-form" class="form-horizontal">
       <div id="resources">
-      
+        {% if ofi['ofi_exists'] %}
+          <div>OFI Resources have been already added.</div>
+        {% elif pkg_obj_name == '' %}
+          <div>No 'Object Name' exists for this dataset. Add an 'Object Name' to the dataset, for OFI.</div>
+        {% else %}
+            <h4 style="text-align:center;">Object is avaiable, would you like to add all the resource links?</h4>
+
+            <div>Object is not avaiable, please contact your administrator.</div>
+        {% endif %}
       </div>
     </form>
 
@@ -36,7 +52,14 @@
 
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button id="ofi-confirm" class="btn btn-primary">Yes</button>
+    {% if ofi['ofi_exists'] %}
+      <button id="ofi-delete" class="btn btn-danger pull-left">Delete</button>
+      <button id="ofi-edit" class="btn btn-primary">Edit</button>
+    {% elif pkg_obj_name == '' %} 
+
+    {% else %}
+      <button id="ofi-confirm" class="btn btn-primary">Yes</button>
+    {% endif %}
   </div>
 </div>
 

@@ -9,7 +9,7 @@
 **/
 "use strict";
 
-this.ckan.module('ofi_lookup', function($, _) {
+this.ckan.module('ofi_modal', function($, _) {
   var self, modal, modal_subtitle, ofi_form, content_body, modal_controls, spinner;
 
   return {
@@ -28,9 +28,9 @@ this.ckan.module('ofi_lookup', function($, _) {
       this._toggleSpinner(true);
 
       if (this.options.object_name == 'False') {
-        this._showResults('<div>No \'Object Name\' exists for this dataset. Add an \'Object Name\' to the dataset, for OFI.</div>');
-        modal_subtitle.text('No Object Name');
-        modal_controls.find('#ofi-confirm').remove();
+        //this._showResults('<div>No \'Object Name\' exists for this dataset. Add an \'Object Name\' to the dataset, for OFI.</div>');
+        //modal_subtitle.text('No Object Name');
+        //modal_controls.find('#ofi-confirm').remove();
         return;
       }
 
@@ -43,8 +43,13 @@ this.ckan.module('ofi_lookup', function($, _) {
       if (success) {
         if (content instanceof Object) {
           var prompt;
+          //if (content['allowed']) {
             prompt = '<h4 style="text-align:center;">Object is avaiable, would you like to add all the resource links?</h4>';
             modal_controls.find('#ofi-confirm').on('click',this._getResourceForm);
+          //} else {
+          //  prompt = '<div>Object is not avaiable, please contact your administrator.</div>';
+          //  modal_controls.find('#ofi-confirm').remove();
+          //}
           this._showResults(prompt);
         } 
       } else {
