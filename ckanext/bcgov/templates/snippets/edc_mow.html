@@ -1,0 +1,28 @@
+<div id="edc-mow" class="modal hide fade" tabindex="-1" role="dialog"
+  data-module="edc_mow"
+  data-module-example="{{ true }}"
+>
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>EDC MOW</h3>
+        <h4 id="modal-subtitle">
+        Subtitle
+        </h4>
+    </div>
+
+    <div class="modal-body">
+        <div id="mow-content">Modal Window</div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    </div>
+
+    {# TODO: stop animation when not visible #}
+    <div id="loading" class="overlay-wrap">
+        <div class="add-data-loader">Loading...</div>
+    </div>
+</div>
+
+{% resource 'edc_resource/edc_mow.js' %}
+{% resource 'edc_resource/edc_mow_style.css' %}

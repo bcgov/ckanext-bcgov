@@ -140,4 +140,8 @@
 {% endblock %}
 
 
-{% block secondary_content %}{% endblock %}
+{% block secondary_content %}
+  {% if c.pkg_dict.type == 'Geographic' %}
+    {% snippet 'snippets/edc_mow.html' %}
+  {% endif %}
+{% endblock %}

@@ -65,6 +65,14 @@
         </a>
       </li>
       {% endif %}
+      {% if pkg.type == 'Geographic' %}
+      <li>
+        <a href="#edc-mow" role="button" data-toggle="modal">
+          <i class="icon-download"></i>
+          {{ _('MOW') }}
+        </a>
+      </li>
+      {% endif %}
       {% endblock %}
     </ul>
   </div>
