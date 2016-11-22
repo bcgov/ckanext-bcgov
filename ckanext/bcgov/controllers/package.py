@@ -371,7 +371,7 @@ class EDCPackageController(PackageController):
                     # TODO figure out the mechanism for turning on secure calls for ofi
                     ofi_data = {
                         u'object_name': pkg_dict[u'object_name'],
-                        u'secure': False,
+                        u'secure': True,
                         u'open_modal': True
                     }
 
