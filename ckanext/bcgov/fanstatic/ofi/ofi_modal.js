@@ -81,18 +81,7 @@ this.ckan.module('ofi_modal', function($, _) {
             .text('Submit');
           modal_subtitle.text('Add OFI Resources');
 
-          self.$("#ofi-field-data_collection_start_date")
-            .datepicker({
-              dateFormat: "yy-mm-dd",
-              showOtherMonths: true,
-              selectOtherMonths: true
-            });
-          self.$("#ofi-field-data_collection_end_date")
-            .datepicker({
-              dateFormat: "yy-mm-dd",
-              showOtherMonths: true,
-              selectOtherMonths: true
-            });
+          self._initDatepicker();
         },
         'error': function() {
 
@@ -163,6 +152,7 @@ this.ckan.module('ofi_modal', function($, _) {
             .off('click', self._editOFIResources)
             .text('Update')
             .on('click', self._updateOFIResources);
+          self._initDatepicker();
         },
         'error': function(jqXHR, textStatus, errorThrown) {
           console.log(jqXHR);
@@ -240,6 +230,20 @@ this.ckan.module('ofi_modal', function($, _) {
         .on('click', self._editOFIResources);
 
       modal_controls.append(delete_button);
+    },
+    _initDatepicker: function() {
+      this.$("#ofi-field-data_collection_start_date")
+        .datepicker({
+          dateFormat: "yy-mm-dd",
+          showOtherMonths: true,
+          selectOtherMonths: true
+        });
+      this.$("#ofi-field-data_collection_end_date")
+        .datepicker({
+          dateFormat: "yy-mm-dd",
+          showOtherMonths: true,
+          selectOtherMonths: true
+        });
     },
     _toggleSpinner: function(on_off) {
       // TODO: Include a 'Cancel' button for the api call
