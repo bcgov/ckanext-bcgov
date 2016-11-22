@@ -351,7 +351,6 @@ class EDCPackageController(PackageController):
             pkg_dict = get_action('package_show')({}, {'id': id})
 
             if 'type' in pkg_dict and pkg_dict[u'type'] == 'Geographic':
-                # TODO need to test no object_name in dataset before deploying to cad
                 ofi_resources = []
                 for resource in pkg_dict[u'resources']:
                     if 'ofi' in resource and resource[u'ofi']:

@@ -46,7 +46,8 @@ from ckanext.bcgov.util.helpers import (get_suborg_sector,
                                              get_org_parent,
                                              size_or_link,
                                              remove_user_link,
-                                             get_ofi_config
+                                             get_ofi_config,
+                                             get_ofi_resources
                                              )
 
 abort = base.abort
@@ -105,7 +106,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "get_parent_org": get_org_parent,
                 "size_or_link": size_or_link,
                 "remove_user_link": remove_user_link,
-                "get_ofi_config": get_ofi_config
+                "get_ofi_config": get_ofi_config,
+                "get_ofi_resources": get_ofi_resources
                 }
 
     def update_config(self, config):
@@ -357,7 +359,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'file_formats': ofi.file_formats,
             'populate_dataset': ofi.populate_dataset_with_ofi,
             'geo_resource_form': ofi.geo_resource_form,
-            'remove_ofi_resources': ofi.remove_ofi_resources
+            'remove_ofi_resources': ofi.remove_ofi_resources,
+            'edit_ofi_resources': ofi.edit_ofi_resources
         }
 
     def get_auth_functions(self):
@@ -369,7 +372,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'file_formats': ofi.file_formats,
             'populate_dataset': ofi.populate_dataset_with_ofi,
             'geo_resource_form': ofi.geo_resource_form,
-            'remove_ofi_resources': ofi.remove_ofi_resources
+            'remove_ofi_resources': ofi.remove_ofi_resources,
+            'edit_ofi_resources': ofi.edit_ofi_resources
         }
 
 

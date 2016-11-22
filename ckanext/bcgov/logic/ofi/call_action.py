@@ -23,8 +23,10 @@ except ImportError:
     from pylons import config
 
 # shortcuts
+_ = toolkit._
 NotFound = toolkit.ObjectNotFound
 ValidationError = toolkit.ValidationError
+OFIServiceError = ofi_logic.OFIServiceError
 
 log = logging.getLogger(u'ckanext.bcgov.logic.ofi')
 
@@ -36,6 +38,11 @@ def file_formats(context, ofi_vars, ofi_resp):
     OFI API Call:
     TODO
     '''
+    resp_content = ofi_resp.json()
+
+    if 'Status' in resp_content and resp_content['Status'] == 'FAILURE':
+        raise OFIServiceError(_('OFI Service returning failure status - file_formats'))
+
     return ofi_resp.json()
 
 
@@ -184,5 +191,75 @@ def remove_ofi_resources(context, ofi_vars, ofi_resp):
             u'error': True,
             u'error_msg': unicode(e)
         })
+
+    return results
+
+
+@toolkit.side_effect_free
+@ofi_logic.setup_ofi_action()
+def edit_ofi_resources(context, ofi_vars, ofi_resp):
+    '''
+    TODO
+    '''
+    pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
+
+    results = {}
+
+    # get all ofi resources in the dataset
+    ofi_resources = [i for i in pkg_dict[u'resources'] if u'ofi' in i and i[u'ofi']]
+
+    if toolkit.request.method == 'GET':
+        # get the first ofi resource, it doesn't matter which type it is
+        ofi_resource = ofi_resources[0] or False
+
+        # just the format names from the ofi resources
+        file_formats = []
+        for resource in ofi_resources:
+            if u'format' in resource:
+                file_formats.append({
+                    u'formatname': resource[u'format']
+                })
+
+        if ofi_resource:
+            results.update({
+                u'success': True,
+                u'render_form': True,
+                u'ofi_resource': ofi_resource,
+                u'file_formats': file_formats
+            })
+        else:
+            results.update({
+                u'success': False,
+                u'error': True,
+                u'error_msg': _('OFI resource not found.')
+            })
+    else:
+        update_resources = []
+        for resource in pkg_dict[u'resources']:
+            # update only ofi resources
+            if u'ofi' in resource and resource[u'ofi']:
+                resource.update(ofi_vars[u'ofi_resource_info'])
+
+            update_resources.append(resource)
+
+        pkg_dict[u'resources'] = update_resources
+
+        try:
+            updated_dataset = toolkit.get_action('package_update')(context, pkg_dict)
+            # shorthand way to get just ofi resources
+            updated_resources = [i for i in updated_dataset[u'resources'] if u'ofi' in i and i[u'ofi']]
+
+            results.update({
+                u'success': True,
+                u'updated': True,
+                u'updated_resources': updated_resources
+            })
+        except (NotFound, ValidationError) as e:
+            results.update({
+                u'success': False,
+                u'updated': False,
+                u'error': True,
+                u'error_msg': unicode(e)
+            })
 
     return results

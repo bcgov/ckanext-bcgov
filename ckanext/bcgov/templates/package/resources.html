@@ -18,8 +18,16 @@
 
 {% block page_primary_action %}
 {% if pkg.edc_state != "ARCHIVED" %}
+  {% if c.record_type == 'Geographic' %}
+    <a href="#ofi-results" role="button" class="btn btn-primary" data-toggle="modal">{{ _('Mange OFI Resources') }}</a>
+  {% endif %}
   {% link_for _('Add new resource'), controller='package', action='new_resource', id=c.pkg_dict.name, class_='btn btn-primary', icon='plus' %}
 {% endif %}
 {% endblock %}
 
-{% block secondary_content %}{% endblock %}
+{% block secondary_content %}
+  {#{% if c.record_type == 'Geographic' %}
+    {% set data = data or {} %}
+    {% snippet 'ofi/ofi_modal.html', pkg_id=c.pkg_dict.id, pkg_obj_name=c.pkg_dict.object_name, data=data %}
+  {% endif %}#}
+{% endblock %}

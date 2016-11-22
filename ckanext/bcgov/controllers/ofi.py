@@ -96,5 +96,27 @@ class EDCOfiController(ApiController):
 
             return self._finish_ok(remove_results)
 
+        elif call_action == 'edit_ofi_resources':
+            data.update({
+                u'ofi_resource_info': query_params.get(u'ofi_resource_info', {})
+            })
+
+            edit_resources = action_func(context, data)
+
+            if 'error' in edit_resources and edit_resources[u'error']:
+                return self._finish_bad_request(_(edit_resources[u'error_msg']))
+
+            elif 'render_form' in edit_resources and edit_resources[u'render_form']:
+                return toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=edit_resources)
+
+            elif 'updated' in edit_resources:
+                if edit_resources[u'updated']:
+                    return toolkit.render('ofi/snippets/populate_success.html', extra_vars=edit_resources)
+                else:
+                    return toolkit.render('ofi/snippets/populate_failed.html', extra_vars=edit_resources)
+
+            else:
+                return self._finish_bad_request(_('Something went wrong with editing ofi resources.'))
+
         else:
             return base.abort(501, _('TODO in OFI API Controller: %s') % call_action)
