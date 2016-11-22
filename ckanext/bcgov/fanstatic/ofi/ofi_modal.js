@@ -25,12 +25,7 @@ this.ckan.module('ofi_modal', function($, _) {
       ofi_form = this.$('#ofi-lookup-form');
       modal_controls = this.$('.modal-footer');
 
-      //this._toggleSpinner(true);
-
       if (this.options.object_name == 'False') {
-        //this._showResults('<div>No \'Object Name\' exists for this dataset. Add an \'Object Name\' to the dataset, for OFI.</div>');
-        //modal_subtitle.text('No Object Name');
-        //modal_controls.find('#ofi-confirm').remove();
         return;
       }
 
@@ -86,8 +81,18 @@ this.ckan.module('ofi_modal', function($, _) {
             .text('Submit');
           modal_subtitle.text('Add OFI Resources');
 
-          self.$("#ofi-field-data_collection_start_date").datepicker({ dateFormat: "yy-mm-dd", showOtherMonths: true, selectOtherMonths: true });
-          self.$("#ofi-field-data_collection_end_date").datepicker({ dateFormat: "yy-mm-dd", showOtherMonths: true, selectOtherMonths: true });
+          self.$("#ofi-field-data_collection_start_date")
+            .datepicker({
+              dateFormat: "yy-mm-dd",
+              showOtherMonths: true,
+              selectOtherMonths: true
+            });
+          self.$("#ofi-field-data_collection_end_date")
+            .datepicker({
+              dateFormat: "yy-mm-dd",
+              showOtherMonths: true,
+              selectOtherMonths: true
+            });
         },
         'error': function() {
 
@@ -98,10 +103,8 @@ this.ckan.module('ofi_modal', function($, _) {
       event.preventDefault();
       self._toggleSpinner(true);
       modal_subtitle.text('Popluating Dataset');
-
-      // makes a plain obj from the form
-      var form_as_obj = ofi_form.serializeArray()
-        .reduce(function(a, x) { a[x.name] = x.value; return a; }, {});
+      
+      var form_as_obj = self._serializeArray(ofi_form);
 
       $.ajax({
         'url': self.options.ofi_populate_dataset_url,
@@ -143,7 +146,57 @@ this.ckan.module('ofi_modal', function($, _) {
       modal_controls.find('#ofi-delete').remove();
     },
     _editOFIResources: function(event) {
-      console.log('todo edit resources');
+      self._toggleSpinner(true);
+      modal_subtitle.text('Editing Resources');
+
+      $.ajax({
+        'url': self.options.ofi_edit_resources_url,
+        'method': 'GET',
+        'data': {
+          'package_id': self.options.package_id,
+          'object_name': self.options.object_name
+        },
+        'contentType': 'application/json; charset=utf-8',
+        'success': function(data, status) {
+          self._showResults(data);
+          modal_controls.find('#ofi-edit')
+            .off('click', self._editOFIResources)
+            .text('Update')
+            .on('click', self._updateOFIResources);
+        },
+        'error': function(jqXHR, textStatus, errorThrown) {
+          console.log(jqXHR);
+          self._toggleSpinner(false);
+        }
+      })
+    },
+    _updateOFIResources: function(event) {
+      self._toggleSpinner(true);
+
+      var form_as_obj = self._serializeArray(ofi_form);
+
+      $.ajax({
+        'url': self.options.ofi_edit_resources_url,
+        'method': 'POST',
+        'data': JSON.stringify({
+          'package_id': self.options.package_id,
+          'object_name': self.options.object_name,
+          'secure': true,
+          'ofi_resource_info': form_as_obj
+        }),
+        'contentType': 'application/json; charset=utf-8',
+        'success': function(data, status) {
+          self._showResults(data);
+          modal_controls.find('#ofi-edit')
+            .off('click', self._updateOFIResources)
+            .text('Edit')
+            .on('click', self._editOFIResources)
+        },
+        'error': function(jqXHR, textStatus, errorThrown) {
+          console.log(jqXHR.responseText);
+          self._toggleSpinner(false);
+        }
+      });
     },
     _actuallyRemoveResources: function(event) {
       self._toggleSpinner(true);
@@ -189,9 +242,7 @@ this.ckan.module('ofi_modal', function($, _) {
       modal_controls.append(delete_button);
     },
     _toggleSpinner: function(on_off) {
-      // TODO: Adjust spinner location
-      //       Disable 'Add' in modal when spinner is enabled
-      //       Include a 'Cancel' button for the api call
+      // TODO: Include a 'Cancel' button for the api call
       //content_body.toggleClass('hidden', on_off);
       spinner.toggleClass('enable', on_off);      
     },
@@ -200,12 +251,10 @@ this.ckan.module('ofi_modal', function($, _) {
 
       this._toggleSpinner(false); // turn off
     },
-    _resizeModal: function(pos) {
-      if (pos.width)
-        modal.style.width = pos.width;
-
-      if (pos.height)
-        modal.style.height = pos.height;
+    _serializeArray: function(form) {
+      // makes a plain obj from the form
+      return form.serializeArray()
+        .reduce(function(a, x) { a[x.name] = x.value; return a; }, {});
     },
     teardown: function() {
 

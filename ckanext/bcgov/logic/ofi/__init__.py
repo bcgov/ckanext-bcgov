@@ -36,6 +36,13 @@ def setup_ofi_action(api_url=None):
             else:
                 data.update(_prepare(data[u'secure']))
 
+            if action.__name__ == 'edit_ofi_resources':
+                if u'package_id' not in data:
+                    data[u'package_id'] = data.query_params.getone('package_id')
+
+                if u'object_name' not in data:
+                    data[u'object_name'] = data.query_params.getone('object_name')
+
             # allows the decorator to be used for just getting query params, cookies, etc.
             if api_url is not None:
                 if not api_url.endswith(u'/'):
@@ -61,7 +68,7 @@ def _prepare(secure=False):
         u'SMSESSION': request.cookies.get(u'SMSESSION', '')
     }
     try:
-        ofi_vars['query_params'] = request.params
+        ofi_vars[u'query_params'] = request.params
     except ValueError, inst:
         log.info('Bad Action API request data: %s', inst)
         return {}
@@ -101,3 +108,11 @@ def _log_response(resp, call_type):
         u'elapsed': str(resp.elapsed.total_seconds()) + u's'
     }))
     log.debug(u'OFI api content: %s', pformat(resp.text))
+
+
+class OFIServiceError(Exception):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)

@@ -487,7 +487,7 @@ def _build_ofi_url(secure=False):
     import urlparse
     ofi_config = get_ofi_config()
     protocol = ofi_config.get(u'api.protocol', 'https')
-    domain = ofi_config.get(u'api.hostname', 'delivery.apps.gov.bc.ca')
+    domain = ofi_config.get(u'api.hostname', 'apps.gov.bc.ca')
     port = ofi_config.get(u'api.port', '')
 
     if port != '':
@@ -501,3 +501,7 @@ def _build_ofi_url(secure=False):
     url = urlparse.urlunparse((protocol, domain, order_path, '', '', ''))
     log.debug(u'OFI base API URL: %s', url)
     return url
+
+
+def get_ofi_resources(pkg):
+    return [i for i in pkg[u'resources'] if u'ofi' in i and i[u'ofi']]

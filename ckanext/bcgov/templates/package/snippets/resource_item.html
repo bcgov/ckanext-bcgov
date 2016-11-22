@@ -69,12 +69,16 @@
     </ul>
   </div>
   {% else %}
-  <div class="dropdown btn-group">
-    <a href="{{ url }}"{% if archived %} disabled="disabled"{% endif %} class="btn dropdown-toggle">
-      <i class="icon-wrench"></i>
-      {{ _('Manage') }}
-    </a>
-  </div>
+    <div class="dropdown btn-group">
+    {% if res.ofi %}
+      <a href="#ofi-results" role="button" class="btn dropdown-toggle" data-toggle="modal">
+    {% else %}
+      <a href="{{ url }}"{% if archived %} disabled="disabled"{% endif %} class="btn dropdown-toggle">
+    {% endif %}
+        <i class="icon-wrench"></i>
+        {{ _('Manage') }}
+      </a>
+    </div>
   {% endif %}
   {% endblock %}
 </li>
