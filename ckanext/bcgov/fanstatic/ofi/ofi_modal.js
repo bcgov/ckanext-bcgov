@@ -136,6 +136,7 @@ this.ckan.module('ofi_modal', function($, _) {
       var back_button = $('<button id="ofi-back" class="btn btn-danger">No</button>');
       modal_controls.find('#ofi-edit')
         .off('click', self._editOFIResources)
+        .off('click', self._updateOFIResources)
         .text('Yes')
         .prop('id', 'ofi-confirm-remove')
         .on('click', self._actuallyRemoveResources)
