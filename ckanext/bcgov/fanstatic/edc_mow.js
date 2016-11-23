@@ -2,7 +2,7 @@
  * DataBC CITZ EDC
  *
  * HighwayThree Solutions Inc.
- * Author: Jared Smith <jrods@github>
+ * Author: Jared Smith <jrods@github>, Brock Anderson <brock@bandersgeo.ca>
  *
  * MOW Modal Window
  *
@@ -18,9 +18,13 @@ this.ckan.module('edc_mow', function($, _) {
     var _getMaxDownloadArea = function(callbackSuccess, callbackErr) {
       _toggleSpinner(true);
 
+      //https://cad.data.gov.bc.ca/api/3/action/resource_show?id=6f370640-fe58-4aa9-832a-f6f615d5a335
+
       //simulate async ajax call to fetch the dataset with the maximum 
       //downloadable area for this dataset
       setTimeout(function() {
+      
+
         console.log("todo: fetch the resource that gives the max downloadable area for this dataset.  for now just assume a max area of 5000000 hectares");
         _maxAreaHectares = 5000000;
         $('.max-area-hectares').html(_formatNum(_maxAreaHectares));
