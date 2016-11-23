@@ -2,6 +2,6 @@
 
 {% block secondary_content %}
   {% if pkg_dict.type == 'Geographic' %}
-    {% snippet 'ofi/ofi_modal.html', pkg_id=pkg_dict.id, pkg_obj_name=pkg_dict.object_name, data=data %}
+    {% snippet 'ofi/ofi_modal.html', pkg_id=pkg_dict.id, pkg_name=pkg_dict.name, pkg_obj_name=pkg_dict.object_name, data=data %}
   {% endif %}
 {% endblock %}

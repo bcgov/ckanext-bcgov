@@ -78,7 +78,7 @@ this.ckan.module('ofi_modal', function($, _) {
           modal_controls.find('#ofi-confirm')
             .off('click', self._getResourceForm)
             .on('click', self._createResources)
-            .text('Submit');
+            .text('Save');
           modal_subtitle.text('Add OFI Resources');
 
           self._initDatepicker();
@@ -109,7 +109,18 @@ this.ckan.module('ofi_modal', function($, _) {
           self._showResults(data);
           modal_controls.find('#ofi-confirm')
             .off('click', self._createResources)
-            .text('Finish');
+            .text('Finish')
+            .prop({
+              'type': 'submit',
+              'name': 'save',
+              'value': 'go-metadata'
+            })
+            .on('click', function() {
+              // this is a bit of a hack to move the dataset into 'added' status so it doesnt
+              // appear as if the dataset doesnt have resources after ofi has added its resources
+              ofi_form.prop('action', self.options.to_dataset_page_url);
+              ofi_form.submit();
+            });
           self._toggleSpinner(false);
         },
         'error': function(jqXHR, textStatus, errorThrown) {
