@@ -28,6 +28,9 @@
 {% block secondary_content %}
   {% if c.record_type == 'Geographic' %}
     {% set data = data or {} %}
-    {#{% snippet 'ofi/ofi_modal.html', pkg_id=c.pkg_dict.id, pkg_obj_name=c.pkg_dict.object_name, data=data %}#}
+    {% snippet 'ofi/ofi_modal.html', pkg_id=c.pkg_dict.id, pkg_name=c.pkg_dict.name, pkg_obj_name=c.pkg_dict.object_name, ofi=c.ofi %}
+
+    {% resource 'edc_resource/jquery-ui.js' %}
+    {% resource 'edc_resource/jquery-ui.css' %}
   {% endif %}
 {% endblock %}
