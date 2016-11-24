@@ -130,6 +130,13 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
             u'success': True,
             u'added_resources': added_resources
         }
+        pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
+
+        # easiest way to change the dataset state, too difficult to do on the front end
+        pkg_dict.update({
+            u'state': u'active'
+        })
+        pkg_dict = toolkit.get_action(u'package_update')(context, pkg_dict)
 
     return results
 
