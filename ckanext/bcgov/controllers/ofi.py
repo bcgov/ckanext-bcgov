@@ -75,6 +75,10 @@ class EDCOfiController(ApiController):
                 u'ofi_resource_info': query_params.get(u'ofi_resource_info', {})
             })
 
+            context.update({
+                'allow_state_change': True
+            })
+
             populate_results = action_func(context, data)
 
             if 'error' in populate_results and populate_results['error']:
