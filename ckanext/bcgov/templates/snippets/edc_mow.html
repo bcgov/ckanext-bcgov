@@ -1,12 +1,7 @@
 <div id="edc-mow" class="modal hide fade" tabindex="-1" role="dialog"
   data-module="edc_mow"
-  data-module-example="{{ true }}"
   style="width: 800px;"
 >
-
-    <link href="/lib/leaflet/0.7.7/leaflet.css" rel="stylesheet">
-    <script src="/lib/leaflet/0.7.7/leaflet.js"></script>
-    <script src="/lib/leaflet.draw/0.4.0/dist/leaflet.draw.js"></script>
 
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -22,8 +17,8 @@
           <div id="mow-ready" style="display: none">
           <table width="100%">
           <tr>
-          <td valign="top" width="50%">
-            <div class="col-md-6" id="map" style="height:400px; width:100%;"></div>
+          <td valign="top" width="400px">
+            <div class="col-md-6" id="map" style="height:400px; width:400px;"></div>
           </td>
           <td valign="top">
 
@@ -98,7 +93,8 @@
 
 </div>
 
-
+{% resource 'ckanext-geoview/geojson' %}
+{% resource 'edc_resource/leaflet-ext/leaflet.draw/0.4.0/dist/leaflet.draw.js' %}
 {% resource 'edc_resource/edc_mow.js' %}
 {% resource 'edc_resource/edc_mow_style.css' %}
 
