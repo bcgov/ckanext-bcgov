@@ -109,19 +109,13 @@ this.ckan.module('ofi_modal', function($, _) {
         'success': function(data, status) {
           self._showResults(data);
 
+          modal_controls.find('#ofi-cancel')
+            .text('Close');
+
           modal_controls.find('#ofi-confirm')
             .off('click', self._createResources)
             .text('Finish')
-            //.prop({
-            //  'type': 'submit',
-            //  'name': 'save',
-            //  'value': 'go-metadata'
-            //})
-            .on('click', function() {
-              // redirects to the dataset page
-              ofi_form.prop('action', self.options.to_dataset_page_url);
-              ofi_form.submit();
-            });
+            .on('click', self._redirectToDatasetPage);
 
           self._toggleSpinner(false);
         },
@@ -136,7 +130,7 @@ this.ckan.module('ofi_modal', function($, _) {
       modal_subtitle.text('Removing Resources');
 
       var back_button = $('<button id="ofi-back" class="btn btn-danger">No</button>');
-      back_button.on('click', self._backToStart);
+      back_button.on('click', self._backToExistingStart);
 
       modal_controls.find('#ofi-edit')
         .off('click', self._editOFIResources)
@@ -168,6 +162,9 @@ this.ckan.module('ofi_modal', function($, _) {
             .off('click', self._editOFIResources)
             .text('Save')
             .on('click', self._updateOFIResources);
+
+          modal_controls.find('#ofi-cancel')
+            .on('click', self._backToExistingStart);
           
           self._initDatepicker();
         },
@@ -223,7 +220,10 @@ this.ckan.module('ofi_modal', function($, _) {
             self._showResults('<h4>OFI resources have been removed from the dataset.</h4>');
 
             modal_controls.find('#ofi-back').remove();
-            modal_controls.find('#ofi-confirm-remove').remove();
+            modal_controls.find('#ofi-confirm-remove')
+              .off('click', self._actuallyRemoveResources)
+              .text('Finish')
+              .on('click', self._redirectToDatasetPage);
           }
         },
         'error': function(jqXHR, textStatus, errorThrown) {
@@ -236,7 +236,18 @@ this.ckan.module('ofi_modal', function($, _) {
         }
       });
     },
-    _backToStart: function(event) {
+    _redirectToDatasetPage: function(event) {
+      // redirects to the dataset page
+      // uses the form action to redirect to the dataset,
+      // bit of a hack but quick and dirty
+      ofi_form.prop('action', self.options.to_dataset_page_url);
+      ofi_form.submit();
+    },
+    _backToExistingStart: function(event) {
+      /* 
+       * This resets the modal to the begin if there's ofi resources in the dataset
+       */
+
       self._showResults('<div>OFI Resources are present in this dataset.</div>');
       modal_subtitle.text('Manage');
 
@@ -246,6 +257,14 @@ this.ckan.module('ofi_modal', function($, _) {
       delete_button.on('click', self._removeOFIResources);
 
       var cancel_button = $('<button id="ofi-cancel" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>');      
+
+      /* Reason for 2 steps for ofi-edit button is because, the first one is when a user clicks cancel on 
+       * the editing form. The second one is when clicking no on the delete ofi resources view.
+       */
+      modal_controls.find('#ofi-edit')
+        .off('click', self._updateOFIResources)
+        .text('Edit')
+        .on('click', self._editOFIResources)
 
       modal_controls.find('#ofi-confirm-remove')
         .off('click', self._actuallyRemoveResources)
