@@ -47,7 +47,7 @@ this.ckan.module('ofi_modal', function($, _) {
           //  modal_controls.find('#ofi-confirm').remove();
           //}
           //this._showResults(prompt);
-        } 
+        }
       }
       else if (ofi_exists) {
         modal_controls.find('#ofi-delete').on('click', this._removeOFIResources);
@@ -93,7 +93,7 @@ this.ckan.module('ofi_modal', function($, _) {
       event.preventDefault();
       self._toggleSpinner(true);
       modal_subtitle.text('Popluating Dataset');
-      
+
       var form_as_obj = self._serializeArray(ofi_form);
 
       $.ajax({
@@ -112,17 +112,17 @@ this.ckan.module('ofi_modal', function($, _) {
           modal_controls.find('#ofi-confirm')
             .off('click', self._createResources)
             .text('Finish')
-            .prop({
-              'type': 'submit',
-              'name': 'save',
-              'value': 'go-metadata'
-            })
-            .on('click', function() {
+            //.prop({
+            //  'type': 'submit',
+            //  'name': 'save',
+            //  'value': 'go-metadata'
+            //})
+            .on('click', function(event) {
               // this is a bit of a hack to move the dataset into 'added' status so it doesnt
               // appear as if the dataset doesnt have resources after ofi has added its resources
               // it mimicks the finish button on the new resource page
-              ofi_form.prop('action', self.options.to_dataset_page_url);
-              ofi_form.submit();
+              // just going to fire the click event for the Finish button from the standard resource form
+              $('[value="go-metadata"]').click();
             });
 
           self._toggleSpinner(false);
@@ -169,7 +169,7 @@ this.ckan.module('ofi_modal', function($, _) {
             .off('click', self._editOFIResources)
             .text('Update')
             .on('click', self._updateOFIResources);
-          
+
           self._initDatepicker();
         },
         'error': function(jqXHR, textStatus, errorThrown) {
@@ -271,7 +271,7 @@ this.ckan.module('ofi_modal', function($, _) {
     _toggleSpinner: function(on_off) {
       // TODO: Include a 'Cancel' button for the api call
       //content_body.toggleClass('hidden', on_off);
-      spinner.toggleClass('enable', on_off);      
+      spinner.toggleClass('enable', on_off);
     },
     _showResults: function(data) {
       content_body.html(data);
