@@ -112,15 +112,13 @@ this.ckan.module('ofi_modal', function($, _) {
           modal_controls.find('#ofi-confirm')
             .off('click', self._createResources)
             .text('Finish')
-            .prop({
-              'type': 'submit',
-              'name': 'save',
-              'value': 'go-metadata'
-            })
+            //.prop({
+            //  'type': 'submit',
+            //  'name': 'save',
+            //  'value': 'go-metadata'
+            //})
             .on('click', function() {
-              // this is a bit of a hack to move the dataset into 'added' status so it doesnt
-              // appear as if the dataset doesnt have resources after ofi has added its resources
-              // it mimicks the finish button on the new resource page
+              // redirects to the dataset page
               ofi_form.prop('action', self.options.to_dataset_page_url);
               ofi_form.submit();
             });
@@ -149,6 +147,7 @@ this.ckan.module('ofi_modal', function($, _) {
         .before(back_button);
 
       modal_controls.find('#ofi-delete').remove();
+      modal_controls.find('#ofi-cancel').remove();
     },
     _editOFIResources: function(event) {
       self._toggleSpinner(true);
@@ -167,7 +166,7 @@ this.ckan.module('ofi_modal', function($, _) {
 
           modal_controls.find('#ofi-edit')
             .off('click', self._editOFIResources)
-            .text('Update')
+            .text('Save')
             .on('click', self._updateOFIResources);
           
           self._initDatepicker();
@@ -238,7 +237,7 @@ this.ckan.module('ofi_modal', function($, _) {
       });
     },
     _backToStart: function(event) {
-      self._showResults('<div>OFI Resources have been already added.</div>');
+      self._showResults('<div>OFI Resources are present in this dataset.</div>');
       modal_subtitle.text('Manage');
 
       modal_controls.find('#ofi-back').remove();
@@ -246,13 +245,14 @@ this.ckan.module('ofi_modal', function($, _) {
       var delete_button = $('<button id="ofi-delete" class="btn btn-danger pull-left">Delete</button>');
       delete_button.on('click', self._removeOFIResources);
 
+      var cancel_button = $('<button id="ofi-cancel" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>');      
+
       modal_controls.find('#ofi-confirm-remove')
         .off('click', self._actuallyRemoveResources)
         .text('Edit')
         .prop('id', 'ofi-edit')
-        .on('click', self._editOFIResources);
-
-      modal_controls.append(delete_button);
+        .on('click', self._editOFIResources)
+        .before(cancel_button, delete_button);
     },
     _initDatepicker: function() {
       this.$("#ofi-field-data_collection_start_date")
