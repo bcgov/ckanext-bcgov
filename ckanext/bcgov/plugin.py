@@ -142,6 +142,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('/authorization-error', action='auth_error')
             m.connect('resource_edit', '/dataset/{id}/resource_edit/{resource_id}', action='resource_edit', ckan_icon='edit')
             m.connect('new_resource', '/dataset/new_resource/{id}', action='new_resource')
+            m.connect('resources', '/dataset/resources/{id}', action='resources')
 
         with SubMapper(map, controller=user_controller) as m:
             m.connect('user_dashboard_unpublished', '/dashboard/unpublished',

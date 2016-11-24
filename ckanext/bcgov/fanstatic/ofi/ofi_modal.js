@@ -75,11 +75,12 @@ this.ckan.module('ofi_modal', function($, _) {
         'dataType': 'html',
         'success': function(data, status) {
           self._showResults(data);
+          modal_subtitle.text('Add OFI Resources');
+
           modal_controls.find('#ofi-confirm')
             .off('click', self._getResourceForm)
             .on('click', self._createResources)
-            .text('Submit');
-          modal_subtitle.text('Add OFI Resources');
+            .text('Save');
 
           self._initDatepicker();
         },
@@ -107,9 +108,23 @@ this.ckan.module('ofi_modal', function($, _) {
         'contentType': 'application/json; charset=utf-8',
         'success': function(data, status) {
           self._showResults(data);
+
           modal_controls.find('#ofi-confirm')
             .off('click', self._createResources)
-            .text('Finish');
+            .text('Finish')
+            .prop({
+              'type': 'submit',
+              'name': 'save',
+              'value': 'go-metadata'
+            })
+            .on('click', function() {
+              // this is a bit of a hack to move the dataset into 'added' status so it doesnt
+              // appear as if the dataset doesnt have resources after ofi has added its resources
+              // it mimicks the finish button on the new resource page
+              ofi_form.prop('action', self.options.to_dataset_page_url);
+              ofi_form.submit();
+            });
+
           self._toggleSpinner(false);
         },
         'error': function(jqXHR, textStatus, errorThrown) {
@@ -123,14 +138,15 @@ this.ckan.module('ofi_modal', function($, _) {
       modal_subtitle.text('Removing Resources');
 
       var back_button = $('<button id="ofi-back" class="btn btn-danger">No</button>');
+      back_button.on('click', self._backToStart);
+
       modal_controls.find('#ofi-edit')
         .off('click', self._editOFIResources)
+        .off('click', self._updateOFIResources)
         .text('Yes')
         .prop('id', 'ofi-confirm-remove')
         .on('click', self._actuallyRemoveResources)
         .before(back_button);
-
-      back_button.on('click', self._backToStart);
 
       modal_controls.find('#ofi-delete').remove();
     },
@@ -148,10 +164,12 @@ this.ckan.module('ofi_modal', function($, _) {
         'contentType': 'application/json; charset=utf-8',
         'success': function(data, status) {
           self._showResults(data);
+
           modal_controls.find('#ofi-edit')
             .off('click', self._editOFIResources)
             .text('Update')
             .on('click', self._updateOFIResources);
+          
           self._initDatepicker();
         },
         'error': function(jqXHR, textStatus, errorThrown) {
@@ -177,6 +195,7 @@ this.ckan.module('ofi_modal', function($, _) {
         'contentType': 'application/json; charset=utf-8',
         'success': function(data, status) {
           self._showResults(data);
+
           modal_controls.find('#ofi-edit')
             .off('click', self._updateOFIResources)
             .text('Edit')
@@ -201,15 +220,19 @@ this.ckan.module('ofi_modal', function($, _) {
         'contentType': 'application/json; charset=utf-8',
         'success': function(data, status) {
           if(data.success) {
+            modal_subtitle.text('Removed Resources');
             self._showResults('<h4>OFI resources have been removed from the dataset.</h4>');
+
             modal_controls.find('#ofi-back').remove();
             modal_controls.find('#ofi-confirm-remove').remove();
           }
         },
         'error': function(jqXHR, textStatus, errorThrown) {
           self._showResults('<div>There was an error with removing ofi resources.</div>');
+
           modal_controls.find('#ofi-back').remove();
           modal_controls.find('#ofi-confirm-remove').remove();
+
           console.log(jqXHR);
         }
       });
