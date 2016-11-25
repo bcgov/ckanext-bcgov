@@ -6,10 +6,14 @@
 
 <li class="resource-item" data-id="{{ res.id }}">
   {% block resource_item_title %}
-  <a class="heading resource-url-analytics" href="{{ url }}" title="{{ res.name or res.description }}">
-    {{ h.resource_display_name(res) | truncate(50) }}<span class="format-label" property="dc:format" data-format="{{ res.format.lower() or 'data' }}">{{ res.format }}</span>
-    {{ h.popular('views', res.tracking_summary.recent, min=10) }}
-  </a>
+    {% if res.ofi %}
+    <a class="heading resource-url-analytics" href="#ofi-results" title="{{ res.name or res.description }}" role="button" data-toggle="modal">
+    {% else %}
+    <a class="heading resource-url-analytics" href="{{ url }}" title="{{ res.name or res.description }}">
+    {% endif %}
+      {{ h.resource_display_name(res) | truncate(50) }}<span class="format-label" property="dc:format" data-format="{{ res.format.lower() or 'data' }}">{{ res.format }}</span>
+      {{ h.popular('views', res.tracking_summary.recent, min=10) }}
+    </a>
   {% endblock %}
 
   <p class="size">
