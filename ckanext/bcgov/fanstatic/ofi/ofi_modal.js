@@ -38,15 +38,7 @@ this.ckan.module('ofi_modal', function($, _) {
 
       if (success) {
         if (content instanceof Object) {
-          //var prompt;
-          //if (content['allowed']) {
-            //prompt = '<h4 style="text-align:center;">Object is avaiable, would you like to add all the resource links?</h4>';
-            modal_controls.find('#ofi-confirm').on('click',this._getResourceForm);
-          //} else {
-          //  prompt = '<div>Object is not avaiable, please contact your administrator.</div>';
-          //  modal_controls.find('#ofi-confirm').remove();
-          //}
-          //this._showResults(prompt);
+          modal_controls.find('#ofi-confirm').on('click',this._getResourceForm);
         } 
       }
       else if (ofi_exists) {
@@ -109,21 +101,14 @@ this.ckan.module('ofi_modal', function($, _) {
         'success': function(data, status) {
           self._showResults(data);
 
+          modal_controls.find('#ofi-cancel')
+            .text('Close')
+            .on('click', self._backToExistingStart);
+
           modal_controls.find('#ofi-confirm')
             .off('click', self._createResources)
             .text('Finish')
-            .prop({
-              'type': 'submit',
-              'name': 'save',
-              'value': 'go-metadata'
-            })
-            .on('click', function() {
-              // this is a bit of a hack to move the dataset into 'added' status so it doesnt
-              // appear as if the dataset doesnt have resources after ofi has added its resources
-              // it mimicks the finish button on the new resource page
-              ofi_form.prop('action', self.options.to_dataset_page_url);
-              ofi_form.submit();
-            });
+            .on('click', self._redirectToDatasetPage);
 
           self._toggleSpinner(false);
         },
@@ -138,7 +123,7 @@ this.ckan.module('ofi_modal', function($, _) {
       modal_subtitle.text('Removing Resources');
 
       var back_button = $('<button id="ofi-back" class="btn btn-danger">No</button>');
-      back_button.on('click', self._backToStart);
+      back_button.on('click', self._backToExistingStart);
 
       modal_controls.find('#ofi-edit')
         .off('click', self._editOFIResources)
@@ -149,6 +134,7 @@ this.ckan.module('ofi_modal', function($, _) {
         .before(back_button);
 
       modal_controls.find('#ofi-delete').remove();
+      modal_controls.find('#ofi-cancel').remove();
     },
     _editOFIResources: function(event) {
       self._toggleSpinner(true);
@@ -167,8 +153,12 @@ this.ckan.module('ofi_modal', function($, _) {
 
           modal_controls.find('#ofi-edit')
             .off('click', self._editOFIResources)
-            .text('Update')
+            .text('Save')
             .on('click', self._updateOFIResources);
+
+          modal_controls.find('#ofi-cancel')
+            .text('Cancel')
+            .on('click', self._backToExistingStart);
           
           self._initDatepicker();
         },
@@ -195,6 +185,9 @@ this.ckan.module('ofi_modal', function($, _) {
         'contentType': 'application/json; charset=utf-8',
         'success': function(data, status) {
           self._showResults(data);
+
+          modal_controls.find('#ofi-cancel')
+            .text('Close');
 
           modal_controls.find('#ofi-edit')
             .off('click', self._updateOFIResources)
@@ -224,7 +217,10 @@ this.ckan.module('ofi_modal', function($, _) {
             self._showResults('<h4>OFI resources have been removed from the dataset.</h4>');
 
             modal_controls.find('#ofi-back').remove();
-            modal_controls.find('#ofi-confirm-remove').remove();
+            modal_controls.find('#ofi-confirm-remove')
+              .off('click', self._actuallyRemoveResources)
+              .text('Finish')
+              .on('click', self._redirectToDatasetPage);
           }
         },
         'error': function(jqXHR, textStatus, errorThrown) {
@@ -237,22 +233,65 @@ this.ckan.module('ofi_modal', function($, _) {
         }
       });
     },
-    _backToStart: function(event) {
-      self._showResults('<div>OFI Resources have been already added.</div>');
+    _redirectToDatasetPage: function(event) {
+      // redirects to the dataset page
+      // uses the form action to redirect to the dataset,
+      // bit of a hack but quick and dirty
+      ofi_form.prop('action', self.options.to_dataset_page_url);
+      ofi_form.submit();
+    },
+    _backToExistingStart: function(event) {
+      /* 
+       * This resets the modal to the begin if there's ofi resources in the dataset
+       */
+
+      self._showResults('<div>OFI Resources are present in this dataset.</div>');
       modal_subtitle.text('Manage');
 
       modal_controls.find('#ofi-back').remove();
 
-      var delete_button = $('<button id="ofi-delete" class="btn btn-danger pull-left">Delete</button>');
-      delete_button.on('click', self._removeOFIResources);
+      /* TODO, example, just why in the fuck this is a thing
+       */
+      if (modal_controls.has('#ofi-edit').length) {
+        modal_controls.find('#ofi-edit')
+          .off('click', self._updateOFIResources)
+          .text('Edit')
+          .on('click', self._editOFIResources);
+      }
+      else if (modal_controls.has('#ofi-confirm').length) {
+        modal_controls.find('#ofi-confirm')
+          .off('click', self._redirectToDatasetPage)
+          .text('Edit')
+          .prop('id', 'ofi-edit')
+          .on('click', self._editOFIResources);
+      }
+      else if (modal_controls.has('#ofi-confirm-remove').length) {
+        modal_controls.find('#ofi-confirm-remove')
+          .off('click', self._actuallyRemoveResources)
+          .text('Edit')
+          .prop('id', 'ofi-edit')
+          .on('click', self._editOFIResources);
+      }
 
-      modal_controls.find('#ofi-confirm-remove')
-        .off('click', self._actuallyRemoveResources)
-        .text('Edit')
-        .prop('id', 'ofi-edit')
-        .on('click', self._editOFIResources);
+      // if ofi-delete button doesn't exist
+      if (modal_controls.has('#ofi-delete').length == 0) {
+        var delete_button = $('<button id="ofi-delete" class="btn btn-danger pull-left">Delete</button>');
+        delete_button.on('click', self._removeOFIResources);
 
-      modal_controls.append(delete_button);
+        modal_controls.find('#ofi-edit')
+          .before(delete_button);
+      }      
+
+      // if ofi-cancel exists
+      if (modal_controls.has('#ofi-cancel').length) {
+        modal_controls.find('#ofi-cancel')
+          .off('click', self._backToExistingStart)
+          .text('Cancel');        
+      }
+      else {
+        var cancel_button = $('<button id="ofi-cancel" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>');
+        modal_controls.find('#ofi-edit').before(cancel_button);
+      }      
     },
     _initDatepicker: function() {
       this.$("#ofi-field-data_collection_start_date")

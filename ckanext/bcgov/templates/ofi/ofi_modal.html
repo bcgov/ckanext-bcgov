@@ -36,7 +36,7 @@
         <form id="ofi-lookup-form" class="form-horizontal">
             <div id="resources">
                 {% if ofi['ofi_exists'] %}
-                    <div>OFI Resources have been already added.</div>
+                    <div>OFI Resources are present in this dataset.</div>
                 {% elif pkg_obj_name == '' %}
                     <div>No 'Object Name' exists for this dataset. Add an 'Object Name' to the dataset, for OFI.</div>
                 {% else %}
@@ -51,7 +51,7 @@
     </div>
 
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button id="ofi-cancel" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
         {% if ofi['ofi_exists'] %}
             <button id="ofi-delete" class="btn btn-danger pull-left">Delete</button>
             <button id="ofi-edit" class="btn btn-primary">Edit</button>
