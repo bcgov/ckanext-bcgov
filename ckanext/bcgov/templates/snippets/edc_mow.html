@@ -1,28 +1,100 @@
 <div id="edc-mow" class="modal hide fade" tabindex="-1" role="dialog"
   data-module="edc_mow"
-  data-module-example="{{ true }}"
+  style="width: 800px; margin-left: -400px;"
 >
+
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3>EDC MOW</h3>
+        <h3>Geographic Data Download</h3>
         <h4 id="modal-subtitle">
-        Subtitle
+        Pan and zoom this map to select the geographic area.
         </h4>
     </div>
 
-    <div class="modal-body">
-        <div id="mow-content">Modal Window</div>
+    <div class="modal-body" style="min-height: 460px;">
+        <div id="mow-content">
+        
+          <div id="mow-ready" style="display: none">
+          <table width="100%">
+          <tr>
+          <td valign="top" width="400px">
+            <div class="col-md-6" id="map" style="height:400px; width:400px;"></div>
+          </td>
+          <td valign="top">
+
+            <!-- TODO:
+            If the area for object is beyond the provincial scope as measured by full extent display this text with the URL tied to the package UUID.
+            -->
+            <!--p>Due to its size, this dataset cannot be downloaded at the provincial extent from here.
+              Please check the <a href="https://catalogue.data.gov.bc.ca/dataset/2ebb35d8-c82f-4a17-9c96-612ac3532d55">catalogue record</a> for an alternative provincial file / resource for download.
+            </p-->
+          
+            <form style="padding-left: 10px;">
+
+              <div id="area-info">
+                <p><strong>Maximum download area for this dataset:</strong> <span class="max-area-hectares"></span> hectares</p>
+
+                <p><strong>Selected map area:</strong> <span id="selected-area"></span> hectares</p>
+
+                <div id="area-warning" class="alert alert-warning">
+                  <span id="area-warning-text">Please select an area &lt; <span class="max-area-hectares"></span> hectares</span>
+                </div>
+              </div>
+
+              <label for="epsg">
+                Map projection:
+                <select name="EPSG">
+                  <option value="1" >BC Albers NAD 83 m</a></option>
+                  <option value="2" >Geographic WGS 84 Long / Lat dd</option>
+                  <option value="3" >UTM Zone 7 m</option>
+                  <option value="4" >UTM Zone 8 m</option>
+                  <option value="5" >UTM Zone 9 m</option>
+                  <option value="6" >UTM Zone 10 m</option>
+                  <option value="7" >UTM Zone 11 m</option>
+                </select>
+              </label>
+
+              <div class="checkbox">
+                <p><input type="checkbox"/>I consent to the collection of my email address as per the terms.</p>
+              </div>
+
+              <div>
+                <p><small>
+                 The information on this form is collected under the authority of Sections 26(c) and 27(1)(c) of the Freedom of Information and Protection of Privacy Act [RSBC 1996 c.165], and will help us to assess and respond to your enquiry.
+                 By consenting to submit this form you are confirming that you are authorized to provide information of individuals/organizations/businesses for the purpose of your enquiry.
+                </small></p>
+                <label for="email-ofi">Email address: <input type="email" class="form-control" id="email1" autocomplete="off"></label>
+              </div>
+
+            </form>
+
+          </td>
+          </tr>
+          </table>
+          </div>
+
+          <div id="mow-err" class="alert alert-error" style="display: none">
+            <strong>Error:</strong> Unable to determine the maximum downloadable area for this dataset
+          </div>
+
+        </div>
     </div>
 
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button id="order-btn" class="btn btn-default">Place order</button>
     </div>
 
     {# TODO: stop animation when not visible #}
     <div id="loading" class="overlay-wrap">
         <div class="add-data-loader">Loading...</div>
     </div>
+
+
 </div>
 
+{% resource 'ckanext-geoview/geojson' %}
+{% resource 'edc_resource/leaflet-ext/leaflet.draw/0.4.0/dist/leaflet.draw.js' %}
 {% resource 'edc_resource/edc_mow.js' %}
 {% resource 'edc_resource/edc_mow_style.css' %}
+
