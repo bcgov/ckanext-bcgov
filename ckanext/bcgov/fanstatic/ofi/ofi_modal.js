@@ -38,15 +38,7 @@ this.ckan.module('ofi_modal', function($, _) {
 
       if (success) {
         if (content instanceof Object) {
-          //var prompt;
-          //if (content['allowed']) {
-            //prompt = '<h4 style="text-align:center;">Object is avaiable, would you like to add all the resource links?</h4>';
-            modal_controls.find('#ofi-confirm').on('click',this._getResourceForm);
-          //} else {
-          //  prompt = '<div>Object is not avaiable, please contact your administrator.</div>';
-          //  modal_controls.find('#ofi-confirm').remove();
-          //}
-          //this._showResults(prompt);
+          modal_controls.find('#ofi-confirm').on('click',this._getResourceForm);
         } 
       }
       else if (ofi_exists) {
@@ -110,7 +102,8 @@ this.ckan.module('ofi_modal', function($, _) {
           self._showResults(data);
 
           modal_controls.find('#ofi-cancel')
-            .text('Close');
+            .text('Close')
+            .on('click', self._backToExistingStart);
 
           modal_controls.find('#ofi-confirm')
             .off('click', self._createResources)
@@ -164,6 +157,7 @@ this.ckan.module('ofi_modal', function($, _) {
             .on('click', self._updateOFIResources);
 
           modal_controls.find('#ofi-cancel')
+            .text('Cancel')
             .on('click', self._backToExistingStart);
           
           self._initDatepicker();
@@ -191,6 +185,9 @@ this.ckan.module('ofi_modal', function($, _) {
         'contentType': 'application/json; charset=utf-8',
         'success': function(data, status) {
           self._showResults(data);
+
+          modal_controls.find('#ofi-cancel')
+            .text('Close');
 
           modal_controls.find('#ofi-edit')
             .off('click', self._updateOFIResources)
@@ -253,25 +250,48 @@ this.ckan.module('ofi_modal', function($, _) {
 
       modal_controls.find('#ofi-back').remove();
 
-      var delete_button = $('<button id="ofi-delete" class="btn btn-danger pull-left">Delete</button>');
-      delete_button.on('click', self._removeOFIResources);
-
-      var cancel_button = $('<button id="ofi-cancel" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>');      
-
-      /* Reason for 2 steps for ofi-edit button is because, the first one is when a user clicks cancel on 
-       * the editing form. The second one is when clicking no on the delete ofi resources view.
+      /* TODO, example, just why in the fuck this is a thing
        */
-      modal_controls.find('#ofi-edit')
-        .off('click', self._updateOFIResources)
-        .text('Edit')
-        .on('click', self._editOFIResources)
+      if (modal_controls.has('#ofi-edit').length) {
+        modal_controls.find('#ofi-edit')
+          .off('click', self._updateOFIResources)
+          .text('Edit')
+          .on('click', self._editOFIResources);
+      }
+      else if (modal_controls.has('#ofi-confirm').length) {
+        modal_controls.find('#ofi-confirm')
+          .off('click', self._redirectToDatasetPage)
+          .text('Edit')
+          .prop('id', 'ofi-edit')
+          .on('click', self._editOFIResources);
+      }
+      else if (modal_controls.has('#ofi-confirm-remove').length) {
+        modal_controls.find('#ofi-confirm-remove')
+          .off('click', self._actuallyRemoveResources)
+          .text('Edit')
+          .prop('id', 'ofi-edit')
+          .on('click', self._editOFIResources);
+      }
 
-      modal_controls.find('#ofi-confirm-remove')
-        .off('click', self._actuallyRemoveResources)
-        .text('Edit')
-        .prop('id', 'ofi-edit')
-        .on('click', self._editOFIResources)
-        .before(cancel_button, delete_button);
+      // if ofi-delete button doesn't exist
+      if (modal_controls.has('#ofi-delete').length == 0) {
+        var delete_button = $('<button id="ofi-delete" class="btn btn-danger pull-left">Delete</button>');
+        delete_button.on('click', self._removeOFIResources);
+
+        modal_controls.find('#ofi-edit')
+          .before(delete_button);
+      }      
+
+      // if ofi-cancel exists
+      if (modal_controls.has('#ofi-cancel').length) {
+        modal_controls.find('#ofi-cancel')
+          .off('click', self._backToExistingStart)
+          .text('Cancel');        
+      }
+      else {
+        var cancel_button = $('<button id="ofi-cancel" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>');
+        modal_controls.find('#ofi-edit').before(cancel_button);
+      }      
     },
     _initDatepicker: function() {
       this.$("#ofi-field-data_collection_start_date")
