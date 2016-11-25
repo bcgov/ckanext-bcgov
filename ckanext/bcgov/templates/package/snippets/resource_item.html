@@ -6,7 +6,7 @@
 
 <li class="resource-item" data-id="{{ res.id }}">
   {% block resource_item_title %}
-    {% if res.ofi %}
+    {% if res.ofi and url_is_edit %}
     <a class="heading resource-url-analytics" href="#ofi-results" title="{{ res.name or res.description }}" role="button" data-toggle="modal">
     {% else %}
     <a class="heading resource-url-analytics" href="{{ url }}" title="{{ res.name or res.description }}">
