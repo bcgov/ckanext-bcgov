@@ -31,7 +31,7 @@
 
   <input name="id" value="{{ data.id }}" type="hidden"/>
 
-  {% if record_type == 'Geographic' %}
+  {% if record_type == 'Geographic' and data.ofi %}
     {# OFI modal button #}
     <div class="control-group">
       <div class="controls">

@@ -300,7 +300,8 @@ class EDCPackageController(PackageController):
         if not data:
             data = resource_dict
 
-        data[u'ofi'] = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=True)
+        if u'ofi' in resource_dict and resource_dict[u'ofi']:
+            data[u'ofi'] = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=True)
 
         errors = errors or {}
         error_summary = error_summary or {}
