@@ -300,6 +300,9 @@ class EDCPackageController(PackageController):
         if not data:
             data = resource_dict
 
+        if u'ofi' in resource_dict and resource_dict[u'ofi']:
+            data[u'ofi'] = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=True)
+
         errors = errors or {}
         error_summary = error_summary or {}
 
@@ -524,9 +527,13 @@ def removekey(d, key):
     return r
 
 
-def _setup_ofi(id, open_modal=True):
+def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
     # Setup for OFI
-    pkg_dict = get_action('package_show')({}, {'id': id})
+    if not context:
+        context = {}
+
+    if not pkg_dict:
+        pkg_dict = get_action('package_show')(context, {'id': id})
 
     ofi_data = {}
 
@@ -553,7 +560,7 @@ def _setup_ofi(id, open_modal=True):
                 u'open_modal': open_modal
             }
 
-            ofi_data.update(get_action('check_object_name')({}, obj_data))
+            ofi_data.update(get_action('check_object_name')(context, obj_data))
 
         else:
             ofi_data.update({
