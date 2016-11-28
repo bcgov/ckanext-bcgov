@@ -106,6 +106,12 @@ this.ckan.module('edc_mow', function($, _) {
     var _initStart = function() {
       $("#mow-ready").hide();
       $("#mow-err").hide();
+      $("#consent-check").change(function() {
+        if (this.checked) 
+          $("#consent-terms").css("visibility", "hidden");
+        else
+          $("#consent-terms").css("visibility", "visible");          
+      });
       _fetchMaxDownloadableArea(_initSuccess, _initFailed);
     };
 
