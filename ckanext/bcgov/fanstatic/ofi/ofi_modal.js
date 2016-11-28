@@ -102,8 +102,7 @@ this.ckan.module('ofi_modal', function($, _) {
           self._showResults(data);
 
           modal_controls.find('#ofi-cancel')
-            .text('Close')
-            .on('click', self._backToExistingStart);
+            .remove();
 
           modal_controls.find('#ofi-confirm')
             .off('click', self._createResources)
@@ -186,13 +185,13 @@ this.ckan.module('ofi_modal', function($, _) {
         'success': function(data, status) {
           self._showResults(data);
 
-          modal_controls.find('#ofi-cancel')
-            .text('Close');
+          modal_controls.find('#ofi-delete').remove();
+          modal_controls.find('#ofi-cancel').remove();
 
           modal_controls.find('#ofi-edit')
             .off('click', self._updateOFIResources)
-            .text('Edit')
-            .on('click', self._editOFIResources)
+            .text('Finish')
+            .on('click', self._redirectToDatasetPage);
         },
         'error': function(jqXHR, textStatus, errorThrown) {
           console.log(jqXHR.responseText);
