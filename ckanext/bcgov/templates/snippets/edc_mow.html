@@ -1,5 +1,7 @@
 <div id="edc-mow" class="modal hide fade" tabindex="-1" role="dialog"
   data-module="edc_mow"
+  data-module-object_name="{{ pkg_obj_name or false }}"
+  data-module-mow_max_aoi_url="{{ h.url_for('ofi api', call_action='get_max_aoi') }}"
   style="width: 800px; margin-left: -400px;"
 >
 
@@ -82,7 +84,7 @@
 
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-        <button id="order-btn" class="btn btn-default">Place order</button>
+        <button id="order-btn" class="btn btn-primary">Place order</button>
     </div>
 
     {# TODO: stop animation when not visible #}

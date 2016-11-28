@@ -88,6 +88,9 @@ class EDCOfiController(ApiController):
         elif call_action == 'file_formats':
             return self._finish_ok(action_func(context, {}))
 
+        elif call_action == 'get_max_aoi':
+            return self._finish_ok(action_func(context, data))
+
         elif call_action == 'remove_ofi_resources':
             remove_results = action_func(context, data)
 

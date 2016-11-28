@@ -186,3 +186,53 @@ def remove_ofi_resources(context, ofi_vars, ofi_resp):
         })
 
     return results
+
+
+@toolkit.side_effect_free
+def get_max_aoi(context, data):
+    results = {}
+
+    if u'object_name' in data:
+        # TODO: move url and resource_id as config params
+        url = 'https://catalogue.data.gov.bc.ca/api/action/datastore_search'
+        data = {
+            'resource_id': 'd52c3bff-459d-422a-8922-7fd3493a60c2',
+            'q': {
+                'FEATURE_TYPE': data[u'object_name']
+            }
+        }
+
+        resp = reqs.request('post', url, json=data)
+
+        resp_dict = resp.json()
+        search_results = resp_dict[u'result']
+        records_found = len(search_results[u'records'])
+
+        #pprint(resp_dict)
+
+        if u'success' in resp_dict and resp_dict[u'success'] and records_found > 0:
+            results.update({
+                u'success': True,
+                u'datastore_response': search_results
+            })
+        else:
+            results.update({
+                u'success': False,
+                u'error': True,
+                u'error_msg': 'Datastore_search failed',
+                u'datastore_response': resp_dict
+            })
+
+            if records_found == 0:
+                results.update({
+                    u'error_msg': 'datastore_search didn\'t find any records with given object_name',
+                    u'records_found': records_found
+                })
+    else:
+        results.update({
+            u'success': False,
+            u'error': True,
+            u'error_msg': 'No object_name'
+        })
+
+    return results
