@@ -36,7 +36,11 @@
           <ul>
             {% block resource_actions_inner %}
             {% if h.check_access('package_update', {'id':pkg.id }) %}
-              <li>{% link_for _('Manage'), controller='package', action='resource_edit', id=pkg.name, resource_id=res.id, class_='btn', icon='wrench' %}</li>
+              {% if c.ofi and res.ofi %}
+                <li><a href="#ofi-results" role="button" class="btn dropdown-toggle" data-toggle="modal"><i class="icon-wrench"></i>{{ _('Manage') }}</a></li>
+              {% else %}
+                <li>{% link_for _('Manage'), controller='package', action='resource_edit', id=pkg.name, resource_id=res.id, class_='btn', icon='wrench' %}</li>
+              {% endif %}
             {% endif %}
             {% if res.url and h.is_url(res.url) %}
               <li>
@@ -165,5 +169,9 @@
   {% block resource_license %}
     {% snippet "package/snippets/social.html" %}
   {% endblock %}
+
+  {% if c.pkg_dict.type == 'Geographic' and c.ofi %}
+    {% snippet 'ofi/ofi_modal.html', pkg_id=c.pkg_dict.id, pkg_name=c.pkg_dict.name, pkg_obj_name=c.pkg_dict.object_name, ofi=c.ofi %}
+  {% endif %}
 
 {% endblock %}

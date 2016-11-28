@@ -216,16 +216,37 @@ class EDCPackageController(PackageController):
         First calls ckan's default resource read to get the resource and package data.
         Then it checks if the resource can be viewed by the user
         '''
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user or c.author,
+                   'auth_user_obj': c.userobj,
+                   'for_view': True}
+
+        try:
+            pkg_dict = get_action('package_show')(context, {'id': id})
+        except NotFound:
+            abort(404, _('Dataset not found'))
+        except NotAuthorized:
+            abort(401, _('Unauthorized to read dataset %s') % id)
+
+        for resource in pkg_dict.get('resources', []):
+            if resource['id'] == resource_id:
+                resource_dict = resource
+                break
+        if not resource_dict:
+            abort(404, _('Resource not found'))
+
+        if u'ofi' in resource_dict and resource_dict[u'ofi']:
+            c.ofi = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=False)
+
         result = super(EDCPackageController, self).resource_read(id, resource_id)
 
-        #Check if user can view this record
+        # Check if user can view this record
         from ckanext.bcgov.util.helpers import record_is_viewable
 
-        if not record_is_viewable(c.pkg_dict, c.userobj) :
+        if not record_is_viewable(c.pkg_dict, c.userobj):
             abort(401, _('Unauthorized to read package %s') % id)
 
         return result
-
 
     def resource_edit(self, id, resource_id, data=None, errors=None,
                       error_summary=None):
