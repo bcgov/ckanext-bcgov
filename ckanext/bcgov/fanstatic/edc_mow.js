@@ -10,7 +10,7 @@
 "use strict";
 
 this.ckan.module('edc_mow', function($, _) {
-    var self, modal, modal_subtitle, content_body, modal_controls, spinner;
+    var self, modal, modal_subtitle, content_body, modal_controls, spinner, aoi_form;
 
     var _map = null;
     var _maxAreaHectares = null;
@@ -67,8 +67,12 @@ this.ckan.module('edc_mow', function($, _) {
         bounds.getNorthEast(), 
         bounds.getSouthEast(), 
         bounds.getSouthWest()]
+
+      self.aoi = latLonList;
       var areaM2 = L.GeometryUtil.geodesicArea(latLonList)
       var areaHect = Math.round(areaM2 * 0.0001);
+      console.log(areaM2);
+      console.log(areaHect);
       $('#selected-area').html(_formatNum(areaHect))
 
       if (areaHect < _maxAreaHectares || _maxAreaHectares == 0) {
@@ -135,8 +139,35 @@ this.ckan.module('edc_mow', function($, _) {
     };
 
     var _placeOrder = function() {
-      console.log("todo: place the order");
-    };
+        for (var key in self.aoi) {
+            console.log('LAT: ' + self.aoi[key].lat);
+            console.log('LNG: ' + self.aoi[key].lng);
+        }
+
+        var aoi_data = {};
+        aoi_data.aoi = self.aoi;
+        aoi_data.emailAddress = aoi_form.find('#email1').val();
+        aoi_data.EPSG = aoi_form.find('#map_projection').val();
+        aoi_data.useAOIBounds = "1";
+        var featureItems = [];
+        featureItems.push({'featureItem' : self.options.object_name});
+        aoi_data.featureItems = featureItems;
+
+        console.log(aoi_data);
+
+      $.ajax({
+        'url': self.options.aoi_create_order_url,
+        'method': 'POST',
+        'data': JSON.stringify(aoi_data),
+        'contentType': 'application/json; charset=utf-8',
+        'success': function(result, status) {
+            console.log(result);
+        },
+        'error': function(jqXHR, textStatus, errorThrown) {
+          console.log(jqXHR.responseText);
+        }
+      });
+     };
 
     return {
         options: {
@@ -149,6 +180,7 @@ this.ckan.module('edc_mow', function($, _) {
             spinner = this.$('#loading');
             modal_subtitle = this.$('#modal-subtitle');
             modal_controls = this.$('.modal-footer');
+            aoi_form = this.$('#aoi-order-form');
 
             //capture the bootstrap event fired when the modal window is actually
             //shown.  

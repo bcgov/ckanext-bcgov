@@ -6,6 +6,7 @@
 
 import logging
 from pprint import pprint, pformat
+import json
 
 import requests as reqs
 
@@ -235,4 +236,37 @@ def get_max_aoi(context, data):
             u'error_msg': 'No object_name'
         })
 
+    return results
+
+
+
+def create_aoi(context, data):
+    results = {}
+
+    from string import Template
+
+    aoi_data = data.get('aoi_params', None)
+    aoi = aoi_data.get('aoi', [])
+
+    aoi_coordinates = [str(item.get('lat', 0.0)) + ',' + str(item.get('lng', 0.0)) for item in aoi]
+
+    coordinates = ' '.join(aoi_coordinates)
+
+    aoi_str = '<?xml version="1.0" encoding="UTF-8" ?><areaOfInterest xmlns:gml="http://www.opengis.net/gml"><gml:Polygon xmlns:gml="urn:gml"><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>$coordinates</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></areaOfInterest>'
+
+    aoi_template = Template(aoi_str)
+    aoi_xml = aoi_template.safe_substitute(coordinates=coordinates)
+
+    data_dict = {'aoi': aoi_xml, 'emailAddress': aoi_data.get('emailAddress'),
+                 'featureItems': aoi_data.get('featureItems'), 'useAOIBounds': '1', 'formatType': '3', 'aoiType': '2',
+                 'clippingMethodType': '0', 'crsType': '1', 'prepackagedItems': '', 'aoiName': ''}
+
+    print data_dict
+    aoi_json = json.dumps(data_dict)
+    print aoi_json
+
+    url = "https://apps.gov.bc.ca/ext/dwds-ofi-tester/#createOrderFilteredPublic"
+    resp = reqs.request('post', url, json=data_dict)
+
+    print resp.text
     return results
