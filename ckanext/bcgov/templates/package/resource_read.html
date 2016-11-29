@@ -40,7 +40,11 @@
             {% endif %}
             {% if res.url and h.is_url(res.url) %}
               <li>
-                <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}" title="{{ h.size_or_link(res.url_type=='upload', res.size) }}">
+                {% if pkg.type == 'Geographic' and res.ofi %}
+                    <a href="#edc-mow" class="btn btn-primary resource-type-{{ res.resource_type }}" role="button" data-toggle="modal">
+                {% else %}
+                  <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}" title="{{ h.size_or_link(res.url_type=='upload', res.size) }}">
+                {% endif %}
                   {% if res.resource_type in ('listing', 'service') %}
                     <i class="icon-eye-open"></i> {{ _('View') }}
                   {% elif  res.resource_type == 'api' %}
@@ -165,5 +169,9 @@
   {% block resource_license %}
     {% snippet "package/snippets/social.html" %}
   {% endblock %}
+
+  {% if c.pkg_dict.type == 'Geographic' and res.ofi %}
+    {% snippet 'snippets/edc_mow.html', pkg_obj_name=pkg.object_name %}
+  {% endif %}
 
 {% endblock %}

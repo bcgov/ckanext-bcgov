@@ -40,6 +40,7 @@ this.ckan.module('edc_mow', function($, _) {
           }
           else if (data.records_found === 0) {
             _maxAreaHectares = 0;
+            $('#area-info').css("display", "none");
           }
           else {
             // not sure 
@@ -110,6 +111,12 @@ this.ckan.module('edc_mow', function($, _) {
     var _initStart = function() {
       $("#mow-ready").hide();
       $("#mow-err").hide();
+      $("#consent-check").change(function() {
+        if (this.checked) 
+          $("#consent-terms").css("display", "none");
+        else
+          $("#consent-terms").css("display", "block");
+      });
       _fetchMaxDownloadableArea(_initSuccess, _initFailed);
     };
 
