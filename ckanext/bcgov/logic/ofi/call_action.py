@@ -6,6 +6,7 @@
 
 import logging
 from pprint import pprint, pformat
+import json
 
 import requests as reqs
 
@@ -48,7 +49,7 @@ def file_formats(context, ofi_vars, ofi_resp):
 
 def geo_resource_form(context, data):
     '''
-    TODO
+    TODO: this should be moved to the ofi controller, considering it returns html
     '''
     # Note: need to remove object_name because the decorator handles object_name if present
     #       and appends the object_name on the url, which in this case for fileFormats, is
@@ -267,5 +268,134 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
                 u'error': True,
                 u'error_msg': unicode(e)
             })
+
+
+@toolkit.side_effect_free
+@ofi_logic.setup_ofi_action(u'/security/productAllowedByFeatureType/')
+def get_max_aoi(context, ofi_vars, ofi_resp):
+    '''
+    TODO
+    Also checks object_name for users eg. opening the mow
+    '''
+    results = {}
+
+    #pprint(ofi_vars)
+    #pprint(ofi_resp.text)
+
+    if ofi_resp.status_code == 200:
+        resp_dict = ofi_resp.json()
+        if u'allowed' in resp_dict and resp_dict[u'allowed'] is False:
+            results.update({
+                u'success': False,
+                u'error': True,
+                u'user_not_allowed': True,
+                u'error_msg': unicode('User is not allowed to view object.'),
+                u'content': resp_dict
+            })
+            return results
+    else:
+        results.update({
+            u'success': False,
+            u'error': True,
+            u'error_msg': unicode(ofi_resp.text)
+        })
+        return results
+
+    if u'object_name' in ofi_vars:
+        # TODO: move url and resource_id as config params
+        url = 'https://catalogue.data.gov.bc.ca/api/action/datastore_search'
+        data = {
+            'resource_id': 'd52c3bff-459d-422a-8922-7fd3493a60c2',
+            'q': {
+                'FEATURE_TYPE': ofi_vars[u'object_name']
+            }
+        }
+
+        resp = reqs.request('post', url, json=data)
+
+        resp_dict = resp.json()
+        search_results = resp_dict[u'result']
+        records_found = len(search_results[u'records'])
+
+        if u'success' in resp_dict and resp_dict[u'success'] and records_found > 0:
+            results.update({
+                u'success': True,
+                u'datastore_response': search_results
+            })
+        else:
+            results.update({
+                u'success': False,
+                u'error': True,
+                u'error_msg': 'Datastore_search failed',
+                u'datastore_response': resp_dict
+            })
+
+            if records_found == 0:
+                results.update({
+                    u'error_msg': 'datastore_search didn\'t find any records with given object_name',
+                    u'records_found': records_found
+                })
+    else:
+        results.update({
+            u'success': False,
+            u'error': True,
+            u'error_msg': 'No object_name'
+        })
+
+    return results
+
+
+@ofi_logic.setup_ofi_action()
+def create_aoi(context, ofi_vars, ofi_resp):
+    from string import Template
+
+    results = {}
+
+    aoi_data = ofi_vars.get('aoi_params', {})
+
+    if u'aoi_params' not in ofi_vars:
+        results.update({
+            u'success': False,
+            u'error': True,
+            u'error_msg': u'Missing aoi parameters.'
+        })
+        return results
+
+    aoi = aoi_data.get(u'aoi', [])
+    aoi_coordinates = [str(item.get(u'lat', 0.0)) + ',' + str(item.get(u'lng', 0.0)) for item in aoi]
+    coordinates = ' '.join(aoi_coordinates)
+
+    aoi_str = u'<?xml version="1.0" encoding="UTF-8" ?><areaOfInterest xmlns:gml="http://www.opengis.net/gml"><gml:Polygon xmlns:gml="urn:gml"><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>$coordinates</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></areaOfInterest>'
+
+    aoi_template = Template(aoi_str)
+    aoi_xml = aoi_template.safe_substitute(coordinates=coordinates)
+
+    data_dict = {
+        u'aoi': aoi_xml,
+        u'emailAddress': aoi_data.get(u'emailAddress'),
+        u'featureItems': aoi_data.get(u'featureItems'),
+        u'formatType': aoi_data.get(u'formatType'),
+        u'useAOIBounds': u'0',
+        u'aoiType': u'1',
+        u'clippingMethodType': u'0',
+        # crsType should always be 6, it will specify the AOI coordinates in latitude/longitude format
+        u'crsType': u'6',
+        u'prepackagedItems': u'',
+        u'aoiName': None
+    }
+
+    log.debug(u'AOI create order data - %s', pformat(data_dict))
+
+    if u'auth_user_obj' in context and context[u'auth_user_obj']:
+        url = ofi_vars[u'ofi_url'] + u'/order/createOrderFiltered'
+    else:
+        url = ofi_vars[u'ofi_url'] + u'/order/createOrderFilteredSM'
+
+    resp = reqs.request(u'post', url, json=data_dict, cookies=ofi_vars[u'cookies'])
+
+    if resp.status_code == 200:
+        results.update({
+            u'order_response': resp.json()
+        })
 
     return results

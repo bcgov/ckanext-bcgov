@@ -1,0 +1,33 @@
+/**
+ * DataBC CITZ EDC
+ *
+ * HighwayThree Solutions Inc.
+ * Author: Jared Smith <github@jrods>
+ *
+**/
+#edc-mow {
+
+}
+#edc-mow h4 {
+	margin: 0;
+}
+#edc-mow .modal-body {
+  /*min-height: 50vh;*/
+  padding: 15px;
+}
+#edc-mow .modal-body label {
+  margin-right: 5px;
+}
+#edc-mow .modal-body .btn {
+  font-size: 18px;
+  line-height: 1.2;
+}
+#edc-mow .form-actions {
+  margin: 0;
+}
+#edc-mow #resources {
+  padding: 15px 0;
+}
+#edc-mow #loading .add-data-loader {
+	bottom: calc(50% - 10em);
+}
