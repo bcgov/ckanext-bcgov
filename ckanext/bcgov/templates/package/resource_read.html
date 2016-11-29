@@ -44,7 +44,11 @@
             {% endif %}
             {% if res.url and h.is_url(res.url) %}
               <li>
-                <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}" title="{{ h.size_or_link(res.url_type=='upload', res.size) }}">
+                {% if pkg.type == 'Geographic' and res.ofi %}
+                  <a href="#edc-mow" class="btn btn-primary resource-type-{{ res.resource_type }} edc-mow-button" role="button" id="{{ res.format }}">
+                {% else %}
+                  <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}" title="{{ h.size_or_link(res.url_type=='upload', res.size) }}">
+                {% endif %}
                   {% if res.resource_type in ('listing', 'service') %}
                     <i class="icon-eye-open"></i> {{ _('View') }}
                   {% elif  res.resource_type == 'api' %}
@@ -68,7 +72,14 @@
           {% block resource_read_title %}<h1 class="page-heading">{{ h.resource_display_name(res) | truncate(50) }}</h1>{% endblock %}
           {% block resource_read_url %}
             {% if res.url and h.is_url(res.url) %}
-              <p class="muted ellipsis">{{ _('URL:') }} <a href="{{ res.url }}" class="resource-url-analytics" title="{{ res.url }}">{{ res.url }}</a></p>
+              <p class="muted ellipsis">{{ _('URL:') }} 
+                {% if pkg.type == 'Geographic' and res.ofi %}
+                  <a href="#edc-mow" class="resource-type-{{ res.resource_type }} edc-mow-button" role="button" id="{{ res.format }}" title="{{ _('Open MOW') }}">
+                {% else %}
+                  <a href="{{ res.url }}" class="resource-url-analytics" title="{{ res.url }}">
+                {% endif %} 
+                {{ res.url }}</a>               
+              </p>
             {% endif %}
           {% endblock %}
           <div class="prose notes" property="rdfs:label">
@@ -170,8 +181,14 @@
     {% snippet "package/snippets/social.html" %}
   {% endblock %}
 
-  {% if c.pkg_dict.type == 'Geographic' and c.ofi %}
-    {% snippet 'ofi/ofi_modal.html', pkg_id=c.pkg_dict.id, pkg_name=c.pkg_dict.name, pkg_obj_name=c.pkg_dict.object_name, ofi=c.ofi %}
+  {% if c.pkg_dict.type == 'Geographic' %}
+    {% if c.ofi %}
+      {% snippet 'ofi/ofi_modal.html', pkg_id=c.pkg_dict.id, pkg_name=c.pkg_dict.name, pkg_obj_name=c.pkg_dict.object_name, ofi=c.ofi %}
+    {% endif %}
+
+    {% if res.ofi %}
+      {% snippet 'snippets/edc_mow.html', pkg_obj_name=pkg.object_name, pkg_id=pkg.id %}
+    {% endif %}
   {% endif %}
 
 {% endblock %}

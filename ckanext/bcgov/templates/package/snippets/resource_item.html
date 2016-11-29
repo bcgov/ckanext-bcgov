@@ -55,6 +55,9 @@
             <i class="icon-download"></i>
             {{ _('Download') }}
           {% else %}
+            {% if pkg.type == 'Geographic' and res.ofi %}
+              <a href="#edc-mow" role="button" id="{{ res.format }}" class="edc-mow-button">
+            {% endif %}
             <i class="icon-external-link"></i>
             {{ _('Access / Download') }}
           {% endif %}

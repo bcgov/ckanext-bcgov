@@ -92,6 +92,18 @@ class EDCOfiController(ApiController):
         elif call_action == 'file_formats':
             return self._finish_ok(action_func(context, {}))
 
+        elif call_action == 'get_max_aoi':
+            max_aoi = action_func(context, data)
+
+            if u'user_not_allowed' in max_aoi and max_aoi[u'user_not_allowed']:
+                return self._finish(403, max_aoi, 'json')
+
+            return self._finish_ok(max_aoi)
+
+        elif call_action == 'create_aoi':
+            data.update({'aoi_params': query_params})
+            return self._finish_ok(action_func(context, data))
+
         elif call_action == 'remove_ofi_resources':
             remove_results = action_func(context, data)
 
