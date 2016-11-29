@@ -66,9 +66,9 @@ this.ckan.module('edc_mow', function($, _) {
               $('#mow-err').html('<strong>Error:</strong> You currently don\'t have access to this resource. Please log in.');
             else
               $('#mow-err').html('<strong>Error:</strong> Something else happened with authorization.');
-
-            modal_controls.find('#order-btn').remove();
           }
+          
+          modal_controls.find('#order-btn').remove();
 
           callbackErr();  
           _toggleSpinner(false);       

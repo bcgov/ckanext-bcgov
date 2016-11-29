@@ -270,6 +270,7 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
             })
 
 
+@toolkit.side_effect_free
 @ofi_logic.setup_ofi_action(u'/security/productAllowedByFeatureType/')
 def get_max_aoi(context, ofi_vars, ofi_resp):
     '''
