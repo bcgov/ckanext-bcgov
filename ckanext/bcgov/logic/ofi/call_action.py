@@ -106,8 +106,9 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
         resource_meta.update({
             u'name':  base_name + file_format[u'formatname'],
             u'url': base_url + h.url_for('ofi resource', format=file_format[u'formatname'], object_name=ofi_vars[u'object_name']),
-            u'format': file_format[u'formatname'],
+            u'format': str(file_format[u'formatID'])
         })
+
         try:
             resource = toolkit.get_action(u'resource_create')(context, resource_meta)
             added_resources.append(resource)
@@ -210,6 +211,8 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
     '''
     pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
 
+    file_formats = toolkit.get_action(u'file_formats')({}, {})
+
     results = {}
 
     # get all ofi resources in the dataset
@@ -219,13 +222,9 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
         # get the first ofi resource, it doesn't matter which type it is
         ofi_resource = ofi_resources[0] or False
 
-        # just the format names from the ofi resources
-        file_formats = []
-        for resource in ofi_resources:
-            if u'format' in resource:
-                file_formats.append({
-                    u'formatname': resource[u'format']
-                })
+        # just the format names from the ofi api call
+        # TODO: maybe store both the format name and id in the resource meta data?
+        file_formats = [i[u'formatname'] for i in file_formats]
 
         if ofi_resource:
             results.update({

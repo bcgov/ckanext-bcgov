@@ -8,7 +8,7 @@
 	<label class="control-label">{{ _("Formats") }}</label>
 	<div>
 		{% for format in file_formats %}
-			{{ format.formatname }}
+			{{ format.formatname or format }}
 		{% endfor %}
 	</div>
 </div>
