@@ -198,8 +198,8 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
     '''
     results = {}
 
-    pprint(ofi_vars)
-    pprint(ofi_resp.text)
+    #pprint(ofi_vars)
+    #pprint(ofi_resp.text)
 
     if ofi_resp.status_code == 200:
         resp_dict = ofi_resp.json()
@@ -208,7 +208,8 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
                 u'success': False,
                 u'error': True,
                 u'user_not_allowed': True,
-                u'error_msg': unicode('User is not allowed to view object.')
+                u'error_msg': unicode('User is not allowed to view object.'),
+                u'content': resp_dict
             })
             return results
     else:

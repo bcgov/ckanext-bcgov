@@ -60,7 +60,14 @@ this.ckan.module('edc_mow', function($, _) {
           console.log(jqXHR.responseText);
 
           if (jqXHR.status == 403) {
-            console.log('todo');
+            var resp_obj = jqXHR.responseJSON;
+
+            if (resp_obj.user_not_allowed)
+              $('#mow-err').html('<strong>Error:</strong> You currently don\'t have access to this resource. Please log in.');
+            else
+              $('#mow-err').html('<strong>Error:</strong> Something else happened with authorization.');
+
+            modal_controls.find('#order-btn').remove();
           }
 
           callbackErr();  
