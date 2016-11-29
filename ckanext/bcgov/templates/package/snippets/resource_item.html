@@ -51,6 +51,9 @@
             <i class="icon-download"></i>
             {{ _('Download') }}
           {% else %}
+            {% if pkg.type == 'Geographic' and res.ofi %}
+                <a href="#edc-mow" role="button" data-toggle="modal">
+            {% endif %}
             <i class="icon-external-link"></i>
             {{ _('Access / Download') }}
           {% endif %}
@@ -62,14 +65,6 @@
         <a href="{{ h.url_for(controller='package', action='resource_edit', id=pkg.name, resource_id=res.id) }}">
           <i class="icon-edit"></i>
           {{ _('Edit') }}
-        </a>
-      </li>
-      {% endif %}
-      {% if pkg.type == 'Geographic' %}
-      <li>
-        <a href="#edc-mow" role="button" data-toggle="modal">
-          <i class="icon-download"></i>
-          {{ _('MOW') }}
         </a>
       </li>
       {% endif %}
