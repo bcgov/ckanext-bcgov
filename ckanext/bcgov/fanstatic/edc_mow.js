@@ -10,7 +10,7 @@
 "use strict";
 
 this.ckan.module('edc_mow', function($, _) {
-    var self, modal, modal_subtitle, content_body, modal_controls, spinner, aoi_form;
+    var self, modal, modal_subtitle, content_body, modal_controls, spinner, aoi_form, format_type;
 
     var _map = null;
     var _maxAreaHectares = null;
@@ -27,7 +27,10 @@ this.ckan.module('edc_mow', function($, _) {
         
       $.ajax({
         'url': self.options.mow_max_aoi_url,
-        'data': { 'object_name': self.options.object_name },
+        'data': { 
+          'object_name': self.options.object_name,
+          'package_id': self.options.package_id
+        },
         'success': function(data, status) {
           console.log(data);
           if (data.success) {
@@ -54,6 +57,12 @@ this.ckan.module('edc_mow', function($, _) {
         },
         'error': function(jqXHR, textStatus, errorThrown) {
           console.log(jqXHR);
+          console.log(jqXHR.responseText);
+
+          if (jqXHR.status == 403) {
+            console.log('todo');
+          }
+
           callbackErr();  
           _toggleSpinner(false);       
         }
@@ -146,21 +155,23 @@ this.ckan.module('edc_mow', function($, _) {
     };
 
     var _placeOrder = function() {
-        for (var key in self.aoi) {
-            console.log('LAT: ' + self.aoi[key].lat);
-            console.log('LNG: ' + self.aoi[key].lng);
-        }
+      for (var key in self.aoi) {
+          console.log('LAT: ' + self.aoi[key].lat);
+          console.log('LNG: ' + self.aoi[key].lng);
+      }
 
-        var aoi_data = {};
-        aoi_data.aoi = self.aoi;
-        aoi_data.emailAddress = aoi_form.find('#email1').val();
-        aoi_data.EPSG = aoi_form.find('#map_projection').val();
-        aoi_data.useAOIBounds = "1";
-        var featureItems = [];
-        featureItems.push({'featureItem' : self.options.object_name});
-        aoi_data.featureItems = featureItems;
+      var aoi_data = {
+        'object_name': self.options.object_name,
+        'aoi': self.aoi,
+        'emailAddress': aoi_form.find('#email1').val(),
+        'EPSG': aoi_form.find('#map_projection').val(),
+        'formatType': format_type,
+        'featureItems': [
+          {'featureItem': self.options.object_name}
+        ]          
+      };
 
-        console.log(aoi_data);
+      console.log(aoi_data);
 
       $.ajax({
         'url': self.options.aoi_create_order_url,
@@ -168,7 +179,7 @@ this.ckan.module('edc_mow', function($, _) {
         'data': JSON.stringify(aoi_data),
         'contentType': 'application/json; charset=utf-8',
         'success': function(result, status) {
-            console.log(result);
+          console.log(result);
         },
         'error': function(jqXHR, textStatus, errorThrown) {
           console.log(jqXHR.responseText);
@@ -189,11 +200,20 @@ this.ckan.module('edc_mow', function($, _) {
             modal_controls = this.$('.modal-footer');
             aoi_form = this.$('#aoi-order-form');
 
+            $.map($('.edc-mow-button'), function(button) {
+              $(button).on('click', function(event) {
+                // allows the button for the specified resource to give its format type to be passed to the server
+                event.preventDefault();
+                format_type = event.target.id;                
+                $("#edc-mow").modal("show");
+              });
+            });
+
             //capture the bootstrap event fired when the modal window is actually
             //shown.  
             //perform any initialization that can't be done until the modal window is actually
             //visible
-            $("#edc-mow").on("shown.bs.tab", function() {
+            $("#edc-mow").on("shown.bs.tab", function(event) {              
               _initStart();
             });
         },

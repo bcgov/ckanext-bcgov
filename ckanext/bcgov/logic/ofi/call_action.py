@@ -42,7 +42,7 @@ def file_formats(context, ofi_vars, ofi_resp):
 
 def geo_resource_form(context, data):
     '''
-    TODO
+    TODO: this should be moved to the ofi controller, considering it returns html
     '''
     # Note: need to remove object_name because the decorator handles object_name if present
     #       and appends the object_name on the url, which in this case for fileFormats, is
@@ -190,16 +190,42 @@ def remove_ofi_resources(context, ofi_vars, ofi_resp):
 
 
 @toolkit.side_effect_free
-def get_max_aoi(context, data):
+@ofi_logic.setup_ofi_action(u'/security/productAllowedByFeatureType/')
+def get_max_aoi(context, ofi_vars, ofi_resp):
+    '''
+    TODO
+    Also checks object_name for users eg. opening the mow
+    '''
     results = {}
 
-    if u'object_name' in data:
+    pprint(ofi_vars)
+    pprint(ofi_resp.text)
+
+    if ofi_resp.status_code == 200:
+        resp_dict = ofi_resp.json()
+        if u'allowed' in resp_dict and resp_dict[u'allowed'] is False:
+            results.update({
+                u'success': False,
+                u'error': True,
+                u'user_not_allowed': True,
+                u'error_msg': unicode('User is not allowed to view object.')
+            })
+            return results
+    else:
+        results.update({
+            u'success': False,
+            u'error': True,
+            u'error_msg': unicode(ofi_resp.text)
+        })
+        return results
+
+    if u'object_name' in ofi_vars:
         # TODO: move url and resource_id as config params
         url = 'https://catalogue.data.gov.bc.ca/api/action/datastore_search'
         data = {
             'resource_id': 'd52c3bff-459d-422a-8922-7fd3493a60c2',
             'q': {
-                'FEATURE_TYPE': data[u'object_name']
+                'FEATURE_TYPE': ofi_vars[u'object_name']
             }
         }
 
@@ -208,8 +234,6 @@ def get_max_aoi(context, data):
         resp_dict = resp.json()
         search_results = resp_dict[u'result']
         records_found = len(search_results[u'records'])
-
-        #pprint(resp_dict)
 
         if u'success' in resp_dict and resp_dict[u'success'] and records_found > 0:
             results.update({
@@ -239,34 +263,57 @@ def get_max_aoi(context, data):
     return results
 
 
-
-def create_aoi(context, data):
-    results = {}
-
+@ofi_logic.setup_ofi_action()
+def create_aoi(context, ofi_vars, ofi_resp):
     from string import Template
 
-    aoi_data = data.get('aoi_params', None)
-    aoi = aoi_data.get('aoi', [])
+    results = {}
 
-    aoi_coordinates = [str(item.get('lat', 0.0)) + ',' + str(item.get('lng', 0.0)) for item in aoi]
+    aoi_data = ofi_vars.get('aoi_params', {})
 
+    if u'aoi_params' not in ofi_vars:
+        results.update({
+            u'success': False,
+            u'error': True,
+            u'error_msg': u'Missing aoi parameters.'
+        })
+        return results
+
+    aoi = aoi_data.get(u'aoi', [])
+    aoi_coordinates = [str(item.get(u'lat', 0.0)) + ',' + str(item.get(u'lng', 0.0)) for item in aoi]
     coordinates = ' '.join(aoi_coordinates)
 
-    aoi_str = '<?xml version="1.0" encoding="UTF-8" ?><areaOfInterest xmlns:gml="http://www.opengis.net/gml"><gml:Polygon xmlns:gml="urn:gml"><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>$coordinates</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></areaOfInterest>'
+    aoi_str = u'<?xml version="1.0" encoding="UTF-8" ?><areaOfInterest xmlns:gml="http://www.opengis.net/gml"><gml:Polygon xmlns:gml="urn:gml"><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>$coordinates</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></areaOfInterest>'
 
     aoi_template = Template(aoi_str)
     aoi_xml = aoi_template.safe_substitute(coordinates=coordinates)
 
-    data_dict = {'aoi': aoi_xml, 'emailAddress': aoi_data.get('emailAddress'),
-                 'featureItems': aoi_data.get('featureItems'), 'useAOIBounds': '1', 'formatType': '3', 'aoiType': '2',
-                 'clippingMethodType': '0', 'crsType': '1', 'prepackagedItems': '', 'aoiName': ''}
+    data_dict = {
+        u'aoi': aoi_xml,
+        u'emailAddress': aoi_data.get(u'emailAddress'),
+        u'featureItems': aoi_data.get(u'featureItems'),
+        u'formatType': aoi_data.get(u'formatType'),
+        u'useAOIBounds': u'0',
+        u'aoiType': u'1',
+        u'clippingMethodType': u'0',
+        # crsType should always be 6, it will specify the AOI coordinates in latitude/longitude format
+        u'crsType': u'6',
+        u'prepackagedItems': u'',
+        u'aoiName': None
+    }
 
-    print data_dict
-    aoi_json = json.dumps(data_dict)
-    print aoi_json
+    log.debug(u'AOI create order data - %s', pformat(data_dict))
 
-    url = "https://apps.gov.bc.ca/ext/dwds-ofi-tester/#createOrderFilteredPublic"
-    resp = reqs.request('post', url, json=data_dict)
+    if u'auth_user_obj' in context and context[u'auth_user_obj']:
+        url = ofi_vars[u'ofi_url'] + u'/order/createOrderFiltered'
+    else:
+        url = ofi_vars[u'ofi_url'] + u'/order/createOrderFilteredSM'
 
-    print resp.text
+    resp = reqs.request(u'post', url, json=data_dict, cookies=ofi_vars[u'cookies'])
+
+    if resp.status_code == 200:
+        results.update({
+            u'order_response': resp.json()
+        })
+
     return results

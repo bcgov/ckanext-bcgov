@@ -41,7 +41,7 @@
             {% if res.url and h.is_url(res.url) %}
               <li>
                 {% if pkg.type == 'Geographic' and res.ofi %}
-                    <a href="#edc-mow" class="btn btn-primary resource-type-{{ res.resource_type }}" role="button" data-toggle="modal">
+                  <a href="#edc-mow" class="btn btn-primary resource-type-{{ res.resource_type }} edc-mow-button" role="button" id="{{ res.format }}">
                 {% else %}
                   <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}" title="{{ h.size_or_link(res.url_type=='upload', res.size) }}">
                 {% endif %}
@@ -68,7 +68,14 @@
           {% block resource_read_title %}<h1 class="page-heading">{{ h.resource_display_name(res) | truncate(50) }}</h1>{% endblock %}
           {% block resource_read_url %}
             {% if res.url and h.is_url(res.url) %}
-              <p class="muted ellipsis">{{ _('URL:') }} <a href="{{ res.url }}" class="resource-url-analytics" title="{{ res.url }}">{{ res.url }}</a></p>
+              <p class="muted ellipsis">{{ _('URL:') }} 
+                {% if pkg.type == 'Geographic' and res.ofi %}
+                  <a href="#edc-mow" class="resource-type-{{ res.resource_type }} edc-mow-button" role="button" id="{{ res.format }}" title="{{ _('Open MOW') }}">
+                {% else %}
+                  <a href="{{ res.url }}" class="resource-url-analytics" title="{{ res.url }}">
+                {% endif %} 
+                {{ res.url }}</a>               
+              </p>
             {% endif %}
           {% endblock %}
           <div class="prose notes" property="rdfs:label">
@@ -171,7 +178,7 @@
   {% endblock %}
 
   {% if c.pkg_dict.type == 'Geographic' and res.ofi %}
-    {% snippet 'snippets/edc_mow.html', pkg_obj_name=pkg.object_name %}
+    {% snippet 'snippets/edc_mow.html', pkg_obj_name=pkg.object_name, pkg_id=pkg.id %}
   {% endif %}
 
 {% endblock %}
