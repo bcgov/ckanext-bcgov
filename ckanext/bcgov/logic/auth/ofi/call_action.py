@@ -80,7 +80,7 @@ def get_max_aoi(context, data_dict=None):
     return {'success': False, 'msg': _('Failed authorization.')}
 
 
-def create_aoi(context, data_dict=None):
+def create_order(context, data_dict=None):
     user_obj = context.get('auth_user_obj')
     user_obj_checked = context.get('__auth_user_obj_checked', False)
 
