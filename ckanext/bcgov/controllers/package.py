@@ -569,7 +569,7 @@ def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
                 u'object_name': pkg_dict[u'object_name'],
                 u'ofi_resources': ofi_resources,
                 u'ofi_exists': True,
-                u'secure': False,
+                u'secure': True,
                 u'open_modal': open_modal
             })
 
@@ -577,7 +577,7 @@ def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
             # TODO figure out the mechanism for turning on secure calls for ofi
             obj_data = {
                 u'object_name': pkg_dict[u'object_name'],
-                u'secure': False,
+                u'secure': True,
                 u'open_modal': open_modal
             }
 
