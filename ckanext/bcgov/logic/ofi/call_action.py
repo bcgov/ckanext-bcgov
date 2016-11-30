@@ -107,7 +107,8 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
         resource_meta.update({
             u'name':  base_name + file_format[u'formatname'],
             u'url': base_url + h.url_for('ofi resource', format=file_format[u'formatname'], object_name=ofi_vars[u'object_name']),
-            u'format': str(file_format[u'formatID'])
+            u'format': file_format[u'formatname'],
+            # u'format_id': file_format[u'formatID']
         })
 
         try:
@@ -212,8 +213,6 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
     '''
     pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
 
-    file_formats = toolkit.get_action(u'file_formats')({}, {})
-
     results = {}
 
     # get all ofi resources in the dataset
@@ -221,17 +220,17 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
 
     if toolkit.request.method == 'GET':
         # get the first ofi resource, it doesn't matter which type it is
-        ofi_resource = ofi_resources[0] or False
+        is_ofi_res = ofi_resources[0] or False
 
         # just the format names from the ofi api call
         # TODO: maybe store both the format name and id in the resource meta data?
-        file_formats = [i[u'formatname'] for i in file_formats]
+        file_formats = [i[u'format'] for i in ofi_resources if u'format' in i]
 
-        if ofi_resource:
+        if is_ofi_res:
             results.update({
                 u'success': True,
                 u'render_form': True,
-                u'ofi_resource': ofi_resource,
+                u'ofi_resource': is_ofi_res,
                 u'file_formats': file_formats
             })
         else:
@@ -269,6 +268,8 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
                 u'error_msg': unicode(e)
             })
 
+    return results
+
 
 @toolkit.side_effect_free
 @ofi_logic.setup_ofi_action(u'/security/productAllowedByFeatureType/')
@@ -279,12 +280,9 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
     '''
     results = {}
 
-    #pprint(ofi_vars)
-    #pprint(ofi_resp.text)
-
     if ofi_resp.status_code == 200:
         resp_dict = ofi_resp.json()
-        if u'allowed' in resp_dict: 
+        if u'allowed' in resp_dict:
             if resp_dict[u'allowed'] is False:
                 results.update({
                     u'success': False,
@@ -294,7 +292,7 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
                     u'content': resp_dict
                 })
                 return results
-            else:            
+            else:
                 results.update({
                     u'content': resp_dict,
                     u'user_allowed': resp_dict[u'allowed']
@@ -355,6 +353,8 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
 def create_aoi(context, ofi_vars, ofi_resp):
     from string import Template
 
+    file_formats = toolkit.get_action('file_formats')({}, {})
+
     results = {}
 
     aoi_data = ofi_vars.get('aoi_params', {})
@@ -380,7 +380,7 @@ def create_aoi(context, ofi_vars, ofi_resp):
         u'aoi': aoi_xml,
         u'emailAddress': aoi_data.get(u'emailAddress'),
         u'featureItems': aoi_data.get(u'featureItems'),
-        u'formatType': aoi_data.get(u'formatType'),
+        u'formatType': aoi_data.get(u'format'),
         u'useAOIBounds': u'0',
         u'aoiType': u'1',
         u'clippingMethodType': u'0',

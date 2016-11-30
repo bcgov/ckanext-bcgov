@@ -10,7 +10,7 @@
 "use strict";
 
 this.ckan.module('edc_mow', function($, _) {
-    var self, modal, modal_subtitle, content_body, modal_controls, spinner, aoi_form, format_type;
+    var self, modal, modal_subtitle, content_body, modal_controls, spinner, aoi_form, format;
 
     var _map = null;
     var _maxAreaHectares = null;
@@ -130,6 +130,11 @@ this.ckan.module('edc_mow', function($, _) {
     var _initStart = function() {
       $("#mow-ready").hide();
       $("#mow-err").hide();
+
+      if (!document.getElementById("order-btn")) {
+        modal_controls.append('<button id="order-btn" class="btn btn-primary">Place order</button>');
+      }
+
       $("#consent-check").change(function() {
         if (this.checked) 
           $("#consent-terms").css("display", "none");
@@ -165,6 +170,8 @@ this.ckan.module('edc_mow', function($, _) {
     };
 
     var _placeOrder = function() {
+      _toggleSpinner(true);
+
       for (var key in self.aoi) {
           console.log('LAT: ' + self.aoi[key].lat);
           console.log('LNG: ' + self.aoi[key].lng);
@@ -175,7 +182,7 @@ this.ckan.module('edc_mow', function($, _) {
         'aoi': self.aoi,
         'emailAddress': aoi_form.find('#email1').val(),
         'EPSG': aoi_form.find('#map_projection').val(),
-        'formatType': format_type,
+        'format': format,
         'featureItems': [
           {'featureItem': self.options.object_name}
         ]          
@@ -205,9 +212,11 @@ this.ckan.module('edc_mow', function($, _) {
             modal_controls.find('#order-btn').remove();
           }
 
+          _toggleSpinner(false);
         },
         'error': function(jqXHR, textStatus, errorThrown) {
           console.log(jqXHR.responseText);
+          _toggleSpinner(false);
         }
       });
      };
@@ -229,7 +238,7 @@ this.ckan.module('edc_mow', function($, _) {
               $(button).on('click', function(event) {
                 // allows the button for the specified resource to give its format type to be passed to the server
                 event.preventDefault();
-                format_type = event.target.id;                
+                format = event.target.id;
                 $("#edc-mow").modal("show");
               });
             });
