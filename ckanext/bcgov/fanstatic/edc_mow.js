@@ -91,8 +91,7 @@ this.ckan.module('edc_mow', function($, _) {
       self.aoi = latLonList;
       var areaM2 = L.GeometryUtil.geodesicArea(latLonList)
       var areaHect = Math.round(areaM2 * 0.0001);
-      console.log(areaM2);
-      console.log(areaHect);
+
       $('#selected-area').html(_formatNum(areaHect))
 
       if (areaHect < _maxAreaHectares || _maxAreaHectares == 0) {
@@ -135,11 +134,17 @@ this.ckan.module('edc_mow', function($, _) {
         modal_controls.append('<button id="order-btn" class="btn btn-primary">Place order</button>');
       }
 
-      $("#consent-check").change(function() {
+      var consent_check = $("#consent-check");
+
+      if (consent_check.prop('checked')) {
+        $("#consent-terms").hide()
+      }
+
+      consent_check.change(function() {
         if (this.checked) 
-          $("#consent-terms").css("display", "none");
+          $("#consent-terms").hide();
         else
-          $("#consent-terms").css("display", "block");
+          $("#consent-terms").show();
       });
       _fetchMaxDownloadableArea(_initSuccess, _initFailed);
     };
@@ -169,18 +174,55 @@ this.ckan.module('edc_mow', function($, _) {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
 
+    var _checkForm = function() {
+      var form_check = true;
+
+
+
+
+      var error_html = '';
+
+      var consent = $("#consent-check").prop('checked');
+      if (!consent) {
+        error_html += '<div><strong>Error:</strong> You must accept the term and conditions.</div>';
+
+        $("#consent").addClass('error error-missing');
+
+        form_check = false;
+      } else {
+        $("#consent").removeClass('error error-missing');
+      }
+
+      var email = $.trim($('#email1').val());
+      if (email === '') {
+        error_html += '<div><strong>Error:</strong> Please provide an email address.</div>';
+
+        $("#email").addClass('error error-missing');
+
+        form_check = false;
+      } else {
+        $("#email").removeClass('error error-missing');
+      }
+
+      if (!form_check) {
+        $('#mow-err').html(error_html).show();
+      }
+
+      return form_check;
+    };
+
     var _placeOrder = function() {
       _toggleSpinner(true);
 
-      for (var key in self.aoi) {
-          console.log('LAT: ' + self.aoi[key].lat);
-          console.log('LNG: ' + self.aoi[key].lng);
+      if (_checkForm() == false) {
+        _toggleSpinner(false);
+        return false;
       }
 
       var aoi_data = {
         'object_name': self.options.object_name,
         'aoi': self.aoi,
-        'emailAddress': aoi_form.find('#email1').val(),
+        'emailAddress': $.trim(aoi_form.find('#email1').val()),
         'EPSG': aoi_form.find('#map_projection').val(),
         'format': format,
         'featureItems': [
