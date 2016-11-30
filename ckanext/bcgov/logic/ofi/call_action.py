@@ -353,8 +353,6 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
 def create_aoi(context, ofi_vars, ofi_resp):
     from string import Template
 
-    file_formats = toolkit.get_action('file_formats')({}, {})
-
     results = {}
 
     aoi_data = ofi_vars.get('aoi_params', {})
@@ -380,7 +378,7 @@ def create_aoi(context, ofi_vars, ofi_resp):
         u'aoi': aoi_xml,
         u'emailAddress': aoi_data.get(u'emailAddress'),
         u'featureItems': aoi_data.get(u'featureItems'),
-        u'formatType': aoi_data.get(u'format'),
+        u'formatType': _get_format_id(aoi_data.get(u'format')),
         u'useAOIBounds': u'0',
         u'aoiType': u'1',
         u'clippingMethodType': u'0',
@@ -405,3 +403,15 @@ def create_aoi(context, ofi_vars, ofi_resp):
         })
 
     return results
+
+
+def _get_format_id(format_name):
+    file_formats = toolkit.get_action('file_formats')({}, {})
+
+    format_id = None
+
+    for file_format in file_formats:
+        if file_format[u'formatname'] == format_name:
+            format_id = str(file_format[u'formatID'])
+
+    return format_id
