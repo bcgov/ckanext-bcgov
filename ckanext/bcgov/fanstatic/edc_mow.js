@@ -59,11 +59,14 @@ this.ckan.module('edc_mow', function($, _) {
           console.log(jqXHR);
           console.log(jqXHR.responseText);
 
+          modal_subtitle.text('Error');
+
           if (jqXHR.status == 403) {
             var resp_obj = jqXHR.responseJSON;
 
-            if (resp_obj.user_not_allowed)
+            if (!resp_obj.user_allowed)
               $('#mow-err').html('<strong>Error:</strong> You currently don\'t have access to this resource. Please log in.');
+
             else
               $('#mow-err').html('<strong>Error:</strong> Something else happened with authorization.');
           }
@@ -185,8 +188,23 @@ this.ckan.module('edc_mow', function($, _) {
         'method': 'POST',
         'data': JSON.stringify(aoi_data),
         'contentType': 'application/json; charset=utf-8',
-        'success': function(result, status) {
-          console.log(result);
+        'success': function(data, status) {
+          var order_resp = data.order_response;
+
+          if (order_resp.Status == 'FAILURE') {
+            modal_subtitle.text('Error');
+            $('#mow-err').html('<strong>Error:</strong> ' + order_resp.Description);
+            modal_controls.find('#order-btn').remove();
+            $('#mow-ready').hide();
+            $('#mow-err').show();
+          }
+
+          if (order_resp.Status == 'SUCCESS') {
+            modal_subtitle.text('Order Success');
+            $('#mow-content').html('<h3>Success</h3><h4>The order has been placed and will be sent to the provided email address.</h4><p>Order ID: ' + order_resp.Value + '</p>');
+            modal_controls.find('#order-btn').remove();
+          }
+
         },
         'error': function(jqXHR, textStatus, errorThrown) {
           console.log(jqXHR.responseText);

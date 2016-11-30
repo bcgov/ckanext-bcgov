@@ -284,15 +284,21 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
 
     if ofi_resp.status_code == 200:
         resp_dict = ofi_resp.json()
-        if u'allowed' in resp_dict and resp_dict[u'allowed'] is False:
-            results.update({
-                u'success': False,
-                u'error': True,
-                u'user_not_allowed': True,
-                u'error_msg': unicode('User is not allowed to view object.'),
-                u'content': resp_dict
-            })
-            return results
+        if u'allowed' in resp_dict: 
+            if resp_dict[u'allowed'] is False:
+                results.update({
+                    u'success': False,
+                    u'error': True,
+                    u'user_allowed': resp_dict,
+                    u'error_msg': unicode('User is not allowed to view object.'),
+                    u'content': resp_dict
+                })
+                return results
+            else:            
+                results.update({
+                    u'content': resp_dict,
+                    u'user_allowed': resp_dict[u'allowed']
+                })
     else:
         results.update({
             u'success': False,
@@ -365,7 +371,7 @@ def create_aoi(context, ofi_vars, ofi_resp):
     aoi_coordinates = [str(item.get(u'lat', 0.0)) + ',' + str(item.get(u'lng', 0.0)) for item in aoi]
     coordinates = ' '.join(aoi_coordinates)
 
-    aoi_str = u'<?xml version="1.0" encoding="UTF-8" ?><areaOfInterest xmlns:gml="http://www.opengis.net/gml"><gml:Polygon xmlns:gml="urn:gml"><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>$coordinates</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></areaOfInterest>'
+    aoi_str = u'<?xml version=\"1.0\" encoding=\"UTF-8\" ?><areaOfInterest xmlns:gml=\"http://www.opengis.net/gml\"><gml:Polygon xmlns:gml=\"urn:gml\" srsName=\"EPSG:4326\"><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>$coordinates</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></areaOfInterest>'
 
     aoi_template = Template(aoi_str)
     aoi_xml = aoi_template.safe_substitute(coordinates=coordinates)
