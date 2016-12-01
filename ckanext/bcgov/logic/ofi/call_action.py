@@ -280,14 +280,16 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
     '''
     results = {}
 
-    if ofi_resp.status_code == 200:
+    content_type = ofi_resp.headers.get(u'content-type').split(';')[0]
+
+    if ofi_resp.status_code == 200 and content_type == 'application/json':
         resp_dict = ofi_resp.json()
         if u'allowed' in resp_dict:
             if resp_dict[u'allowed'] is False:
                 results.update({
                     u'success': False,
                     u'error': True,
-                    u'user_allowed': resp_dict,
+                    u'user_allowed': resp_dict[u'allowed'],
                     u'error_msg': unicode('User is not allowed to view object.'),
                     u'content': resp_dict
                 })
@@ -297,6 +299,16 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
                     u'content': resp_dict,
                     u'user_allowed': resp_dict[u'allowed']
                 })
+    elif content_type == 'text/html':
+        api_url = ofi_vars[u'ofi_url'] + u'/security/productAllowedByFeatureType/' + ofi_vars[u'object_name']
+        results.update({
+            u'success': False,
+            u'error': True,
+            u'error_msg': _('HTML was returned from %s') % api_url,
+            u'idir_login': unicode(ofi_resp.text),
+            u'idir_req': True
+        })
+        return results
     else:
         results.update({
             u'success': False,
@@ -390,6 +402,7 @@ def create_order(context, ofi_vars, ofi_resp):
 
     log.debug(u'AOI create order data - %s', pformat(data_dict))
 
+    # TODO: this stuff needs to change
     if u'auth_user_obj' in context and context[u'auth_user_obj']:
         url = ofi_vars[u'ofi_url'] + u'/order/createOrderFiltered'
     else:
@@ -397,9 +410,17 @@ def create_order(context, ofi_vars, ofi_resp):
 
     resp = reqs.request(u'post', url, json=data_dict, cookies=ofi_vars[u'cookies'])
 
-    if resp.status_code == 200:
+    content_type = resp.headers.get(u'content-type').split(';')[0]
+    if resp.status_code == 200 and content_type == 'application/json':
         results.update({
             u'order_response': resp.json()
+        })
+    else:
+        results.update({
+            u'success': False,
+            u'error': True,
+            u'error_msg': _('Non-json content returned from create order call.'),
+            u'order_response': resp.text
         })
 
     return results

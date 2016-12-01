@@ -1,6 +1,7 @@
 <div id="edc-mow" class="modal hide fade" tabindex="-1" role="dialog"
   data-module="edc_mow"
-  data-module-object_name="{{ pkg_obj_name or false }}"
+  data-module-secure_call="{{ c.user or False }}"
+  data-module-object_name="{{ pkg_obj_name or False }}"
   data-module-package_id="{{ pkg_id }}"
   data-module-mow_max_aoi_url="{{ h.url_for('ofi api', call_action='get_max_aoi') }}"
   data-module-aoi_create_order_url="{{ h.url_for('ofi api', call_action='ofi_create_order') }}"

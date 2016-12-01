@@ -70,21 +70,11 @@ def edit_ofi_resources(context, data_dict=None):
     return {'success': False, 'msg': _('Failed authorization.')}
 
 
+@toolkit.auth_allow_anonymous_access
 def get_max_aoi(context, data_dict=None):
-    user_obj = context.get('auth_user_obj')
-    user_obj_checked = context.get('__auth_user_obj_checked', False)
-
-    if user_obj and user_obj_checked:
-        return {'success': True}
-
-    return {'success': False, 'msg': _('Failed authorization.')}
+    return {'success': True}
 
 
+@toolkit.auth_allow_anonymous_access
 def create_order(context, data_dict=None):
-    user_obj = context.get('auth_user_obj')
-    user_obj_checked = context.get('__auth_user_obj_checked', False)
-
-    if user_obj and user_obj_checked:
-        return {'success': True}
-
-    return {'success': False, 'msg': _('Failed authorization.')}
+    return {'success': True}
