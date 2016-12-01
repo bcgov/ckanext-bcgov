@@ -95,7 +95,7 @@ class EDCOfiController(ApiController):
         elif call_action == 'get_max_aoi':
             max_aoi = action_func(context, data)
 
-            if u'user_not_allowed' in max_aoi and max_aoi[u'user_not_allowed']:
+            if u'user_allowed' in max_aoi and max_aoi[u'user_allowed'] is False:
                 return self._finish(403, max_aoi, 'json')
 
             return self._finish_ok(max_aoi)

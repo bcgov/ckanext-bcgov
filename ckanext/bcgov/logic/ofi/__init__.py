@@ -12,6 +12,8 @@ import requests as reqs
 
 from ckan.common import request
 
+import ckan.plugins.toolkit as toolkit
+
 import ckanext.bcgov.util.helpers as edc_h
 
 log = logging.getLogger(u'ckanext.bcgov.logic.ofi')
@@ -27,14 +29,14 @@ def setup_ofi_action(api_url=None):
             '''
             Context and data are args for get_action calls
             '''
-            if 'secure' not in data:
+            if u'secure' not in data:
                 data[u'secure'] = False
 
             # this action call doesn't need to be the secure url
             if action.__name__ == 'file_formats':
                 data.update(_prepare(False))
             else:
-                data.update(_prepare(data[u'secure']))
+                data.update(_prepare(toolkit.asbool(data[u'secure'])))
 
             if action.__name__ == 'edit_ofi_resources':
                 if u'package_id' not in data:

@@ -27,7 +27,8 @@ this.ckan.module('edc_mow', function($, _) {
         
       $.ajax({
         'url': self.options.mow_max_aoi_url,
-        'data': { 
+        'data': {
+          'secure': (self.options.secure_call !== 'False' ? true : false),
           'object_name': self.options.object_name,
           'package_id': self.options.package_id
         },
@@ -43,16 +44,28 @@ this.ckan.module('edc_mow', function($, _) {
           }
           else if (data.records_found === 0) {
             _maxAreaHectares = 0;
-            $('#area-info').css("display", "none");
+            $('#area-info').hide();
+          }
+          else if (data.error) {
+            $('#mow-err').html('<strong>Error:</strong> ' + data.error_msg);
+
+            callbackErr();
+
+            _toggleSpinner(false);
+            return false;
           }
           else {
-            // not sure 
+            // something really bad happened.
+            $('#mow-err').html('<strong>Error:</strong> Unknown error.');
+            callbackErr();
+
+            _toggleSpinner(false);
+            return false;
           }
           
           $('.max-area-hectares').html(_formatNum(_maxAreaHectares));
 
           callbackSuccess();
-
           _toggleSpinner(false);
         },
         'error': function(jqXHR, textStatus, errorThrown) {
@@ -66,12 +79,9 @@ this.ckan.module('edc_mow', function($, _) {
 
             if (!resp_obj.user_allowed)
               $('#mow-err').html('<strong>Error:</strong> You currently don\'t have access to this resource. Please log in.');
-
             else
               $('#mow-err').html('<strong>Error:</strong> Something else happened with authorization.');
           }
-          
-          modal_controls.find('#order-btn').remove();
 
           callbackErr();  
           _toggleSpinner(false);       
@@ -164,6 +174,7 @@ this.ckan.module('edc_mow', function($, _) {
     var _initFailed = function() {
       $("#mow-ready").hide();
       $("#mow-err").show();
+      modal_controls.find('#order-btn').remove();
     };
 
     var _toggleSpinner = function(on_off) {
@@ -177,9 +188,6 @@ this.ckan.module('edc_mow', function($, _) {
     var _checkForm = function() {
       var form_check = true;
 
-
-
-
       var error_html = '';
 
       var consent = $("#consent-check").prop('checked');
@@ -190,7 +198,7 @@ this.ckan.module('edc_mow', function($, _) {
 
         form_check = false;
       } else {
-        $("#consent").removeClass('error error-missing');
+        $("#email").removeClass('error error-missing');
       }
 
       var email = $.trim($('#email1').val());
