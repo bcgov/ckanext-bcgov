@@ -52,6 +52,8 @@ def setup_ofi_action(api_url=None):
                 elif 'object_name' in data:
                     url = data[u'ofi_url'] + api_url + data[u'object_name']
 
+                data[u'api_url'] = url
+
                 call_type = u'Secure' if data[u'secure'] else u'Public'  # call_type is for logging purposes
                 ofi_resp = _make_api_call(url, call_type=call_type, cookies=data[u'cookies'])
             else:
