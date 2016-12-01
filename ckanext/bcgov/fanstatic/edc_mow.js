@@ -120,7 +120,7 @@ this.ckan.module('edc_mow', function($, _) {
       if (!_map) {
         var bcgovRoadsLayer =  
           L.tileLayer(
-              'http://maps.gov.bc.ca/arcserver/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}', 
+              'https://maps.gov.bc.ca/arcserver/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
               {
                 attribution: '&copy; Government of British Columbia',
                 minZoom: 4,
@@ -138,11 +138,14 @@ this.ckan.module('edc_mow', function($, _) {
 
     var _initStart = function() {
       $("#mow-ready").hide();
-      $("#mow-err").hide();
+      _removeDebugMsg();
+      _removeAllErrorMsg();
 
       if (!document.getElementById("order-btn")) {
         modal_controls.append('<button id="order-btn" class="btn btn-primary">Place order</button>');
       }
+
+      modal_subtitle.text('Pan and zoom this map to select the geographic area.');
 
       var consent_check = $("#consent-check");
 
@@ -161,7 +164,7 @@ this.ckan.module('edc_mow', function($, _) {
 
     var _initSuccess = function() {
       $("#mow-ready").show();
-      $("#mow-err").hide();
+      _removeAllErrorMsg();
 
       //listen to order button clicks
       var orderBtn = modal_controls.find('#order-btn')
@@ -187,26 +190,21 @@ this.ckan.module('edc_mow', function($, _) {
 
     var _checkForm = function() {
       var form_check = true;
-
       var error_html = '';
 
       var consent = $("#consent-check").prop('checked');
       if (!consent) {
         error_html += '<div><strong>Error:</strong> You must accept the term and conditions.</div>';
-
         $("#consent").addClass('error error-missing');
-
         form_check = false;
       } else {
-        $("#email").removeClass('error error-missing');
+        $("#consent").removeClass('error error-missing');
       }
 
       var email = $.trim($('#email1').val());
       if (email === '') {
         error_html += '<div><strong>Error:</strong> Please provide an email address.</div>';
-
         $("#email").addClass('error error-missing');
-
         form_check = false;
       } else {
         $("#email").removeClass('error error-missing');
@@ -217,6 +215,16 @@ this.ckan.module('edc_mow', function($, _) {
       }
 
       return form_check;
+    };
+
+    var _removeAllErrorMsg = function() {
+      $('#mow-err').empty().hide();
+      $("#consent").removeClass('error error-missing');
+      $("#email").removeClass('error error-missing');
+    };
+
+    var _removeDebugMsg = function() {
+      $('#mow-debug').empty().hide();
     };
 
     var _placeOrder = function() {
@@ -230,11 +238,12 @@ this.ckan.module('edc_mow', function($, _) {
       var aoi_data = {
         'object_name': self.options.object_name,
         'aoi': self.aoi,
+        'consent': $("#consent-check").prop('checked'),
         'emailAddress': $.trim(aoi_form.find('#email1').val()),
         'EPSG': aoi_form.find('#map_projection').val(),
         'format': format,
         'featureItems': [
-          {'featureItem': self.options.object_name}
+          {'featureItem': self.options.object_name,'filterValue': ''}
         ]          
       };
 
@@ -248,10 +257,15 @@ this.ckan.module('edc_mow', function($, _) {
         'success': function(data, status) {
           var order_resp = data.order_response;
 
+          _removeAllErrorMsg();
+          _removeDebugMsg();
+
           if (order_resp.Status == 'FAILURE') {
             modal_subtitle.text('Error');
             $('#mow-err').html('<strong>Error:</strong> ' + order_resp.Description);
+            
             modal_controls.find('#order-btn').remove();
+            
             $('#mow-ready').hide();
             $('#mow-err').show();
           }
@@ -259,13 +273,53 @@ this.ckan.module('edc_mow', function($, _) {
           if (order_resp.Status == 'SUCCESS') {
             modal_subtitle.text('Order Success');
             $('#mow-content').html('<h3>Success</h3><h4>The order has been placed and will be sent to the provided email address.</h4><p>Order ID: ' + order_resp.Value + '</p>');
+                        
             modal_controls.find('#order-btn').remove();
           }
+
+          var debug_info = '<p>URL: ' + data.api_url + '</p>' +
+                           '<p>Order Response: ' + data.order_response + '</p>' +
+                           '<pre>' +
+                           JSON.stringify(data.order_sent, function(key, value) {
+                              if (key == 'aoi') {
+                                return $("<div>").text(value).html();
+                              } else {
+                                return value;
+                              }
+                           }, '\t') + '</pre>';
+
+          $('#mow-debug').html(debug_info);
+          $('#mow-debug').show();
 
           _toggleSpinner(false);
         },
         'error': function(jqXHR, textStatus, errorThrown) {
+          console.log(jqXHR);
           console.log(jqXHR.responseText);
+
+          _removeAllErrorMsg();
+          _removeDebugMsg();
+
+          if (jqXHR.status === 403) {
+            var err = JSON.parse(jqXHR.responseText);
+
+            if (err) {
+              var error_html = '';
+              if (err.invalid_email) {
+                error_html += '<div><strong>Error:</strong> Please provide a valid email address.</div>';
+                $("#email").addClass('error error-missing');                
+              }
+
+              if (err.no_consent) {
+                error_html += '<div><strong>Error:</strong> You must accept the term and conditions.</div>';
+                $("#consent").addClass('error error-missing');
+              }
+
+              $('#mow-err').html(error_html).show();
+            }
+
+          }
+
           _toggleSpinner(false);
         }
       });

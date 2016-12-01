@@ -102,7 +102,13 @@ class EDCOfiController(ApiController):
 
         elif call_action == 'ofi_create_order':
             data.update({'aoi_params': query_params})
-            return self._finish_ok(action_func(context, data))
+
+            create_order = action_func(context, data)
+
+            if u'error' in create_order and create_order[u'error']:
+                return self._finish(403, create_order, 'json')
+
+            return self._finish_ok(create_order)
 
         elif call_action == 'remove_ofi_resources':
             remove_results = action_func(context, data)

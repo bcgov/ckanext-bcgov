@@ -300,7 +300,7 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
                     u'user_allowed': resp_dict[u'allowed']
                 })
     elif content_type == 'text/html':
-        api_url = ofi_vars[u'ofi_url'] + u'/security/productAllowedByFeatureType/' + ofi_vars[u'object_name']
+        api_url = ofi_vars[u'api_url'] if u'api_url' in ofi_vars else ''
         results.update({
             u'success': False,
             u'error': True,
@@ -364,6 +364,7 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
 @ofi_logic.setup_ofi_action()
 def create_order(context, ofi_vars, ofi_resp):
     from string import Template
+    from validate_email import validate_email
 
     results = {}
 
@@ -373,10 +374,28 @@ def create_order(context, ofi_vars, ofi_resp):
         results.update({
             u'success': False,
             u'error': True,
-            u'error_msg': u'Missing aoi parameters.'
+            u'error_msg': _('Missing aoi parameters.')
         })
         return results
 
+    if u'consent' in aoi_data:
+        if toolkit.asbool(aoi_data[u'consent']) is False:
+            results.update(_get_consent_error('You must agree to the terms for the collection of your email address.'))
+            return results
+    else:
+        results.update(_get_consent_error('Consent agreement missing.'))
+        return results
+
+    if not validate_email(aoi_data.get(u'emailAddress')):
+        results.update({
+            u'success': False,
+            u'error': True,
+            u'error_msg': _('Email address is invalid.'),
+            u'invalid_email': True
+        })
+        return results
+
+    # Beginning of create order for ofi resource
     aoi = aoi_data.get(u'aoi', [])
     aoi_coordinates = [str(item.get(u'lat', 0.0)) + ',' + str(item.get(u'lng', 0.0)) for item in aoi]
     coordinates = ' '.join(aoi_coordinates)
@@ -400,7 +419,7 @@ def create_order(context, ofi_vars, ofi_resp):
         u'aoiName': None
     }
 
-    log.debug(u'AOI create order data - %s', pformat(data_dict))
+    log.debug(u'OFI create order data - %s', pformat(data_dict))
 
     # TODO: this stuff needs to change
     if u'auth_user_obj' in context and context[u'auth_user_obj']:
@@ -410,20 +429,47 @@ def create_order(context, ofi_vars, ofi_resp):
 
     resp = reqs.request(u'post', url, json=data_dict, cookies=ofi_vars[u'cookies'])
 
+    log.debug(u'OFI create order response headers - %s', pformat(resp.headers))
+
     content_type = resp.headers.get(u'content-type').split(';')[0]
-    if resp.status_code == 200 and content_type == 'application/json':
-        results.update({
-            u'order_response': resp.json()
-        })
+
+    results.update({
+        u'order_sent': data_dict,
+        u'api_url': url
+    })
+
+    if resp.status_code == 200:
+        # This must be the UUID returning
+        if content_type == 'text/plain':
+            results.update({
+                u'success': True,
+                u'order_response': resp.text
+            })
+
+        elif content_type == 'application/json':
+            results.update({
+                u'order_response': resp.json()
+            })
     else:
         results.update({
             u'success': False,
             u'error': True,
-            u'error_msg': _('Non-json content returned from create order call.'),
+            u'error_msg': _('OFI %s failed.') % ofi_vars[u'ofi_url'],
             u'order_response': resp.text
         })
 
     return results
+
+
+def _get_consent_error(msg):
+    return {
+        u'success': False,
+        u'error': True,
+        u'error_msg': _(msg),
+        u'no_consent': True,
+        u'consent_agreement': '''The information on this form is collected under the authority of Sections 26(c) and 27(1)(c) of the Freedom of Information and Protection of Privacy Act [RSBC 1996 c.165], and will help us to assess and respond to your enquiry.
+             By consenting to submit this form you are confirming that you are authorized to provide information of individuals/organizations/businesses for the purpose of your enquiry.'''
+    }
 
 
 def _get_format_id(format_name):
