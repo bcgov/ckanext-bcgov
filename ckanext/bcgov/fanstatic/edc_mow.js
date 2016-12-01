@@ -120,7 +120,7 @@ this.ckan.module('edc_mow', function($, _) {
       if (!_map) {
         var bcgovRoadsLayer =  
           L.tileLayer(
-              'http://maps.gov.bc.ca/arcserver/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}', 
+              'https://maps.gov.bc.ca/arcserver/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
               {
                 attribution: '&copy; Government of British Columbia',
                 minZoom: 4,
