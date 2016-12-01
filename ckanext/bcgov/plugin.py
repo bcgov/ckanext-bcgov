@@ -363,7 +363,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'remove_ofi_resources': ofi.remove_ofi_resources,
             'edit_ofi_resources': ofi.edit_ofi_resources,
             'get_max_aoi': ofi.get_max_aoi,
-            'create_aoi': ofi.create_aoi
+            'ofi_create_order': ofi.create_order
         }
 
     def get_auth_functions(self):
@@ -378,7 +378,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'remove_ofi_resources': ofi.remove_ofi_resources,
             'edit_ofi_resources': ofi.edit_ofi_resources,
             'get_max_aoi': ofi.get_max_aoi,
-            'create_aoi': ofi.create_aoi
+            'ofi_create_order': ofi.create_order
         }
 
 

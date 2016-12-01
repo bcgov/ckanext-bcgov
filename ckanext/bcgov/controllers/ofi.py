@@ -100,7 +100,7 @@ class EDCOfiController(ApiController):
 
             return self._finish_ok(max_aoi)
 
-        elif call_action == 'create_aoi':
+        elif call_action == 'ofi_create_order':
             data.update({'aoi_params': query_params})
             return self._finish_ok(action_func(context, data))
 

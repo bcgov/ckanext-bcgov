@@ -31,3 +31,9 @@
 #edc-mow #loading .add-data-loader {
 	bottom: calc(50% - 10em);
 }
+#edc-mow #consent .checkbox {
+	padding-left: 35px;
+}
+#edc-mow #consent #consent-terms {
+	padding-left: 15px;
+}
