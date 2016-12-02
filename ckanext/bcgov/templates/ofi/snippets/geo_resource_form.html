@@ -1,14 +1,26 @@
 {% import 'macros/form.html' as form %}
 
 {% set errors = errors or {} %}
+{% set error_summary = errors or {} %}
 {% set ofi_resource = ofi_resource or {} %}
 
 <!--Snippet ofi/snippets/geo_resource_form.html start -->
-<div class="control-group control-full">
+{% if error_summary %}
+	<div class="error-explanation alert alert-error">
+		<p>{{ _('The form contains invalid entries. Please fix the following errors :') }}
+		<ul>
+		{% for type, error in error_summary.items() %}
+			<li>{{ type }}: {{ error }}</li>
+		{% endfor %}
+		</ul>
+	</div>
+{% endif %}
+
+<div id="formats" class="control-group control-full">
 	<label class="control-label">{{ _("Formats") }}</label>
-	<div>
+	<div class="controls">
 		{% for format in file_formats %}
-			{{ format.formatname or format }}
+			<span class="label label-info">{{ format.formatname or format }}</span>
 		{% endfor %}
 	</div>
 </div>
@@ -17,24 +29,23 @@
 
 {% set update_cycle_error = errors.resource_update_cycle %}
 <div class="required control-group control-full{{ " error" if update_cycle_error }}">
-    <label class="control-label" for="field-update_cycle"><span class="control-required">*</span> {{ _("Resource Update Cycle") }}</label>
-    <div class="controls">
-    	{% set update_cycle_list = h.edc_tags(_('resource_update_cycle')) %}
-    	{% set current_update_cycle = ofi_resource.resource_update_cycle %}
-    	<select id="field-update_cycle" name="resource_update_cycle" data-module="autocomplete" onchange="javascript:check_resource_stat();" class="required">
-        	<option value = '' {% if not selected_update_cycle %} selected="selected" {% endif %} disabled>Select an update cycle</option>
-           	{% for update_cycle in update_cycle_list %}
-            	{% set selected_update_cycle = (current_update_cycle and current_update_cycle == update_cycle) %}
-                <option value="{{ update_cycle }}"
-                	{% if selected_update_cycle %} selected="selected" {% endif %}>
-                    {{ update_cycle }}
-                </option>
-            {% endfor %}
-        </select>
-        {% if update_cycle_error and update_cycle_error is iterable %}
-            <span class="error-block">{{ update_cycle_error|join(', ') }}</span>
-        {% endif %}
-    </div>
+		<label class="control-label" for="field-update_cycle"><span class="control-required">*</span> {{ _("Resource Update Cycle") }}</label>
+		<div class="controls">
+			{% set update_cycle_list = h.edc_tags(_('resource_update_cycle')) %}
+			{% set current_update_cycle = ofi_resource.resource_update_cycle %}
+			<select id="field-update_cycle" class="select2" name="resource_update_cycle" data-module="autocomplete" onchange="javascript:check_resource_stat();" class="required">
+				<option value = '' {% if not selected_update_cycle %} selected="selected" {% endif %} disabled>Select an update cycle</option>
+					{% for update_cycle in update_cycle_list %}
+						{% set selected_update_cycle = (current_update_cycle and current_update_cycle == update_cycle) %}
+							<option value="{{ update_cycle }}" {% if selected_update_cycle %} selected="selected" {% endif %}>
+									{{ update_cycle }}
+							</option>
+					{% endfor %}
+			</select>
+			{% if update_cycle_error and update_cycle_error is iterable %}
+				<span class="error-block">{{ update_cycle_error|join(', ') }}</span>
+			{% endif %}
+		</div>
 </div>
 
 {{ form.markdown('supplemental_info', id='field-supplemental_info', label=_('Supplemental information'), placeholder=_('Other descriptive information about the dataset'), value=ofi_resource.supplemental_info, error=errors.supplemental_info) }}

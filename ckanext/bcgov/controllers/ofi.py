@@ -82,7 +82,8 @@ class EDCOfiController(ApiController):
             populate_results = action_func(context, data)
 
             if 'error' in populate_results and populate_results['error']:
-                return toolkit.render('ofi/snippets/populate_failed.html', extra_vars=populate_results)
+                failed_render = toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=populate_results)
+                return self._finish(400, failed_render, 'html')
 
             return toolkit.render('ofi/snippets/populate_success.html', extra_vars=populate_results)
 

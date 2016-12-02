@@ -39,7 +39,7 @@ this.ckan.module('ofi_modal', function($, _) {
       if (success) {
         if (content instanceof Object) {
           modal_controls.find('#ofi-confirm').on('click',this._getResourceForm);
-        } 
+        }
       }
       else if (ofi_exists) {
         modal_controls.find('#ofi-delete').on('click', this._removeOFIResources);
@@ -74,7 +74,7 @@ this.ckan.module('ofi_modal', function($, _) {
             .on('click', self._createResources)
             .text('Save');
 
-          self._initDatepicker();
+          self._initFormElements();
         },
         'error': function() {
 
@@ -85,7 +85,7 @@ this.ckan.module('ofi_modal', function($, _) {
       event.preventDefault();
       self._toggleSpinner(true);
       modal_subtitle.text('Popluating Dataset');
-      
+
       var form_as_obj = self._serializeArray(ofi_form);
 
       $.ajax({
@@ -112,7 +112,16 @@ this.ckan.module('ofi_modal', function($, _) {
           self._toggleSpinner(false);
         },
         'error': function(jqXHR, textStatus, errorThrown) {
-          console.log(jqXHR.responseText);
+          console.log(jqXHR);
+
+          if (jqXHR.status == 400) {
+            if (jqXHR.getResponseHeader('content-type').indexOf('html') > -1) {
+              modal_subtitle.text('Error - Popluating Dataset');
+              self._showResults(jqXHR.responseText);
+              self._initFormElements();
+            }
+          }
+
           self._toggleSpinner(false);
         }
       });
@@ -158,8 +167,8 @@ this.ckan.module('ofi_modal', function($, _) {
           modal_controls.find('#ofi-cancel')
             .text('Cancel')
             .on('click', self._backToExistingStart);
-          
-          self._initDatepicker();
+
+          self._initFormElements();
         },
         'error': function(jqXHR, textStatus, errorThrown) {
           console.log(jqXHR);
@@ -240,7 +249,7 @@ this.ckan.module('ofi_modal', function($, _) {
       ofi_form.submit();
     },
     _backToExistingStart: function(event) {
-      /* 
+      /*
        * This resets the modal to the begin if there's ofi resources in the dataset
        */
 
@@ -279,37 +288,38 @@ this.ckan.module('ofi_modal', function($, _) {
 
         modal_controls.find('#ofi-edit')
           .before(delete_button);
-      }      
+      }
 
       // if ofi-cancel exists
       if (modal_controls.has('#ofi-cancel').length) {
         modal_controls.find('#ofi-cancel')
           .off('click', self._backToExistingStart)
-          .text('Cancel');        
+          .text('Cancel');
       }
       else {
         var cancel_button = $('<button id="ofi-cancel" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>');
         modal_controls.find('#ofi-edit').before(cancel_button);
-      }      
+      }
     },
-    _initDatepicker: function() {
-      this.$("#ofi-field-data_collection_start_date")
+    _initFormElements: function() {
+      self.$("#ofi-field-data_collection_start_date")
         .datepicker({
           dateFormat: "yy-mm-dd",
           showOtherMonths: true,
           selectOtherMonths: true
         });
-      this.$("#ofi-field-data_collection_end_date")
+      self.$("#ofi-field-data_collection_end_date")
         .datepicker({
           dateFormat: "yy-mm-dd",
           showOtherMonths: true,
           selectOtherMonths: true
         });
+      self.$(".select2").select2();
     },
     _toggleSpinner: function(on_off) {
       // TODO: Include a 'Cancel' button for the api call
       //content_body.toggleClass('hidden', on_off);
-      spinner.toggleClass('enable', on_off);      
+      spinner.toggleClass('enable', on_off);
     },
     _showResults: function(data) {
       content_body.html(data);
