@@ -423,9 +423,9 @@ def create_order(context, ofi_vars, ofi_resp):
 
     # TODO: this stuff needs to change
     if u'auth_user_obj' in context and context[u'auth_user_obj']:
-        url = ofi_vars[u'ofi_url'] + u'/order/createOrderFiltered'
-    else:
         url = ofi_vars[u'ofi_url'] + u'/order/createOrderFilteredSM'
+    else:
+        url = ofi_vars[u'ofi_url'] + u'/order/createOrderFiltered'
 
     resp = reqs.request(u'post', url, json=data_dict, cookies=ofi_vars[u'cookies'])
 

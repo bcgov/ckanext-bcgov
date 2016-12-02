@@ -47,6 +47,7 @@ this.ckan.module('edc_mow', function($, _) {
             $('#area-info').hide();
           }
           else if (data.error) {
+            modal_subtitle.text('Error');
             $('#mow-err').html('<strong>Error:</strong> ' + data.error_msg);
 
             callbackErr();
@@ -55,6 +56,7 @@ this.ckan.module('edc_mow', function($, _) {
             return false;
           }
           else {
+            modal_subtitle.text('Error');
             // something really bad happened.
             $('#mow-err').html('<strong>Error:</strong> Unknown error.');
             callbackErr();
