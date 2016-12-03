@@ -50,17 +50,19 @@
       </li>
       {% if res.url and h.is_url(res.url) %}
       <li>
-        <a href="{{ res.url }}" class="resource-url-analytics" target="_blank">
-          {% if res.has_views %}
-            <i class="icon-download"></i>
-            {{ _('Download') }}
-          {% else %}
-            {% if pkg.type == 'Geographic' and res.ofi %}
-              <a href="#edc-mow" role="button" id="{{ res.format }}" class="edc-mow-button">
-            {% endif %}
+        {% if pkg.type == 'Geographic' and res.ofi %}
+          <a href="#edc-mow" role="button" id="{{ res.format }}" class="edc-mow-button">
             <i class="icon-external-link"></i>
             {{ _('Access / Download') }}
-          {% endif %}
+        {% elif res.has_views %}
+          <a href="{{ res.url }}" class="resource-url-analytics" target="_blank">
+            <i class="icon-download"></i>
+            {{ _('Download') }}
+        {% else %}
+          <a href="{{ res.url }}" class="resource-url-analytics" target="_blank">
+            <i class="icon-external-link"></i>
+            {{ _('Access / Download') }}
+        {% endif %}
         </a>
       </li>
       {% endif %}

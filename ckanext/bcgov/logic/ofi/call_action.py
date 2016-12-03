@@ -69,15 +69,13 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
     '''
     results = {}
 
-    if 'ofi_resource_info' not in ofi_vars:
+    if u'ofi_resource_info' not in ofi_vars:
         results.update({
             u'success': False,
             u'error': True,
             u'error_msg': u'Missing ofi resource metadata'
         })
         return results
-
-    # TODO: check incoming resource cycle, send form template back with error
 
     resource_meta = {
         u'package_id': ofi_vars[u'package_id'],
@@ -99,13 +97,14 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
     added_resources = []
     failed_resources = []
     error = False
+    errors = {}
 
     base_url = config.get('ckan.site_url')
 
     # Try to add all avaliable OFI formats
     for file_format in file_formats:
         resource_meta.update({
-            u'name':  base_name + file_format[u'formatname'],
+            u'name': base_name + file_format[u'formatname'],
             u'url': base_url + h.url_for('ofi resource', format=file_format[u'formatname'], object_name=ofi_vars[u'object_name']),
             u'format': file_format[u'formatname'],
             # u'format_id': file_format[u'formatID']
@@ -116,6 +115,7 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
             added_resources.append(resource)
         except toolkit.ValidationError, e:
             error = True
+            errors.update(e.error_dict)
             failed_resources.append({
                 u'resource': resource_meta,
                 u'error_msg': 'ValidationError - %s' % unicode(e)
@@ -125,6 +125,8 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
         results = {
             u'success': False,
             u'error': error,
+            u'errors': errors,
+            u'file_formats': file_formats,
             u'failed_resources': failed_resources,
             u'added_resources': added_resources
         }
@@ -265,7 +267,8 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
                 u'success': False,
                 u'updated': False,
                 u'error': True,
-                u'error_msg': unicode(e)
+                u'errors': e.error_dict,
+                u'error_msg': unicode(e.error_summary)
             })
 
     return results
@@ -301,10 +304,11 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
                 })
     elif content_type == 'text/html':
         api_url = ofi_vars[u'api_url'] if u'api_url' in ofi_vars else ''
+
         results.update({
             u'success': False,
             u'error': True,
-            u'error_msg': _('HTML was returned from %s') % api_url,
+            u'error_msg': _('Please log in with your IDIR credentials.'),
             u'idir_login': unicode(ofi_resp.text),
             u'idir_req': True
         })
@@ -421,14 +425,16 @@ def create_order(context, ofi_vars, ofi_resp):
 
     log.debug(u'OFI create order data - %s', pformat(data_dict))
 
-    # TODO: this stuff needs to change
     if u'auth_user_obj' in context and context[u'auth_user_obj']:
         url = ofi_vars[u'ofi_url'] + u'/order/createOrderFilteredSM'
+        call_type = 'secure'
     else:
         url = ofi_vars[u'ofi_url'] + u'/order/createOrderFiltered'
+        call_type = 'public'
 
     resp = reqs.request(u'post', url, json=data_dict, cookies=ofi_vars[u'cookies'])
 
+    log.debug(u'OFI create order call type - %s', call_type)
     log.debug(u'OFI create order response headers - %s', pformat(resp.headers))
 
     content_type = resp.headers.get(u'content-type').split(';')[0]
@@ -438,25 +444,41 @@ def create_order(context, ofi_vars, ofi_resp):
         u'api_url': url
     })
 
-    if resp.status_code == 200:
-        # This must be the UUID returning
-        if content_type == 'text/plain':
-            results.update({
-                u'success': True,
-                u'order_response': resp.text
-            })
-
-        elif content_type == 'application/json':
-            results.update({
-                u'order_response': resp.json()
-            })
-    else:
+    if resp.status_code != 200:
         results.update({
             u'success': False,
             u'error': True,
             u'error_msg': _('OFI %s failed.') % ofi_vars[u'ofi_url'],
             u'order_response': resp.text
         })
+        return results
+
+    ofi_id = None
+
+    if content_type == 'application/json':
+        order_resp = resp.json()
+        if u'Status' in order_resp:
+            if order_resp[u'Status'] == u'SUCCESS':
+                ofi_id = ('order_id', order_resp[u'Value'])
+            else:
+                results.update({
+                    u'success': False,
+                    u'error': True,
+                    u'error_msg': _(order_resp[u'Description']),
+                    u'order_response': order_resp,
+                    u'order_failed': True
+                })
+                return results
+
+    if content_type == 'text/plain':
+        ofi_id = ('uuid', resp.text)
+
+    if ofi_id:
+        second_url = url + u'/' + ofi_id[1]
+
+        second_resp = reqs.get(second_url)
+
+        print(second_resp.text)
 
     return results
 
@@ -470,6 +492,20 @@ def _get_consent_error(msg):
         u'consent_agreement': '''The information on this form is collected under the authority of Sections 26(c) and 27(1)(c) of the Freedom of Information and Protection of Privacy Act [RSBC 1996 c.165], and will help us to assess and respond to your enquiry.
              By consenting to submit this form you are confirming that you are authorized to provide information of individuals/organizations/businesses for the purpose of your enquiry.'''
     }
+
+
+def _get_error_dict(error_msg, **kw):
+    pprint(kw)
+
+    error_dict = {
+        u'success': False,
+        u'error': True,
+        u'error_msg': error_msg,
+    }
+
+    error_dict.update(kw)
+
+    return error_dict
 
 
 def _get_format_id(format_name):

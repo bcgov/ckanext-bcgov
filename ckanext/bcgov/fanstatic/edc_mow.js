@@ -22,9 +22,9 @@ this.ckan.module('edc_mow', function($, _) {
         callbackSuccess();
         return;
       }
-      
+
       _toggleSpinner(true);
-        
+
       $.ajax({
         'url': self.options.mow_max_aoi_url,
         'data': {
@@ -64,7 +64,7 @@ this.ckan.module('edc_mow', function($, _) {
             _toggleSpinner(false);
             return false;
           }
-          
+
           $('.max-area-hectares').html(_formatNum(_maxAreaHectares));
 
           callbackSuccess();
@@ -85,8 +85,8 @@ this.ckan.module('edc_mow', function($, _) {
               $('#mow-err').html('<strong>Error:</strong> Something else happened with authorization.');
           }
 
-          callbackErr();  
-          _toggleSpinner(false);       
+          callbackErr();
+          _toggleSpinner(false);
         }
       });
     };
@@ -94,10 +94,10 @@ this.ckan.module('edc_mow', function($, _) {
     var _mapViewChanged = function(e) {
       var bounds = _map.getBounds();
       var latLonList = [
-        bounds.getSouthWest(), 
-        bounds.getNorthWest(), 
-        bounds.getNorthEast(), 
-        bounds.getSouthEast(), 
+        bounds.getSouthWest(),
+        bounds.getNorthWest(),
+        bounds.getNorthEast(),
+        bounds.getSouthEast(),
         bounds.getSouthWest()]
 
       self.aoi = latLonList;
@@ -120,7 +120,7 @@ this.ckan.module('edc_mow', function($, _) {
 
     var _showMap = function() {
       if (!_map) {
-        var bcgovRoadsLayer =  
+        var bcgovRoadsLayer =
           L.tileLayer(
               'https://maps.gov.bc.ca/arcserver/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
               {
@@ -130,8 +130,8 @@ this.ckan.module('edc_mow', function($, _) {
               }
             );
 
-        _map = L.map('map', {layers: [bcgovRoadsLayer]}); 
-        
+        _map = L.map('map', {layers: [bcgovRoadsLayer]});
+
         _map.on("zoomend", _mapViewChanged);
         _map.on("moveend", _mapViewChanged);
       }
@@ -156,7 +156,7 @@ this.ckan.module('edc_mow', function($, _) {
       }
 
       consent_check.change(function() {
-        if (this.checked) 
+        if (this.checked)
           $("#consent-terms").hide();
         else
           $("#consent-terms").show();
@@ -183,7 +183,7 @@ this.ckan.module('edc_mow', function($, _) {
     };
 
     var _toggleSpinner = function(on_off) {
-      spinner.toggleClass('enable', on_off);      
+      spinner.toggleClass('enable', on_off);
     };
 
     var _formatNum = function(x) {
@@ -246,7 +246,7 @@ this.ckan.module('edc_mow', function($, _) {
         'format': format,
         'featureItems': [
           {'featureItem': self.options.object_name,'filterValue': ''}
-        ]          
+        ]
       };
 
       console.log(aoi_data);
@@ -265,9 +265,9 @@ this.ckan.module('edc_mow', function($, _) {
           if (order_resp.Status == 'FAILURE') {
             modal_subtitle.text('Error');
             $('#mow-err').html('<strong>Error:</strong> ' + order_resp.Description);
-            
+
             modal_controls.find('#order-btn').remove();
-            
+
             $('#mow-ready').hide();
             $('#mow-err').show();
           }
@@ -275,7 +275,7 @@ this.ckan.module('edc_mow', function($, _) {
           if (order_resp.Status == 'SUCCESS') {
             modal_subtitle.text('Order Success');
             $('#mow-content').html('<h3>Success</h3><h4>The order has been placed and will be sent to the provided email address.</h4><p>Order ID: ' + order_resp.Value + '</p>');
-                        
+
             modal_controls.find('#order-btn').remove();
           }
 
@@ -302,14 +302,14 @@ this.ckan.module('edc_mow', function($, _) {
           _removeAllErrorMsg();
           _removeDebugMsg();
 
-          if (jqXHR.status === 403) {
+          if (jqXHR.status === 400) {
             var err = JSON.parse(jqXHR.responseText);
 
             if (err) {
               var error_html = '';
               if (err.invalid_email) {
                 error_html += '<div><strong>Error:</strong> Please provide a valid email address.</div>';
-                $("#email").addClass('error error-missing');                
+                $("#email").addClass('error error-missing');
               }
 
               if (err.no_consent) {
@@ -350,10 +350,10 @@ this.ckan.module('edc_mow', function($, _) {
             });
 
             //capture the bootstrap event fired when the modal window is actually
-            //shown.  
+            //shown.
             //perform any initialization that can't be done until the modal window is actually
             //visible
-            $("#edc-mow").on("shown.bs.tab", function(event) {              
+            $("#edc-mow").on("shown.bs.tab", function(event) {
               _initStart();
             });
         },

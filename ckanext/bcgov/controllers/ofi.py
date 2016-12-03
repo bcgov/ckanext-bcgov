@@ -82,7 +82,8 @@ class EDCOfiController(ApiController):
             populate_results = action_func(context, data)
 
             if 'error' in populate_results and populate_results['error']:
-                return toolkit.render('ofi/snippets/populate_failed.html', extra_vars=populate_results)
+                failed_render = toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=populate_results)
+                return self._finish(400, failed_render, 'html')
 
             return toolkit.render('ofi/snippets/populate_success.html', extra_vars=populate_results)
 
@@ -106,7 +107,7 @@ class EDCOfiController(ApiController):
             create_order = action_func(context, data)
 
             if u'error' in create_order and create_order[u'error']:
-                return self._finish(403, create_order, 'json')
+                return self._finish(400, create_order, 'json')
 
             return self._finish_ok(create_order)
 

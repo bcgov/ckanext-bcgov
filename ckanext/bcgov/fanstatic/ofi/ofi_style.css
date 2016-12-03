@@ -29,3 +29,6 @@
 	bottom: calc(50% - 10em);
 	z-index: 100;
 }
+#ofi-results #resources #formats .control-label {
+  padding-top: 0;
+}
