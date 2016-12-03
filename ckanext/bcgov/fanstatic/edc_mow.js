@@ -22,9 +22,9 @@ this.ckan.module('edc_mow', function($, _) {
         callbackSuccess();
         return;
       }
-      
+
       _toggleSpinner(true);
-        
+
       $.ajax({
         'url': self.options.mow_max_aoi_url,
         'data': {
@@ -64,7 +64,7 @@ this.ckan.module('edc_mow', function($, _) {
             _toggleSpinner(false);
             return false;
           }
-          
+
           $('.max-area-hectares').html(_formatNum(_maxAreaHectares));
 
           callbackSuccess();

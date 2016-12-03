@@ -107,7 +107,7 @@ class EDCOfiController(ApiController):
             create_order = action_func(context, data)
 
             if u'error' in create_order and create_order[u'error']:
-                return self._finish(403, create_order, 'json')
+                return self._finish(400, create_order, 'json')
 
             return self._finish_ok(create_order)
 

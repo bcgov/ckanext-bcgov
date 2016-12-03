@@ -425,7 +425,6 @@ def create_order(context, ofi_vars, ofi_resp):
 
     log.debug(u'OFI create order data - %s', pformat(data_dict))
 
-    # TODO: this stuff needs to change
     if u'auth_user_obj' in context and context[u'auth_user_obj']:
         url = ofi_vars[u'ofi_url'] + u'/order/createOrderFilteredSM'
         call_type = 'secure'
@@ -454,20 +453,32 @@ def create_order(context, ofi_vars, ofi_resp):
         })
         return results
 
-    if content_type != 'text/plain':
-        results.update({
-            u'order_response': resp.json()
-        })
-        return results
+    ofi_id = None
 
-    order_id = resp.text
+    if content_type == 'application/json':
+        order_resp = resp.json()
+        if u'Status' in order_resp:
+            if order_resp[u'Status'] == u'SUCCESS':
+                ofi_id = ('order_id', order_resp[u'Value'])
+            else:
+                results.update({
+                    u'success': False,
+                    u'error': True,
+                    u'error_msg': _(order_resp[u'Description']),
+                    u'order_response': order_resp,
+                    u'order_failed': True
+                })
+                return results
 
-    # This must be the UUID/OrderID returning
-    results.update({
-        u'success': True,
-        u'order_response': resp.text,
-        u'order_id': order_id
-    })
+    if content_type == 'text/plain':
+        ofi_id = ('uuid', resp.text)
+
+    if ofi_id:
+        second_url = url + u'/' + ofi_id[1]
+
+        second_resp = reqs.get(second_url)
+
+        print(second_resp.text)
 
     return results
 
@@ -481,6 +492,20 @@ def _get_consent_error(msg):
         u'consent_agreement': '''The information on this form is collected under the authority of Sections 26(c) and 27(1)(c) of the Freedom of Information and Protection of Privacy Act [RSBC 1996 c.165], and will help us to assess and respond to your enquiry.
              By consenting to submit this form you are confirming that you are authorized to provide information of individuals/organizations/businesses for the purpose of your enquiry.'''
     }
+
+
+def _get_error_dict(error_msg, **kw):
+    pprint(kw)
+
+    error_dict = {
+        u'success': False,
+        u'error': True,
+        u'error_msg': error_msg,
+    }
+
+    error_dict.update(kw)
+
+    return error_dict
 
 
 def _get_format_id(format_name):
