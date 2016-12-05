@@ -46,19 +46,10 @@ this.ckan.module('edc_mow', function($, _) {
             _maxAreaHectares = 0;
             $('#area-info').hide();
           }
-          else if (data.error) {
-            modal_subtitle.text('Error');
-            $('#mow-err').html('<strong>Error:</strong> ' + data.error_msg);
-
-            callbackErr();
-
-            _toggleSpinner(false);
-            return false;
-          }
           else {
             modal_subtitle.text('Error');
-            // something really bad happened.
-            $('#mow-err').html('<strong>Error:</strong> Unknown error.');
+
+            $('#mow-err').html(data);
             callbackErr();
 
             _toggleSpinner(false);
@@ -74,16 +65,7 @@ this.ckan.module('edc_mow', function($, _) {
           console.log(jqXHR);
           console.log(jqXHR.responseText);
 
-          modal_subtitle.text('Error');
-
-          if (jqXHR.status == 403) {
-            var resp_obj = jqXHR.responseJSON;
-
-            if (!resp_obj.user_allowed)
-              $('#mow-err').html('<strong>Error:</strong> You currently don\'t have access to this resource. Please log in.');
-            else
-              $('#mow-err').html('<strong>Error:</strong> Something else happened with authorization.');
-          }
+          $('#mow-err').html(jqXHR.responseText);
 
           callbackErr();
           _toggleSpinner(false);
@@ -254,9 +236,12 @@ this.ckan.module('edc_mow', function($, _) {
       $.ajax({
         'url': self.options.aoi_create_order_url,
         'method': 'POST',
-        'data': JSON.stringify(aoi_data),
+        'data': JSON.stringify({
+          'aoi_params': aoi_data
+        }),
         'contentType': 'application/json; charset=utf-8',
         'success': function(data, status) {
+          console.log(data)
           var order_resp = data.order_response;
 
           _removeAllErrorMsg();

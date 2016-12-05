@@ -294,18 +294,22 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
         search_results = resp_dict[u'result']
         records_found = len(search_results[u'records'])
 
-        if u'success' in resp_dict and resp_dict[u'success'] and records_found > 0:
-            results.update({
-                u'success': True,
-                u'datastore_response': search_results
-            })
+        if u'success' in resp_dict and resp_dict[u'success']:
+            if records_found > 0:
+                results.update({
+                    u'success': True,
+                    u'datastore_response': search_results
+                })
+            else:
+                results.update({
+                    u'msg': _('datastore_search didn\'t find any records with given object_name'),
+                    u'records_found': records_found,
+                    u'datastore_response': search_results,
+                    u'no_records': True
+                })
         else:
             results.update(_err_dict(_('Datastore_search failed.'),
                                      datastore_response=resp_dict, datastore_fail=True))
-
-            if records_found == 0:
-                results.update(_err_dict(_('datastore_search didn\'t find any records with given object_name'),
-                                         records_found=records_found, no_records=True))
     else:
         results.update(_err_dict(_('No object_name'),
                                  no_object_name=True))
