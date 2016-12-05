@@ -317,6 +317,26 @@ this.ckan.module('edc_mow', function($, _) {
                 $("#consent").addClass('error error-missing');
               }
 
+              if (err.order_failed) {
+                error_html += '<div><strong>Error:</strong> Order Failure - ' + err.order_response.Description;
+              }
+
+              if (err.api_url || err.order_response || err.order_sent) {
+                var debug_info = '<p>URL: ' + err.api_url + '</p>' +
+                                 '<p>Order Response: ' + err.order_response + '</p>' +
+                                 '<pre>' +
+                                 JSON.stringify(err.order_sent, function(key, value) {
+                                    if (key == 'aoi') {
+                                      return $("<div>").text(value).html();
+                                    } else {
+                                      return value;
+                                    }
+                                 }, '\t') + '</pre>';
+
+                $('#mow-debug').html(debug_info);
+                $('#mow-debug').show();
+              }
+
               $('#mow-err').html(error_html).show();
             }
 
