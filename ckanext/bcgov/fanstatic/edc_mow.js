@@ -316,12 +316,23 @@ this.ckan.module('edc_mow', function($, _) {
               if (err.api_url || err.order_response || err.order_sent || err.sm_url) {
                 var debug_info = '';
 
-                debug_info += '<p>URL: ' + err.api_url + '</p>';
+                debug_info += '<p>Order URL: ' + err.api_url + '</p>';
 
                 if (err.sm_url)
-                  debug_info += '<p>Secure SM URL: ' + err.sm_url + '</p>';
+                  debug_info += '<p>Secure SM get URL: ' + err.sm_url + '</p>';
 
-                debug_info += '<p>Order Response: ' + err.order_response + '</p>' +
+                if (err.sm_uuid)
+                  debug_info += '<p>UUID: ' + err.sm_uuid + '</p>';
+
+                var response = null;
+                if (err.order_response) {
+                  response = err.order_response;
+                }
+                else if (err.sm_resp) {
+                  response = err.sm_resp;
+                }
+
+                debug_info += '<p>Order Response: ' + response + '</p>' +
                               '<pre>' +
                               JSON.stringify(err.order_sent, function(key, value) {
                                 if (key == 'aoi') {
