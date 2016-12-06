@@ -248,16 +248,6 @@ this.ckan.module('edc_mow', function($, _) {
           _removeAllErrorMsg();
           _removeDebugMsg();
 
-          if (order_resp.Status == 'FAILURE') {
-            modal_subtitle.text('Error');
-            $('#mow-err').html('<strong>Error:</strong> ' + order_resp.Description);
-
-            modal_controls.find('#order-btn').remove();
-
-            $('#mow-ready').hide();
-            $('#mow-err').show();
-          }
-
           if (order_resp.Status == 'SUCCESS') {
             modal_subtitle.text('Order Success');
             $('#mow-order').html('<h3>Success</h3><h4>The order has been placed and will be sent to the provided email address.</h4><p>Order ID: ' + order_resp.Value + '</p>');
@@ -266,26 +256,34 @@ this.ckan.module('edc_mow', function($, _) {
             $('#mow-ready').hide();
             modal_controls.find('#order-btn').remove();
           }
+          else {
+            modal_subtitle.text('Error');
+            $('#mow-err').html('<strong>Error:</strong> ' + order_resp.Description);
 
-          var debug_info = '';
-          if (data.second_call_response) {
-            debug_info += '<p>Second URL: ' + data.api_url + '</p>';
-          } else {
+            modal_controls.find('#order-btn').remove();
+
+            $('#mow-ready').hide();
+            $('#mow-err').show();
+
+            var debug_info = '';
             debug_info += '<p>URL: ' + data.api_url + '</p>';
-          }
-          
-          debug_info += '<p>Order Response: ' + data.order_response + '</p>' +
-                        '<pre>' +
-                        JSON.stringify(data.order_sent, function(key, value) {
-                          if (key == 'aoi') {
-                            return $("<div>").text(value).html();
-                          } else {
-                            return value;
-                          }
-                        }, '\t') + '</pre>';
 
-          $('#mow-debug').html(debug_info);
-          $('#mow-debug').show();
+            if (data.sm_url)
+              debug_info += '<p>SM URL: ' + data.sm_url + '</p>';
+            
+            debug_info += '<p>Order Response: ' + data.order_response + '</p>' +
+                          '<pre>' +
+                          JSON.stringify(data.order_sent, function(key, value) {
+                            if (key == 'aoi') {
+                              return $("<div>").text(value).html();
+                            } else {
+                              return value;
+                            }
+                          }, '\t') + '</pre>';
+
+            $('#mow-debug').html(debug_info);
+            $('#mow-debug').show();
+          }
 
           _toggleSpinner(false);
         },
