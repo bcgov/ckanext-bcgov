@@ -434,7 +434,7 @@ def create_order(context, ofi_vars, ofi_resp):
         log.debug(u'OFI SiteMinner api url - %s', sm_url)
         log.debug(u'OFI SiteMinner api headers - %s', pformat(sm_resp.headers))
 
-        sm_content_type = resp.headers.get(u'content-type').split(';')[0]
+        sm_content_type = sm_resp.headers.get(u'content-type').split(';')[0]
 
         if sm_resp.status_code != 200:
             msg = _('OFI secure create order failed - %s ') % sm_url
