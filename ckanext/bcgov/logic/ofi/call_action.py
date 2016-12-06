@@ -380,51 +380,70 @@ def create_order(context, ofi_vars, ofi_resp):
     log.debug(u'OFI create order call type - %s', call_type)
     log.debug(u'OFI create order response headers - %s', pformat(resp.headers))
 
-    content_type = resp.headers.get(u'content-type').split(';')[0]
-
     results.update({
         u'order_sent': data_dict,
         u'api_url': url
     })
 
+    def _ofi_order_response(resp_dict):
+        '''
+        Helper function for dealing with ofi create order response
+        '''
+        order_resp = {}
+        if u'Status' in resp_dict:
+            if resp_dict[u'Status'] == u'SUCCESS':
+                order_resp.update({
+                    u'order_id': resp_dict[u'Value'],
+                    u'order_response': resp_dict
+                })
+            else:
+                order_resp.update(_err_dict(_(resp_dict[u'Description']),
+                                  order_response=resp_dict, order_failed=True))
+
+        return order_resp
+
     if resp.status_code != 200:
-        msg = _('OFI %s failed.') % ofi_vars[u'ofi_url']
-        results.update(_err_dict(msg, order_response=resp.text, order_status=resp.status_code))
+        msg = _('OFI public create order failed - %s') % ofi_vars[u'ofi_url']
+        results.update(_err_dict(msg,
+                                 order_response=resp.text, order_status=resp.status_code))
         return results
 
-    ofi_id = None
-    ofi_type = None
+    content_type = resp.headers.get(u'content-type').split(';')[0]
 
+    # public order
     if content_type == 'application/json':
-        order_resp = resp.json()
-        if u'Status' in order_resp:
-            if order_resp[u'Status'] == u'SUCCESS':
-                ofi_id = order_resp[u'Value']
-                ofi_type = u'order_id'
-            else:
-                results.update(_err_dict(_(order_resp[u'Description']), order_response=order_resp, order_failed=True))
-                return results
+        results.update(_ofi_order_response(resp.json()))
 
-    if content_type == 'text/plain':
-        ofi_id = resp.text
-        ofi_type = u'uuid'
+    # secured order for logged in users
+    elif content_type == 'text/plain':
+        # assuming the response text is the uuid
+        ofi_uuid = resp.text
 
-    results.update({
-        ofi_type: ofi_id,
-        u'order_response': order_resp
-    })
+        sm_url = url + u'/' + ofi_uuid
 
-    if ofi_id and ofi_type:
-        second_url = url + u'/' + ofi_id
+        sm_resp = reqs.get(sm_url, cookies=resp.cookies[u'SMSESSION'])
 
-        second_resp = reqs.get(second_url)
+        log.debug(u'OFI SiteMinner api uuid - %s', ofi_uuid)
+        log.debug(u'OFI SiteMinner api url - %s', sm_url)
+        log.debug(u'OFI SiteMinner api headers - %s', pformat(sm_resp.headers))
 
-        results.update({
-            u'api_url': second_url,
-            u'second_call_response': second_resp.text
-        })
+        sm_content_type = resp.headers.get(u'content-type').split(';')[0]
 
-        log.debug(u'OFI second api call for using order_id/uuid - %s', second_resp.text)
+        if sm_resp.status_code != 200:
+            msg = _('OFI secure create order failed - %s ') % sm_url
+            results.update(_err_dict(msg,
+                                     sm_url=sm_url, sm_failed=True, sm_uuid=ofi_uuid))
+            return results
+
+        if sm_content_type == 'application/json':
+            results.update(_ofi_order_response(sm_resp.json()))
+        else:
+            results.update(_err_dict(_('OFI secure create order returned unexpected response.'),
+                                     sm_url=sm_url, sm_failed=True, sm_uuid=ofi_uuid, sm_resp=sm_resp.text))
+
+    else:
+        results.update(_err_dict(_('Bad request from initial ofi create order.'),
+                                 order_response=resp.text, order_type=content_type))
 
     return results
 
