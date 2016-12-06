@@ -313,6 +313,10 @@ this.ckan.module('edc_mow', function($, _) {
                 error_html += '<div><strong>Error:</strong> Order Failure - ' + err.order_response.Description;
               }
 
+              if (err.sm_failed) {
+                error_html += '<div><strong>Error:</strong> SM secure order Failure - ' + err.sm_resp.Description;
+              }
+
               if (err.api_url || err.order_response || err.order_sent || err.sm_url) {
                 var debug_info = '';
 
