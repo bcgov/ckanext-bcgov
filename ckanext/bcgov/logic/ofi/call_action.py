@@ -369,7 +369,8 @@ def create_order(context, ofi_vars, ofi_resp):
     log.debug(u'OFI create order data - %s', pformat(data_dict))
 
     if u'auth_user_obj' in context and context[u'auth_user_obj']:
-        url = ofi_vars[u'ofi_url'] + u'/order/createOrderFilteredSM'
+        # if this url has secure in the path, need to fix it because it's not correct for secure create order calls
+        url = edc_h._build_ofi_url(False) + u'/order/createOrderFilteredSM'
         call_type = 'secure'
     else:
         url = ofi_vars[u'ofi_url'] + u'/order/createOrderFiltered'
@@ -378,6 +379,7 @@ def create_order(context, ofi_vars, ofi_resp):
     resp = reqs.request(u'post', url, json=data_dict, cookies=ofi_vars[u'cookies'])
 
     log.debug(u'OFI create order call type - %s', call_type)
+    log.debug(u'OFI create order call url - %s', url)
     log.debug(u'OFI create order response headers - %s', pformat(resp.headers))
 
     results.update({
@@ -419,7 +421,8 @@ def create_order(context, ofi_vars, ofi_resp):
         # assuming the response text is the uuid
         ofi_uuid = resp.text
 
-        sm_url = url + u'/' + ofi_uuid
+        # need to have a secure url for this call, because that's what's required
+        sm_url = edc_h._build_ofi_url(True) + u'/order/createOrderFiltered/' + ofi_uuid
         sm_cookie = {
             u'SMSESSION': resp.cookies.get(u'SMSESSION', '')
         }
