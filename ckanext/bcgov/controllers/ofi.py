@@ -96,13 +96,15 @@ class EDCOfiController(ApiController):
         elif call_action == 'get_max_aoi':
             max_aoi = action_func(context, data)
 
-            if u'user_allowed' in max_aoi and max_aoi[u'user_allowed'] is False:
-                return self._finish(403, max_aoi, 'json')
+            if u'error' in max_aoi and max_aoi[u'error']:
+                render = toolkit.render('ofi/mow/errors.html', extra_vars=max_aoi)
+                return self._finish(200, render, 'html')
 
             return self._finish_ok(max_aoi)
 
         elif call_action == 'ofi_create_order':
-            data.update({'aoi_params': query_params})
+            # expecting params to be in the 'aoi_params' obj
+            data.update(query_params)
 
             create_order = action_func(context, data)
 

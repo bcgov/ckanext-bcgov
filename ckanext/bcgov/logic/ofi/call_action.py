@@ -48,13 +48,7 @@ def file_formats(context, ofi_vars, ofi_resp):
 
 
 def geo_resource_form(context, data):
-    '''
-    TODO: this should be moved to the ofi controller, considering it returns html
-    '''
-    # Note: need to remove object_name because the decorator handles object_name if present
-    #       and appends the object_name on the url, which in this case for fileFormats, is
-    #       not required at this point in time
-    file_formats = toolkit.get_action(u'file_formats')(context, data)
+    file_formats = toolkit.get_action(u'file_formats')({}, {})
     data.update({
         u'file_formats': file_formats
     })
@@ -70,11 +64,7 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
     results = {}
 
     if u'ofi_resource_info' not in ofi_vars:
-        results.update({
-            u'success': False,
-            u'error': True,
-            u'error_msg': u'Missing ofi resource metadata'
-        })
+        results.update(_err_dict(_('Missing ofi resource metadata'), missing_meta=True))
         return results
 
     resource_meta = {
@@ -122,14 +112,9 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
             })
 
     if error:
-        results = {
-            u'success': False,
-            u'error': error,
-            u'errors': errors,
-            u'file_formats': file_formats,
-            u'failed_resources': failed_resources,
-            u'added_resources': added_resources
-        }
+        results.update(_err_dict(_('Adding OFI resources failed.'),
+                                 errors=errors, file_formats=file_formats,
+                                 failed_resources=failed_resources, added_resources=added_resources))
     else:
         results = {
             u'success': True,
@@ -198,11 +183,7 @@ def remove_ofi_resources(context, ofi_vars, ofi_resp):
             u'package_id': package_id
         })
     except (NotFound, ValidationError) as e:
-        results.update({
-            u'success': False,
-            u'error': True,
-            u'error_msg': unicode(e)
-        })
+        results.update(_err_dict(_(e)))
 
     return results
 
@@ -236,11 +217,8 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
                 u'file_formats': file_formats
             })
         else:
-            results.update({
-                u'success': False,
-                u'error': True,
-                u'error_msg': _('OFI resource not found.')
-            })
+            results.update(_err_dict(_('OFI resource not found.')))
+            return results
     else:
         update_resources = []
         for resource in pkg_dict[u'resources']:
@@ -263,13 +241,7 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
                 u'updated_resources': updated_resources
             })
         except (NotFound, ValidationError) as e:
-            results.update({
-                u'success': False,
-                u'updated': False,
-                u'error': True,
-                u'errors': e.error_dict,
-                u'error_msg': unicode(e.error_summary)
-            })
+            results.update(_err_dict(_(e.error_summary), updated=False, errors=e.error_dict))
 
     return results
 
@@ -289,13 +261,8 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
         resp_dict = ofi_resp.json()
         if u'allowed' in resp_dict:
             if resp_dict[u'allowed'] is False:
-                results.update({
-                    u'success': False,
-                    u'error': True,
-                    u'user_allowed': resp_dict[u'allowed'],
-                    u'error_msg': unicode('User is not allowed to view object.'),
-                    u'content': resp_dict
-                })
+                results.update(_err_dict(_('User is not allowed to view object.'),
+                                         user_allowed=resp_dict[u'allowed'], content=resp_dict))
                 return results
             else:
                 results.update({
@@ -304,21 +271,11 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
                 })
     elif content_type == 'text/html':
         api_url = ofi_vars[u'api_url'] if u'api_url' in ofi_vars else ''
-
-        results.update({
-            u'success': False,
-            u'error': True,
-            u'error_msg': _('Please log in with your IDIR credentials.'),
-            u'idir_login': unicode(ofi_resp.text),
-            u'idir_req': True
-        })
+        results.update(_err_dict(_('Please log in with your IDIR credentials'),
+                                 idir_req=True, idir_login=_(ofi_resp.text)))
         return results
     else:
-        results.update({
-            u'success': False,
-            u'error': True,
-            u'error_msg': unicode(ofi_resp.text)
-        })
+        results.update(_err_dict(_(ofi_resp.text)))
         return results
 
     if u'object_name' in ofi_vars:
@@ -337,30 +294,25 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
         search_results = resp_dict[u'result']
         records_found = len(search_results[u'records'])
 
-        if u'success' in resp_dict and resp_dict[u'success'] and records_found > 0:
-            results.update({
-                u'success': True,
-                u'datastore_response': search_results
-            })
-        else:
-            results.update({
-                u'success': False,
-                u'error': True,
-                u'error_msg': 'Datastore_search failed',
-                u'datastore_response': resp_dict
-            })
-
-            if records_found == 0:
+        if u'success' in resp_dict and resp_dict[u'success']:
+            if records_found > 0:
                 results.update({
-                    u'error_msg': 'datastore_search didn\'t find any records with given object_name',
-                    u'records_found': records_found
+                    u'success': True,
+                    u'datastore_response': search_results
                 })
+            else:
+                results.update({
+                    u'msg': _('datastore_search didn\'t find any records with given object_name'),
+                    u'records_found': records_found,
+                    u'datastore_response': search_results,
+                    u'no_records': True
+                })
+        else:
+            results.update(_err_dict(_('Datastore_search failed.'),
+                                     datastore_response=resp_dict, datastore_fail=True))
     else:
-        results.update({
-            u'success': False,
-            u'error': True,
-            u'error_msg': 'No object_name'
-        })
+        results.update(_err_dict(_('No object_name'),
+                                 no_object_name=True))
 
     return results
 
@@ -374,29 +326,20 @@ def create_order(context, ofi_vars, ofi_resp):
 
     aoi_data = ofi_vars.get('aoi_params', {})
 
-    if u'aoi_params' not in ofi_vars:
-        results.update({
-            u'success': False,
-            u'error': True,
-            u'error_msg': _('Missing aoi parameters.')
-        })
+    if not aoi_data:
+        results.update(_err_dict(_('Missing aoi parameters.'), missing_aoi=True))
         return results
 
     if u'consent' in aoi_data:
         if toolkit.asbool(aoi_data[u'consent']) is False:
-            results.update(_get_consent_error('You must agree to the terms for the collection of your email address.'))
+            results.update(_get_consent_error(u'You must agree to the terms before placing an order.'))
             return results
     else:
-        results.update(_get_consent_error('Consent agreement missing.'))
+        results.update(_get_consent_error(u'Consent agreement missing.'))
         return results
 
-    if not validate_email(aoi_data.get(u'emailAddress')):
-        results.update({
-            u'success': False,
-            u'error': True,
-            u'error_msg': _('Email address is invalid.'),
-            u'invalid_email': True
-        })
+    if not validate_email(aoi_data.get(u'emailAddress', '')):
+        results.update(_err_dict(u'Email address is invalid.', invalid_email=True))
         return results
 
     # Beginning of create order for ofi resource
@@ -445,58 +388,60 @@ def create_order(context, ofi_vars, ofi_resp):
     })
 
     if resp.status_code != 200:
-        results.update({
-            u'success': False,
-            u'error': True,
-            u'error_msg': _('OFI %s failed.') % ofi_vars[u'ofi_url'],
-            u'order_response': resp.text
-        })
+        msg = _('OFI %s failed.') % ofi_vars[u'ofi_url']
+        results.update(_err_dict(msg, order_response=resp.text, order_status=resp.status_code))
         return results
 
     ofi_id = None
+    ofi_type = None
 
     if content_type == 'application/json':
         order_resp = resp.json()
         if u'Status' in order_resp:
             if order_resp[u'Status'] == u'SUCCESS':
-                ofi_id = ('order_id', order_resp[u'Value'])
+                ofi_id = order_resp[u'Value']
+                ofi_type = u'order_id'
             else:
-                results.update({
-                    u'success': False,
-                    u'error': True,
-                    u'error_msg': _(order_resp[u'Description']),
-                    u'order_response': order_resp,
-                    u'order_failed': True
-                })
+                results.update(_err_dict(_(order_resp[u'Description']), order_response=order_resp, order_failed=True))
                 return results
 
     if content_type == 'text/plain':
-        ofi_id = ('uuid', resp.text)
+        ofi_id = resp.text
+        ofi_type = u'uuid'
 
-    if ofi_id:
-        second_url = url + u'/' + ofi_id[1]
+    results.update({
+        ofi_type: ofi_id,
+        u'order_response': order_resp
+    })
+
+    if ofi_id and ofi_type:
+        second_url = url + u'/' + ofi_id
 
         second_resp = reqs.get(second_url)
 
-        print(second_resp.text)
+        results.update({
+            u'api_url': second_url,
+            u'second_call_response': second_resp.text
+        })
+
+        log.debug(u'OFI second api call for using order_id/uuid - %s', second_resp.text)
 
     return results
 
 
 def _get_consent_error(msg):
-    return {
-        u'success': False,
-        u'error': True,
-        u'error_msg': _(msg),
-        u'no_consent': True,
-        u'consent_agreement': '''The information on this form is collected under the authority of Sections 26(c) and 27(1)(c) of the Freedom of Information and Protection of Privacy Act [RSBC 1996 c.165], and will help us to assess and respond to your enquiry.
+    consent_agreement = u'''The information on this form is collected under the authority of Sections 26(c) and 27(1)(c) of the Freedom of Information and Protection of Privacy Act [RSBC 1996 c.165], and will help us to assess and respond to your enquiry.
              By consenting to submit this form you are confirming that you are authorized to provide information of individuals/organizations/businesses for the purpose of your enquiry.'''
-    }
+
+    return _err_dict(msg, no_consent=True, consent_agreement=consent_agreement)
 
 
-def _get_error_dict(error_msg, **kw):
-    pprint(kw)
-
+def _err_dict(error_msg, **kw):
+    '''
+    Basic error dictionary, added arguments that are included, will be added to the error_dict
+    Saves setup time for returning an error dictionary
+    **kw key/value pairs are key/value pairs in the error dictionary
+    '''
     error_dict = {
         u'success': False,
         u'error': True,

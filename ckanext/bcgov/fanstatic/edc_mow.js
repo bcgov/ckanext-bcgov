@@ -46,19 +46,10 @@ this.ckan.module('edc_mow', function($, _) {
             _maxAreaHectares = 0;
             $('#area-info').hide();
           }
-          else if (data.error) {
-            modal_subtitle.text('Error');
-            $('#mow-err').html('<strong>Error:</strong> ' + data.error_msg);
-
-            callbackErr();
-
-            _toggleSpinner(false);
-            return false;
-          }
           else {
             modal_subtitle.text('Error');
-            // something really bad happened.
-            $('#mow-err').html('<strong>Error:</strong> Unknown error.');
+
+            $('#mow-err').html(data);
             callbackErr();
 
             _toggleSpinner(false);
@@ -74,16 +65,7 @@ this.ckan.module('edc_mow', function($, _) {
           console.log(jqXHR);
           console.log(jqXHR.responseText);
 
-          modal_subtitle.text('Error');
-
-          if (jqXHR.status == 403) {
-            var resp_obj = jqXHR.responseJSON;
-
-            if (!resp_obj.user_allowed)
-              $('#mow-err').html('<strong>Error:</strong> You currently don\'t have access to this resource. Please log in.');
-            else
-              $('#mow-err').html('<strong>Error:</strong> Something else happened with authorization.');
-          }
+          $('#mow-err').html(jqXHR.responseText);
 
           callbackErr();
           _toggleSpinner(false);
@@ -140,6 +122,7 @@ this.ckan.module('edc_mow', function($, _) {
 
     var _initStart = function() {
       $("#mow-ready").hide();
+      $('#mow-order').hide();
       _removeDebugMsg();
       _removeAllErrorMsg();
 
@@ -254,9 +237,12 @@ this.ckan.module('edc_mow', function($, _) {
       $.ajax({
         'url': self.options.aoi_create_order_url,
         'method': 'POST',
-        'data': JSON.stringify(aoi_data),
+        'data': JSON.stringify({
+          'aoi_params': aoi_data
+        }),
         'contentType': 'application/json; charset=utf-8',
         'success': function(data, status) {
+          console.log(data)
           var order_resp = data.order_response;
 
           _removeAllErrorMsg();
@@ -274,21 +260,29 @@ this.ckan.module('edc_mow', function($, _) {
 
           if (order_resp.Status == 'SUCCESS') {
             modal_subtitle.text('Order Success');
-            $('#mow-content').html('<h3>Success</h3><h4>The order has been placed and will be sent to the provided email address.</h4><p>Order ID: ' + order_resp.Value + '</p>');
+            $('#mow-order').html('<h3>Success</h3><h4>The order has been placed and will be sent to the provided email address.</h4><p>Order ID: ' + order_resp.Value + '</p>');
 
+            $('#mow-order').show();
+            $('#mow-ready').hide();
             modal_controls.find('#order-btn').remove();
           }
 
-          var debug_info = '<p>URL: ' + data.api_url + '</p>' +
-                           '<p>Order Response: ' + data.order_response + '</p>' +
-                           '<pre>' +
-                           JSON.stringify(data.order_sent, function(key, value) {
-                              if (key == 'aoi') {
-                                return $("<div>").text(value).html();
-                              } else {
-                                return value;
-                              }
-                           }, '\t') + '</pre>';
+          var debug_info = '';
+          if (data.second_call_response) {
+            debug_info += '<p>Second URL: ' + data.api_url + '</p>';
+          } else {
+            debug_info += '<p>URL: ' + data.api_url + '</p>';
+          }
+          
+          debug_info += '<p>Order Response: ' + data.order_response + '</p>' +
+                        '<pre>' +
+                        JSON.stringify(data.order_sent, function(key, value) {
+                          if (key == 'aoi') {
+                            return $("<div>").text(value).html();
+                          } else {
+                            return value;
+                          }
+                        }, '\t') + '</pre>';
 
           $('#mow-debug').html(debug_info);
           $('#mow-debug').show();
@@ -315,6 +309,26 @@ this.ckan.module('edc_mow', function($, _) {
               if (err.no_consent) {
                 error_html += '<div><strong>Error:</strong> You must accept the term and conditions.</div>';
                 $("#consent").addClass('error error-missing');
+              }
+
+              if (err.order_failed) {
+                error_html += '<div><strong>Error:</strong> Order Failure - ' + err.order_response.Description;
+              }
+
+              if (err.api_url || err.order_response || err.order_sent) {
+                var debug_info = '<p>URL: ' + err.api_url + '</p>' +
+                                 '<p>Order Response: ' + err.order_response + '</p>' +
+                                 '<pre>' +
+                                 JSON.stringify(err.order_sent, function(key, value) {
+                                    if (key == 'aoi') {
+                                      return $("<div>").text(value).html();
+                                    } else {
+                                      return value;
+                                    }
+                                 }, '\t') + '</pre>';
+
+                $('#mow-debug').html(debug_info);
+                $('#mow-debug').show();
               }
 
               $('#mow-err').html(error_html).show();
