@@ -393,25 +393,38 @@ def create_order(context, ofi_vars, ofi_resp):
         return results
 
     ofi_id = None
+    ofi_type = None
 
     if content_type == 'application/json':
         order_resp = resp.json()
         if u'Status' in order_resp:
             if order_resp[u'Status'] == u'SUCCESS':
-                ofi_id = ('order_id', order_resp[u'Value'])
+                ofi_id = order_resp[u'Value']
+                ofi_type = u'order_id'
             else:
                 results.update(_err_dict(_(order_resp[u'Description']), order_response=order_resp, order_failed=True))
                 return results
 
     if content_type == 'text/plain':
-        ofi_id = ('uuid', resp.text)
+        ofi_id = resp.text
+        ofi_type = u'uuid'
 
-    if ofi_id:
-        second_url = url + u'/' + ofi_id[1]
+    results.update({
+        ofi_type: ofi_id,
+        u'order_response': order_resp
+    })
+
+    if ofi_id and ofi_type:
+        second_url = url + u'/' + ofi_id
 
         second_resp = reqs.get(second_url)
 
-        print(second_resp.text)
+        results.update({
+            u'api_url': second_url,
+            u'second_call_response': second_resp.text
+        })
+
+        log.debug(u'OFI second api call for using order_id/uuid - %s', second_resp.text)
 
     return results
 

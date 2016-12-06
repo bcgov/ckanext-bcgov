@@ -122,6 +122,7 @@ this.ckan.module('edc_mow', function($, _) {
 
     var _initStart = function() {
       $("#mow-ready").hide();
+      $('#mow-order').hide();
       _removeDebugMsg();
       _removeAllErrorMsg();
 
@@ -259,21 +260,29 @@ this.ckan.module('edc_mow', function($, _) {
 
           if (order_resp.Status == 'SUCCESS') {
             modal_subtitle.text('Order Success');
-            $('#mow-content').html('<h3>Success</h3><h4>The order has been placed and will be sent to the provided email address.</h4><p>Order ID: ' + order_resp.Value + '</p>');
+            $('#mow-order').html('<h3>Success</h3><h4>The order has been placed and will be sent to the provided email address.</h4><p>Order ID: ' + order_resp.Value + '</p>');
 
+            $('#mow-order').show();
+            $('#mow-ready').hide();
             modal_controls.find('#order-btn').remove();
           }
 
-          var debug_info = '<p>URL: ' + data.api_url + '</p>' +
-                           '<p>Order Response: ' + data.order_response + '</p>' +
-                           '<pre>' +
-                           JSON.stringify(data.order_sent, function(key, value) {
-                              if (key == 'aoi') {
-                                return $("<div>").text(value).html();
-                              } else {
-                                return value;
-                              }
-                           }, '\t') + '</pre>';
+          var debug_info = '';
+          if (data.second_call_response) {
+            debug_info += '<p>Second URL: ' + data.api_url + '</p>';
+          } else {
+            debug_info += '<p>URL: ' + data.api_url + '</p>';
+          }
+          
+          debug_info += '<p>Order Response: ' + data.order_response + '</p>' +
+                        '<pre>' +
+                        JSON.stringify(data.order_sent, function(key, value) {
+                          if (key == 'aoi') {
+                            return $("<div>").text(value).html();
+                          } else {
+                            return value;
+                          }
+                        }, '\t') + '</pre>';
 
           $('#mow-debug').html(debug_info);
           $('#mow-debug').show();
