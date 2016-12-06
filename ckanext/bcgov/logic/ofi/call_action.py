@@ -420,8 +420,12 @@ def create_order(context, ofi_vars, ofi_resp):
         ofi_uuid = resp.text
 
         sm_url = url + u'/' + ofi_uuid
+        sm_cookie = {
+            u'SMSESSION': resp.cookies.get(u'SMSESSION', '')
+        }
 
-        sm_resp = reqs.get(sm_url, cookies=resp.cookies[u'SMSESSION'])
+        # call
+        sm_resp = reqs.get(sm_url, cookies=sm_cookie)
 
         log.debug(u'OFI SiteMinner api uuid - %s', ofi_uuid)
         log.debug(u'OFI SiteMinner api url - %s', sm_url)
