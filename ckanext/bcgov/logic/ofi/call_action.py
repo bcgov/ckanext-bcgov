@@ -344,7 +344,8 @@ def create_order(context, ofi_vars, ofi_resp):
 
     # Beginning of create order for ofi resource
     aoi = aoi_data.get(u'aoi', [])
-    aoi_coordinates = [str(item.get(u'lat', 0.0)) + ',' + str(item.get(u'lng', 0.0)) for item in aoi]
+    # flipping coordinate values to y,x
+    aoi_coordinates = [str(item.get(u'lng', 0.0)) + ',' + str(item.get(u'lat', 0.0)) for item in aoi]
     coordinates = ' '.join(aoi_coordinates)
 
     aoi_str = u'<?xml version=\"1.0\" encoding=\"UTF-8\" ?><areaOfInterest xmlns:gml=\"http://www.opengis.net/gml\"><gml:Polygon xmlns:gml=\"urn:gml\" srsName=\"EPSG:4326\"><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>$coordinates</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></areaOfInterest>'
