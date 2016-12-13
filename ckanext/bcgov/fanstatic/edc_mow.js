@@ -150,7 +150,7 @@ this.ckan.module('edc_mow', function($, _) {
         'placement': 'bottom'
       });
 
-      $('#map_projection').select2();
+      $('#map_projection').select2({'width': '206px'});
 
       _fetchMaxDownloadableArea(_initSuccess, _initFailed);
     };
