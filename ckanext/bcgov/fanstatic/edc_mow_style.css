@@ -42,6 +42,9 @@
 #edc-mow #loading .add-data-loader {
 	bottom: calc(50% - 10em);
 }
+#edc-mow #area-info {
+  padding-left: 15px;
+}
 #edc-mow #consent .checkbox {
 	padding-left: 35px;
 }
