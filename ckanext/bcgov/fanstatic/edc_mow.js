@@ -130,7 +130,7 @@ this.ckan.module('edc_mow', function($, _) {
         modal_controls.append('<button id="order-btn" class="btn btn-primary">Place order</button>');
       }
 
-      modal_title.text('Pan and zoom this map to select the geographic area.');
+      modal_title.text('Pan and zoom this map to select the geographic area of data to download. Then enter your email address.');
 
       var consent_check = $("#consent-check");
 
