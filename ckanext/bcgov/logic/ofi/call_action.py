@@ -344,7 +344,8 @@ def create_order(context, ofi_vars, ofi_resp):
 
     # Beginning of create order for ofi resource
     aoi = aoi_data.get(u'aoi', [])
-    # flipping coordinate values to y,x
+    # flipping coordinate values to y,x because that's what's required for submittion
+    # otherwise the coordinates appeared mirrored on the global map
     aoi_coordinates = [str(item.get(u'lng', 0.0)) + ',' + str(item.get(u'lat', 0.0)) for item in aoi]
     coordinates = ' '.join(aoi_coordinates)
 
