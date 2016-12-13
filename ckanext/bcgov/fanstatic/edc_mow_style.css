@@ -47,6 +47,7 @@
 }
 #edc-mow #consent #consent-terms {
 	padding-left: 15px;
+  padding-right: 10px;
 }
 
 @media (max-height: 650px) {
