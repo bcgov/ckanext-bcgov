@@ -148,7 +148,9 @@ this.ckan.module('edc_mow', function($, _) {
       $('#email1').popover({
         'trigger': 'focus',
         'placement': 'bottom'
-      })
+      });
+
+      $('#map_projection').select2();
 
       _fetchMaxDownloadableArea(_initSuccess, _initFailed);
     };
