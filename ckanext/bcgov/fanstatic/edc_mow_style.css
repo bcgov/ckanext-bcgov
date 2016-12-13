@@ -11,9 +11,17 @@
 #edc-mow h4 {
 	margin: 0;
 }
+#edc-mow #modal-title {
+  font-size: 14px;
+}
+#edc-mow .modal-header {
+  padding: 10px 15px;
+}
+#edc-mow .modal-header .close {
+  margin-top: 2px;
+}
 #edc-mow .modal-body {
-  /*min-height: 50vh;*/
-  padding: 15px;
+  padding: 10px;
 }
 #edc-mow .modal-body label {
   margin-right: 5px;
@@ -21,6 +29,9 @@
 #edc-mow .modal-body .btn {
   font-size: 18px;
   line-height: 1.2;
+}
+#edc-mow .popover .popover-content {
+  word-break: keep-all;
 }
 #edc-mow .form-actions {
   margin: 0;
@@ -36,4 +47,10 @@
 }
 #edc-mow #consent #consent-terms {
 	padding-left: 15px;
+}
+
+@media (max-height: 650px) {
+  #edc-mow {
+    top: 5%;
+  }
 }

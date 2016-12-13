@@ -10,7 +10,7 @@
 "use strict";
 
 this.ckan.module('edc_mow', function($, _) {
-    var self, modal, modal_subtitle, content_body, modal_controls, spinner, aoi_form, format;
+    var self, modal, modal_title, content_body, modal_controls, spinner, aoi_form, format;
 
     var _map = null;
     var _maxAreaHectares = null;
@@ -47,7 +47,7 @@ this.ckan.module('edc_mow', function($, _) {
             $('#area-info').hide();
           }
           else {
-            modal_subtitle.text('Error');
+            modal_title.text('Error');
 
             $('#mow-err').html(data);
             callbackErr();
@@ -130,7 +130,7 @@ this.ckan.module('edc_mow', function($, _) {
         modal_controls.append('<button id="order-btn" class="btn btn-primary">Place order</button>');
       }
 
-      modal_subtitle.text('Pan and zoom this map to select the geographic area.');
+      modal_title.text('Pan and zoom this map to select the geographic area of data to download. Then enter your email address.');
 
       var consent_check = $("#consent-check");
 
@@ -144,6 +144,14 @@ this.ckan.module('edc_mow', function($, _) {
         else
           $("#consent-terms").show();
       });
+
+      $('#email1').popover({
+        'trigger': 'focus',
+        'placement': 'bottom'
+      });
+
+      $('#map_projection').select2();
+
       _fetchMaxDownloadableArea(_initSuccess, _initFailed);
     };
 
@@ -249,7 +257,7 @@ this.ckan.module('edc_mow', function($, _) {
           _removeDebugMsg();
 
           if (order_resp.Status == 'SUCCESS') {
-            modal_subtitle.text('Order Success');
+            modal_title.text('Order Success');
             $('#mow-order').html('<h3>Success</h3><h4>The order has been placed and will be sent to the provided email address.</h4><p>Order ID: ' + order_resp.Value + '</p>');
 
             $('#mow-order').show();
@@ -257,7 +265,7 @@ this.ckan.module('edc_mow', function($, _) {
             modal_controls.find('#order-btn').remove();
           }
           else {
-            modal_subtitle.text('Error');
+            modal_title.text('Error');
             $('#mow-err').html('<strong>Error:</strong> ' + order_resp.Description);
 
             modal_controls.find('#order-btn').remove();
@@ -369,7 +377,7 @@ this.ckan.module('edc_mow', function($, _) {
             modal = this.el;
             content_body = this.$('#mow-content');
             spinner = this.$('#loading');
-            modal_subtitle = this.$('#modal-subtitle');
+            modal_title = this.$('#modal-title');
             modal_controls = this.$('.modal-footer');
             aoi_form = this.$('#aoi-order-form');
 
@@ -379,6 +387,7 @@ this.ckan.module('edc_mow', function($, _) {
                 event.preventDefault();
                 format = event.target.id;
                 $("#edc-mow").modal("show");
+                _initStart();
               });
             });
 
@@ -386,9 +395,9 @@ this.ckan.module('edc_mow', function($, _) {
             //shown.
             //perform any initialization that can't be done until the modal window is actually
             //visible
-            $("#edc-mow").on("shown.bs.tab", function(event) {
+            /*$("#edc-mow").on("shown.bs.tab", function(event) {
               _initStart();
-            });
+            });*/
         },
         teardown: function() {}
     };
