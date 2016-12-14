@@ -81,8 +81,6 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
 
     pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
 
-    base_name = u'OFI-{0}-'.format(pkg_dict[u'name'])
-
     # error handling for adding ofi resources
     added_resources = []
     failed_resources = []
@@ -94,7 +92,7 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
     # Try to add all avaliable OFI formats
     for file_format in file_formats:
         resource_meta.update({
-            u'name': base_name + file_format[u'formatname'],
+            u'name': u'Additional information for [{0}] resource'.format(file_format[u'formatname']),
             u'url': base_url + h.url_for('ofi resource', format=file_format[u'formatname'], object_name=ofi_vars[u'object_name']),
             u'format': file_format[u'formatname'],
             # u'format_id': file_format[u'formatID']
