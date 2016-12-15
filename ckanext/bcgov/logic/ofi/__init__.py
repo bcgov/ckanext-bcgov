@@ -84,7 +84,13 @@ def _prepare(secure=False):
 
 
 def _make_api_call(api_url, call_type='Public', cookies=None):
-    resp = reqs.get(api_url, cookies=cookies)
+    log.debug(u'OFI incoming api url: %s', api_url)
+
+    try:
+        resp = reqs.get(api_url, cookies=cookies)
+    except reqs.exceptions.SSLError, e:
+        log.error('SSL error: %s', pformat(e))
+        return toolkit.abort(status_code=500)
 
     _log_response(resp, call_type)
     '''
