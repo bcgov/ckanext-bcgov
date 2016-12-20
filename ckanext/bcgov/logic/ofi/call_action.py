@@ -259,7 +259,10 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
         resp_dict = ofi_resp.json()
         if u'allowed' in resp_dict:
             if resp_dict[u'allowed'] is False:
-                results.update(_err_dict(_('User is not allowed to view object.'),
+                eas_login = edc_h.get_eas_login_url() or '/user/login'
+
+                not_allowed_msg = "This is a dataset with restricted access. To place an order for download please <a href=\"%s\" style=\"text-decoration: underline; color: #1A5A96\">login</a> first. If you are logged in and still cannot place an order, please email the listed dataset \'Contact\' to request access." % eas_login
+                results.update(_err_dict(not_allowed_msg,
                                          user_allowed=resp_dict[u'allowed'], content=resp_dict))
                 return results
             else:

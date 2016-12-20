@@ -1,5 +1,5 @@
 {% macro error(msg) -%}
-<div><strong>Error: </strong> {{ msg }}</div>
+<div><strong>Error: </strong> {{ msg|safe }}</div>
 {%- endmacro %}
 
 {{ error(error_msg) }}
