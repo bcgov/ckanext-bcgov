@@ -24,7 +24,7 @@
                 "arcgis_rest",
                 "atom",
                 "cded",
- 	        "csv",
+                "csv",
                 "e00",
                 "fgdb",
                 "geojson",
@@ -45,6 +45,7 @@
                 "xml",
                 "zip",
                 "tsv",
+                "openapi-json",
                 "other"
     			]
     },
