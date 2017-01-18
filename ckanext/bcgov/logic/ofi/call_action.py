@@ -139,8 +139,6 @@ def check_object_name(context, ofi_vars, ofi_resp):
     success = True if ofi_resp.status_code == 200 else False
     content_type = ofi_resp.headers.get(u'content-type').split(';')[0]
 
-    open_modal = True
-
     if content_type == 'text/html':
         success = False
         # not sure yet, but if the content is the IDIR login page, it will try to redirect the user to log into IDIR
@@ -151,7 +149,6 @@ def check_object_name(context, ofi_vars, ofi_resp):
 
     results = {
         u'success': success,
-        u'open_modal': open_modal,
         u'content': content
     }
 

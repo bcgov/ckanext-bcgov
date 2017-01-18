@@ -376,8 +376,23 @@ class EDCPackageController(PackageController):
 
         errors = errors or {}
 
+        context = {'model': model, 'session': model.Session,
+                   'api_version': 3, 'for_edit': True,
+                   'user': c.user or c.author, 'auth_user_obj': c.userobj}
+
         if request.method == 'GET':
-            data[u'ofi'] = _setup_ofi(id)
+            pkg_dict = get_action('package_show')(context, {'id': id})
+
+            # Checking to see if ofi resources exist when viewing create new resource page
+            # If ofi exist in the dataset, then stop the manage modal from opening automatically
+            open_modal = True
+            if 'type' in pkg_dict and pkg_dict[u'type'] == 'Geographic':
+                for resource in pkg_dict[u'resources']:
+                    if 'ofi' in resource and resource[u'ofi']:
+                        open_modal = False
+                        break
+
+            data[u'ofi'] = _setup_ofi(id, context=context, pkg_dict=pkg_dict, open_modal=open_modal)
 
         # TODO: This is a workaround for a core ckan issue that can be removed when the issue
         # is resolved https://github.com/ckan/ckan/issues/2650
@@ -578,10 +593,10 @@ def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
             obj_data = {
                 u'object_name': pkg_dict[u'object_name'],
                 u'secure': True,
-                u'open_modal': open_modal
             }
 
             ofi_data.update(get_action('check_object_name')(context, obj_data))
+            ofi_data.update(open_modal=open_modal)
 
         else:
             ofi_data.update({
