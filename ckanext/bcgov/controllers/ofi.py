@@ -93,6 +93,9 @@ class EDCOfiController(ApiController):
         elif call_action == 'file_formats':
             return self._finish_ok(action_func(context, {}))
 
+        elif call_action == 'crs_types':
+            return self._finish_ok(action_func(context, {}))
+
         elif call_action == 'get_max_aoi':
             max_aoi = action_func(context, data)
 

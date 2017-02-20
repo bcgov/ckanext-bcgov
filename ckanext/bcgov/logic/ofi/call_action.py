@@ -47,6 +47,17 @@ def file_formats(context, ofi_vars, ofi_resp):
     return ofi_resp.json()
 
 
+@toolkit.side_effect_free
+@ofi_logic.setup_ofi_action(u'/info/crsTypes')
+def crs_types(context, ofi_vars, ofi_resp):
+    resp_content = ofi_resp.json()
+
+    if 'Status' in resp_content and resp_content['Status'] == 'FAILURE':
+        raise OFIServiceError(_('OFI Service returning failure status - crs_types'))
+
+    return ofi_resp.json()
+
+
 def geo_resource_form(context, data):
     file_formats = toolkit.get_action(u'file_formats')({}, {})
     data.update({
