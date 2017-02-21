@@ -172,14 +172,36 @@ class EDCPackageController(PackageController):
         First calls ckan's default read to get package data.
         Then it checks if the package can be viewed by the user
         '''
+        # Need to setup for ofi here before heading to the super method
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user or c.author,
+                   'auth_user_obj': c.userobj,
+                   'for_view': True}
+
+        try:
+            pkg_dict = get_action('package_show')(context, {'id': id})
+        except NotFound:
+            abort(404, _('Dataset not found'))
+        except NotAuthorized:
+            abort(401, _('Unauthorized to read dataset %s') % id)
+
+        for resource in pkg_dict.get('resources', []):
+            if u'ofi' in resource and resource[u'ofi']:
+                # only care if there's at least one ofi resource
+                c.ofi = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=False)
+                break
+        else:
+            abort(404, _('Resource not found'))
+
+        # the ofi object is now in the global vars for this view, to use it in templates, call `c.ofi`
         result = super(EDCPackageController, self).read(id)
 
-        #Check if user can view this record
+        # Check if user can view this record
         from ckanext.bcgov.util.helpers import record_is_viewable
-        if not record_is_viewable(c.pkg_dict, c.userobj) :
+        if not record_is_viewable(c.pkg_dict, c.userobj):
             abort(401, _('Unauthorized to read package %s') % id)
 
-        #TODO: find out if/why comparing times is neccessary? - @deniszgonjanin
+        # TODO: find out if/why comparing times is neccessary? - @deniszgonjanin
         metadata_modified_time = from_utc(c.pkg_dict['metadata_modified'])
         revision = get_action('revision_show')(
             {}, {'id': c.pkg_dict['revision_id']}
@@ -191,9 +213,9 @@ class EDCPackageController(PackageController):
         else:
             timestamp = revision_timestamp_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
-        #we only want Google Search Appliance to re-index records that have changed
+        # we only want Google Search Appliance to re-index records that have changed
         if ('gsa-crawler' in request.user_agent):
-            response.headers['Last-Modified']  = timestamp
+            response.headers['Last-Modified'] = timestamp
             response.headers['Cache-Control'] = 'public, max-age=31536000'
             response.headers['Pragma'] = 'cache'
 
@@ -216,6 +238,8 @@ class EDCPackageController(PackageController):
         First calls ckan's default resource read to get the resource and package data.
         Then it checks if the resource can be viewed by the user
         '''
+
+        # Need to setup for ofi here before heading to the super method
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author,
                    'auth_user_obj': c.userobj,
@@ -229,15 +253,14 @@ class EDCPackageController(PackageController):
             abort(401, _('Unauthorized to read dataset %s') % id)
 
         for resource in pkg_dict.get('resources', []):
-            if resource['id'] == resource_id:
-                resource_dict = resource
+            if resource['id'] == resource_id and u'ofi' in resource and resource[u'ofi']:
+                c.ofi = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=False)
+                # only care about finding at least one ofi resource
                 break
-        if not resource_dict:
+        else:
             abort(404, _('Resource not found'))
 
-        if u'ofi' in resource_dict and resource_dict[u'ofi']:
-            c.ofi = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=False)
-
+        # the ofi object is now in the global vars for this view, to use it in templates, call `c.ofi`
         result = super(EDCPackageController, self).resource_read(id, resource_id)
 
         # Check if user can view this record
@@ -580,11 +603,13 @@ def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
                 ofi_resources.append(resource)
 
         if len(ofi_resources) > 0:
+            projections = get_action(u'crs_types')(context, {})
             ofi_data.update({
                 u'object_name': pkg_dict[u'object_name'],
                 u'ofi_resources': ofi_resources,
                 u'ofi_exists': True,
                 u'secure': True,
+                u'projections': projections,
                 u'open_modal': open_modal
             })
 
