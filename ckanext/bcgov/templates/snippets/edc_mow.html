@@ -59,7 +59,8 @@
                 <div class="controls">
                   <select name="EPSG" id="map_projection">
                     {% for proj in projections %}
-                    <option value="{{ proj.crsTypeId }}">{{ proj.crsName }}</option>
+                    {# crsTypeId 0 == BC Albers (m) #}
+                    <option value="{{ proj.crsTypeId }}" {% if proj.crsTypeId == 0 %}selected{% endif %}>{{ proj.crsName }}</option>
                     {% endfor %}
                   </select>
                 </div>

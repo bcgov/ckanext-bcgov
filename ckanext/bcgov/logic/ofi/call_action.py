@@ -348,7 +348,12 @@ def create_order(context, ofi_vars, ofi_resp):
         return results
 
     if not validate_email(aoi_data.get(u'emailAddress', '')):
-        results.update(_err_dict(u'Email address is invalid.', invalid_email=True))
+        results.update(_err_dict(_(u'Email address is invalid.'), invalid_email=True))
+        return results
+
+    projection_id = aoi_data.get('projection')
+    if not projection_id:
+        results.update(_err_dict(_(u'Missing CRS Type (map projection).'), missing_crsType=True))
         return results
 
     # Beginning of create order for ofi resource
@@ -371,8 +376,7 @@ def create_order(context, ofi_vars, ofi_resp):
         u'useAOIBounds': u'0',
         u'aoiType': u'1',
         u'clippingMethodType': u'0',
-        # crsType should always be 6, it will specify the AOI coordinates in latitude/longitude format
-        u'crsType': u'6',
+        u'crsType': projection_id,
         u'prepackagedItems': u'',
         u'aoiName': None
     }
