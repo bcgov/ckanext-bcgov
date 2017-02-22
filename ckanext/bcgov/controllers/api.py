@@ -306,7 +306,6 @@ class EDCApiController(ApiController):
             return_dict['error'] = error_dict
             return self._finish(200, return_dict, content_type='json')
 
-
     def action(self, logic_function, ver=None):
         # FIXME: remove this method when functions called below are removed
 
@@ -322,7 +321,6 @@ class EDCApiController(ApiController):
             log.error('Bad request data: %s' % inst)
             return self._finish_bad_request(_('JSON Error: %s') % inst)
 
-
         context = {'model': model, 'session': model.Session, 'user': c.user,
                    'api_version': ver, 'auth_user_obj': c.userobj}
 
@@ -330,11 +328,11 @@ class EDCApiController(ApiController):
             return self._package_show(context, request_data['id'])
         elif logic_function == 'package_list':
             return self._get_package_list(context, ver)
-        elif logic_function == 'current_package_list_with_resources' :
+        elif logic_function == 'current_package_list_with_resources':
             return self._get_package_list_with_resources(context, ver)
-        elif logic_function == 'recently_changed_packages_activity_list' :
+        elif logic_function == 'recently_changed_packages_activity_list':
             return self._get_recently_changed_packages_activity_list(context, ver)
-        elif logic_function == 'vocabulary_list' :
+        elif logic_function == 'vocabulary_list':
             return self._get_vocabulary_list(context, ver)
-        else :
+        else:
             return super(EDCApiController, self).action(logic_function, ver)

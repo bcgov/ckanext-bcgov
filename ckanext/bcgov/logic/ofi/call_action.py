@@ -33,6 +33,7 @@ log = logging.getLogger(u'ckanext.bcgov.logic.ofi')
 
 
 @toolkit.side_effect_free
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action(u'/info/fileFormats')
 def file_formats(context, ofi_vars, ofi_resp):
     '''
@@ -48,6 +49,7 @@ def file_formats(context, ofi_vars, ofi_resp):
 
 
 @toolkit.side_effect_free
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action(u'/info/crsTypes')
 def crs_types(context, ofi_vars, ofi_resp):
     resp_content = ofi_resp.json()
@@ -58,6 +60,7 @@ def crs_types(context, ofi_vars, ofi_resp):
     return ofi_resp.json()
 
 
+@ofi_logic.check_access
 def geo_resource_form(context, data):
     file_formats = toolkit.get_action(u'file_formats')({}, {})
     data.update({
@@ -67,6 +70,7 @@ def geo_resource_form(context, data):
     return toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=data)
 
 
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action()
 def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
     '''
@@ -141,6 +145,7 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
 
 
 @toolkit.side_effect_free
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action(u'/security/productAllowedByFeatureType/')
 def check_object_name(context, ofi_vars, ofi_resp):
     '''
@@ -166,6 +171,7 @@ def check_object_name(context, ofi_vars, ofi_resp):
     return results
 
 
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action()
 def remove_ofi_resources(context, ofi_vars, ofi_resp):
     '''
@@ -195,6 +201,7 @@ def remove_ofi_resources(context, ofi_vars, ofi_resp):
 
 
 @toolkit.side_effect_free
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action()
 def edit_ofi_resources(context, ofi_vars, ofi_resp):
     '''
@@ -253,6 +260,7 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
 
 
 @toolkit.side_effect_free
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action(u'/security/productAllowedByFeatureType/')
 def get_max_aoi(context, ofi_vars, ofi_resp):
     '''
@@ -326,6 +334,7 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
     return results
 
 
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action()
 def create_order(context, ofi_vars, ofi_resp):
     from string import Template

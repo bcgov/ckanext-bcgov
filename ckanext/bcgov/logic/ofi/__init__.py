@@ -19,6 +19,14 @@ import ckanext.bcgov.util.helpers as edc_h
 log = logging.getLogger(u'ckanext.bcgov.logic.ofi')
 
 
+def check_access(action):
+    @wraps(action)
+    def wrapper(context, data):
+        toolkit.check_access(action.__name__, context, data)
+        return action(context, data)
+    return wrapper
+
+
 def setup_ofi_action(api_url=None):
     '''
     Decorator for call_action functions, macro for setting up all the vars for ofi call
@@ -32,8 +40,8 @@ def setup_ofi_action(api_url=None):
             if u'secure' not in data:
                 data[u'secure'] = False
 
-            # this action call doesn't need to be the secure url
-            if action.__name__ == 'file_formats':
+            # these action calls don't need to be the secure url
+            if action.__name__ in ['file_formats', 'crs_types']:
                 data.update(_prepare(False))
             else:
                 data.update(_prepare(toolkit.asbool(data[u'secure'])))
