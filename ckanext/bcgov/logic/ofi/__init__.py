@@ -20,6 +20,12 @@ log = logging.getLogger(u'ckanext.bcgov.logic.ofi')
 
 
 def check_access(action):
+    """
+    Decorator for call_action functions to check authorization.
+
+    Even if the call_action doesn't need any authorization checks, there should still be
+    a defined auth check for the call_action.
+    """
     @wraps(action)
     def wrapper(context, data):
         toolkit.check_access(action.__name__, context, data)
@@ -28,15 +34,32 @@ def check_access(action):
 
 
 def setup_ofi_action(api_url=None):
-    '''
-    Decorator for call_action functions, macro for setting up all the vars for ofi call
-    '''
+    """
+    Decorator for call_action functions.
+
+    This decorator should be used last before the actual call to the
+    call_action function
+
+    This sets up common params and options for call_action functions.
+
+    The api_url should be used for prerequisite use only, such as getting
+    DWDS file formats or CRS Types, etc. It doesn't support OFI POST API calls.
+
+    :param api_url: An OFI DWDS API endpoint or NoneType
+    :returns: call_action function location from logic.ofi.call_action,
+              these args are manditory for call_actions:
+              def call_action(context, data, ofi_resp)
+    """
     def action_decorator(action):
         @wraps(action)
         def wrapper(context, data):
-            '''
+            """
             Context and data are args for get_action calls
-            '''
+
+            :returns: call_action function location from logic.ofi.call_action,
+                      these args are manditory for call_actions:
+                        def call_action(context, data, ofi_resp)
+            """
             if u'secure' not in data:
                 data[u'secure'] = False
 
@@ -55,14 +78,17 @@ def setup_ofi_action(api_url=None):
 
             # allows the decorator to be used for just getting query params, cookies, etc.
             if api_url is not None:
-                if not api_url.endswith(u'/'):
-                    url = data[u'ofi_url'] + api_url
-                elif 'object_name' in data:
-                    url = data[u'ofi_url'] + api_url + data[u'object_name']
+                url = data[u'ofi_url'] + api_url
+
+                # expecting additonal pathing if incoming api endpoint ends with a '/'
+                if api_url.endswith(u'/'):
+                    if 'object_name' in data:
+                        url += data[u'object_name']
 
                 data[u'api_url'] = url
 
                 call_type = u'Secure' if data[u'secure'] else u'Public'  # call_type is for logging purposes
+
                 ofi_resp = _make_api_call(url, call_type=call_type, cookies=data[u'cookies'])
             else:
                 ofi_resp = {}
@@ -92,28 +118,17 @@ def _prepare(secure=False):
 
 
 def _make_api_call(api_url, call_type='Public', cookies=None):
-    log.debug(u'OFI outgoing api url: %s', api_url)
+    log.info(u'OFI outgoing, call type: %s, api url: %s', call_type, api_url)
 
     resp = reqs.get(api_url, cookies=cookies)
 
     _log_response(resp, call_type)
-    '''
-    content_type = resp.headers.get(u'content-type').split(';')[0]
 
-    if resp.status_code == 404:
-        return resp.content
-    elif content_type == 'text/html':
-        # switch to a raise
-        return u'Need valid IDIR Login session'
-    else:
-        return resp.json()
-    '''
     return resp
 
 
 def _log_response(resp, call_type):
-    log.debug(u'OFI check object name, call type: %s', call_type)
-    log.debug(u'OFI check object name, api response:\n %s', pformat({
+    log.debug(u'OFI response, api response:\n %s', pformat({
         u'url': resp.url,
         u'status': resp.status_code,
         u'reason': resp.reason,

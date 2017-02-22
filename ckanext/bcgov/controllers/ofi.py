@@ -34,10 +34,11 @@ class EDCOfiController(ApiController):
         self.config = edc_h.get_ofi_config()
 
     def action(self, call_action, ver=None):
-        '''
-        API Entry
-        TODO
-        '''
+        """
+        OFI API endpoint
+
+        REST interface for call_action funtions.
+        """
         context = {
             u'model': model,
             u'session': model.Session,
@@ -147,7 +148,7 @@ class EDCOfiController(ApiController):
                     return self._finish_bad_request(_('Something went wrong with editing ofi resources.'))
 
             else:
-                return base.abort(501, _('TODO in OFI API Controller: %s') % call_action)
+                return self._finish_not_found(_('OFI API Controller action not found: %s') % call_action)
 
         except toolkit.NotAuthorized, e:
             return self._finish_not_authz(_('Not authorized to call %s') % call_action)
