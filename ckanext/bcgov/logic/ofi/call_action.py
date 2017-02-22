@@ -336,7 +336,7 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
 
 @ofi_logic.check_access
 @ofi_logic.setup_ofi_action()
-def create_order(context, ofi_vars, ofi_resp):
+def ofi_create_order(context, ofi_vars, ofi_resp):
     from string import Template
     from validate_email import validate_email
 

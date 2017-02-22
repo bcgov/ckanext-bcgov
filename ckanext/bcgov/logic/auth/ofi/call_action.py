@@ -90,5 +90,5 @@ def get_max_aoi(context, data_dict=None):
 
 
 @toolkit.auth_allow_anonymous_access
-def create_order(context, data_dict=None):
+def ofi_create_order(context, data_dict=None):
     return {'success': True}
