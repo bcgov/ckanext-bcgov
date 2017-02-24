@@ -190,8 +190,6 @@ class EDCPackageController(PackageController):
                 # only care if there's at least one ofi resource
                 c.ofi = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=False)
                 break
-        else:
-            abort(404, _('Resource not found'))
 
         # the ofi object is now in the global vars for this view, to use it in templates, call `c.ofi`
         result = super(EDCPackageController, self).read(id)
@@ -257,8 +255,6 @@ class EDCPackageController(PackageController):
                 c.ofi = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=False)
                 # only care about finding at least one ofi resource
                 break
-        else:
-            abort(404, _('Resource not found'))
 
         # the ofi object is now in the global vars for this view, to use it in templates, call `c.ofi`
         result = super(EDCPackageController, self).resource_read(id, resource_id)
