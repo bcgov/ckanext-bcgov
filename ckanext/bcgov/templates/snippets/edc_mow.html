@@ -7,7 +7,6 @@
   data-module-aoi_create_order_url="{{ h.url_for('ofi api', call_action='ofi_create_order') }}"
   style="width: 800px; margin-left: -400px;"
 >
-
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h3 id="modal-title">
@@ -58,13 +57,10 @@
                 <label for="map_projection" class="control-label">Map projection:</label>
                 <div class="controls">
                   <select name="EPSG" id="map_projection">
-                    <option value="1" >BC Albers NAD 83 m</a></option>
-                    <option value="2" >Geographic WGS 84 Long / Lat dd</option>
-                    <option value="3" >UTM Zone 7 m</option>
-                    <option value="4" >UTM Zone 8 m</option>
-                    <option value="5" >UTM Zone 9 m</option>
-                    <option value="6" >UTM Zone 10 m</option>
-                    <option value="7" >UTM Zone 11 m</option>
+                    {% for proj in projections %}
+                    {# crsTypeId 0 == BC Albers (m) #}
+                    <option value="{{ proj.crsTypeId }}" {% if proj.crsTypeId == 0 %}selected{% endif %}>{{ proj.crsName }}</option>
+                    {% endfor %}
                   </select>
                 </div>
               </div>

@@ -33,12 +33,12 @@ log = logging.getLogger(u'ckanext.bcgov.logic.ofi')
 
 
 @toolkit.side_effect_free
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action(u'/info/fileFormats')
 def file_formats(context, ofi_vars, ofi_resp):
-    '''
-    OFI API Call:
-    TODO
-    '''
+    """
+    Gets available file formats from DWDS.
+    """
     resp_content = ofi_resp.json()
 
     if 'Status' in resp_content and resp_content['Status'] == 'FAILURE':
@@ -47,7 +47,26 @@ def file_formats(context, ofi_vars, ofi_resp):
     return ofi_resp.json()
 
 
+@toolkit.side_effect_free
+@ofi_logic.check_access
+@ofi_logic.setup_ofi_action(u'/info/crsTypes')
+def crs_types(context, ofi_vars, ofi_resp):
+    """
+    Gets projection formats from DWDS.
+    """
+    resp_content = ofi_resp.json()
+
+    if 'Status' in resp_content and resp_content['Status'] == 'FAILURE':
+        raise OFIServiceError(_('OFI Service returning failure status - crs_types'))
+
+    return ofi_resp.json()
+
+
+@ofi_logic.check_access
 def geo_resource_form(context, data):
+    """
+    Returns the form for the OFI Manager create/edit of OFI resources.
+    """
     file_formats = toolkit.get_action(u'file_formats')({}, {})
     data.update({
         u'file_formats': file_formats
@@ -56,11 +75,12 @@ def geo_resource_form(context, data):
     return toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=data)
 
 
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action()
 def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
-    '''
-    TODO
-    '''
+    """
+    Creates the OFI resources in the dataset.
+    """
     results = {}
 
     if u'ofi_resource_info' not in ofi_vars:
@@ -130,12 +150,12 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
 
 
 @toolkit.side_effect_free
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action(u'/security/productAllowedByFeatureType/')
 def check_object_name(context, ofi_vars, ofi_resp):
-    '''
-    OFI API Call:
-    TODO
-    '''
+    """
+    Checks to see if the object_name is accessible for the user.
+    """
     success = True if ofi_resp.status_code == 200 else False
     content_type = ofi_resp.headers.get(u'content-type').split(';')[0]
 
@@ -155,11 +175,12 @@ def check_object_name(context, ofi_vars, ofi_resp):
     return results
 
 
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action()
 def remove_ofi_resources(context, ofi_vars, ofi_resp):
-    '''
-    TODO
-    '''
+    """
+    Removes OFI resources from the dataset.
+    """
     pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
 
     resources_to_keep = []
@@ -184,11 +205,17 @@ def remove_ofi_resources(context, ofi_vars, ofi_resp):
 
 
 @toolkit.side_effect_free
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action()
 def edit_ofi_resources(context, ofi_vars, ofi_resp):
-    '''
-    TODO
-    '''
+    """
+    Edits the OFI resources that are in the dataset.
+
+    When requesting with GET it provides the first OFI resource in the results
+    to use as a basis for the edit form in the OFI Manager.
+
+    POST will edit the ofi resources in the dataset.
+    """
     pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
 
     results = {}
@@ -242,12 +269,18 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
 
 
 @toolkit.side_effect_free
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action(u'/security/productAllowedByFeatureType/')
 def get_max_aoi(context, ofi_vars, ofi_resp):
-    '''
-    TODO
-    Also checks object_name for users eg. opening the mow
-    '''
+    """
+    Gets the max area of interest for an object name.
+
+    The list is stored in a resource in catalogue (prod)
+
+    A query is maded using the datastore api to get the max aoi.
+
+    A user check is made for the object_name before getting the max aoi.
+    """
     results = {}
 
     content_type = ofi_resp.headers.get(u'content-type').split(';')[0]
@@ -315,8 +348,19 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
     return results
 
 
+@ofi_logic.check_access
 @ofi_logic.setup_ofi_action()
-def create_order(context, ofi_vars, ofi_resp):
+def ofi_create_order(context, ofi_vars, ofi_resp):
+    """
+    Places an order to DWDS
+
+    The first call places the order to DWDS.
+    If the order was a public call, a json object is returned.
+
+    If the order is a secure order, then the first call response from DWDS
+    is a UUID, a second call is then made to get the order status using
+    the UUID from the first call.
+    """
     from string import Template
     from validate_email import validate_email
 
@@ -337,7 +381,12 @@ def create_order(context, ofi_vars, ofi_resp):
         return results
 
     if not validate_email(aoi_data.get(u'emailAddress', '')):
-        results.update(_err_dict(u'Email address is invalid.', invalid_email=True))
+        results.update(_err_dict(_(u'Email address is invalid.'), invalid_email=True))
+        return results
+
+    projection_id = aoi_data.get('projection')
+    if not projection_id:
+        results.update(_err_dict(_(u'Missing CRS Type (map projection).'), missing_crsType=True))
         return results
 
     # Beginning of create order for ofi resource
@@ -360,8 +409,7 @@ def create_order(context, ofi_vars, ofi_resp):
         u'useAOIBounds': u'0',
         u'aoiType': u'1',
         u'clippingMethodType': u'0',
-        # crsType should always be 6, it will specify the AOI coordinates in latitude/longitude format
-        u'crsType': u'6',
+        u'crsType': projection_id,
         u'prepackagedItems': u'',
         u'aoiName': None
     }
@@ -388,9 +436,9 @@ def create_order(context, ofi_vars, ofi_resp):
     })
 
     def _ofi_order_response(resp_dict):
-        '''
+        """
         Helper function for dealing with ofi create order response
-        '''
+        """
         order_resp = {}
         if u'Status' in resp_dict:
             if resp_dict[u'Status'] == u'SUCCESS':
@@ -463,11 +511,13 @@ def _get_consent_error(msg):
 
 
 def _err_dict(error_msg, **kw):
-    '''
-    Basic error dictionary, added arguments that are included, will be added to the error_dict
-    Saves setup time for returning an error dictionary
-    **kw key/value pairs are key/value pairs in the error dictionary
-    '''
+    """
+    Basic error dictionary, added arguments that are included,
+    will be added to the error_dict.
+    Saves setup time for returning an error dictionary.
+
+    **kw args are key/value pairs in the error dictionary
+    """
     error_dict = {
         u'success': False,
         u'error': True,
@@ -480,6 +530,9 @@ def _err_dict(error_msg, **kw):
 
 
 def _get_format_id(format_name):
+    """
+    Getting the file format ID by format name.
+    """
     file_formats = toolkit.get_action('file_formats')({}, {})
 
     format_id = None
@@ -487,5 +540,6 @@ def _get_format_id(format_name):
     for file_format in file_formats:
         if file_format[u'formatname'] == format_name:
             format_id = str(file_format[u'formatID'])
+            break
 
     return format_id

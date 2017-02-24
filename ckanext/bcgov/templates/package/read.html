@@ -142,6 +142,6 @@
 
 {% block secondary_content %}
   {% if c.pkg_dict.type == 'Geographic' %}
-    {% snippet 'snippets/edc_mow.html', pkg_obj_name=pkg.object_name, pkg_id=pkg.id %}
+    {% snippet 'snippets/edc_mow.html', pkg_obj_name=pkg.object_name, pkg_id=pkg.id, projections=c.ofi.projections %}
   {% endif %}
 {% endblock %}

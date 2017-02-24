@@ -358,12 +358,13 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'package_autocomplete': edc_action.package_autocomplete,
             'check_object_name': ofi.check_object_name,
             'file_formats': ofi.file_formats,
+            'crs_types': ofi.crs_types,
             'populate_dataset': ofi.populate_dataset_with_ofi,
             'geo_resource_form': ofi.geo_resource_form,
             'remove_ofi_resources': ofi.remove_ofi_resources,
             'edit_ofi_resources': ofi.edit_ofi_resources,
             'get_max_aoi': ofi.get_max_aoi,
-            'ofi_create_order': ofi.create_order
+            'ofi_create_order': ofi.ofi_create_order
         }
 
     def get_auth_functions(self):
@@ -373,12 +374,13 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'package_create': edc_auth_create.package_create,
             'check_object_name': ofi.check_object_name,
             'file_formats': ofi.file_formats,
+            'crs_types': ofi.crs_types,
             'populate_dataset': ofi.populate_dataset_with_ofi,
             'geo_resource_form': ofi.geo_resource_form,
             'remove_ofi_resources': ofi.remove_ofi_resources,
             'edit_ofi_resources': ofi.edit_ofi_resources,
             'get_max_aoi': ofi.get_max_aoi,
-            'ofi_create_order': ofi.create_order
+            'ofi_create_order': ofi.ofi_create_order
         }
 
 

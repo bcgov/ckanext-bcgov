@@ -233,7 +233,7 @@ this.ckan.module('edc_mow', function($, _) {
         'aoi': self.aoi,
         'consent': $("#consent-check").prop('checked'),
         'emailAddress': $.trim(aoi_form.find('#email1').val()),
-        'EPSG': aoi_form.find('#map_projection').val(),
+        'projection': aoi_form.find('#map_projection').val(),
         'format': format,
         'featureItems': [
           {'featureItem': self.options.object_name,'filterValue': ''}
