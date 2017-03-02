@@ -53,8 +53,10 @@ def remove_ofi_resources(context, data_dict=None):
     user_obj = context.get('auth_user_obj')
     user_obj_checked = context.get('__auth_user_obj_checked', False)
 
-    if toolkit.check_access('package_delete', context, data_dict):
-        if toolkit.check_access('package_update', context, data_dict):
+    pkg_id = data_dict.get('package_id', '')
+
+    if toolkit.check_access('package_delete', context, {'id': pkg_id}):
+        if toolkit.check_access('package_update', context, {'id': pkg_id}):
             return {'success': True}
 
     return {'success': False, 'msg': _('Failed authorization.')}
