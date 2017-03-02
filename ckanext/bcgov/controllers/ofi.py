@@ -71,7 +71,7 @@ class EDCOfiController(ApiController):
         # Not ideal, but all cases involve calling the action_func,
         #  which could throw a NotAuthorized exception
         try:
-            if call_action == 'populate_dataset':
+            if call_action == 'populate_dataset_with_ofi':
                 data.update({
                     u'ofi_resource_info': query_params.get(u'ofi_resource_info', {})
                 })
