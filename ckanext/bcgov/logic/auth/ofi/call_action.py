@@ -19,20 +19,6 @@ def file_formats(context, data_dict=None):
     return {'success': False, 'msg': _('Failed authorization.')}
 
 
-def crs_types(context, data_dict=None):
-    '''
-    No checks for annonymous and sysadmin users because core ckan
-    already does that before calling this function
-    '''
-    user_obj = context.get('auth_user_obj')
-    user_obj_checked = context.get('__auth_user_obj_checked', False)
-
-    if user_obj and user_obj_checked:
-        return {'success': True}
-
-    return {'success': False, 'msg': _('Failed authorization.')}
-
-
 def geo_resource_form(context, data_dict=None):
     user_obj = context.get('auth_user_obj')
     user_obj_checked = context.get('__auth_user_obj_checked', False)
@@ -82,6 +68,11 @@ def edit_ofi_resources(context, data_dict=None):
         return {'success': True}
 
     return {'success': False, 'msg': _('Failed authorization.')}
+
+
+@toolkit.auth_allow_anonymous_access
+def crs_types(context, data_dict=None):
+    return {'success': True}
 
 
 @toolkit.auth_allow_anonymous_access
