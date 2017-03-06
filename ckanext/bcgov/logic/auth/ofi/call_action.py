@@ -73,6 +73,6 @@ def ofi_create_order(context, data_dict=None):
     return {'success': True}
 
 
-@toolkit.auth_allow-anonymous_access
+@toolkit.auth_allow_anonymous_access
 def file_formats(context, data_dict=None):
     return {'success': True}
