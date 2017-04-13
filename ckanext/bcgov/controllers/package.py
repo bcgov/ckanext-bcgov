@@ -601,7 +601,7 @@ def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
         if len(ofi_resources) > 0:
             projections = get_action(u'crs_types')(context, {})
             ofi_data.update({
-                u'object_name': pkg_dict[u'object_name'],
+                u'object_name': pkg_dict.get(u'object_name', ""),
                 u'ofi_resources': ofi_resources,
                 u'ofi_exists': True,
                 u'secure': True,

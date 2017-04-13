@@ -68,11 +68,11 @@ def geo_resource_form(context, data):
     Returns the form for the OFI Manager create/edit of OFI resources.
     """
     file_formats = toolkit.get_action(u'file_formats')({}, {})
-    data.update({
-        u'file_formats': file_formats
-    })
 
-    return toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=data)
+    data.update(file_formats=file_formats)
+
+    return toolkit.render('ofi/snippets/geo_resource_form.html',
+                          extra_vars=data)
 
 
 @ofi_logic.check_access
@@ -83,12 +83,50 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
     """
     results = {}
 
+    # error handling for adding ofi resources
+    error = False
+    errors = {}
+
+    added_resources = []
+    failed_resources = []
+
     if u'ofi_resource_info' not in ofi_vars:
-        results.update(_err_dict(_('Missing ofi resource metadata'), missing_meta=True))
+        results.update(_err_dict(_('Missing ofi resource metadata'),
+                                 missing_meta=True))
         return results
 
+    file_formats = toolkit.get_action(u'file_formats')(context, ofi_vars)
+
+    try:
+        pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
+    except ValidationError as e:
+        results.update(_err_dict(_('ValidationError - package_show'),
+                                 errors=e.error_dict,
+                                 validation_error=True))
+        return results
+    except NotFound as e:
+        results.update(_err_dict(_('NotFound - package_show'),
+                                 package_id=ofi_vars[u'package_id'],
+                                 not_found_error=True))
+        return results
+
+    # If the dataset has no object name set, the `force_populate`
+    #  parameter must be included in the request
+    if u'object_name' not in pkg_dict or not pkg_dict['object_name']:
+        if u'force_populate' not in ofi_vars or not ofi_vars['force_populate']:
+            msg = 'No Object Name in dataset. Must include `force_populate: true` parameter ' \
+                  'in the request if you wish to create the DWDS resources without an object name.'
+            error_dict = {
+                'missing': msg
+            }
+
+            results.update(_err_dict(_('No Object Name'),
+                                     errors=error_dict,
+                                     no_object_name=True))
+            return results
+
     resource_meta = {
-        u'package_id': ofi_vars[u'package_id'],
+        u'package_id': pkg_dict['id'],
         u'resource_storage_access_method': u'Indirect Access',
         u'resource_storage_location': u'BCGW DataStore',
         u'projection_name': u'EPSG_3005 - NAD83 BC Albers',
@@ -97,54 +135,62 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
     }
     resource_meta.update(ofi_vars[u'ofi_resource_info'])
 
-    file_formats = toolkit.get_action(u'file_formats')(context, ofi_vars)
+    ofi_exists = False
+    for resource in pkg_dict[u'resources']:
+        if u'ofi' in resource and resource['ofi']:
+            ofi_exists = True
+            results.update(ofi_exists=ofi_exists)
+            break
 
-    pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
+    if not ofi_exists:
+        # Try to add all avaliable OFI formats
+        for file_format in file_formats:
+            resource_url = h.url_for('ofi resource',
+                                     format=file_format[u'formatname'],
+                                     object_name=pkg_dict.get(u'object_name',
+                                                              "__MISSING_OBJECT_NAME__"),
+                                     qualified=True)
 
-    # error handling for adding ofi resources
-    added_resources = []
-    failed_resources = []
-    error = False
-    errors = {}
+            resource_name = "Additional information for [%s] resource" % \
+                            file_format[u'formatname']
 
-    base_url = config.get('ckan.site_url')
+            resource_meta.update(name=resource_name,
+                                 url=resource_url,
+                                 format=file_format[u'formatname'])
 
-    # Try to add all avaliable OFI formats
-    for file_format in file_formats:
-        resource_meta.update({
-            u'name': u'Additional information for [{0}] resource'.format(file_format[u'formatname']),
-            u'url': base_url + h.url_for('ofi resource', format=file_format[u'formatname'], object_name=ofi_vars[u'object_name']),
-            u'format': file_format[u'formatname'],
-            # u'format_id': file_format[u'formatID']
-        })
+            try:
+                resource = toolkit.get_action(u'resource_create')(context, resource_meta)
+                added_resources.append(resource)
 
-        try:
-            resource = toolkit.get_action(u'resource_create')(context, resource_meta)
-            added_resources.append(resource)
-        except toolkit.ValidationError, e:
-            error = True
-            errors.update(e.error_dict)
-            failed_resources.append({
-                u'resource': resource_meta,
-                u'error_msg': 'ValidationError - %s' % unicode(e)
-            })
+            except ValidationError as e:
+                error = True
+                errors.update(e.error_dict)
+                failed_resources.append({
+                    u'resource': resource_meta,
+                    u'error_msg': _('ValidationError - resource_create'),
+                    u'errors': e.error_dict
+                })
 
     if error:
         results.update(_err_dict(_('Adding OFI resources failed.'),
-                                 errors=errors, file_formats=file_formats,
-                                 failed_resources=failed_resources, added_resources=added_resources))
-    else:
-        results = {
-            u'success': True,
-            u'added_resources': added_resources
-        }
+                                 errors=errors,
+                                 file_formats=file_formats,
+                                 failed_resources=failed_resources,
+                                 added_resources=added_resources))
+        return results
+
+    # Updates the dataset to be active and not a draft
+    if u'object_name' in pkg_dict and pkg_dict['object_name']:
         pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
 
-        # easiest way to change the dataset state, too difficult to do on the front end
         pkg_dict.update({
             u'state': u'active'
         })
         pkg_dict = toolkit.get_action(u'package_update')(context, pkg_dict)
+
+    results.update(success=True,
+                   added_resources=added_resources,
+                   failed_resources=failed_resources)
 
     return results
 
@@ -161,8 +207,10 @@ def check_object_name(context, ofi_vars, ofi_resp):
 
     if content_type == 'text/html':
         success = False
-        # not sure yet, but if the content is the IDIR login page, it will try to redirect the user to log into IDIR
-        # if the page then displays 404, it's most likey the user isn't logged onto the vpn
+        # not sure yet, but if the content is the IDIR login page,
+        # it will try to redirect the user to log into IDIR
+        # if the page then displays 404, it's most likey the user isn't
+        # logged onto the vpn
         content = ofi_resp.content
     else:
         content = ofi_resp.json()
@@ -194,10 +242,9 @@ def remove_ofi_resources(context, ofi_vars, ofi_resp):
 
     try:
         package_id = toolkit.get_action(u'package_update')(context, pkg_dict)
-        results.update({
-            u'success': True,
-            u'package_id': package_id
-        })
+        results.update(success=True,
+                       package_id=package_id)
+
     except (NotFound, ValidationError) as e:
         results.update(_err_dict(_(e)))
 
@@ -255,7 +302,8 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
         try:
             updated_dataset = toolkit.get_action('package_update')(context, pkg_dict)
             # shorthand way to get just ofi resources
-            updated_resources = [i for i in updated_dataset[u'resources'] if u'ofi' in i and i[u'ofi']]
+            updated_resources = [i for i in updated_dataset[u'resources']
+                                 if u'ofi' in i and i[u'ofi']]
 
             results.update({
                 u'success': True,
@@ -263,7 +311,9 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
                 u'updated_resources': updated_resources
             })
         except (NotFound, ValidationError) as e:
-            results.update(_err_dict(_(e.error_summary), updated=False, errors=e.error_dict))
+            results.update(_err_dict(_(e.error_summary),
+                           updated=False,
+                           errors=e.error_dict))
 
     return results
 
@@ -291,9 +341,14 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
             if resp_dict[u'allowed'] is False:
                 eas_login = edc_h.get_eas_login_url() or '/user/login'
 
-                not_allowed_msg = "This is a dataset with restricted access. To place an order for download please <a href=\"%s\" style=\"text-decoration: underline; color: #1A5A96\">login</a> first. If you are logged in and still cannot place an order, please email the listed dataset \'Contact\' to request access." % eas_login
+                not_allowed_msg = ('This is a dataset with restricted access. '
+                                   'To place an order for download please '
+                                   '<a href=\"%s\" style=\"text-decoration: underline; color: #1A5A96\">login</a> first. '
+                                   'If you are logged in and still cannot place an order, '
+                                   'please email the listed dataset \'Contact\' to request access.') % eas_login
                 results.update(_err_dict(not_allowed_msg,
-                                         user_allowed=resp_dict[u'allowed'], content=resp_dict))
+                                         user_allowed=resp_dict[u'allowed'],
+                                         content=resp_dict))
                 return results
             else:
                 results.update({
@@ -340,7 +395,8 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
                 })
         else:
             results.update(_err_dict(_('Datastore_search failed.'),
-                                     datastore_response=resp_dict, datastore_fail=True))
+                                     datastore_response=resp_dict,
+                                     datastore_fail=True))
     else:
         results.update(_err_dict(_('No object_name'),
                                  no_object_name=True))
@@ -396,7 +452,17 @@ def ofi_create_order(context, ofi_vars, ofi_resp):
     aoi_coordinates = [str(item.get(u'lng', 0.0)) + ',' + str(item.get(u'lat', 0.0)) for item in aoi]
     coordinates = ' '.join(aoi_coordinates)
 
-    aoi_str = u'<?xml version=\"1.0\" encoding=\"UTF-8\" ?><areaOfInterest xmlns:gml=\"http://www.opengis.net/gml\"><gml:Polygon xmlns:gml=\"urn:gml\" srsName=\"EPSG:4326\"><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>$coordinates</gml:coordinates></gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></areaOfInterest>'
+    aoi_str = u'''
+<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
+    <areaOfInterest xmlns:gml=\"http://www.opengis.net/gml\">
+        <gml:Polygon xmlns:gml=\"urn:gml\" srsName=\"EPSG:4326\">
+            <gml:outerBoundaryIs>
+                <gml:LinearRing>
+                    <gml:coordinates>$coordinates</gml:coordinates>
+                </gml:LinearRing>
+            </gml:outerBoundaryIs>
+        </gml:Polygon>
+    </areaOfInterest>'''
 
     aoi_template = Template(aoi_str)
     aoi_xml = aoi_template.safe_substitute(coordinates=coordinates)
@@ -504,8 +570,11 @@ def ofi_create_order(context, ofi_vars, ofi_resp):
 
 
 def _get_consent_error(msg):
-    consent_agreement = u'''The information on this form is collected under the authority of Sections 26(c) and 27(1)(c) of the Freedom of Information and Protection of Privacy Act [RSBC 1996 c.165], and will help us to assess and respond to your enquiry.
-             By consenting to submit this form you are confirming that you are authorized to provide information of individuals/organizations/businesses for the purpose of your enquiry.'''
+    consent_agreement = ('The information on this form is collected under the authority of Sections 26(c) and 27(1)(c) '
+                         'of the Freedom of Information and Protection of Privacy Act [RSBC 1996 c.165], and will help '
+                         'us to assess and respond to your enquiry. '
+                         'By consenting to submit this form you are confirming that you are authorized to provide '
+                         'information of individuals/organizations/businesses for the purpose of your enquiry.')
 
     return _err_dict(msg, no_consent=True, consent_agreement=consent_agreement)
 
