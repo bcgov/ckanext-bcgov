@@ -25,10 +25,6 @@ this.ckan.module('ofi_modal', function($, _) {
       ofi_form = this.$('#ofi-lookup-form');
       modal_controls = this.$('.modal-footer');
 
-      if (this.options.object_name == 'False') {
-        return;
-      }
-
       console.log(this.options);
 
       var open_modal = this.options.ofi_results.open_modal;
@@ -45,6 +41,7 @@ this.ckan.module('ofi_modal', function($, _) {
         modal_controls.find('#ofi-delete').on('click', this._removeOFIResources);
         modal_controls.find('#ofi-edit').on('click', this._editOFIResources);
       } else {
+        modal_controls.find('#ofi-force-confirm').on('click',this._getResourceForm);
         this._showResults(content);
       }
 
@@ -55,6 +52,8 @@ this.ckan.module('ofi_modal', function($, _) {
     _getResourceForm: function(event) {
       event.preventDefault();
       self._toggleSpinner(true);
+
+      self.options.force_confirm = (event.target.id == 'ofi-force-confirm');
 
       $.ajax({
         'url': self.options.ofi_geo_resource_form_url,
@@ -69,7 +68,7 @@ this.ckan.module('ofi_modal', function($, _) {
           self._showResults(data);
           modal_subtitle.text('Add OFI Resources');
 
-          modal_controls.find('#ofi-confirm')
+          modal_controls.find('#ofi-confirm, #ofi-force-confirm')
             .off('click', self._getResourceForm)
             .on('click', self._createResources)
             .text('Save');
@@ -95,6 +94,7 @@ this.ckan.module('ofi_modal', function($, _) {
           'package_id': self.options.package_id,
           'object_name': self.options.object_name,
           'secure': true,
+          'force_populate': self.options.force_confirm || false,
           'ofi_resource_info': form_as_obj
         }),
         'contentType': 'application/json; charset=utf-8',
@@ -104,7 +104,7 @@ this.ckan.module('ofi_modal', function($, _) {
           modal_controls.find('#ofi-cancel')
             .remove();
 
-          modal_controls.find('#ofi-confirm')
+          modal_controls.find('#ofi-confirm, #ofi-force-confirm')
             .off('click', self._createResources)
             .text('Finish')
             .on('click', self._redirectToDatasetPage);
@@ -266,8 +266,8 @@ this.ckan.module('ofi_modal', function($, _) {
           .text('Edit')
           .on('click', self._editOFIResources);
       }
-      else if (modal_controls.has('#ofi-confirm').length) {
-        modal_controls.find('#ofi-confirm')
+      else if (modal_controls.has('#ofi-confirm, #ofi-force-confirm').length) {
+        modal_controls.find('#ofi-confirm, #ofi-force-confirm')
           .off('click', self._redirectToDatasetPage)
           .text('Edit')
           .prop('id', 'ofi-edit')

@@ -62,17 +62,19 @@ class EDCOfiController(ApiController):
                 u'object_name': query_params.get(u'object_name', ''),
                 u'secure': query_params.get(u'secure', False)
             })
-        except ValueError, e:
+        except ValueError as e:
             return self._finish_bad_request(unicode(e))
 
         log.debug(u'OFI api config:\n %s \n', pformat(self.config))
         log.debug(u'OFI api context:\n %s\n', pformat(context))
+        log.info(u'OFI action call: %s' % call_action)
 
         # Not ideal, but all cases involve calling the action_func,
         #  which could throw a NotAuthorized exception
         try:
             if call_action == 'populate_dataset_with_ofi':
                 data.update({
+                    u'force_populate': toolkit.asbool(query_params.get(u'force_populate', False)),
                     u'ofi_resource_info': query_params.get(u'ofi_resource_info', {})
                 })
 
@@ -82,13 +84,18 @@ class EDCOfiController(ApiController):
 
                 populate_results = action_func(context, data)
 
-                if 'error' in populate_results and populate_results['error']:
-                    failed_render = toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=populate_results)
-                    return self._finish(400, failed_render, 'html')
+                if str(toolkit.request.accept) == u'application/json':
+                    return self._finish(200, populate_results, 'json')
+                else:
+                    if u'error' in populate_results and populate_results['error']:
+                        failed_render = toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=populate_results)
+                        return self._finish(400, failed_render, 'html')
 
-                return toolkit.render('ofi/snippets/populate_success.html', extra_vars=populate_results)
+                    return toolkit.render('ofi/snippets/populate_success.html', extra_vars=populate_results)
 
             elif call_action == 'geo_resource_form':
+                data.update(force_populate=toolkit.asbool(query_params.get(u'force_populate')))
+
                 return action_func(context, data)
 
             elif call_action == 'file_formats':

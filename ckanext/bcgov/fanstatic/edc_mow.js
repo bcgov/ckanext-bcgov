@@ -28,8 +28,10 @@ this.ckan.module('edc_mow', function($, _) {
       $.ajax({
         'url': self.options.mow_max_aoi_url,
         'data': {
+          // the ckan js module has some issues with empty values when
+          //  getting vars from the DOM (data-* attr), they are assigned to true in js
           'secure': (self.options.secure_call !== 'False' ? true : false),
-          'object_name': self.options.object_name,
+          'object_name': (self.options.object_name !== 'False' ? self.options.object_name : false),
           'package_id': self.options.package_id
         },
         'success': function(data, status) {

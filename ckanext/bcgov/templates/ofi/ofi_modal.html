@@ -38,7 +38,8 @@
                 {% if ofi['ofi_exists'] %}
                     <div>OFI Resources are present in this dataset.</div>
                 {% elif pkg_obj_name == '' %}
-                    <div>No 'Object Name' exists for this dataset. Add an 'Object Name' to the dataset, for OFI.</div>
+                    <h4 style="text-align:center;">No 'Object Name' exists for this dataset.</h4>
+                    <h4 style="text-align:center;">Would you like to create the resources anyways?</h4>
                 {% else %}
                     {% set content = ofi['content'] or false %}
                     {% if content['allowed'] %}
@@ -56,7 +57,9 @@
         {% if ofi['ofi_exists'] %}
             <button id="ofi-delete" class="btn btn-danger pull-left">Delete</button>
             <button id="ofi-edit" class="btn btn-primary">Edit</button>
-        {% elif pkg_obj_name != '' %}
+        {% elif pkg_obj_name == '' %}
+            <button id="ofi-force-confirm" class="btn btn-primary">Yes</button>
+        {% else %}
             {% set content = ofi['content'] or false %}
             {% if content['allowed'] %}
                 <button id="ofi-confirm" class="btn btn-primary">Yes</button>

@@ -82,7 +82,7 @@ def setup_ofi_action(api_url=None):
 
                 # expecting additonal pathing if incoming api endpoint ends with a '/'
                 if api_url.endswith(u'/'):
-                    if 'object_name' in data:
+                    if 'object_name' in data and data[u'object_name']:
                         url += data[u'object_name']
 
                 data[u'api_url'] = url
