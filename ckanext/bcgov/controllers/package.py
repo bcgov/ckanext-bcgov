@@ -300,7 +300,7 @@ class EDCPackageController(PackageController):
 
             log.info('`finish` save param included, skipping add data view, going to dataset read view.')
 
-            toolkit.redirect_to('dataset type read', dataset_type=package_type, id=pkg_dict['name'])
+            toolkit.redirect_to('dataset_read', id=pkg_dict['name'])
 
         except NotAuthorized:
             toolkit.abort(401, _('Unauthorized to read package %s') % '')

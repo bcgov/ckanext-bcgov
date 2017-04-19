@@ -137,7 +137,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('add dataset type', '/{dataset_type}/new', action='new')
             m.connect('search', '/dataset', action='search', highlight_actions='index search')
             m.connect('dataset_read', '/dataset/{id}', action='read', ckan_icon='sitemap')
-            m.connect('dataset type read', '/{dataset_type}/{id}', action='read', ckan_icon='sitemap')
+            #m.connect('dataset type read', '/{dataset_type}/{id}', action='read', ckan_icon='sitemap')
             m.connect('duplicate', '/dataset/duplicate/{id}/{package_type}', action='duplicate')
             m.connect('/dataset/{id}/resource/{resource_id}', action='resource_read')
             m.connect('/dataset/{id}/resource_delete/{resource_id}', action='resource_delete')
