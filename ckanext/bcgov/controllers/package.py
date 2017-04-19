@@ -231,6 +231,97 @@ class EDCPackageController(PackageController):
 
         return result
 
+    def new(self, data=None, errors=None, error_summary=None):
+        """
+        This overrides the PackageController method to redirect
+        to the show dataset view without having to go to the add data view.
+
+        The difference is the inclusion of what the dataset type is.
+        If the save param finish is included or any exceptions happen it
+        will either abort or call the super new method.
+        """
+        log.info('ckanext-bcgov.controllers.package:EDCPackageController.new overriding ckan\'s method')
+
+        save_action = toolkit.request.params.get('save')
+
+        data_dict = logic.clean_dict(
+                        dict_fns.unflatten(
+                            logic.tuplize_dict(
+                                logic.parse_params(toolkit.request.POST,
+                                                   ignore_keys=CACHE_PARAMETERS))))
+
+        log.debug('EDCPackageController data from toolkit.request.POST %s' % data_dict)
+
+        is_an_update = data_dict.get('pkg_name', False)
+
+        if save_action == 'finish' and not is_an_update:
+            return self._new_dataset_only(data_dict, errors, error_summary)
+        else:
+            return super(EDCPackageController, self).new(data, errors, error_summary)
+
+    def _new_dataset_only(self, data_dict=None, errors=None, error_summary=None):
+        from ckan.lib.search import SearchIndexError
+
+        context = {
+            'model': model,
+            'session': model.Session,
+            'user': toolkit.c.user or toolkit.c.author,
+            'auth_user_obj': toolkit.c.userobj,
+            'save': 'save' in toolkit.request.params
+            }
+
+        try:
+            check_access('package_create', context)
+        except NotAuthorized:
+            abort(401, _('Unauthorized to create a package'))
+
+        try:
+            if 'type' in data_dict and data_dict['type']:
+                package_type = data_dict['type']
+            else:
+                package_type = self._guess_package_type(True)
+
+            data_dict['type'] = package_type
+
+            ckan_phase = toolkit.request.params.get('_ckan_phase')
+
+            if ckan_phase:
+                # prevent clearing of groups etc
+                context['allow_partial_update'] = True
+                # sort the tags
+                if 'tag_string' in data_dict:
+                    data_dict['tags'] = self._tag_string_to_list(
+                        data_dict['tag_string'])
+
+            data_dict['state'] = 'draft'
+            context['allow_state_change'] = True
+
+            pkg_dict = toolkit.get_action('package_create')(context, data_dict)
+
+            log.info('`finish` save param included, skipping add data view, going to dataset read view.')
+
+            toolkit.redirect_to('dataset type read', dataset_type=package_type, id=pkg_dict['name'])
+
+        except NotAuthorized:
+            toolkit.abort(401, _('Unauthorized to read package %s') % '')
+
+        except NotFound, e:
+            toolkit.abort(404, _('Dataset not found'))
+
+        except dict_fns.DataError:
+            toolkit.abort(400, _(u'Integrity Error'))
+
+        except SearchIndexError, e:
+            try:
+                exc_str = unicode(repr(e.args))
+            except Exception:  # We don't like bare excepts
+                exc_str = unicode(str(e))
+            toolkit.abort(500, _(u'Unable to add package to search index.') + exc_str)
+
+        except ValidationError, e:
+            data_dict['state'] = 'none'
+            return super(EDCPackageController, self).new(data_dict, e.errors, e.error_summary)
+
     def resource_read(self, id, resource_id):
         '''
         First calls ckan's default resource read to get the resource and package data.
