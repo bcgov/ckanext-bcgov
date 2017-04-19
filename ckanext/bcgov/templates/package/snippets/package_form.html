@@ -141,6 +141,7 @@ then itself be extended to add/remove blocks of functionality. #}
           {% endif %}
         {% endif %}
       {% endblock %}
+      <button id="finish" class="btn" type="submit" name="save" value="finish">{{ _('Save Dataset') }}</button>
       <button class="btn btn-primary" type="submit" name="save" id="save2" onclick="this.style.visibility = 'hidden';document.getElementById('save2').style.visibility='hidden';">{% block save_button_text %}{{ _('Next: Add Data') }}{% endblock %}</button>
     </div>
   {% endblock %}
