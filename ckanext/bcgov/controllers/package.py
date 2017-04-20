@@ -254,12 +254,17 @@ class EDCPackageController(PackageController):
 
         is_an_update = data_dict.get('pkg_name', False)
 
-        if save_action == 'finish' and not is_an_update:
-            return self._new_dataset_only(data_dict, errors, error_summary)
+        if 'type' in data and data['type']:
+            package_type = data['type']
+        else:
+            package_type = self._guess_package_type(True)
+
+        if save_action == 'finish' and not is_an_update and package_type == 'Geographic':
+            return self._new_dataset_only(package_type, data_dict, errors, error_summary)
         else:
             return super(EDCPackageController, self).new(data, errors, error_summary)
 
-    def _new_dataset_only(self, data_dict=None, errors=None, error_summary=None):
+    def _new_dataset_only(self, package_type, data_dict=None, errors=None, error_summary=None):
         from ckan.lib.search import SearchIndexError
 
         context = {
@@ -276,11 +281,6 @@ class EDCPackageController(PackageController):
             abort(401, _('Unauthorized to create a package'))
 
         try:
-            if 'type' in data_dict and data_dict['type']:
-                package_type = data_dict['type']
-            else:
-                package_type = self._guess_package_type(True)
-
             data_dict['type'] = package_type
 
             ckan_phase = toolkit.request.params.get('_ckan_phase')
@@ -319,8 +319,10 @@ class EDCPackageController(PackageController):
             toolkit.abort(500, _(u'Unable to add package to search index.') + exc_str)
 
         except ValidationError, e:
+            errors = e.errors
+            error_summary = e.error_summary
             data_dict['state'] = 'none'
-            return super(EDCPackageController, self).new(data_dict, e.errors, e.error_summary)
+            return super(EDCPackageController, self).new(data_dict, errors, error_summary)
 
     def resource_read(self, id, resource_id):
         '''
