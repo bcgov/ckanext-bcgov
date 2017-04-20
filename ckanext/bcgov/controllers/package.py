@@ -265,6 +265,10 @@ class EDCPackageController(PackageController):
             return super(EDCPackageController, self).new(data, errors, error_summary)
 
     def _new_dataset_only(self, package_type, data_dict=None, errors=None, error_summary=None):
+        """
+        This method is for creating the actual dataset and redirecting
+        to the read dataset without adding any resources
+        """
         from ckan.lib.search import SearchIndexError
 
         context = {
@@ -319,7 +323,7 @@ class EDCPackageController(PackageController):
             toolkit.abort(500, _(u'Unable to add package to search index.') + exc_str)
 
         except ValidationError, e:
-            errors = e.errors
+            errors = e.error_dict
             error_summary = e.error_summary
             data_dict['state'] = 'none'
             return super(EDCPackageController, self).new(data_dict, errors, error_summary)
@@ -680,8 +684,13 @@ def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
     if not context:
         context = {}
 
-    if not pkg_dict:
-        pkg_dict = get_action('package_show')(context, {'id': id})
+    try:
+        if not pkg_dict:
+            pkg_dict = get_action('package_show')(context, {'id': id})
+    except NotFound:
+        abort(404, _('Dataset not found'))
+    except NotAuthorized:
+        abort(401, _('Unauthorized to read dataset %s') % id)
 
     ofi_data = {}
 
