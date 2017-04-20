@@ -254,7 +254,7 @@ class EDCPackageController(PackageController):
 
         is_an_update = data_dict.get('pkg_name', False)
 
-        if 'type' in data and data['type']:
+        if data and 'type' in data and data['type']:
             package_type = data['type']
         else:
             package_type = self._guess_package_type(True)
