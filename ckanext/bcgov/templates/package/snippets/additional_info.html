@@ -11,11 +11,13 @@
       {% if pkg.type == "Geographic" or pkg.type == "Dataset" %}
         <table class="table dataset_view">
           <tr>
-            <td width="150px"><strong>Data Quality</strong></td><td>{{ pkg.data_quality }}</td>
+            <td width="150px"><strong>Data Quality</strong></td>
+            <td>{{ h.render_markdown(pkg.data_quality) }}</td>
           </tr>
 
           <tr>
-            <td><strong>Lineage Statement</strong></td><td>{{ pkg.lineage_statement }}</td>
+            <td><strong>Lineage Statement</strong></td>
+            <td>{{ h.render_markdown(pkg.lineage_statement) }}</td>
           </tr>
         </table>
       {% endif %}
