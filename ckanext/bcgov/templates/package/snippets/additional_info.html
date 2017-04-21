@@ -4,7 +4,7 @@
       {% if pkg.purpose %}
       <h2>Purpose</h2>
       <div id="purpose">
-        {{ pkg.purpose }}
+        {{ h.render_markdown(pkg.purpose) }}
       </div>
       {% endif %}
 
