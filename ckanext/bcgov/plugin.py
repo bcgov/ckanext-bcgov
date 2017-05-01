@@ -140,7 +140,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
                         ])))
             m.connect('search', '/dataset', action='search', highlight_actions='index search')
             m.connect('dataset_read', '/dataset/{id}', action='read', ckan_icon='sitemap')
-            m.connect('dataset type read', '/{dataset_type}/{id}', action='read', ckan_icon='sitemap',
+            m.connect('read edc dataset', '/{dataset_type}/{id}', action='read', ckan_icon='sitemap',
                       requirements=dict(dataset_type='|'.join([
                         'Dataset',
                         'Geographic',
