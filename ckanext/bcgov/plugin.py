@@ -134,7 +134,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         with SubMapper(map, controller=package_controller) as m:
             m.connect('/dataset/add', action='typeSelect')
             m.connect('add dataset', '/dataset/new', action='new')
-            m.connect('new geographic', '/{dataset_type}/new', action='new',
+            m.connect('new edc dataset', '/{dataset_type}/new', action='new',
                       requirements=dict(dataset_type='|'.join([
                         'Geographic',
                         ])))
