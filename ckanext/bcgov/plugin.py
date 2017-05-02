@@ -134,10 +134,19 @@ class SchemaPlugin(plugins.SingletonPlugin):
         with SubMapper(map, controller=package_controller) as m:
             m.connect('/dataset/add', action='typeSelect')
             m.connect('add dataset', '/dataset/new', action='new')
-            m.connect('add dataset type', '/{dataset_type}/new', action='new')
+            m.connect('new edc dataset', '/{dataset_type}/new', action='new',
+                      requirements=dict(dataset_type='|'.join([
+                        'Geographic',
+                        ])))
             m.connect('search', '/dataset', action='search', highlight_actions='index search')
             m.connect('dataset_read', '/dataset/{id}', action='read', ckan_icon='sitemap')
-            #m.connect('dataset type read', '/{dataset_type}/{id}', action='read', ckan_icon='sitemap')
+            m.connect('read edc dataset', '/{dataset_type}/{id}', action='read', ckan_icon='sitemap',
+                      requirements=dict(dataset_type='|'.join([
+                        'Dataset',
+                        'Geographic',
+                        'WebService',
+                        'Application'
+                        ])))
             m.connect('duplicate', '/dataset/duplicate/{id}/{package_type}', action='duplicate')
             m.connect('/dataset/{id}/resource/{resource_id}', action='resource_read')
             m.connect('/dataset/{id}/resource_delete/{resource_id}', action='resource_delete')
