@@ -136,7 +136,10 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('add dataset', '/dataset/new', action='new')
             m.connect('new edc dataset', '/{dataset_type}/new', action='new',
                       requirements=dict(dataset_type='|'.join([
+                        'Dataset',
                         'Geographic',
+                        'WebService',
+                        'Application'
                         ])))
             m.connect('search', '/dataset', action='search', highlight_actions='index search')
             m.connect('dataset_read', '/dataset/{id}', action='read', ckan_icon='sitemap')
