@@ -297,7 +297,7 @@ class EDCPackageController(PackageController):
                     data_dict['tags'] = self._tag_string_to_list(
                         data_dict['tag_string'])
 
-            data_dict['state'] = 'draft'
+            data_dict['state'] = 'active'
             context['allow_state_change'] = True
 
             pkg_dict = toolkit.get_action('package_create')(context, data_dict)
