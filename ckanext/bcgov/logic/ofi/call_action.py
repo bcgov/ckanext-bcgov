@@ -151,7 +151,7 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
                                                               "__MISSING_OBJECT_NAME__"),
                                      qualified=True)
 
-            resource_name = "Additional information for [%s] resource" % \
+            resource_name = "%s - from Geographic Warehouse" % \
                             file_format[u'formatname']
 
             resource_meta.update(name=resource_name,
