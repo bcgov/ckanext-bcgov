@@ -872,6 +872,7 @@ menu li {
 
 .resource-item .size {
   display: inline-block;
+  font-style: italic;
 }
 
 .resource-item .heading {
