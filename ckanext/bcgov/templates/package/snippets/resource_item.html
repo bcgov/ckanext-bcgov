@@ -21,7 +21,7 @@
   {% else %}
     <p class="size">
       {% if res.size %}
-        ({{ h.size_or_link(res.url_type=='upload', res.size) }})
+        {{ h.size_or_link(res.url_type=='upload', res.size) }}
       {% endif %}
     </p>
   {% endif %}
