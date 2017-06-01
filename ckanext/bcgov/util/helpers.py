@@ -463,7 +463,7 @@ def size_or_link(upload, size):
     size = int(size)
 
     if upload and size > 0:
-        return f.localised_filesize(size)
+        return '(%s)' % f.localised_filesize(size)
     else:
         return ''
 
