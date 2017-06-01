@@ -452,7 +452,7 @@ def resource_prefix():
     return config.get('googleanalytics_resource_prefix', '/downloads/')
 
 def size_or_link(upload, size):
-    '''Returns a string with a localised filesize or an external link
+    '''Returns a string with a localised filesize
     From ckan/lib/formatters.py localised_filesize()
     '''
     import ckan.lib.formatters as f
@@ -464,8 +464,6 @@ def size_or_link(upload, size):
 
     if upload and size > 0:
         return f.localised_filesize(size)
-    elif not upload:
-        return 'external link'
     else:
         return ''
 
