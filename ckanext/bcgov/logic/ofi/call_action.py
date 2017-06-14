@@ -446,33 +446,41 @@ def ofi_create_order(context, ofi_vars, ofi_resp):
 
     # Beginning of create order for ofi resource
     aoi = aoi_data.get(u'aoi', [])
-    # flipping coordinate values to y,x because that's what's required for submittion
-    # otherwise the coordinates appeared mirrored on the global map
-    aoi_coordinates = [str(item.get(u'lng', 0.0)) + ',' + str(item.get(u'lat', 0.0)) for item in aoi]
-    coordinates = ' '.join(aoi_coordinates)
 
-    aoi_str = u'''
-<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
-    <areaOfInterest xmlns:gml=\"http://www.opengis.net/gml\">
-        <gml:Polygon xmlns:gml=\"urn:gml\" srsName=\"EPSG:4326\">
-            <gml:outerBoundaryIs>
-                <gml:LinearRing>
-                    <gml:coordinates>$coordinates</gml:coordinates>
-                </gml:LinearRing>
-            </gml:outerBoundaryIs>
-        </gml:Polygon>
-    </areaOfInterest>'''
+    # if no aoi coords, then assume that the user wants the whole province
+    # aoi param to dwds call will be undefined and aoiType = '0' for No Area of Interest Applied
+    aoi_doc = None
+    aoi_type = u'0'
 
-    aoi_template = Template(aoi_str)
-    aoi_xml = aoi_template.safe_substitute(coordinates=coordinates)
+    if aoi:
+        # flipping coordinate values to y,x because that's what's required for submittion
+        # otherwise the coordinates appeared mirrored on the global map
+        aoi_coordinates = [str(item.get(u'lng', 0.0)) + ',' + str(item.get(u'lat', 0.0)) for item in aoi]
+        coordinates = ' '.join(aoi_coordinates)
+
+        aoi_str = u'''
+        <?xml version=\"1.0\" encoding=\"UTF-8\" ?>
+        <areaOfInterest xmlns:gml=\"http://www.opengis.net/gml\">
+            <gml:Polygon xmlns:gml=\"urn:gml\" srsName=\"EPSG:4326\">
+                <gml:outerBoundaryIs>
+                    <gml:LinearRing>
+                        <gml:coordinates>$coordinates</gml:coordinates>
+                    </gml:LinearRing>
+                </gml:outerBoundaryIs>
+            </gml:Polygon>
+        </areaOfInterest>'''
+
+        aoi_template = Template(aoi_str)
+        aoi_doc = aoi_template.safe_substitute(coordinates=coordinates)
+        aoi_type = u'1'
 
     data_dict = {
-        u'aoi': aoi_xml,
+        u'aoi': aoi_doc,
         u'emailAddress': aoi_data.get(u'emailAddress'),
         u'featureItems': aoi_data.get(u'featureItems'),
         u'formatType': _get_format_id(aoi_data.get(u'format')),
         u'useAOIBounds': u'0',
-        u'aoiType': u'1',
+        u'aoiType': aoi_type,
         u'clippingMethodType': u'0',
         u'crsType': projection_id,
         u'prepackagedItems': u'',
