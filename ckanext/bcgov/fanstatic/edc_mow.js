@@ -76,7 +76,7 @@ this.ckan.module('edc_mow', function($, _) {
     };
 
     var _mapViewChanged = function(e) {
-      if (e.type === 'zoomend' && e.target.getZoom() == 4) {
+      if (e.target.getZoom() == 4) {
         var latLonList = [];
       }
       else {
