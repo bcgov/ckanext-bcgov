@@ -76,13 +76,18 @@ this.ckan.module('edc_mow', function($, _) {
     };
 
     var _mapViewChanged = function(e) {
-      var bounds = _map.getBounds();
-      var latLonList = [
-        bounds.getSouthWest(),
-        bounds.getNorthWest(),
-        bounds.getNorthEast(),
-        bounds.getSouthEast(),
-        bounds.getSouthWest()]
+      if (e.target.getZoom() == 4) {
+        var latLonList = [];
+      }
+      else {
+        var bounds = _map.getBounds();
+        var latLonList = [
+          bounds.getSouthWest(),
+          bounds.getNorthWest(),
+          bounds.getNorthEast(),
+          bounds.getSouthEast(),
+          bounds.getSouthWest()];
+      }
 
       self.aoi = latLonList;
       var areaM2 = L.GeometryUtil.geodesicArea(latLonList)
