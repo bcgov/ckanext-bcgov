@@ -248,7 +248,12 @@ class EDCApiController(ApiController):
         sort = data_dict.get('sort', 'name asc')
         organizations = data_dict.get('organizations', [])
 
-
+        try:
+            import ast
+            organizations = ast.literal_eval(organizations)
+            data_dict['organizations'] = organizations
+        except Exception:
+            pass
 
         context = {'model': model, 'session': model.Session, 'user': c.user,
                    'api_version': ver, 'auth_user_obj': c.userobj}
