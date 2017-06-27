@@ -67,4 +67,4 @@ Installation
 
     Originally converted from SVN Source
 
-    Original Repo Copyright 2015, Province of British Columbia
+    Original Repo Copyright 2015, Province of British Columbia.
