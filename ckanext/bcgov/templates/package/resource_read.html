@@ -91,8 +91,7 @@
           </div>
         {% endblock %}
       </div>
-      {# Issue #336 - If the resources is not using the datastore, dont render the preview #}
-      {% if (res.size != '0' or res.datastore_active == True) %}
+
         {# CITZEDC769 - xls/xlsx previews not being identified
             Solution for now is to check the resource type for xls/xlsx and don't
             display the preview element at all, data preview doesn't have any option
@@ -102,7 +101,6 @@
           {% block data_preview %}
               {{ super() }}
           {% endblock %}
-        {% endif %}
       {% endif %}
     </section>
   {% endblock %}
