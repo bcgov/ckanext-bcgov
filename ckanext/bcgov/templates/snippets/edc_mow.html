@@ -40,7 +40,7 @@
             <!--p>Due to its size, this dataset cannot be downloaded at the provincial extent from here.
               Please check the <a href="https://catalogue.data.gov.bc.ca/dataset/2ebb35d8-c82f-4a17-9c96-612ac3532d55">catalogue record</a> for an alternative provincial file / resource for download.
             </p-->
-          
+
             <form id="aoi-order-form" style="padding-left: 10px;" class="form-horizontal">
 
               <div id="area-info">
@@ -109,8 +109,25 @@
 
 </div>
 
+<div id="edc-pow" class="modal hide fade" tabindex="-1" role="dialog"
+  data-module="edc_pow"
+  data-module-secure_call="{{ c.user or False }}"
+  data-module-object_name="{{ pkg_obj_name or False }}"
+  data-module-package_id="{{ pkg_id }}"
+  data-module-mow_max_aoi_url="{{ h.url_for('ofi api', call_action='get_max_aoi') }}"
+  data-module-aoi_create_order_url="{{ h.url_for('ofi api', call_action='ofi_create_order') }}"
+  style="width: 800px; margin-left: -400px;"
+>
+  <div class="modal-header">
+  </div>
+  <div class="modal-body">
+    <h1> Hello form POW</h1>
+  </div>
+  <div class="modal-footer">
+  </div>
+</div>
+
 {% resource 'ckanext-geoview/geojson' %}
 {% resource 'edc_resource/leaflet-ext/leaflet.draw/0.4.0/dist/leaflet.draw.js' %}
 {% resource 'edc_resource/edc_mow.js' %}
 {% resource 'edc_resource/edc_mow_style.css' %}
-
