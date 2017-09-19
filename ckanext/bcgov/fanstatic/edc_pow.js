@@ -9,7 +9,7 @@
 **/
 "use strict";
 
-this.ckan.module('edc_mow', function($, _) {
+this.ckan.module('edc_pow', function($, _) {
     var self, modal, modal_title, content_body, modal_controls, spinner, aoi_form, format;
 
     var _map = null;
@@ -285,7 +285,7 @@ this.ckan.module('edc_mow', function($, _) {
 
             if (data.sm_url)
               debug_info += '<p>SM URL: ' + data.sm_url + '</p>';
-            
+
             debug_info += '<p>Order Response: ' + data.order_response + '</p>' +
                           '<pre>' +
                           JSON.stringify(data.order_sent, function(key, value) {
@@ -382,19 +382,19 @@ this.ckan.module('edc_mow', function($, _) {
         initialize: function() {
             self = this;
             modal = this.el;
-            content_body = this.$('#mow-content');
-            spinner = this.$('#loading');
-            modal_title = this.$('#modal-title');
-            modal_controls = this.$('.modal-footer');
+            content_body = this.$('#pow-content');
+            spinner = this.$('#pow-loading');
+            modal_title = this.$('#pow-modal-title');
+            modal_controls = this.$('.pow-modal-footer');
             aoi_form = this.$('#aoi-order-form');
 
-            $.map($('.edc-mow-button'), function(button) {
+            $.map($('.edc-pow-button'), function(button) {
               $(button).on('click', function(event) {
                 // allows the button for the specified resource to give its format type to be passed to the server
                 event.preventDefault();
                 format = event.target.id;
-                $("#edc-mow").modal("show");
-                _initStart();
+                $("#edc-pow").modal("show");
+                //_initStart();
               });
             });
 
