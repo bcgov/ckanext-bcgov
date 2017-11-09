@@ -3,7 +3,7 @@
 
 import logging
 from ckan.controllers.user import UserController
-from ckan.common import OrderedDict,_,g, request
+from ckan.common import OrderedDict, _, request
 import ckan.lib.base as base
 import ckan.model as model
 import ckan.logic as logic
@@ -18,13 +18,12 @@ from ckanext.bcgov.util.util import (get_user_orgs, get_user_toporgs, get_orgs_u
 
 c = toolkit.c
 
-render = base.render
-abort = base.abort
-redirect = base.redirect
+render = toolkit.render
+abort = toolkit.abort
+redirect = toolkit.redirect_to
 
 check_access = logic.check_access
 NotAuthorized = logic.NotAuthorized
-render = base.render
 
 log = logging.getLogger('ckanext.edc_schema')
 
@@ -45,11 +44,10 @@ class EDCUserController(UserController):
         user_id = c.userobj.id 
 
         fq = ' +edc_state:("DRAFT" OR "PENDING PUBLISH" OR "REJECTED")'
-            #Get the list of organizations that this user is the admin
+
+        # Get the list of organizations that this user is the admin
         if not c.userobj.sysadmin :
-            user_orgs = get_orgs_user_can_edit(c.userobj)#['"' + org + '"' for org in get_orgs_user_can_edit()]
-            #user_orgs = ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'admin')]
-            #user_orgs += ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'editor')]
+            user_orgs = get_orgs_user_can_edit(c.userobj)
             if len(user_orgs) > 0 :
                 fq += ' +owner_org:(' + ' OR '.join(user_orgs) + ')'
         self._user_datasets('dashboard_unpublished', c.userobj.id, fq)
@@ -70,9 +68,8 @@ class EDCUserController(UserController):
             fq = ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
             if c.userobj:
                 user_id = c.userobj.id
-                user_orgs = get_orgs_user_can_edit(c.userobj)#['"' + org + '"' for org in get_orgs_user_can_edit()]
-                #user_orgs = ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'admin')]
-                #user_orgs += ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'editor')]
+                user_orgs = get_orgs_user_can_edit(c.userobj)
+
                 if len(user_orgs) > 0:
                     fq += ' OR owner_org:(' + ' OR '.join(user_orgs) + ')'
             fq += ')'
@@ -100,7 +97,7 @@ class EDCUserController(UserController):
         except ValueError, e:
             abort(400, ('"page" parameter must be an integer'))
 
-        limit = g.datasets_per_page
+        limit = int(toolkit.config.get('ckan.datasets_per_page', 20))
 
         # most search operations should reset the page counter:
         params_nopage = [(k, v) for k, v in request.params.items()
@@ -172,7 +169,6 @@ class EDCUserController(UserController):
 
             fq = filter_query or ''
 
-
             data_dict = {
                 'q': q,
                 'fq': fq.strip(),
@@ -194,14 +190,14 @@ class EDCUserController(UserController):
             )
             user_dict['package_count'] = query['count']
             c.facets = query['facets']
-            maintain.deprecate_context_item('facets',
-                                            'Use `c.search_facets` instead.')
+            #maintain.deprecate_context_item('facets',
+            #                                'Use `c.search_facets` instead.')
 
             c.search_facets = query['search_facets']
             c.search_facets_limits = {}
             for facet in c.facets.keys():
                 limit = int(request.params.get('_%s_limit' % facet,
-                                                g.facets_default_number))
+                                               int(toolkit.config.get('search.facets.default', 10))))
                 c.search_facets_limits[facet] = limit
             c.page.items = query['results']
 

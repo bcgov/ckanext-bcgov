@@ -12,11 +12,12 @@ import ckan.logic as logic
 import ckan.lib.search as search
 import ckan.model as model
 import ckan.lib.maintain as maintain
+import ckan.plugins.toolkit as toolkit
 
 from ckanext.bcgov.util.helpers import get_suborgs
 
-render = base.render
-abort = base.abort
+render = toolkit.render
+abort = toolkit.abort
 
 NotFound = logic.NotFound
 NotAuthorized = logic.NotAuthorized
@@ -77,7 +78,7 @@ class EDCOrganizationController(OrganizationController):
         # search facets
         ''' This is common code used by both read and bulk_process'''
         
-        group_type = self._get_group_type(id.split('@')[0])
+        #group_type = self._get_group_type(id.split('@')[0])
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author,
                    'schema': self._db_to_form_schema(group_type=group_type),
@@ -206,14 +207,14 @@ class EDCOrganizationController(OrganizationController):
 
             c.group_dict['package_count'] = query['count']
             c.facets = query['facets']
-            maintain.deprecate_context_item('facets',
-                                            'Use `c.search_facets` instead.')
+            #maintain.deprecate_context_item('facets',
+            #                                'Use `c.search_facets` instead.')
 
             c.search_facets = query['search_facets']
             c.search_facets_limits = {}
             for facet in c.facets.keys():
                 limit = int(request.params.get('_%s_limit' % facet,
-                                               g.facets_default_number))
+                            toolkit.config.get('search.facets.default', 10)))
                 c.search_facets_limits[facet] = limit
             c.page.items = query['results']
 
