@@ -8,7 +8,7 @@
     <div class="search-input control-group search-giant">
       <input type="text" class="search" name="q" autocomplete="off" placeholder="Search datasets...">
       <button type="submit" value="search">
-        <i class="icon-search"></i>
+        <i class="fa fa-search icon-search"></i>
         <span>{{ _('Submit') }}</span>
       </button>
     </div>
@@ -37,7 +37,7 @@
             {% block resource_actions_inner %}
             {% if h.check_access('package_update', {'id':pkg.id }) %}
               {% if c.ofi and res.ofi %}
-                <li><a href="#ofi-results" role="button" class="btn dropdown-toggle" data-toggle="modal"><i class="icon-wrench"></i>{{ _('Manage') }}</a></li>
+                <li><a href="#ofi-results" role="button" class="btn dropdown-toggle" data-toggle="modal"><i class="fa fa-wrench icon-wrench"></i>{{ _('Manage') }}</a></li>
               {% else %}
                 <li>{% link_for _('Manage'), controller='package', action='resource_edit', id=pkg.name, resource_id=res.id, class_='btn', icon='wrench' %}</li>
               {% endif %}
@@ -50,13 +50,13 @@
                   <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}" title="{{ h.size_or_link(res.url_type=='upload', res.size) }}">
                 {% endif %}
                   {% if res.resource_type in ('listing', 'service') %}
-                    <i class="icon-eye-open"></i> {{ _('View') }}
+                    <i class="fa fa-eye icon-eye-open"></i> {{ _('View') }}
                   {% elif  res.resource_type == 'api' %}
-                    <i class="icon-key"></i> {{ _('API Endpoint') }}
+                    <i class="fa fa-key icon-key"></i> {{ _('API Endpoint') }}
                   {% elif not res.has_views or not res.can_be_previewed %}
-                    <i class="icon-external-link"></i> {{ _('Access / Download') }}
+                    <i class="fa fa-external-link icon-external-link"></i> {{ _('Access / Download') }}
                   {% else %}
-                    <i class="icon-download"></i> {{ _('Download') }}
+                    <i class="fa fa-download icon-download"></i> {{ _('Download') }}
                   {% endif %}
                 </a>
               </li>

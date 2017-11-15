@@ -55,7 +55,7 @@ def organization_list(context, data_dict):
     from ckan.logic.action.get import _group_or_org_list
 
     toolkit.check_access('organization_list', context, data_dict)
-    groups = data_dict.get('organizations', [])
+    groups = data_dict.get('organizations', 'None')
 
     try:
         import ast

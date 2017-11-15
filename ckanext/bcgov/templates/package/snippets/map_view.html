@@ -43,7 +43,7 @@
       </div>
        {% if pkg.link_to_imap %}
        <div class="imap">
-           <a href="{{ pkg.link_to_imap }}" target="_blank" class="btn btn-primary"><i class="icon-map-marker"></i> View in iMapBC</a>
+           <a href="{{ pkg.link_to_imap }}" target="_blank" class="btn btn-primary"><i class="fa fa-map-marker icon-map-marker"></i> View in iMapBC</a>
        </div>
       {% endif %}
     </div>
@@ -52,7 +52,7 @@
       {% if ((not has_extent) and (pkg.link_to_imap)) %}
     <div class="col-md-0">
     <div class="imap">
-        <a href="{{ pkg.link_to_imap }}" target="_blank" class="btn btn-primary"><i class="icon-map-marker"></i> View in iMapBC</a>
+        <a href="{{ pkg.link_to_imap }}" target="_blank" class="btn btn-primary"><i class="fa fa-map-marker icon-map-marker"></i> View in iMapBC</a>
     </div>
     </div>
     {% endif %}

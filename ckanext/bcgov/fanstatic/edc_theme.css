@@ -26,6 +26,10 @@
   src: local('Open Sans Bold'), local('OpenSans-Bold'), url(https://themes.googleusercontent.com/static/fonts/opensans/v8/k3k702ZOKiLJc3WVjuplzKRDOzjiPcYnFooOUGCOsRk.woff) format('woff');
 }
 
+.fa {
+  width: auto;
+}
+
 /* End Fonts */
 
 body {
@@ -401,6 +405,10 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
 
 .search-form .search-input.search-giant input {
   border: 2px solid #003366;
+}
+
+.search-form .search-input.search-giant button {
+  margin-top: -15px;
 }
 
 .dataset-markers {

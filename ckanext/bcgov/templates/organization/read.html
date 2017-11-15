@@ -3,7 +3,7 @@
 {% block page_primary_action %}
   {% set org_id = c.group_dict.id %}
   {% if h.check_access('package_create', {'owner_org': c.group_dict.id}) %}
-    {% link_for _('Add Dataset'), controller='ckanext.bcgov.controllers.package:EDCPackageController', action='typeSelect', group=org_id, class_='btn btn-primary', icon='plus-sign-alt' %}
+    {% link_for _('Add Dataset'), controller='ckanext.bcgov.controllers.package:EDCPackageController', action='typeSelect', group=org_id, class_='btn btn-primary', icon='plus-square' %}
   {% endif %}
 {% endblock %}
 

@@ -13,7 +13,7 @@
         <section id="{{ "%s %s"|format(id, "filter")|replace(' ','-') }}" class="{{ wrapper_class or 'module module-narrow module-shallow' }}">
           {% block facet_list_heading %}
             <h2 class="module-heading">
-              <i class="icon-medium icon-filter"></i>
+              <i class="fa fa-filter icon-medium icon-filter"></i>
               {% set title = title or h.get_facet_title(name) %}
               {{ title }}
             </h2>
@@ -60,10 +60,10 @@
                 	{% if unselected_items|length > 5 %}
                 		<a id="{{ more_button }}" class="facet-expand-collapse" >
                 			<div class="expander">
-                				<i class="icon-angle-down"></i>&nbsp; Show more &nbsp;<i class="icon-angle-down"></i>
+                				<i class="fa fa-angle-down icon-angle-down"></i>&nbsp; Show more &nbsp;<i class="fa fa-angle-down icon-angle-down"></i>
                 			</div>
                 			<div class="collapser">
-                				<i class="icon-angle-up"></i>&nbsp; Show less &nbsp;<i class="icon-angle-up"></i>
+                				<i class="fa fa-angle-up icon-angle-up"></i>&nbsp; Show less &nbsp;<i class="fa fa-angle-up icon-angle-up"></i>
                 			</div>
                 		</a>
                 	{% endif %}
