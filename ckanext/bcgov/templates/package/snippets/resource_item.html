@@ -35,7 +35,7 @@
   {% if not url_is_edit %}
   <div class="dropdown btn-group">
     <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-      <i class="icon-share-alt"></i>
+      <i class="fa fa-share icon-share-alt"></i>
       {{ _('Explore') }}
       <span class="caret"></span>
     </a>
@@ -44,10 +44,10 @@
       <li>
         <a href="{{ url }}">
           {% if res.has_views %}
-            <i class="icon-bar-chart"></i>
+            <i class="fa fa-bar-chart icon-bar-chart"></i>
             {{ _('Preview') }}
           {% else %}
-            <i class="icon-info-sign"></i>
+            <i class="fa fa-info-circle icon-info-sign"></i>
             {{ _('More information') }}
           {% endif %}
         </a>
@@ -56,15 +56,15 @@
       <li>
         {% if pkg.type == 'Geographic' and res.ofi %}
           <a href="#edc-mow" role="button" id="{{ res.format }}" class="edc-mow-button">
-            <i class="icon-external-link"></i>
+            <i class="fa fa-external-link icon-external-link"></i>
             {{ _('Access / Download') }}
         {% elif res.has_views %}
           <a href="{{ res.url }}" class="resource-url-analytics" target="_blank">
-            <i class="icon-download"></i>
+            <i class="fa fa-download icon-download"></i>
             {{ _('Download') }}
         {% else %}
           <a href="{{ res.url }}" class="resource-url-analytics" target="_blank">
-            <i class="icon-external-link"></i>
+            <i class="fa fa-external-link icon-external-link"></i>
             {{ _('Access / Download') }}
         {% endif %}
         </a>
@@ -73,7 +73,7 @@
       {% if can_edit %}
       <li>
         <a href="{{ h.url_for(controller='package', action='resource_edit', id=pkg.name, resource_id=res.id) }}">
-          <i class="icon-edit"></i>
+          <i class="fa fa-pencil-square-o icon-edit"></i>
           {{ _('Edit') }}
         </a>
       </li>
@@ -88,7 +88,7 @@
     {% else %}
       <a href="{{ url }}"{% if archived %} disabled="disabled"{% endif %} class="btn dropdown-toggle">
     {% endif %}
-        <i class="icon-wrench"></i>
+        <i class="fa fa-wrench icon-wrench"></i>
         {{ _('Manage') }}
       </a>
     </div>

@@ -47,7 +47,7 @@ ValidationError = logic.ValidationError
 
 render = base.render
 abort = base.abort
-redirect = base.redirect
+redirect = toolkit.redirect_to
 
 check_access = logic.check_access
 NotAuthorized = logic.NotAuthorized

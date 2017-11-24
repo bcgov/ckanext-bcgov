@@ -45,6 +45,29 @@ log = logging.getLogger('ckanext.edc_schema')
 _or_ = sqlalchemy.or_
 
 
+@toolkit.side_effect_free
+def organization_list(context, data_dict):
+    '''
+    Overriding the `organization_list` action,
+    See github issue #353
+    To replace the bcgov ckan fork modification from https://github.com/bcgov/ckan/pull/16
+    '''
+    from ckan.logic.action.get import _group_or_org_list
+
+    toolkit.check_access('organization_list', context, data_dict)
+    groups = data_dict.get('organizations', 'None')
+
+    try:
+        import ast
+        data_dict['groups'] = ast.literal_eval(groups)
+    except Exception as e:
+        from ckan.lib.navl.dictization_functions import DataError
+        raise DataError('organizations is not parsable, each value must have double or single quotes.')
+
+    data_dict.setdefault('type', 'organization')
+    return _group_or_org_list(context, data_dict, is_org=True)
+
+
 '''
 Checking package status and sending a notification if the state is changed.
 '''

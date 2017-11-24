@@ -2,7 +2,7 @@
   {% if activity.is_new %}
     <span class="new" title="{{ _('New activity item') }}">{{ _('New activity item') }}</span>
   {% endif %}
-  <i class="icon icon-{{ activity.icon }}"></i>
+  <i class="fa fa-{{ activity.icon }} icon icon-{{ activity.icon }}"></i>
   <p>
     {% do activity.data.update({'actor': h.remove_user_link(activity.data.actor)}) %}
     {{ h.literal(activity.msg.format(**activity.data)) }}

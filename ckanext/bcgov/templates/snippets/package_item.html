@@ -51,7 +51,7 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
           {% endif %}
           <div class="dataset-marker-type-icon">
 
-            <div title="{{ title_text }}" class="cursor-help"><i class="icon icon-2x icon-{{ icon_type }}"></i></div>
+            <div title="{{ title_text }}" class="cursor-help"><i class="fa fa-2x fa-{{ icon_type }} icon icon-2x icon-{{ icon_type }}"></i></div>
           </div>
         {% endblock %}
 
@@ -67,7 +67,7 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
             {% block heading_private %}
               {% if package.private %}
                 <span class="dataset-private label label-inverse">
-                  <i class="icon-lock"></i>
+                  <i class="fa fa-lock icon-lock"></i>
                   {{ _('Private') }}
                 </span>
               {% endif %}

@@ -15,12 +15,12 @@
 {% block content_primary_nav %}
   {{ super() }}
   <li class="dropdown share-this-record">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-share-alt"></i> Share this Record</a>
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-share icon-share-alt"></i> Share this Record</a>
     {% snippet "snippets/social.html" %}
   </li>
   <li>
     <a href="{% url_for controller='package', action='read', id=pkg.id %}"
-      ><i class="icon-link"></i> Permalink</a>
+      ><i class="fa fa-link icon-link"></i> Permalink</a>
   </li>
   {#
   <li><a href="#"><i class="icon-rss"></i> RSS</a></li> #}
@@ -49,7 +49,7 @@
     <div class="search-input control-group search-giant">
       <input type="text" class="search" name="q" autocomplete="off" placeholder="Search datasets...">
       <button type="submit" value="search">
-        <i class="icon-search"></i>
+        <i class="fa fa-icon icon-search"></i>
         <span>{{ _('Submit') }}</span>
       </button>
     </div>
@@ -63,7 +63,7 @@
   {% block package_description %}
     {% if pkg.private %}
       <span class="dataset-private label label-inverse pull-right">
-        <i class="icon-lock"></i>
+        <i class="fa fa-lock icon-lock"></i>
         {{ _('Private') }}
       </span>
     {% endif %}
