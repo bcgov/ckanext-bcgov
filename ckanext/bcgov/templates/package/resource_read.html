@@ -129,7 +129,7 @@
 
               <tr>
                 <th scope="row">{{ _('Resource Last Modified') }}</th>
-                <td>{{ h.render_datetime(res.last_modified, '%Y-%m-%d %I:%M:%S %p') or h.render_datetime(res.created, '%Y-%m-%d %I:%M:%S %p') or _('unknown') }}</td>
+                <td>{{ h.render_datetime(res.last_modified, '%Y-%m-%d %I:%M:%S %p %Z') or h.render_datetime(res.created, '%Y-%m-%d %I:%M:%S %p %Z') or _('unknown') }}</td>
               </tr>
 
               <tr>
