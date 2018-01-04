@@ -1,58 +1,62 @@
 (function($, wb) {
 
+    const apiList = '/disqus/posts/list';
+    const apiPostCreate = '/disqus/posts/create';
+    const $termsModal = $('#comment-terms-modal');
+    const baseUrl = site_url;
+    const $threadContainer = $('#disqus_thread');
+    const $numCommentsContainer = $('#disqus_num_comments');
+    const $addCommentContainer = $('#disqus_add_comment');
+    const $messagesContainer = $('#disqus_messages');
+    const $addCommentForm = $('#comment_box form');
+
     var acceptedTerms = false;
     var promiseModal = $.Deferred();
-    var $termsModal = $('#comment-terms-modal');
-    var addCommentContext = '';
-    var baseUrl = site_url;
-    var apiList = '/disqus/posts/list';
-    var apiPostCreate = '/disqus/posts/create';
-    var $threadContainer = $('#disqus_thread');
-    var $numCommentsContainer = $('#disqus_num_comments');
-    var $addCommentContainer = $('#disqus_add_comment');
     var $commentBox = $addCommentContainer.find('.message');
-    var $messagesContainer = $('#disqus_messages');
-    var $addCommentForm = $('#comment_box form');
 
     $(document).ready(function() {
 
         var commentDiv = $threadContainer.find('.post').clone();
         var emptyCommentDiv = $threadContainer.find('.empty').clone();
         var loaderDiv = $threadContainer.find('.loader').clone();
+
         $threadContainer.html(loaderDiv);
-
-        var commentTheadJson;
         getCommentThread(disqus_identifier).done(function(json) {
-            commentTheadJson = json;
-            updateCommentCount(json.response.length);
+            
             $addCommentContainer.show();
-
-            if(json.response.length == 0) {
-                $threadContainer.html(emptyCommentDiv);
-            }
-            else {
-                $threadContainer.html('');
+        
+            if(Array.isArray(json.response) && json.response.length > 0) {
+            
                 var comments = json.response;
+    
+                $threadContainer.html('');
+                updateCommentCount(comments.length);
+
+                // this can be set through the disques control panel.
                 comments = comments.reverse(); // reverse order so parents are populated first
 
-                for (x in comments) {
-                    var comment = comments[x];
+                for( let i=0; i < comments.length; i++ ) {
+
+                    var comment = comments[i];
 
                     if(isValidComment(comment)) {
                         var newComment = commentDiv.clone();
-                        newComment.attr('id', 'post-' + comment.id);
+                        newComment.attr('id', `post-${comment.id}`);
                         newComment.find('.post-author').html(comment.author.name);
-                        newComment.find('.post-time').html($('<a>').attr('href', '#post-' + comment.id).html($.timeago(comment.createdAt + 'Z')));
+                        newComment.find('.post-time').html($('<a>').attr('href', `#post-${comment.id}`).html($.timeago(comment.createdAt + 'Z')));
                         newComment.find('.post-body').html(comment.message);
-                        if(!comment.parent)
+                        if(!comment.parent){
                             $threadContainer.append(newComment);
-                        else {
+                        } else {
                             var parentId = comment.parent;
-                            $('#post-' + parentId + ' .post-replies').first().append(newComment);
-                            $('#post-' + parentId + ' .post-menu .post-menu-collapse').first().closest('li').show();
+                            $(`#post-${parentId} .post-replies`).first().append(newComment);
+                            $(`#post-${parentId} .post-menu .post-menu-collapse`).first().closest('li').show();
                         }
                     }
                 }
+
+            } else {
+                $threadContainer.html(emptyCommentDiv);
             }
 
             // If the user has loaded a permalink to a post
@@ -125,10 +129,10 @@
             $(this).toggleClass('active');
             if(acceptedTerms) {
                 if($(this).hasClass('active')) {
-                    $('#post-' + postId).find('.post-reply-form').first().slideDown();
+                    $(`#post-${postId}`).find('.post-reply-form').first().slideDown();
                 }
                 else {
-                    $('#post-' + postId).find('.post-reply-form').first().slideUp();
+                    $(`#post-${postId}`).find('.post-reply-form').first().slideUp();
                 }
                 setTimeout(function() {
                     $textarea.focus();
@@ -169,8 +173,7 @@
                 var fieldName = $(this).attr('name');
                 if(!val) {
                     formErrors += errors[fieldName] + '<br>';
-                }
-                else {
+                } else {
                     formValues[fieldName] = val;
                 }
             });
@@ -184,48 +187,51 @@
             if(formErrors) {
                 $errorsContainer.html(formErrors);
                 $errorsContainer.slideDown();
-            }
-            else {
+            } else {
                 createComment(disqus_identifier, $formContainer).done(function(json) {
                     $formContainer.trigger('reset');
+                    
                     if(json.code == 0 && json.response.isApproved) {
+                        
                         var parentId = $formContainer.attr('data-reply-to');
                         var newComment = $(commentDiv).clone();
                         newComment.find('.post-author').html(formValues['author_name']);
                         newComment.find('.post-time').html('less than a minute ago');
                         newComment.find('.post-body').html(formValues['message']);
                         newComment.attr('id', 'post-' + json.response.id);
+                        
                         if(parentId == 0 || !parentId) {
                             $threadContainer.find('.empty').remove();
                             $threadContainer.append(newComment);
-                        }
-                        else {
-                            $('#post-' + parentId).find('.post-replies').first().append(newComment);
-                            $('#post-' + parentId + ' .post-menu .post-menu-reply').removeClass('active');
-                            $('#post-' + parentId + ' .post-menu .post-menu-collapse').first().closest('li').show();
+                        } else {
+                            $(`#post-${parentId}`).find('.post-replies').first().append(newComment);
+                            $(`#post-${parentId} .post-menu .post-menu-reply`).removeClass('active');
+                            $(`#post-${parentId} .post-menu .post-menu-collapse`).first().closest('li').show();
                             $formContainer.remove();
                         }
+
                         updateCommentCount($threadContainer.find('.post').length);
                         $(newComment).hide();
                         $(newComment).fadeIn();
                         $('html, body').animate({
                             scrollTop: $(newComment).offset().top
                         }, 500);
-                    }
-                    else if(json.code == 0 && !json.response.isApproved) {
+
+                    } else if(json.code == 0 && !json.response.isApproved) {
                         var parentId = $formContainer.attr('data-reply-to');
                         if(parentId != 0 && parentId) {
-                            $('#post-' + parentId + ' .post-menu .post-menu-reply').removeClass('active');
+                            $(`#post-${parentId} .post-menu .post-menu-reply`).removeClass('active');
                             $formContainer.remove();
                         }
                         addMessage('Thank you for your comment.  Once approved it will appear on this page.', 'success');
-                    }
-                    else if(json.code == 4) {
+                    } else if(json.code == 4) {
                         addMessage('Anonymous commenting is not permitted.  Please sign in before commenting.', 'danger');
-                    }
-                    else {
+                    } else if(json.code == 2) {
+                        addMessage('Missing or invalid argument', 'danger');
+                    } else {
                         addMessage('There was an error posting your comment.  Please try again.', 'danger');
                     }
+
                 }).fail(function() {
                     addMessage('There was an error posting your comment.  Please try again later.', 'danger');
                 });
@@ -256,7 +262,7 @@
     function getCommentThread(ident) {
         return $.ajax({
             url: baseUrl + apiList,
-            data: 'thread=' + ident,
+            data: `thread=${ident}`,
             method: 'GET',
             dataType: 'json',
             done: function(json) {
@@ -271,7 +277,7 @@
     function createComment(ident, form) {
         return $.ajax({
             url: baseUrl + apiPostCreate,
-            data: 'ident=' + ident + '&' + form.serialize(),
+            data: `ident=${ident}&${form.serialize()}`,
             method: 'POST',
             dataType: 'json',
             done: function(json) {
@@ -283,21 +289,25 @@
     }
 
     function updateCommentCount(numComments) {
-        if(numComments == 1)
-            var commentsString = 'comment';
-        else
-            var commentsString = 'comments';
+        
+        var commentsString
+        if(numComments == 1) {
+            commentsString = 'comment';
+        } else {
+            commentsString = 'comments';
+        }
+
         $numCommentsContainer.html(numComments + ' ' + commentsString);
 
     }
 
     function isValidComment(comment) {
-        return !comment.isSpam && !comment.isDeleted && comment.isApproved
+        return ( !comment.isSpam && !comment.isDeleted && comment.isApproved )
     }
 
     function addMessage(message, type) {
         clearMessage();
-        $messagesContainer.append($('<div>').addClass('alert alert-' + type).html(message));
+        $messagesContainer.append($('<div>').addClass(`alert alert-${type}`).html(message));
         $messagesContainer.slideDown();
     }
 

@@ -3,6 +3,7 @@
  
 from ckan.controllers.api import ApiController
 
+import logging
 import ckan.lib.base as base
 import ckan.model as model
 import ckan.logic as logic
@@ -19,13 +20,13 @@ from pylons import config
 
 get_action = logic.get_action
 h = HTMLParser.HTMLParser()
+log = logging.getLogger(u'ckanext.bcgov.controllers.disqus')
 
 class DisqusController(ApiController):
 
     # Creates a new post with the given parameters in the URL
     # If the thread doesn't exist (based on identifier), it will create the thread first
     def disqusPostCreate(self):
-
         ident = request.params.get('ident')
         author_name = request.params.get('author_name')
         author_email = request.params.get('author_email')
@@ -60,8 +61,8 @@ class DisqusController(ApiController):
         return self._finish_ok(comment_request)
 
     def disqusGetThread(self):
-
         ident = request.params.get('ident')
+
         if ident:
             thread = self.getThread(ident)
             return self._finish_ok(thread)
@@ -69,7 +70,6 @@ class DisqusController(ApiController):
             return self._finish_bad_request('Missing argument \'ident\'')
 
     def disqusGetPostsByThread(self):
-
         ident = request.params.get('thread')
 
         if ident:
@@ -79,7 +79,6 @@ class DisqusController(ApiController):
             return self._finish_bad_request('Missing arugment \'thread\'')
 
     def getPosts(self, ident):
-
         thread = self.getThread(ident)
         request = thread
         fresh_thread = False
@@ -108,7 +107,6 @@ class DisqusController(ApiController):
 
     # Returns thread details if the Disqus thread exists (searches by identifier), 0 otherwise
     def getThread(self, ident):
-
         api_key = config.get('edcdisqus.api_key')
         forum_name = config.get('edcdisqus.forum_name')
 
@@ -121,10 +119,10 @@ class DisqusController(ApiController):
         return request
 
     def createThreadFromIdent(self, ident):
-
         context = {'model': model, 'session': model.Session, 'user': c.user,
                    'api_version': 3, 'auth_user_obj': c.userobj}
         thread = {}
+
         try:
             pkg = get_action('package_show')(context, {'id' : ident})
             pkg_title = pkg['title']
@@ -135,7 +133,6 @@ class DisqusController(ApiController):
         return thread
 
     def createThread(self, title, ident):
-
         api_key = config.get('edcdisqus.api_key')
         forum_name = config.get('edcdisqus.forum_name')
         access_token = config.get('edcdisqus.access_token')
@@ -143,6 +140,7 @@ class DisqusController(ApiController):
         data_string = urllib.urlencode({'forum': forum_name, 'title': title, 'identifier': ident, 'api_key': api_key, 'access_token': access_token })
 
         request_json = self.request('https://disqus.com/api/3.0/threads/create.json', data_string, 'post')
+
         request = json.loads(request_json)
 
         # If somehow the thread exists already, just return it instead
@@ -155,15 +153,31 @@ class DisqusController(ApiController):
         return request
 
     def createGuestPost(self, thread_id, name, email, message, parent = None):
-
         # This is sort of a hack, the Disqus API won't let you post guest comments without it, even though they document it otherwise...
+        # RE: This seems to be the standard way to add a guest comment (using the disqus api key)
+        api_secret = config.get('edcdisqus.api_secret')
         widget_api_key = config.get('edcdisqus.widget_api_key')
 
         if parent:
-            data_string = urllib.urlencode({'thread': thread_id, 'author_name': name, 'author_email': email, 'message': message, 'parent': parent, 'api_key': widget_api_key })
+            data_string = urllib.urlencode({
+                    'thread': thread_id, 
+                    'author_name': name, 
+                    'author_email': email, 
+                    'message': message, 
+                    'parent': parent, 
+                    'api_secret': api_secret,
+                    'api_key': widget_api_key,
+                })
         else:
-            data_string = urllib.urlencode({'thread': thread_id, 'author_name': name, 'author_email': email, 'message': message, 'api_key': widget_api_key })
-
+            data_string = urllib.urlencode({
+                    'thread': thread_id, 
+                    'author_name': name, 
+                    'author_email': email, 
+                    'message': message, 
+                    'api_secret': api_secret, 
+                    'api_key': widget_api_key,
+                })
+        
         request_json = self.request('https://disqus.com/api/3.0/posts/create.json', data_string, 'post')
 
         request = json.loads(request_json)
@@ -180,6 +194,10 @@ class DisqusController(ApiController):
             else:
                 response = urllib2.urlopen(url, data)
             request_json = response.read()
+            
+            if( json.loads(request_json)['code'] > 0):
+                log.info('disques request error %s' % json.loads(request_json))
+
         except urllib2.HTTPError, e:
             request_json =  e.fp.read()
 
