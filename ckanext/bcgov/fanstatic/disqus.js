@@ -23,13 +23,13 @@
         $threadContainer.html(loaderDiv);
         getCommentThread(disqus_identifier).done(function(json) {
             
+            $addCommentContainer.show();
+        
             if(Array.isArray(json.response) && json.response.length > 0) {
             
                 var comments = json.response;
-
-                $addCommentContainer.show();
+    
                 $threadContainer.html('');
-
                 updateCommentCount(comments.length);
 
                 // this can be set through the disques control panel.
