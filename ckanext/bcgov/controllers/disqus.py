@@ -62,6 +62,7 @@ class DisqusController(ApiController):
 
     def disqusGetThread(self):
         ident = request.params.get('ident')
+
         if ident:
             thread = self.getThread(ident)
             return self._finish_ok(thread)
@@ -87,7 +88,7 @@ class DisqusController(ApiController):
             fresh_thread = True
 
         if thread['code'] == 0:
-            thread_id = thread['response']['id']            
+            thread_id = thread['response']['id']
             api_key = config.get('edcdisqus.api_key')
             forum_name = config.get('edcdisqus.forum_name')
             data_string = urllib.urlencode({'forum': forum_name, 'thread': thread_id, 'api_key': api_key, 'limit': 100 })
@@ -121,6 +122,7 @@ class DisqusController(ApiController):
         context = {'model': model, 'session': model.Session, 'user': c.user,
                    'api_version': 3, 'auth_user_obj': c.userobj}
         thread = {}
+
         try:
             pkg = get_action('package_show')(context, {'id' : ident})
             pkg_title = pkg['title']
@@ -138,7 +140,7 @@ class DisqusController(ApiController):
         data_string = urllib.urlencode({'forum': forum_name, 'title': title, 'identifier': ident, 'api_key': api_key, 'access_token': access_token })
 
         request_json = self.request('https://disqus.com/api/3.0/threads/create.json', data_string, 'post')
-        
+
         request = json.loads(request_json)
 
         # If somehow the thread exists already, just return it instead
@@ -179,7 +181,7 @@ class DisqusController(ApiController):
         request_json = self.request('https://disqus.com/api/3.0/posts/create.json', data_string, 'post')
 
         request = json.loads(request_json)
-        
+
         return request
 
     def request(self, url, data, method):
