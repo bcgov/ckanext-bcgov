@@ -27,8 +27,6 @@ class DisqusController(ApiController):
     # Creates a new post with the given parameters in the URL
     # If the thread doesn't exist (based on identifier), it will create the thread first
     def disqusPostCreate(self):
-        log.info('disqusPostCreate')
-
         ident = request.params.get('ident')
         author_name = request.params.get('author_name')
         author_email = request.params.get('author_email')
@@ -63,8 +61,6 @@ class DisqusController(ApiController):
         return self._finish_ok(comment_request)
 
     def disqusGetThread(self):
-        log.info('disqusGetThread')
-
         ident = request.params.get('ident')
         if ident:
             thread = self.getThread(ident)
@@ -73,7 +69,6 @@ class DisqusController(ApiController):
             return self._finish_bad_request('Missing argument \'ident\'')
 
     def disqusGetPostsByThread(self):
-
         ident = request.params.get('thread')
 
         if ident:
@@ -83,12 +78,9 @@ class DisqusController(ApiController):
             return self._finish_bad_request('Missing arugment \'thread\'')
 
     def getPosts(self, ident):
-
         thread = self.getThread(ident)
         request = thread
         fresh_thread = False
-
-        log.info('getPosts')
 
         if thread['code'] != 0:
             thread = self.createThreadFromIdent(ident)
@@ -114,8 +106,6 @@ class DisqusController(ApiController):
 
     # Returns thread details if the Disqus thread exists (searches by identifier), 0 otherwise
     def getThread(self, ident):
-        log.info('getThread')
-
         api_key = config.get('edcdisqus.api_key')
         forum_name = config.get('edcdisqus.forum_name')
 
@@ -128,8 +118,6 @@ class DisqusController(ApiController):
         return request
 
     def createThreadFromIdent(self, ident):
-        log.info('createThreadFromIdent')
-
         context = {'model': model, 'session': model.Session, 'user': c.user,
                    'api_version': 3, 'auth_user_obj': c.userobj}
         thread = {}
@@ -143,8 +131,6 @@ class DisqusController(ApiController):
         return thread
 
     def createThread(self, title, ident):
-        log.info('createThread')
-
         api_key = config.get('edcdisqus.api_key')
         forum_name = config.get('edcdisqus.forum_name')
         access_token = config.get('edcdisqus.access_token')
@@ -165,8 +151,6 @@ class DisqusController(ApiController):
         return request
 
     def createGuestPost(self, thread_id, name, email, message, parent = None):
-        log.info('createGuestPost')
-
         # This is sort of a hack, the Disqus API won't let you post guest comments without it, even though they document it otherwise...
         # RE: This seems to be the standard way to add a guest comment (using the disqus api key)
         api_secret = config.get('edcdisqus.api_secret')
