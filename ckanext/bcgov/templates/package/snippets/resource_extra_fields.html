@@ -146,15 +146,15 @@
     		<label class="control-label" for="field-projection_name"><span class="control-required">*</span> Projection Name</label>
     		<div class="controls">
     			{% set projection_names_list = h.edc_tags(_('projection_name')) %}
-    			{% set current_projection = data.projection_name %}
+    			{% set current_projection = h.set_projection_select(data.projection_name, projection_names_list) %}
             	<select id="field-projection_name" name="projection_name" data-module="autocomplete" class="required">
-            		<option value ='' {% if not selected_projection %} selected="selected" {% endif %} disabled>Select a projection name</option>
+            		  <option value ='' {% if not selected_projection %} selected="selected" {% endif %} disabled>Select a projection name</option>
                 	{% for projection in projection_names_list  %}
                 		{% set selected_projection = (current_projection and current_projection == projection) %}
-                    	<option value="{{ projection }}"
-                    		{% if selected_projection %} selected="selected" {% endif %}>
-                        	{{ projection }}
-                    	</option>
+                  	<option value="{{ projection }}"
+                  		{% if selected_projection %} selected="selected" {% endif %}>
+                      	{{ projection }}
+                  	</option>
                 	{% endfor %}
            		</select>
           		{% if error and error is iterable %}<span class="error-block">{{ error|join(', ') }}</span>{% endif %}
