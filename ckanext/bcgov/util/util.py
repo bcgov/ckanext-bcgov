@@ -440,13 +440,22 @@ def get_all_orgs():
     return orgs_dict
 
 def can_view_resource(resource):
-    # log.info(resource)
+    '''
+    Returns a boolean if the resource is able to be loaded / viewed. 
+    This is intended to add functionality beyond user view permissions.
+
+    return True if the resource is viewable, False if not.
+    '''
     data_dict = { 'resource':resource }
     format_lower = resource.get('format', '').lower()
 
     proxy_enabled = p.plugin_loaded('resource_proxy')
     same_domain = datapreview.on_same_domain(data_dict)
 
+    '''
+        requirement
+        - If the format is a PDF (uses pdfview), from a proxy thats smaller than the configuration proxy max size value.
+    '''
     if format_lower in ['pdf', 'x-pdf', 'acrobat', 'vnd.pdf']:
         if same_domain:
             return same_domain
