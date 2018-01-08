@@ -113,7 +113,7 @@
         <div class="module-content">
           {% if res.supplemental_info %}
           <h2>{{ _('Supplemental Information')}}</h2>
-          <p>{{ res.supplemental_info }}</p>
+          <p>{{ h.render_markdown(res.supplemental_info) }}</p>
           {% endif %}
           <h2>{{ _('Additional Information') }}</h2>
           <table class="table">
