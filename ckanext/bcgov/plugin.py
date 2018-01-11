@@ -69,6 +69,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     plugins.implements(plugins.IAuthFunctions)
 
+    plugins.implements(plugins.IResourceController, inherit=True)
+
     def get_helpers(self):
         return {
                 "dataset_type" : get_dataset_type,
@@ -333,7 +335,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     #def after_update(self, context, pkg_dict):
         # If there are no resources added, redirect to the "add resource" page after saving
-        #if len(pkg_dict.get('resources', [])) == 0:
+        # if len(pkg_dict.get('resources', [])) == 0:
         #    toolkit.redirect_to(controller='package', action='new_resource', id=pkg_dict['id'])
 
     def dataset_facets(self, facet_dict, package_type):
@@ -398,6 +400,10 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'ofi_create_order': ofi.ofi_create_order
         }
 
+    # IResourceController
+    def before_create(self, context, resource):
+        # preventative fix for #386 - make sure facet format types are always lowercase;
+        resource['format'] = resource['format'].lower()
 
 class EDCDisqusPlugin(plugins.SingletonPlugin):
     # Declare that this class implements IConfigurer.
