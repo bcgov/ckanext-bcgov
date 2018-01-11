@@ -5,24 +5,29 @@ import urllib2
 import urllib
 import json
 import pprint
+import logging
 
 import ckan.model as model
-import ckan.plugins.toolkit as toolkit
-from ckan.common import  c
+import ckan.plugins as p
+from ckan.common import c
 
 import ckan.logic as logic
+import ckan.lib.datapreview as datapreview
 
 from ckanext.bcgov.util.helpers import get_record_type_label
 from sqlalchemy import and_, distinct
 from sqlalchemy.orm import aliased
 
+toolkit = p.toolkit
 ValidationError = logic.ValidationError
 
 from pylons import config
 
 site_url = config.get('ckan.site_url')
 api_key = config.get('ckan.api_key')
+log = logging.getLogger('ckanext.bcgov.util')
 
+MAX_FILE_SIZE = config.get('ckan.resource_proxy.max_file_size', 1024**2)
 
 def edc_type_label(item):
     rec_type = item['display_name']
@@ -65,7 +70,6 @@ def get_edc_tags(vocab_id):
 
     return tags
 
-
 def get_username(id):
     '''
     Returns the user name for the given id.
@@ -100,7 +104,6 @@ def get_orgs_user_can_edit(userobj) :
     '''
     orgs =  userobj.get_group_ids('organization', 'editor') +  c.userobj.get_group_ids('organization', 'admin')
     return orgs
-
 
 def get_user_toporgs(user_id, role=None):
 
@@ -305,7 +308,6 @@ def get_user_orgs(user_id, role=None):
     return orgs
     '''
 
-
 def get_user_orgs_id(user_id, role=None):
     user_orgs = get_user_orgs(user_id, role)
     return [org.id for org in user_orgs]
@@ -339,7 +341,6 @@ def get_parent_orgs(org_id):
 
     
     return parents    
-    
 
 def get_org_admins(org_id):
     '''
@@ -352,7 +353,6 @@ def get_org_admins(org_id):
     except toolkit.ObjectNotFound:
         members = []
     return members
-
 
 def get_org_users(org_id, role=None):
     '''
@@ -425,7 +425,6 @@ def get_state_values(userobj, pkg):
 
     return states
 
-
 def get_all_orgs():
     '''
     Returns all user orgs as a dictionary with the id as the key
@@ -439,3 +438,40 @@ def get_all_orgs():
         orgs_dict[org['id']] = {'name': org.name, 'title': org.title }
 
     return orgs_dict
+
+def can_view_resource(resource):
+    '''
+    Returns a boolean if the resource is able to be loaded / viewed. 
+    This is intended to add functionality beyond user view permissions.
+
+    return True if the resource is viewable, False if not.
+    '''
+    data_dict = { 'resource':resource }
+    format_lower = resource.get('format', '').lower()
+
+    proxy_enabled = p.plugin_loaded('resource_proxy')
+    same_domain = datapreview.on_same_domain(data_dict)
+
+    '''
+        requirement
+        - If the format is a PDF (uses pdfview), from a proxy thats smaller than the configuration proxy max size value.
+    '''
+    if format_lower in ['pdf', 'x-pdf', 'acrobat', 'vnd.pdf']:
+        if same_domain:
+            return same_domain
+        elif proxy_enabled:
+            try:
+                usock = urllib2.urlopen(resource['url'], '')
+                size =  usock.info().get('Content-Length')
+                if size is None:
+                    size = 0
+                size = float(size) # in bytes
+                
+                if size > MAX_FILE_SIZE:
+                    return False
+                else:
+                    return True
+            except Exception, e:
+                return True
+
+    return False

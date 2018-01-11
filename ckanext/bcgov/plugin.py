@@ -18,7 +18,8 @@ from ckanext.bcgov.util.util import (get_edc_tags,
                                           get_orgs_user_can_edit,
                                           get_user_orgs_id,
                                           get_user_toporgs,
-                                          get_organization_branches
+                                          get_organization_branches,
+                                          can_view_resource
                                           )
 
 from ckanext.bcgov.util.helpers import (get_suborg_sector,
@@ -109,7 +110,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "size_or_link": size_or_link,
                 "remove_user_link": remove_user_link,
                 "get_ofi_config": get_ofi_config,
-                "get_ofi_resources": get_ofi_resources
+                "get_ofi_resources": get_ofi_resources,
+                "can_view_resource": can_view_resource
                 }
 
     def update_config(self, config):
