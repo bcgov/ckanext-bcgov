@@ -475,3 +475,9 @@ def can_view_resource(resource):
                 return True
 
     return False
+
+def get_package_tracking(package):
+    return (model.TrackingSummary.get_for_package(package['id']))
+
+def get_resource_tracking(resource):
+    return (model.TrackingSummary.get_for_resource(resource['url']))

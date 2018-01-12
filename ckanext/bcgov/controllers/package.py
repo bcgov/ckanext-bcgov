@@ -179,7 +179,7 @@ class EDCPackageController(PackageController):
                    'for_view': True}
 
         try:
-            pkg_dict = get_action('package_show')(context, {'id': id})
+            pkg_dict = get_action('package_show')(context, {'id': id, 'include_tracking':True})
         except NotFound:
             abort(404, _('Dataset not found'))
         except NotAuthorized:
@@ -341,7 +341,7 @@ class EDCPackageController(PackageController):
                    'for_view': True}
 
         try:
-            pkg_dict = get_action('package_show')(context, {'id': id})
+            pkg_dict = get_action('package_show')(context, {'id': id, 'include_tracking':True })
         except NotFound:
             abort(404, _('Dataset not found'))
         except NotAuthorized:
@@ -686,7 +686,7 @@ def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
 
     try:
         if not pkg_dict:
-            pkg_dict = get_action('package_show')(context, {'id': id})
+            pkg_dict = get_action('package_show')(context, {'id': id, 'include_tracking':True})
     except NotFound:
         abort(404, _('Dataset not found'))
     except NotAuthorized:

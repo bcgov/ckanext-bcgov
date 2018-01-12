@@ -175,7 +175,7 @@ class EDCApiController(ApiController):
 
         return_dict = {"help": help_str}
         try :
-            pkg = get_action('package_show')(context, {'id' : pkg_id})
+            pkg = get_action('package_show')(context, {'id' : pkg_id, 'include_tracking':True})
 
             #add the top-level org to the organization
             #'organization, branch'

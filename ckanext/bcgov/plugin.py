@@ -3,11 +3,13 @@
 
 from ckan.common import  c, _
 
+import logging
 import pylons.config as config
 import ckan.lib.base as base
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 
+from paste.deploy.converters import asbool
 from routes.mapper import SubMapper
 
 from ckanext.bcgov.util.util import (get_edc_tags,
@@ -19,7 +21,9 @@ from ckanext.bcgov.util.util import (get_edc_tags,
                                           get_user_orgs_id,
                                           get_user_toporgs,
                                           get_organization_branches,
-                                          can_view_resource
+                                          can_view_resource,
+                                          get_package_tracking,
+                                          get_resource_tracking
                                           )
 
 from ckanext.bcgov.util.helpers import (get_suborg_sector,
@@ -49,11 +53,13 @@ from ckanext.bcgov.util.helpers import (get_suborg_sector,
                                              debug_full_info_as_list,
                                              remove_user_link,
                                              get_ofi_config,
-                                             get_ofi_resources
+                                             get_ofi_resources,
+                                             log_this
                                              )
 
 abort = base.abort
 
+log = logging.getLogger('ckan.ckanbcgov.plugin')
 
 class SchemaPlugin(plugins.SingletonPlugin):
 
@@ -113,7 +119,10 @@ class SchemaPlugin(plugins.SingletonPlugin):
                 "remove_user_link": remove_user_link,
                 "get_ofi_config": get_ofi_config,
                 "get_ofi_resources": get_ofi_resources,
-                "can_view_resource": can_view_resource
+                "can_view_resource": can_view_resource,
+                "get_package_tracking":get_package_tracking,
+                "get_resource_tracking":get_resource_tracking,
+                "log":log_this
                 }
 
     def update_config(self, config):

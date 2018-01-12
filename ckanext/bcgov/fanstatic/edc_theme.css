@@ -586,6 +586,7 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
   float: right;
   clear: both;
   padding-bottom: 3px;
+  margin-top:-8px;
   margin-right: -20px;
 }
 
@@ -593,11 +594,31 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
   margin-bottom: 50px;
 }
 
+.flex-fill-end{
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+}
+
+.dataset-content{
+  margin-bottom:12px;
+}
+
 .dataset-list .dataset-dates {
   list-style-type: none;
   padding: 0;
-  margin: 25px 0 0 0;
+  margin: 12px 0 0 0;
   color: #999;
+  display:flex;
+  flex-direction:row;
+}
+
+.dataset-list .dataset-dates:first-child{
+  margin-top:6px;
+}
+
+.dataset-list .dataset-dates li.flex-1{
+  flex:1;
 }
 
 .dataset-list .dataset-dates li {
@@ -616,6 +637,9 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
     visibility: hidden;
     line-height: 0;
     height: 0;
+}
+.description-tracking {
+  margin-top:-10px;
 }
 
 .notes {
@@ -1111,6 +1135,11 @@ input.search.tt-hint {
 .edc-state.archived {
   background: #95a5a6;
   color: #fff;
+}
+
+.dataset-heading .tracking-summary{
+  font-size:13px;
+  font-weight:600;
 }
 
 .dataset-heading .dataset-heading-orgs {

@@ -70,6 +70,15 @@
         </div>
         {% block resource_content %}
           {% block resource_read_title %}<h1 class="page-heading">{{ h.resource_display_name(res) | truncate(50) }}</h1>{% endblock %}
+
+          {% set tracking_summary = h.get_resource_tracking(res) %}
+          {% if tracking_summary %}
+            <h4 class="description-tracking">
+            {% if tracking_summary.total > 0 %} Total Views:{{ tracking_summary.total}} {% endif %}
+            {% if tracking_summary.recent > 0 %} Recent Views:{{ tracking_summary.recent }} {% endif %}  
+            </h4>
+          {% endif %}
+
           {% block resource_read_url %}
             {% if res.url and h.is_url(res.url) %}
               {% if not (pkg.type == 'Geographic' and res.ofi) %}

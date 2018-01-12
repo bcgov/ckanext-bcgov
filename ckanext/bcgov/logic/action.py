@@ -512,7 +512,7 @@ def package_update(context, data_dict):
 
     # FIXME: first modifications to package_updade begin here:
     # tag strings are reconstructed because validators are stripping
-    # tags passed and only taking taks as tag_string values
+    # tags passed and only taking tags as tag_string values
     # image upload support has also been added here
     old_data = get_action('package_show')(context, {'id': pkg.id})
 
@@ -662,7 +662,7 @@ def package_update(context, data_dict):
     # we could update the dataset so we should still be able to read it.
     context['ignore_auth'] = True
     output = data_dict['id'] if return_id_only \
-        else _get_action('package_show')(context, {'id': data_dict['id']})
+        else _get_action('package_show')(context, {'id': data_dict['id'], 'include_tracking':True})
 
     '''
     Send state change notifications if required; Added by Khalegh Mamakani
