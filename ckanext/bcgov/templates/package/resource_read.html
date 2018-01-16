@@ -71,7 +71,7 @@
         {% block resource_content %}
           {% block resource_read_title %}<h1 class="page-heading">{{ h.resource_display_name(res) | truncate(50) }}</h1>{% endblock %}
 
-          {% set tracking_summary = h.get_resource_tracking(res) %}
+          {% set tracking_summary = h.get_resource_tracking(res['url']) %}
           {% if tracking_summary %}
             <h4 class="description-tracking">
             {% if tracking_summary.total > 0 %} Total Views:{{ tracking_summary.total}} {% endif %}

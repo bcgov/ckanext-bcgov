@@ -88,7 +88,7 @@
     </h1>
 
     
-    {% set tracking_summary = h.get_package_tracking(pkg) %}
+    {% set tracking_summary = h.get_package_tracking(pkg['id']) %}
     {% if tracking_summary %}
       <h4 class="description-tracking">
       {% if tracking_summary.total > 0 %} Total Views:{{ tracking_summary.total}} {% endif %}
