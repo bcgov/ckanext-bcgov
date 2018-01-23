@@ -30,7 +30,13 @@ this.ckan.module('edc_pow', function($, _){
 		initialize: function() {
 			console.log('initializing module "edc_pow"');
 
-			console.log(this.options);
+			// Ckan Issue #3287 -> https://github.com/ckan/ckan/issues/3287
+			// if data-module-* attributes are None from templates,
+			// an empty string, etc. these are initialized as `true` in `this.options`
+			//
+			// set an empty string for `env`, indicates to not use a bcgov subdomain environment
+			// eg. use prod if env isn't set in the config
+			this.options.env = (!(this.options.env instanceof String) || (this.options.env instanceof Boolean)) && '';
 
 			// convinence option vars
 			self = this;
