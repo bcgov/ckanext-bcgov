@@ -1,149 +1,138 @@
 "use strict";
 
 this.ckan.module('edc_pow', function($, _){
-	var self, dwds_url;
+	var self, opt, pkg, pow_order;
 
-	var publicUrl = 'https://' + env + '.apps.gov.bc.ca/pub/dwds-ofi/public/' ;
-	var secureUrl = 'https://' + env + '.apps.gov.bc.ca/pub/dwds-ofi/secure/' ;
-
-	var pastOrdersNbr = '5';
-	var secureSite = JSON.parse('false');
-	var customAoiUrl = 'http://maps.gov.bc.ca/ess/hm/aoi/';
-
-	// change this to false to bypass the POW UI and submit the order directly using the pow api
-	var usePowUi = false;
 	var pow_initialized = false;
 
-	var _initAndOpenPOW = 
+	var get_dwds_url = function(endpoint) {
+		const env = (opt.env) ? opt.env + '.' : '';
+		endpoint = (endpoint.charAt(0) !== '/') ? '/' + endpoint : endpoint;
+		return 'https://' + env + 'apps.gov.bc.ca/pub/dwds-ofi' + endpoint;
+	};
 
 	return {
 		options: {
 			env: 'delivery',
-			dwds_url: 
+			pkg: {
+				object_name: '',
+				id: '',
+				title: '',
+				name: '',
+			},
+			secure_site: false,
+			past_orders_nbr: '5',
+			custom_aoi_url: 'http://maps.gov.bc.ca/ess/hm/aoi/',
+			persist_config: true,
+			use_pow_ui: true
 		},
 
 		initialize: function() {
-				self = this;
-				console.log('initializing module "edc_pow"');
+			console.log('initializing module "edc_pow"');
 
-				var dwds_url = 'https://' + this.options.env + '.apps.gov.bc.ca/pub/dwds-ofi';
+			console.log(this.options);
 
-				// load JS dependencies.
-				var script = document.createElement('script');
-				script.type = 'text/javascript';
-				script.src = 'https://delivery.apps.gov.bc.ca/pub/dwds-ofi/script/lib/xdLocalStorage.min.js';
-				document.body.appendChild(script);
+			// convinence option vars
+			self = this;
+			opt = this.options;
+			pkg = this.options.pkg;
 
-				var script = document.createElement('script');
-				script.type = 'text/javascript';
-				script.src = 'https://delivery.apps.gov.bc.ca/pub/dwds-ofi/script/pow/dwds-POW-api.js';
-				document.body.appendChild(script);
+			// load JS dependencies.
+			var scripts = [
+				'/script/lib/xdLocalStorage.min.js',
+				'/script/pow/dwds-POW-api.js'
+			];
 
-				this.el.on('click', this.startOrder);
+			scripts.map(function(script) {
+				var el = document.createElement('script');
+				el.type = 'text/javascript';
+				el.src = get_dwds_url(script);
+				document.body.appendChild(el);
+			});
+
+			$('.edc-pow-button').on('click', this.startOrder);
 		},
 
 		startOrder: function(event) {
 			console.log(
-				'Object Name: ' + self.options.object_name +
-				' Package_id: ' + self.options.package_id +
-				' Title: ' + self.options.package_title);
-			
-			if ( !pow_initialized) {
-				_initAndOpenPOW(self.options.object_name, self.options.package_id, self.options.package_title, self.options.package_name);
-				pow_initialized = true;
-			}
-			else {
-				if (usePowUi) {
-					window.open('https://' + env + '.apps.gov.bc.ca/pub/dwds-ofi/jsp/dwds_pow_current_order.jsp?' +
-								'publicUrl=https%3A%2F%2F' + env + '.apps.gov.bc.ca%2Fpub%2Fdwds-ofi%2Fpublic%2F&' +
-								'secureUrl=https%3A%2F%2F' + env + '.apps.gov.bc.ca%2Fpub%2Fdwds-ofi%2Fsecure%2F&' +
-								'customAoiUrl=http%3A%2F%2F' + env + '.maps.gov.bc.ca%2Fess%2Fhm%2Faoi%2F&' +
-								'pastOrdersNbr=' + pastOrdersNbr + '&' +
-								'secureSite=' + secureSite + '&' +
-								'orderSource=imap4m',
-								"_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10");
-							// window.open('https://test.apps.gov.bc.ca/pub/dwds-ofi/jsp/dwds_pow_current_order.jsp?publicUrl=https%3A%2F%2Fdelivery.apps.gov.bc.ca%2Fpub%2Fdwds-ofi%2Fpublic%2F&secureUrl=https%3A%2F%2Fdelivery.apps.gov.bc.ca%2Fpub%2Fdwds-ofi%2Fsecure%2F&customAoiUrl=http%3A%2F%2Fdelivery.maps.gov.bc.ca%2Fess%2Fhm%2Faoi%2F&pastOrdersNbr=5&secureSite=false&orderSource=imap4m', "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10");
+				'Object Name: ' + pkg.object_name +
+				' Package_id: ' + pkg.id +
+				' Title: ' + pkg.title);
 
-				} else {
-					console.log(powOrder);
-					//result = powOrder.validate();
-					//alert('result of order validation is ' + result);
-					powOrder.submitOrder(function(orderID) {
-						alert('Order Id: ' + orderID);
-					}, function() {
-						alert('error')
-					});
-				}
-			}
+			var public_url = get_dwds_url('/public/');
+			var secure_url = get_dwds_url('/secure/');
+
+			// Callback function once the dwds finishes initializing
+			var run_pow = (pow_initialized) ? self.runOrder : self.initPow;
+
+			dwdspowapi.initialize(public_url, secure_url, opt.custom_aoi_url, opt.past_orders_nbr, opt.secure_site, opt.persist_config, run_pow);
 		},
 
-		initPow: function(object_name, package_id, package_title, package_name) {
-			var initState = dwdspowapi.initialize(publicUrl, secureUrl, customAoiUrl, pastOrdersNbr, secureSite, true, function(initState) {
-					if (initState) {
-						// this is "null" unless we are called back from the Custom AOI Tool
-						var submittedAOI = 'null';
+		initPow: function(pow_ready) {
+			pow_initialized = pow_ready;
 
-						// proections used for converting shapfile to aoi gml
-						//Proj4js.defs["EPSG:3857"] = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs";
-						//Proj4js.defs["EPSG:3005"] = "+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
+			(!pow_ready)
+				? alert('The POW Configuration could not be read from the config cookie and URL parmaters were not provided.')
+				: console.log('dwdspowapi::initialize Initialized')
 
-						//DwdsPow.Init.activateOrder(submittedAOI);
-						//alert('Initialized');
-						console.log('dwdspowapi::initialize Initialized');
-
-					} else {
-						alert('The POW Configuration could not be read from the config cookie and URL parmaters were not provided.');
+			dwdspowapi.orderData = {
+				emailAddress: '',
+				aoiType: '4',
+				aoi: '',
+				orderingApplication: 'BCDC',
+				aoiName: '092B061,092C070',
+				formatType: '3',
+				crsType: '4',
+				clippingMethodType: '0',
+				useAOIBounds: '0',
+				prepackagedItems: '',
+				featureItems: [
+					{
+						featureItem: pkg.object_name,
+						filterValue: '',
+						layerMetadataUrl: null,
+						layerName: pkg.title,
+						filterType: 'Query Filter',
+						layerMetadataUrl: 'https://catalogue.data.gov.bc.ca/dataset/' + pkg.name,
+						pctOfMax: null
 					}
+				],
+			};
 
-					dwdspowapi.orderData = {
-						emailAddress: '',
-						aoiType: '4',
-						aoi: '',
-						orderingApplication: 'BCDC',
-						aoiName: '092B061,092C070',
-						formatType: '3',
-						crsType: '4',
-						clippingMethodType: '0',
-						useAOIBounds: '0',
-						prepackagedItems: '',
-						featureItems: [
-							{
-								featureItem: object_name,
-								filterValue: '',
-								layerMetadataUrl: null,
-								layerName: package_title,
-								filterType: 'Query Filter',
-								layerMetadataUrl: 'https://catalogue.data.gov.bc.ca/dataset/' + package_name,
-								pctOfMax: null
-							}
-						],
-					};
+			pow_order = new dwdspowapi.Order(dwdspowapi.orderData, opt.use_pow_ui);
+			console.log('dwdspowapi Order Pesisted');
 
-					var powOrder = new dwdspowapi.Order(dwdspowapi.orderData, usePowUi);
-					//alert('order persisted');
-					console.log('_initAndOpenPOW::dwdspowapi Order Pesisted');
+			self.runOrder(pow_ready);
+		},
 
-					if (usePowUi) {
-						window.open('https://' + env + '.apps.gov.bc.ca/pub/dwds-ofi/jsp/dwds_pow_current_order.jsp?' +
-								'publicUrl=https%3A%2F%2F' + env + '.apps.gov.bc.ca%2Fpub%2Fdwds-ofi%2Fpublic%2F&' +
-								'secureUrl=https%3A%2F%2F' + env + '.apps.gov.bc.ca%2Fpub%2Fdwds-ofi%2Fsecure%2F&' +
-								'customAoiUrl=http%3A%2F%2F' + env + '.maps.gov.bc.ca%2Fess%2Fhm%2Faoi%2F&' +
-								'pastOrdersNbr=' + pastOrdersNbr + '&' +
-								'secureSite=' + secureSite + '&' +
-								'orderSource=imap4m',
-								"_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10");
+		runOrder: function(pow_ready) {
+			(opt.use_pow_ui)
+				? self.dwdsPowUi()
+				: pow_order.submitOrder(self.powOrderSuccess, self.powOrderFail)
+		},
 
-					} else {
-						//result = powOrder.validate();
-						//alert('result of order validation is ' + result);
-						powOrder.submitOrder(function(orderID) {
-							alert('Order Id: ' + orderID);
-						}, function() {
-							alert('error')
-						});
-					}
+		dwdsPowUi: function() {
+			var qs = {
+				publicUrl: get_dwds_url('/public/'),
+				secureUrl: get_dwds_url('/secure/'),
+				customAoiUrl: opt.custom_aoi_url,
+				pastOrdersNbr: opt.past_orders_nbr,
+				secureSite: opt.secure_site,
+				orderSource: 'imap4m'
+			};
 
-				});
-		}
+			// Create url with query params from above
+			var url = get_dwds_url('/jsp/dwds_pow_current_order.jsp?') + $.param(qs);
+
+			window.open(url, "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10");
+		},
+
+		powOrderSuccess: function(orderID) {
+			alert('Order Id: ' + orderID);
+		},
+
+		powOrderFail: function(error) {
+			alert('Order Error: ' + error);
+		},
 	}
-})
+});

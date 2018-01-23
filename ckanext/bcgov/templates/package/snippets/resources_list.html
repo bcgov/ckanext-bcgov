@@ -12,25 +12,7 @@ Example:
 <section id="dataset-resources" class="resources">
   <h3>{{ _('Data and Resources') }}</h3>
   {% block resource_list %}
-    {%- if 'object_name' in pkg and pkg.object_name %}
-      <ul class="resource-list"><li class="resource-item">
-        {# need a helper func to give the dwds the proper env subdomain #}
-        <button type="button"
-          class="btn btn-info btn-lg"
-          data-module="edc_pow"
-          data-module-env="delivery"
-          data-module-object_name="{{ pkg.object_name }}"
-          data-module-package_id="{{ pkg.id }}"
-          data-module-package_title="{{ pkg.title }}"
-          data-module-package_name="{{ pkg.name }}">
-          Order Data
-        </button>
-        <p class="size">(from Geographic Warehouse)</p>
-      </li></ul>
-      {% resource 'edc_resource/edc_pow.js' %}
-    {% endif -%}
     {% if resources %}
-      {%- if 'object_name' in pkg and pkg.object_name %}<hr />{% endif -%}
       <ul class="{% block resource_list_class %}resource-list{% endblock %}">
         {% block resource_list_inner %}
           {% for resource in resources %}
@@ -38,6 +20,22 @@ Example:
           {% endfor %}
         {% endblock %}
       </ul>
+
+      {%- if 'object_name' in pkg and pkg.object_name %}
+        {%- set pow_config = h.get_pow_config() -%}
+
+        <div class="hide"
+          data-module="edc_pow"
+          data-module-env="{{ pow_config['env'] }}"
+          data-module-pkg="{{ h.dump_json(pkg) }}"
+          data-module-secure_site="{{ pow_config['secure_site'] }}"
+          data-module-past_orders_nbr="{{ pow_config['past_orders_nbr'] }}"
+          data-module-custom_aoi_url="{{ pow_config['custom_aoi_url'] }}"
+          data-module-persist_config="{{ pow_config['persist_config'] }}"
+          data-module-use_pow_ui="{{ pow_config['use_pow_ui'] }}"></div>
+
+        {% resource 'edc_resource/edc_pow.js' %}
+      {% endif -%}
     {% else %}
     	{% if h.check_access('package_update', {'id':pkg.id }) %}
       		<p>
@@ -50,5 +48,5 @@ Example:
     		<p class="empty">This dataset has no data.</p>
     	{% endif %}
     {% endif %}
-   {% endblock %}
+  {% endblock %}
 </section>

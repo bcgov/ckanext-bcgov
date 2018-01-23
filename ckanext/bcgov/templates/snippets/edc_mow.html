@@ -105,35 +105,8 @@
     <div id="loading" class="overlay-wrap">
         <div class="add-data-loader">Loading...</div>
     </div>
-
-
 </div>
 
-<div id="edc-pow" class="modal hide fade" tabindex="-1" role="dialog"
-  data-module="edc_pow"
-  data-module-secure_call="{{ c.user or False }}"
-  data-module-object_name="{{ pkg_obj_name or False }}"
-  data-module-package_id="{{ pkg_id }}"
-  data-module-mow_max_aoi_url="{{ h.url_for('ofi api', call_action='get_max_aoi') }}"
-  data-module-aoi_create_order_url="{{ h.url_for('ofi api', call_action='ofi_create_order') }}"
-  style="width: 800px; margin-left: -400px;"
->
-  <div class="pow-modal-header">
-  </div>
-  <div class="pow-modal-body">
-    <div id="pow-content">
-      <h1> Hello form POW</h1>
-    </div>
-  </div>
-  <div class="pow-modal-footer">
-  </div>
-
-  {# TODO: stop animation when not visible #}
-  <div id="pow-loading" class="overlay-wrap">
-      <div class="add-data-loader">Loading...</div>
-  </div>
-
-</div>
 
 {% resource 'ckanext-geoview/geojson' %}
 {% resource 'edc_resource/leaflet-ext/leaflet.draw/0.4.0/dist/leaflet.draw.js' %}
