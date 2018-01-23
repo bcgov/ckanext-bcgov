@@ -89,7 +89,11 @@ def setup_ofi_action(api_url=None):
 
                 call_type = u'Secure' if data[u'secure'] else u'Public'  # call_type is for logging purposes
 
-                ofi_resp = _make_api_call(url, call_type=call_type, cookies=data[u'cookies'])
+                try:
+                    ofi_resp = _make_api_call(url, call_type=call_type, cookies=data[u'cookies'])
+                except Exception as e:
+                    log.error(u'OFI call exception | url: %s | error: %s' % (url, e))
+                    ofi_resp = {}
             else:
                 ofi_resp = {}
 
@@ -123,6 +127,8 @@ def _make_api_call(api_url, call_type='Public', cookies=None):
     resp = reqs.get(api_url, cookies=cookies)
 
     _log_response(resp, call_type)
+
+    resp.raise_for_status()
 
     return resp
 
