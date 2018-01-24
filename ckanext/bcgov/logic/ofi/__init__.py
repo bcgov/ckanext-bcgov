@@ -93,9 +93,9 @@ def setup_ofi_action(api_url=None):
                     ofi_resp = _make_api_call(url, call_type=call_type, cookies=data[u'cookies'])
                 except Exception as e:
                     log.error(u'OFI call exception | url: %s | error: %s' % (url, e))
-                    ofi_resp = {}
+                    raise e
             else:
-                ofi_resp = {}
+                ofi_resp = reqs.Response()
 
             return action(context, data, ofi_resp)
 
