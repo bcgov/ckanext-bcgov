@@ -40,6 +40,8 @@ from ckan.lib.mailer import MailerException
 
 from pylons import config
 
+from ckanext.bcgov.logic.ofi import OFIServiceError
+
 
 log = logging.getLogger('ckanext.edc_schema')
 
@@ -188,8 +190,14 @@ class EDCPackageController(PackageController):
         for resource in pkg_dict.get('resources', []):
             if u'ofi' in resource and resource[u'ofi']:
                 # only care if there's at least one ofi resource
-                c.ofi = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=False)
-                break
+                try:
+                    c.ofi = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=False)
+                except OFIServiceError as e:
+                    # log.error(e)
+                    pass
+                finally:
+                    break
+        # end ofi check
 
         # the ofi object is now in the global vars for this view, to use it in templates, call `c.ofi`
         result = super(EDCPackageController, self).read(id)
