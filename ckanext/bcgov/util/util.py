@@ -26,6 +26,7 @@ from pylons import config
 site_url = config.get('ckan.site_url')
 api_key = config.get('ckan.api_key')
 log = logging.getLogger('ckanext.bcgov.util')
+download_resource_id = config.get('ckan.datasource.downloads.resource')
 
 MAX_FILE_SIZE = config.get('ckan.resource_proxy.max_file_size', 1024**2)
 
@@ -477,27 +478,46 @@ def can_view_resource(resource):
     return False
 
 def get_package_tracking(package_id):
-    # dl_resource_id = 'e0d0e432-0f86-4db9-8ea7-5a4e002c5c0f'
-    dl_resource_id = '1a7df2c1-f7df-46f1-a920-da85c04eeab6'
+
+    # try:
+    #     request = urllib2.Request(site_url + '/api/3/action/datastore_search')
+    #     data_string = urllib2.quote(json.dumps({'resource_id':download_resource_id,'q':package_id}))
+    #     request.add_header('Authorization', api_key)
+
+    #     response = urllib2.urlopen(request, data_string)
+    #     assert response.code == 200
+
+    #     # Use the json module to load CKAN's response into a dictionary.
+    #     response_dict = json.loads(response.read())
+    #     assert response_dict['success'] is True
+    #     # log.info(response_dict['result'])
+    #     downloads = response_dict['result']['total']
+
+    # except Exception, e:
+    #     log.info(e)
+    #     pass
+
+    return ({'views':model.TrackingSummary.get_for_package(package_id), 'downloads':None})
+    
+def get_resource_tracking(resource_url, resource_id):
+    downloads = 0
     
     try:
-        request = urllib2.Request(site_url + '/api/3/action/datastore_search?resource_id'+dl_resource_id+'&q='+package_id)
+        request = urllib2.Request(site_url + '/api/3/action/datastore_search')
+        data_string = urllib2.quote(json.dumps({'resource_id':download_resource_id,'q':resource_id}))
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, '')
+
+        response = urllib2.urlopen(request, data_string)
         assert response.code == 200
 
         # Use the json module to load CKAN's response into a dictionary.
-        response_dict = response.read()
-        log.info(response_dict)
+        response_dict = json.loads(response.read())
         assert response_dict['success'] is True
-
+        # log.info(response_dict['result'])
+        downloads = response_dict['result']['total']
 
     except Exception, e:
         log.info(e)
-        print str(e)
         pass
 
-    return (model.TrackingSummary.get_for_package(package_id))
-    
-def get_resource_tracking(resource_url):
-    return (model.TrackingSummary.get_for_resource(resource_url))
+    return ({'views':model.TrackingSummary.get_for_resource(resource_url), 'downloads':downloads})

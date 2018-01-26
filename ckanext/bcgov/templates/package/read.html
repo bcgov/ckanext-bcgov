@@ -91,8 +91,9 @@
     {% set tracking_summary = h.get_package_tracking(pkg['id']) %}
     {% if tracking_summary %}
       <h4 class="description-tracking">
-      {% if tracking_summary.total > 0 %} Total Views:{{ tracking_summary.total}} {% endif %}
-      {% if tracking_summary.recent > 0 %} Recent Views:{{ tracking_summary.recent }} {% endif %}  
+      {% if tracking_summary.views.total > -1 %} <span class="flex-1">Total Views: {{ tracking_summary.views.total}}</span> {% endif %}
+      {% if tracking_summary.views.recent > -1 %} <span class="flex-1">Recent Views: {{ tracking_summary.views.recent }}</span> {% endif %}  
+      {% if tracking_summary.downloads > -1 %} <span class="flex-1">Downloads: {{ tracking_summary.downloads }}</span> {% endif %}  
       </h4>
     {% endif %}
 

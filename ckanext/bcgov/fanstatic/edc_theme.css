@@ -640,6 +640,12 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
 }
 .description-tracking {
   margin-top:-10px;
+  display:flex;
+  flex-direction:row;
+}
+
+.flex-1 {
+  flex:1;
 }
 
 .notes {
