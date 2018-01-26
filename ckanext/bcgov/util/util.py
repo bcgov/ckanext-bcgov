@@ -26,7 +26,6 @@ from pylons import config
 site_url = config.get('ckan.site_url')
 api_key = config.get('ckan.api_key')
 log = logging.getLogger('ckanext.bcgov.util')
-download_resource_id = config.get('ckan.datasource.downloads.resource')
 
 MAX_FILE_SIZE = config.get('ckan.resource_proxy.max_file_size', 1024**2)
 
@@ -500,6 +499,7 @@ def get_package_tracking(package_id):
     return ({'views':model.TrackingSummary.get_for_package(package_id), 'downloads':None})
     
 def get_resource_tracking(resource_url, resource_id):
+    download_resource_id = config.get('ckan.datasource.downloads.resource')
     downloads = 0
     
     try:
