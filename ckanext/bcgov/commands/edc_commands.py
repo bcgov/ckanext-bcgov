@@ -118,6 +118,7 @@ class EdcCommand(CkanCommand):
 
             vocab_name = vocab_item['name']
             vocab_tags = vocab_item['tags']
+
             #check if the vocabulary exists :
             if not vocab_name in available_vocab_names:
                 #Create the vocabulary
@@ -131,8 +132,8 @@ class EdcCommand(CkanCommand):
                 #Add each tag that is not in the list of available tags
                 for tag in vocab_tags:
                     if not tag in available_tags:
-                        new_tag = {'name': tag,
-                               'vocabulary_id': vocab['id']}
+                        log.info('tag: %s vocab: %s' % (tag, vocab_name))
+                        new_tag = {'name': tag, 'vocabulary_id': vocab['id']}
                         get_action('tag_create')(context, new_tag)
 
     def delete_all_vocabs(self):

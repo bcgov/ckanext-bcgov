@@ -235,7 +235,17 @@
                 "EPSG_32611 - WGS 84 UTM zone 11N",
                 "EPSG_32612 - WGS 84 UTM zone 12N",
                 "UTM",
-                "N/A"
+                "NA"
             ]
+},
+{
+    "name":"nrs_spatial_datatypes",
+    "tags":[
+                "Point", 
+                "Line", 
+                "Polygon", 
+                "Raster", 
+                "LIDAR"
+    ]
 }
 ]

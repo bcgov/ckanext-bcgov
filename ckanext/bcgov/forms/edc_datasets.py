@@ -111,6 +111,7 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
                         'data_quality': [ignore_missing, convert_to_extras ],
                         'lineage_statement': [ignore_missing, convert_to_extras ],
                         'spatial' : [ignore_missing, convert_to_extras],
+                        'nrs_spatial_datatype':  [ignore_missing, convert_to_extras],
                         'object_name' : [ ignore_missing, convert_to_extras ],
                         'object_short_name' : [ ignore_missing, convert_to_extras ],
                         'object_table_comments' : [ ignore_missing, convert_to_extras ],

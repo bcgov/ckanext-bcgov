@@ -183,6 +183,28 @@
 								classes=['control-full']) }}
 
 		</div>
+
+		<div id="nrs_spactial_datatype_container" class="control-full">
+			<div class='control-group control-medium{{ " error" if download_error }}'>
+                <label class="control-label" for="field-nrs_spatial_datatype">NRS Spacial Datatype</label>
+                {% set nrs_spatial_datatype_list = h.edc_tags(_("nrs_spatial_datatypes")) %}
+                <div class="controls">
+                    <select id="field-nrs_spatial_datatype" name="nrs_spatial_datatype" data-module="autocomplete">
+                        <option value ='' {% if not selected_audience %} selected="selected" {% endif %} disabled>Select a NRS Spacial Datatype</option>
+                        {% for tag in nrs_spatial_datatype_list  %}
+                        {% set selected_audience = (tag == data.get('nrs_spatial_datatype', None)) %}
+                            <option value="{{ tag }}" {% if selected_audience %} selected="selected" {% endif %}>
+                                {{ tag }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if download_error and download_error is iterable %}
+                        <span class="error-block">{{ download_error|join(', ') }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+		</div>
 	{% endif %}
 
 {% endblock %}
