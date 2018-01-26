@@ -239,13 +239,11 @@
             ]
 },
 {
-    "name":"nrs_spatial_datatypes",
+    "name":"spatial_datatypes",
     "tags":[
-                "Point", 
-                "Line", 
-                "Polygon", 
-                "Raster", 
-                "LIDAR"
+                "sdo_geometry", 
+                "sed_binary",
+                "st_geometry"
     ]
 }
 ]

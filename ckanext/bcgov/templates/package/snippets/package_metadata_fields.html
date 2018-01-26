@@ -171,28 +171,18 @@
 					</div>
 				</div>
 			</div>
-		<input id="field-spatial" name="spatial" type="hidden" value='{"type": "Polygon", "coordinates": [[[{{west_longitude}}, {{south_latitude}}], [{{west_longitude}}, {{north_latitude}}], [{{east_longitude}}, {{north_latitude}}], [{{east_longitude}}, {{south_latitude}}], [{{west_longitude}}, {{south_latitude}}]]]}'/>
+			<input id="field-spatial" name="spatial" type="hidden" value='{"type": "Polygon", "coordinates": [[[{{west_longitude}}, {{south_latitude}}], [{{west_longitude}}, {{north_latitude}}], [{{east_longitude}}, {{north_latitude}}], [{{east_longitude}}, {{south_latitude}}], [{{west_longitude}}, {{south_latitude}}]]]}'/>
 		</div>
-		<div id="object_name_container" class="control-full">
-				{{ form.input('object_name',
-								label=_("Object Name"),
-								id='field-object_name',
-								placeholder=_(''),
-								value=data.object_name,
-								error=errors.object_name,
-								classes=['control-full']) }}
-
-		</div>
-
+		
 		<div id="nrs_spactial_datatype_container" class="control-full">
 			<div class='control-group control-medium{{ " error" if download_error }}'>
-                <label class="control-label" for="field-nrs_spatial_datatype">NRS Spacial Datatype</label>
-                {% set nrs_spatial_datatype_list = h.edc_tags(_("nrs_spatial_datatypes")) %}
+                <label class="control-label" for="field-spatial_datatypes">Spacial Datatype</label>
+                {% set spatial_datatypes_list = h.edc_tags(_("spatial_datatypes")) %}
                 <div class="controls">
-                    <select id="field-nrs_spatial_datatype" name="nrs_spatial_datatype" data-module="autocomplete">
-                        <option value ='' {% if not selected_audience %} selected="selected" {% endif %} disabled>Select a NRS Spacial Datatype</option>
-                        {% for tag in nrs_spatial_datatype_list  %}
-                        {% set selected_audience = (tag == data.get('nrs_spatial_datatype', None)) %}
+                    <select id="field-spatial_datatypes" name="spatial_datatypes" data-module="autocomplete">
+                        <option value ='' {% if not selected_audience %} selected="selected" {% endif %} disabled>Select a Spacial Datatype</option>
+                        {% for tag in spatial_datatypes_list  %}
+                        {% set selected_audience = (tag == data.get('spatial_datatypes', None)) %}
                             <option value="{{ tag }}" {% if selected_audience %} selected="selected" {% endif %}>
                                 {{ tag }}
                             </option>
@@ -203,6 +193,16 @@
                     {% endif %}
                 </div>
             </div>
+		</div>
+
+		<div id="object_name_container" class="control-full">
+				{{ form.input('object_name',
+								label=_("Object Name"),
+								id='field-object_name',
+								placeholder=_(''),
+								value=data.object_name,
+								error=errors.object_name,
+								classes=['control-full']) }}
 
 		</div>
 	{% endif %}
