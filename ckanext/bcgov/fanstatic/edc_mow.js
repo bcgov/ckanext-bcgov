@@ -6,6 +6,14 @@
  *
  * MOW Modal Window
  *
+ * Depricated, POW will replace this all together
+ * Also note, do not build an interface this way, the following code is rough and not maintainable
+ * Only use it as an example of what not to do with ckan modules =)
+ *
+ * The biggest issue is the DOM elements that are created
+ * something like React would be better suited but with ckan modules,
+ * it's better to use server-side snippets for this use-case
+ *
 **/
 "use strict";
 
@@ -64,10 +72,17 @@ this.ckan.module('edc_mow', function($, _) {
           _toggleSpinner(false);
         },
         'error': function(jqXHR, textStatus, errorThrown) {
-          console.log(jqXHR);
-          console.log(jqXHR.responseText);
+          console.log('OFI API error', jqXHR);
 
-          $('#mow-err').html(jqXHR.responseText);
+          _removeAllErrorMsg();
+          _removeDebugMsg();
+
+          var resp = (jqXHR.responseJSON !== undefined) && JSON.parse(jqXHR.responseText);
+
+          if (resp) {
+            $('#mow-err').html(resp.error_msg);
+            modal_title.text(resp.error);
+          }
 
           callbackErr();
           _toggleSpinner(false);
@@ -373,39 +388,31 @@ this.ckan.module('edc_mow', function($, _) {
           _toggleSpinner(false);
         }
       });
-     };
+    };
 
     return {
-        options: {
-          // defaults
-        },
-        initialize: function() {
-            self = this;
-            modal = this.el;
-            content_body = this.$('#mow-content');
-            spinner = this.$('#loading');
-            modal_title = this.$('#modal-title');
-            modal_controls = this.$('.modal-footer');
-            aoi_form = this.$('#aoi-order-form');
+      options: {
+        // defaults
+      },
+      initialize: function() {
+        self = this;
+        modal = this.el;
+        content_body = this.$('#mow-content');
+        spinner = this.$('#loading');
+        modal_title = this.$('#modal-title');
+        modal_controls = this.$('.modal-footer');
+        aoi_form = this.$('#aoi-order-form');
 
-            $.map($('.edc-mow-button'), function(button) {
-              $(button).on('click', function(event) {
-                // allows the button for the specified resource to give its format type to be passed to the server
-                event.preventDefault();
-                format = event.target.id;
-                $("#edc-mow").modal("show");
-                _initStart();
-              });
-            });
-
-            //capture the bootstrap event fired when the modal window is actually
-            //shown.
-            //perform any initialization that can't be done until the modal window is actually
-            //visible
-            /*$("#edc-mow").on("shown.bs.tab", function(event) {
-              _initStart();
-            });*/
-        },
-        teardown: function() {}
+        $.map($('.edc-mow-button'), function(button) {
+          $(button).on('click', function(event) {
+            // allows the button for the specified resource to give its format type to be passed to the server
+            event.preventDefault();
+            format = event.target.id;
+            $("#edc-mow").modal("show");
+            _initStart();
+          });
+        });
+      },
+      teardown: function() {}
     };
 });
