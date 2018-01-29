@@ -477,25 +477,6 @@ def can_view_resource(resource):
     return False
 
 def get_package_tracking(package_id):
-
-    # try:
-    #     request = urllib2.Request(site_url + '/api/3/action/datastore_search')
-    #     data_string = urllib2.quote(json.dumps({'resource_id':download_resource_id,'q':package_id}))
-    #     request.add_header('Authorization', api_key)
-
-    #     response = urllib2.urlopen(request, data_string)
-    #     assert response.code == 200
-
-    #     # Use the json module to load CKAN's response into a dictionary.
-    #     response_dict = json.loads(response.read())
-    #     assert response_dict['success'] is True
-    #     # log.info(response_dict['result'])
-    #     downloads = response_dict['result']['total']
-
-    # except Exception, e:
-    #     log.info(e)
-    #     pass
-
     return ({'views':model.TrackingSummary.get_for_package(package_id), 'downloads':None})
     
 def get_resource_tracking(resource_url, resource_id):
@@ -513,11 +494,10 @@ def get_resource_tracking(resource_url, resource_id):
         # Use the json module to load CKAN's response into a dictionary.
         response_dict = json.loads(response.read())
         assert response_dict['success'] is True
-        # log.info(response_dict['result'])
         downloads = response_dict['result']['total']
 
     except Exception, e:
-        log.info(e)
+        log.error(e)
         pass
 
     return ({'views':model.TrackingSummary.get_for_resource(resource_url), 'downloads':downloads})
