@@ -54,7 +54,6 @@ _case = sqlalchemy.case
 _text = sqlalchemy.text
 
 def _group_or_org_list(context, data_dict, is_org=False):
-    log.info('testing!!!1')
     model = context['model']
     api = context.get('api_version')
     groups = data_dict.get('groups')
