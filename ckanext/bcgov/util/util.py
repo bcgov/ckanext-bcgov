@@ -457,11 +457,11 @@ def can_view_resource(resource):
         - If the format is a PDF (uses pdfview), from a proxy thats smaller than the configuration proxy max size value.
     '''
     if format_lower in ['pdf', 'x-pdf', 'acrobat', 'vnd.pdf']:
-        if same_domain:
-            return same_domain
-        elif proxy_enabled:
-            try:
-                usock = urllib2.urlopen(resource['url'], '')
+        try:
+            usock = urllib2.urlopen(resource['url'], '')
+            if same_domain:
+                return same_domain
+            elif proxy_enabled:    
                 size =  usock.info().get('Content-Length')
                 if size is None:
                     size = 0
@@ -471,7 +471,7 @@ def can_view_resource(resource):
                     return False
                 else:
                     return True
-            except Exception, e:
-                return True
+        except Exception, e:
+            return True
 
     return False
