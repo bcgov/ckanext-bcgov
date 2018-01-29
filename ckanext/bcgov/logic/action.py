@@ -52,7 +52,8 @@ def organization_list(context, data_dict):
     See github issue #353
     To replace the bcgov ckan fork modification from https://github.com/bcgov/ckan/pull/16
     '''
-    from ckan.logic.action.get import _group_or_org_list
+    log.info('testing1')
+    from ckanext.bcgov.logic.get import (_group_or_org_list)
 
     toolkit.check_access('organization_list', context, data_dict)
     groups = data_dict.get('organizations', 'None')
