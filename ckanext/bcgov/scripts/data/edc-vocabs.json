@@ -206,7 +206,12 @@
                 "BCGW Data Store",
                 "EDC Data Store",
                 "pub.data.gov.bc.ca",
-                "External"
+                "External",
+                "Converge",
+                "GeoDB",
+                "SDE",
+                "SDO",
+                "X-Y"
             ]
  },
  {
@@ -235,7 +240,7 @@
                 "EPSG_32611 - WGS 84 UTM zone 11N",
                 "EPSG_32612 - WGS 84 UTM zone 12N",
                 "UTM",
-                "N/A"
+                "N-A"
             ]
 }
 ]
