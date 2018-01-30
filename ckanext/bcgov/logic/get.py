@@ -23,9 +23,15 @@ ValidationError = logic.ValidationError
 
 _or_ = sqlalchemy.or_
 
-# Copied from ckan 2.7.7 ckan.logic.action.get
-# Modified for the puposes of wrapping the asbool in a try:catch
 def _group_or_org_list(context, data_dict, is_org=False):
+    """
+    Copied from ckan 2.7.2 ckan.logic.action.get
+
+    Modified for the purposes of catching `asbool` value error 
+    due to a bug in the function with missing or malformed argument value, eg. `None or 'tr'`
+
+    See ticket #357 in bcgov repository
+    """
     model = context['model']
     api = context.get('api_version')
     groups = data_dict.get('groups')
@@ -46,8 +52,6 @@ def _group_or_org_list(context, data_dict, is_org=False):
     sort = data_dict.get('sort') or 'title'
     q = data_dict.get('q')
 
-    # Warp this asbool in a try catch so that no 500 error occurs.
-    # see ticket #357 in bcgov repo
     try:
         all_fields = asbool(data_dict.get('all_fields', None)) 
     except ValueError:
