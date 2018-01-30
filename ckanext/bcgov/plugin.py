@@ -60,7 +60,7 @@ from ckanext.bcgov.util.helpers import (get_suborg_sector,
 
 abort = base.abort
 
-log = logging.getLogger('ckan.ckanbcgov.plugin')
+log = logging.getLogger('ckanext.bcgov')
 
 class SchemaPlugin(plugins.SingletonPlugin):
 
