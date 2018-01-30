@@ -56,13 +56,13 @@
 				{% endif %}
 			</div>
 		</div>
-    {#
+
     {% set storage_location_error = errors.resource_storage_location %}
-      <div class="required control-group control-full{{ " error" if storage_location_error}}">
-        <label class="control-label" for="field-resource_storage_location"><span class="control-required">*</span> {{ _("Resource Storage Location") }}</label>
-        <div class="controls">
-        {% set storage_location_list = h.edc_tags(_('resource_storage_location')) %}
-        {% set current_storage_location = data.resource_storage_location %}
+    <div class="required control-group control-full{{ " error" if storage_location_error}}">
+      <label class="control-label" for="field-resource_storage_location"><span class="control-required">*</span> {{ _("Resource Storage Location") }}</label>
+      <div class="controls">
+      {% set storage_location_list = h.edc_tags(_('resource_storage_location')) %}
+      {% set current_storage_location = data.resource_storage_location %}
       <select id="field-resource_storage_location" name="resource_storage_location" data-module="autocomplete" onchange="javascript:check_storage_location();">
         <option value="" {% if not selected_storage_location %} selected="selected" {% endif %}  disabled>Select a storage location</option>
             {% for storage_location in storage_location_list %}
@@ -78,7 +78,7 @@
       {% endif %}
       </div>
     </div>
-    #}
+    
 		{% set access_method_error = errors.resource_storage_access_method %}
     	<div class="required control-group control-full{{ " error" if access_method_error}}">
      		<label class="control-label" for="field-resource_storage_access_method"><span class="control-required">*</span> {{ _("Resource Access Method") }}</label>
@@ -107,17 +107,17 @@
       {% endblock %}
     {% endif %}
 
-	{#
-      {{ form.markdown('resource_storage_location_info',
-      					id='field-resource_storage_location_info',
-      					label=_('Resource Storage Location Description'),
-      					placeholder=_('A description of where the resource is located'),
-      					value=data.resource_storage_location_info,
-      					error=errors.resource_storage_location_info,
-      					classes=['required'])
-      					}}
+    {# 
+    {{ form.markdown('resource_storage_location_info',
+    					id='field-resource_storage_location_info',
+    					label=_('Resource Storage Location Description'),
+    					placeholder=_('A description of where the resource is located'),
+    					value=data.resource_storage_location_info,
+    					error=errors.resource_storage_location_info,
+    					classes=['required'])
+    					}}
     #}
-
+  
 	<h3 class="module-sub-heading">Temporal Extent</h3>
 	<div class="control-list">
     	{{ form.input('data_collection_start_date',
@@ -146,15 +146,16 @@
     		<label class="control-label" for="field-projection_name"><span class="control-required">*</span> Projection Name</label>
     		<div class="controls">
     			{% set projection_names_list = h.edc_tags(_('projection_name')) %}
-    			{% set current_projection = data.projection_name %}
+          {% set projection_name =  data.projection_name if data.projection_name else False %}
+    			{% set current_projection = h.set_projection_select(projection_name, projection_names_list) %}
             	<select id="field-projection_name" name="projection_name" data-module="autocomplete" class="required">
-            		<option value ='' {% if not selected_projection %} selected="selected" {% endif %} disabled>Select a projection name</option>
+            		  <option value ='' {% if not selected_projection %} selected="selected" {% endif %} disabled>Select a projection name</option>
                 	{% for projection in projection_names_list  %}
                 		{% set selected_projection = (current_projection and current_projection == projection) %}
-                    	<option value="{{ projection }}"
-                    		{% if selected_projection %} selected="selected" {% endif %}>
-                        	{{ projection }}
-                    	</option>
+                  	<option value="{{ projection }}"
+                  		{% if selected_projection %} selected="selected" {% endif %}>
+                      	{{ projection }}
+                  	</option>
                 	{% endfor %}
            		</select>
           		{% if error and error is iterable %}<span class="error-block">{{ error|join(', ') }}</span>{% endif %}

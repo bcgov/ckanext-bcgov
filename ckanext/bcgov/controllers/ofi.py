@@ -9,6 +9,8 @@ from ckan.controllers.api import ApiController
 import logging
 from pprint import pformat, pprint
 
+from requests.exceptions import ConnectionError
+
 # import ckan
 import ckan.lib.base as base
 import ckan.lib.helpers as h
@@ -16,12 +18,15 @@ import ckan.model as model
 import ckan.plugins.toolkit as toolkit
 import ckanext.bcgov.util.helpers as edc_h
 
+from ckanext.bcgov.logic.ofi import OFIServiceError
+
 try:
     # CKAN 2.7 and later
     from ckan.common import config
 except ImportError:
     # CKAN 2.6 and earlier
     from pylons import config
+
 
 # shortcuts
 _ = toolkit._
@@ -159,3 +164,11 @@ class EDCOfiController(ApiController):
 
         except toolkit.NotAuthorized, e:
             return self._finish_not_authz(_('Not authorized to call %s') % call_action)
+
+        except OFIServiceError as e:
+            error = {
+                'success': False,
+                'error': 'OFIServiceError',
+                'error_msg': e.value if toolkit.config.get('debug', False) else 'The data warehouse service is not available.'
+            }
+            return self._finish(500, error, content_type='json')
