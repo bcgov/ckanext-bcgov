@@ -472,6 +472,7 @@ def can_view_resource(resource):
                 else:
                     return True
         except Exception, e:
+            log.error(e)
             return True
 
     return False
