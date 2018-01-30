@@ -70,6 +70,16 @@
         </div>
         {% block resource_content %}
           {% block resource_read_title %}<h1 class="page-heading">{{ h.resource_display_name(res) | truncate(50) }}</h1>{% endblock %}
+
+          {% set tracking_summary = h.get_resource_tracking(res['url'], res['id']) %}
+          {% if tracking_summary %}
+            <h4 class="description-tracking">
+            {% if tracking_summary.views.total > -1 %} <span class="flex-1">Total Views: {{ tracking_summary.views.total}}</span> {% endif %}
+            {% if tracking_summary.views.recent > -1 %} <span class="flex-1">Recent Views: {{ tracking_summary.views.recent }}</span> {% endif %}  
+            {% if tracking_summary.downloads > -1 %} <span class="flex-1">Downloads: {{ tracking_summary.downloads }}</span> {% endif %}  
+            </h4>
+          {% endif %}
+
           {% block resource_read_url %}
             {% if res.url and h.is_url(res.url) %}
               {% if not (pkg.type == 'Geographic' and res.ofi) %}

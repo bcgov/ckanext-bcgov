@@ -16,15 +16,8 @@ Example:
 {% set truncate = truncate or 180 %}
 {% set truncate_title = truncate_title or 80 %}
 {% set title = package.title or package.name %}
+{% set tracking_summary = h.get_package_tracking(package['id']) %}
 {% set notes = h.markdown_extract(package.notes, extract_length=truncate) %}
-
-{# Added only for testing page view tracking
-{% if package.tracking_summary %}
-<div>
-Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tracking_summary.recent }}
-</div>
-{% endif %}
-#}
 
 {% block package_item %}
   {{ icon_type }}
@@ -64,6 +57,7 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
 
         {% block heading %}
           <h3 class="dataset-heading">
+            
             {% block heading_private %}
               {% if package.private %}
                 <span class="dataset-private label label-inverse">
@@ -72,15 +66,18 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
                 </span>
               {% endif %}
             {% endblock %}
+            
             {% block heading_title %}
               {{ h.link_to(h.truncate(title, truncate_title), h.url_for(controller='package', action='read', id=package.name)) }}
             {% endblock %}
+
             {{ h.popular('recent views', package.tracking_summary.recent, min=10) if package.tracking_summary }}
+            
             {% if package.org and package.sub_org %}
-            {% block heading_orgs %}
-              <div class="dataset-heading-orgs">
-              </div>
-            {% endblock %}
+              {% block heading_orgs %}
+                <div class="dataset-heading-orgs">
+                </div>
+              {% endblock %}
             {% endif %}
             {% block heading_meta %}
               {% if package.get('state', '').startswith('draft') %}
@@ -107,7 +104,8 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
       {% block resources %}
         {% if package.resources and not hide_resources %}
           {% block resources_outer %}
-            <ul class="dataset-resources unstyled">
+
+            <div class="flex-fill-end"><ul class="dataset-resources unstyled">
               {% block resources_inner %}
                 {% for resource in h.dict_list_reduce(package.resources, 'format') %}
                 <li>
@@ -115,24 +113,39 @@ Total Views : {{ package.tracking_summary.total}}   Recent views : {{ package.tr
                 </li>
                 {% endfor %}
               {% endblock %}
-            </ul>
+            </ul></div>
           {% endblock %}
         {% endif %}
       {% endblock %}
+      <div>
+        {% block package_dates %}
+          <ul class="dataset-dates">
+            {% if package.record_publish_date %}
+              <li class="flex-1">Record Published: {{ h.render_datetime(package.record_publish_date, '%Y-%m-%d') }}</li>
+            {% endif %}
 
-      {% block package_dates %}
-        <ul class="dataset-dates">
-          {% if package.record_publish_date %}
-            <li>Record Published: {{ h.render_datetime(package.record_publish_date, '%Y-%m-%d') }}</li>
-          {% endif %}
+            {% if package.record_last_modified %}
+              <li class="flex-1">Record Last Modified: {{ h.render_datetime(package.record_last_modified, '%Y-%m-%d') }}</li>
+            {% else %}
+            	<li class="flex-1">Record Last Modified: {{ h.render_datetime(package.metadata_modified, '%Y-%m-%d') or h.render_datetime(package.revision_timestamp, '%Y-%m-%d') or _('unknown') }}</li>
+            {% endif %}
+          </ul>
+        {% endblock %}
 
-          {% if package.record_last_modified %}
-            <li>Record Last Modified: {{ h.render_datetime(package.record_last_modified, '%Y-%m-%d') }}</li>
-          {% else %}
-          	<li>Record Last Modified: {{ h.render_datetime(package.metadata_modified, '%Y-%m-%d') or h.render_datetime(package.revision_timestamp, '%Y-%m-%d') or _('unknown') }}</li>
-          {% endif %}
-        </ul>
-      {% endblock %}
+        {% if tracking_summary %}
+          <ul class="dataset-dates">
+            {% if tracking_summary.views.total %}
+              <li class="flex-1">Total Views: {{ tracking_summary.views.total}}</li>
+            {% endif %}
+            {% if tracking_summary.views.recent %}
+              <li class="flex-1">Recent Views {{ tracking_summary.views.recent }}</li>
+            {% endif %}
+            {% if tracking_summary.downloads %}
+              <li class="flex-1">Downloads {{ tracking_summary.downloads }}</li>
+            {% endif %}
+          </ul>
+        {% endif %}
+      </div>
     {% endblock %}
   </li>
 {% endblock %}

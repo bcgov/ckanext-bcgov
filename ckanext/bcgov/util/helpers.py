@@ -543,3 +543,9 @@ def _build_ofi_url(secure=False):
 
 def get_ofi_resources(pkg):
     return [i for i in pkg[u'resources'] if u'ofi' in i and i[u'ofi']]
+
+def log_this(this):
+    try:
+        log.info(this)
+    except:
+        return False
