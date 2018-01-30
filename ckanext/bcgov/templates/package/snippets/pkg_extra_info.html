@@ -19,4 +19,9 @@
             <td><strong>Metadata Standard Version</strong></td><td>{{ pkg.metadata_standard_version }}</td>
         </tr>
     {% endif %}
+    {% if pkg.spatial_datatypes %}
+        <tr>
+            <td><strong>Spatial Data</strong></td><td>{{ pkg.spatial_datatypes }}</td>
+        </tr>
+    {% endif %}
 {% endif %}

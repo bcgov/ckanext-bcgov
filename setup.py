@@ -32,7 +32,7 @@ setup(
     [ckan.plugins]
     # Add plugins here, eg
     edc_dataset=ckanext.bcgov.plugin:SchemaPlugin
-#    edc_new=ckanext.bcgov.forms.dataset_form:EDC_DatasetForm
+    # edc_new=ckanext.bcgov.forms.dataset_form:EDC_DatasetForm
     edc_app = ckanext.bcgov.forms.edc_datasets:EDC_ApplicationForm
     edc_geo = ckanext.bcgov.forms.edc_datasets:EDC_GeoSpatialForm
     edc_ngeo = ckanext.bcgov.forms.edc_datasets:EDC_NonGeoSpatialForm

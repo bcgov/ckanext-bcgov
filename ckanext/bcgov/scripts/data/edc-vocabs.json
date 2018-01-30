@@ -242,5 +242,13 @@
                 "UTM",
                 "N-A"
             ]
+},
+{
+    "name":"spatial_datatypes",
+    "tags":[
+                "sdo_geometry", 
+                "sed_binary",
+                "st_geometry"
+    ]
 }
 ]

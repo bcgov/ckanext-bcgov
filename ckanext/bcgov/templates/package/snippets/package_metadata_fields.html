@@ -171,8 +171,30 @@
 					</div>
 				</div>
 			</div>
-		<input id="field-spatial" name="spatial" type="hidden" value='{"type": "Polygon", "coordinates": [[[{{west_longitude}}, {{south_latitude}}], [{{west_longitude}}, {{north_latitude}}], [{{east_longitude}}, {{north_latitude}}], [{{east_longitude}}, {{south_latitude}}], [{{west_longitude}}, {{south_latitude}}]]]}'/>
+			<input id="field-spatial" name="spatial" type="hidden" value='{"type": "Polygon", "coordinates": [[[{{west_longitude}}, {{south_latitude}}], [{{west_longitude}}, {{north_latitude}}], [{{east_longitude}}, {{north_latitude}}], [{{east_longitude}}, {{south_latitude}}], [{{west_longitude}}, {{south_latitude}}]]]}'/>
 		</div>
+		
+		<div id="nrs_spactial_datatype_container" class="control-full">
+			<div class='control-group control-medium{{ " error" if download_error }}'>
+                <label class="control-label" for="field-spatial_datatypes">Spacial Datatype</label>
+                {% set spatial_datatypes_list = h.edc_tags(_("spatial_datatypes")) %}
+                <div class="controls">
+                    <select id="field-spatial_datatypes" name="spatial_datatypes" data-module="autocomplete">
+                        <option value ='' {% if not selected_audience %} selected="selected" {% endif %} disabled>Select a Spacial Datatype</option>
+                        {% for tag in spatial_datatypes_list  %}
+                        {% set selected_audience = (tag == data.get('spatial_datatypes', None)) %}
+                            <option value="{{ tag }}" {% if selected_audience %} selected="selected" {% endif %}>
+                                {{ tag }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if download_error and download_error is iterable %}
+                        <span class="error-block">{{ download_error|join(', ') }}</span>
+                    {% endif %}
+                </div>
+            </div>
+		</div>
+
 		<div id="object_name_container" class="control-full">
 				{{ form.input('object_name',
 								label=_("Object Name"),
