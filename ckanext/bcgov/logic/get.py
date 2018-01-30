@@ -2,34 +2,15 @@
 
 '''API functions for searching for and getting data from CKAN.'''
 
-import uuid
 import logging
-import json
-import datetime
-import socket
 
-from ckan.common import config
 import sqlalchemy
 from paste.deploy.converters import asbool
 
-import ckan.lib.dictization
 import ckan.logic as logic
-import ckan.logic.action
-import ckan.logic.schema
-import ckan.lib.dictization.model_dictize as model_dictize
-import ckan.lib.jobs as jobs
 import ckan.lib.navl.dictization_functions
 import ckan.model as model
-import ckan.model.misc as misc
-import ckan.plugins as plugins
-import ckan.lib.search as search
-import ckan.lib.plugins as lib_plugins
-import ckan.lib.activity_streams as activity_streams
-import ckan.lib.datapreview as datapreview
-import ckan.authz as authz
 
-
-from ckan.common import _
 from ckan.logic.action.get import ( _unpick_search )
 
 log = logging.getLogger('ckanext.bcgov.logic.bcgov.override')
@@ -38,21 +19,12 @@ log = logging.getLogger('ckanext.bcgov.logic.bcgov.override')
 # Ensure they are module-private so that they don't get loaded as available
 # actions in the action API.
 _validate = ckan.lib.navl.dictization_functions.validate
-_table_dictize = ckan.lib.dictization.table_dictize
-_check_access = logic.check_access
-NotFound = logic.NotFound
 ValidationError = logic.ValidationError
-_get_or_bust = logic.get_or_bust
 
-_select = sqlalchemy.sql.select
-_aliased = sqlalchemy.orm.aliased
 _or_ = sqlalchemy.or_
-_and_ = sqlalchemy.and_
-_func = sqlalchemy.func
-_desc = sqlalchemy.desc
-_case = sqlalchemy.case
-_text = sqlalchemy.text
 
+# Copied from ckan 2.7.7 ckan.logic.action.get
+# Modified for the puposes of wrapping the asbool in a try:catch
 def _group_or_org_list(context, data_dict, is_org=False):
     model = context['model']
     api = context.get('api_version')
@@ -74,6 +46,8 @@ def _group_or_org_list(context, data_dict, is_org=False):
     sort = data_dict.get('sort') or 'title'
     q = data_dict.get('q')
 
+    # Warp this asbool in a try catch so that no 500 error occurs.
+    # see ticket #357 in bcgov repo
     try:
         all_fields = asbool(data_dict.get('all_fields', None)) 
     except ValueError:
