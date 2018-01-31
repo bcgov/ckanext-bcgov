@@ -164,8 +164,11 @@ class EDCPackageController(PackageController):
 
     def resources(self, id):
         if request.method == 'GET':
-            # have to use the c var without having to rewrite the resources function
-            c.ofi = _setup_ofi(id, open_modal=False)
+            try:
+                # have to use the c var without having to rewrite the resources function
+                c.ofi = _setup_ofi(id, open_modal=False)
+            except OFIServiceError as e:
+                pass
 
         return super(EDCPackageController, self).resources(id)
 
@@ -357,9 +360,14 @@ class EDCPackageController(PackageController):
 
         for resource in pkg_dict.get('resources', []):
             if resource['id'] == resource_id and u'ofi' in resource and resource[u'ofi']:
-                c.ofi = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=False)
-                # only care about finding at least one ofi resource
-                break
+                try:
+                    c.ofi = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=False)
+                except OFIServiceError as e:
+                    # log.error(e)
+                    pass
+                finally:
+                    break  # only care about finding at least one ofi resource
+        # end of ofi check
 
         # the ofi object is now in the global vars for this view, to use it in templates, call `c.ofi`
         result = super(EDCPackageController, self).resource_read(id, resource_id)
@@ -446,7 +454,11 @@ class EDCPackageController(PackageController):
             data = resource_dict
 
         if u'ofi' in resource_dict and resource_dict[u'ofi']:
-            data[u'ofi'] = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=True)
+            try:
+                data[u'ofi'] = _setup_ofi(pkg_dict['id'], context=context, pkg_dict=pkg_dict, open_modal=True)
+            except OFIServiceError as e:
+                # log.error(e)
+                pass
 
         errors = errors or {}
         error_summary = error_summary or {}
@@ -516,7 +528,11 @@ class EDCPackageController(PackageController):
                         open_modal = False
                         break
 
-            data[u'ofi'] = _setup_ofi(id, context=context, pkg_dict=pkg_dict, open_modal=open_modal)
+            try:
+                data[u'ofi'] = _setup_ofi(id, context=context, pkg_dict=pkg_dict, open_modal=open_modal)
+            except OFIServiceError as e:
+                # log.error(e)
+                pass
 
         # TODO: This is a workaround for a core ckan issue that can be removed when the issue
         # is resolved https://github.com/ckan/ckan/issues/2650
