@@ -1,411 +1,144 @@
-/**
- * DataBC CITZ EDC
- *
- * HighwayThree Solutions Inc.
- * Author: Jared Smith <jrods@github>, Brock Anderson <brock@bandersgeo.ca>
- *
- * MOW Modal Window
- *
-**/
 "use strict";
 
-this.ckan.module('edc_pow', function($, _) {
-    var self, modal, modal_title, content_body, modal_controls, spinner, aoi_form, format;
-
-    var _map = null;
-    var _maxAreaHectares = null;
-    var _initialCenterLatLon = [53.5, -128];
-    var _initialZoom = 4;
-
-    var _fetchMaxDownloadableArea = function(callbackSuccess, callbackErr) {
-      if (_maxAreaHectares){
-        callbackSuccess();
-        return;
-      }
-
-      _toggleSpinner(true);
-
-      $.ajax({
-        'url': self.options.mow_max_aoi_url,
-        'data': {
-          // the ckan js module has some issues with empty values when
-          //  getting vars from the DOM (data-* attr), they are assigned to true in js
-          'secure': (self.options.secure_call !== 'False' ? true : false),
-          'object_name': (self.options.object_name !== 'False' ? self.options.object_name : false),
-          'package_id': self.options.package_id
-        },
-        'success': function(data, status) {
-          console.log(data);
-          if (data.success) {
-            data.datastore_response.records.forEach(function(record, index) {
-              if (record.FEATURE_TYPE === self.options.object_name) {
-                _maxAreaHectares = parseInt(record.MAXAOISIZEHA);
-                return;
-              }
-            });
-          }
-          else if (data.records_found === 0) {
-            _maxAreaHectares = 0;
-            $('#area-info').hide();
-          }
-          else {
-            modal_title.text('Error');
-
-            $('#mow-err').html(data);
-            callbackErr();
-
-            _toggleSpinner(false);
-            return false;
-          }
-
-          $('.max-area-hectares').html(_formatNum(_maxAreaHectares));
-
-          callbackSuccess();
-          _toggleSpinner(false);
-        },
-        'error': function(jqXHR, textStatus, errorThrown) {
-          console.log(jqXHR);
-          console.log(jqXHR.responseText);
-
-          $('#mow-err').html(jqXHR.responseText);
-
-          callbackErr();
-          _toggleSpinner(false);
-        }
-      });
-    };
-
-    var _mapViewChanged = function(e) {
-      if (e.target.getZoom() == 4) {
-        var latLonList = [];
-      }
-      else {
-        var bounds = _map.getBounds();
-        var latLonList = [
-          bounds.getSouthWest(),
-          bounds.getNorthWest(),
-          bounds.getNorthEast(),
-          bounds.getSouthEast(),
-          bounds.getSouthWest()];
-      }
-
-      self.aoi = latLonList;
-      var areaM2 = L.GeometryUtil.geodesicArea(latLonList)
-      var areaHect = Math.round(areaM2 * 0.0001);
-
-      $('#selected-area').html(_formatNum(areaHect))
-
-      if (areaHect < _maxAreaHectares || _maxAreaHectares == 0) {
-        //$('#order-btn').removeClass("disabled");
-        $('#order-btn').prop('disabled', false);
-        $('#area-warning').hide();
-      }
-      else {
-        //$('#order-btn').addClass("disabled")
-        $('#order-btn').prop('disabled', true);
-        $('#area-warning').show();
-      }
-    };
-
-    var _showMap = function() {
-      if (!_map) {
-        var bcgovRoadsLayer =
-          L.tileLayer(
-              'https://maps.gov.bc.ca/arcserver/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}',
-              {
-                attribution: '&copy; Government of British Columbia',
-                minZoom: 4,
-                maxZoom: 17
-              }
-            );
-
-        _map = L.map('map', {layers: [bcgovRoadsLayer]});
-
-        _map.on("zoomend", _mapViewChanged);
-        _map.on("moveend", _mapViewChanged);
-      }
-      _map.setView(_initialCenterLatLon, _initialZoom);
-    };
-
-    var _initStart = function() {
-      $("#mow-ready").hide();
-      $('#mow-order').hide();
-      _removeDebugMsg();
-      _removeAllErrorMsg();
-
-      if (!document.getElementById("order-btn")) {
-        modal_controls.append('<button id="order-btn" class="btn btn-primary">Place order</button>');
-      }
-
-      modal_title.text('Pan and zoom this map to select the geographic area of data to download. Then enter your email address.');
-
-      var consent_check = $("#consent-check");
-
-      if (consent_check.prop('checked')) {
-        $("#consent-terms").hide()
-      }
-
-      consent_check.change(function() {
-        if (this.checked)
-          $("#consent-terms").hide();
-        else
-          $("#consent-terms").show();
-      });
-
-      $('#email1').popover({
-        'trigger': 'focus',
-        'placement': 'bottom'
-      });
-
-      $('#map_projection').select2({'width': '206px'});
-
-      _fetchMaxDownloadableArea(_initSuccess, _initFailed);
-    };
-
-    var _initSuccess = function() {
-      $("#mow-ready").show();
-      _removeAllErrorMsg();
-
-      //listen to order button clicks
-      var orderBtn = modal_controls.find('#order-btn')
-      orderBtn.off('click');
-      orderBtn.on('click', _placeOrder);
-
-      _showMap();
-    };
-
-    var _initFailed = function() {
-      $("#mow-ready").hide();
-      $("#mow-err").show();
-      modal_controls.find('#order-btn').remove();
-    };
-
-    var _toggleSpinner = function(on_off) {
-      spinner.toggleClass('enable', on_off);
-    };
-
-    var _formatNum = function(x) {
-      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    };
-
-    var _checkForm = function() {
-      var form_check = true;
-      var error_html = '';
-
-      var consent = $("#consent-check").prop('checked');
-      if (!consent) {
-        error_html += '<div><strong>Error:</strong> You must accept the term and conditions.</div>';
-        $("#consent").addClass('error error-missing');
-        form_check = false;
-      } else {
-        $("#consent").removeClass('error error-missing');
-      }
-
-      var email = $.trim($('#email1').val());
-      if (email === '') {
-        error_html += '<div><strong>Error:</strong> Please provide an email address.</div>';
-        $("#email").addClass('error error-missing');
-        form_check = false;
-      } else {
-        $("#email").removeClass('error error-missing');
-      }
-
-      if (!form_check) {
-        $('#mow-err').html(error_html).show();
-      }
-
-      return form_check;
-    };
-
-    var _removeAllErrorMsg = function() {
-      $('#mow-err').empty().hide();
-      $("#consent").removeClass('error error-missing');
-      $("#email").removeClass('error error-missing');
-    };
-
-    var _removeDebugMsg = function() {
-      $('#mow-debug').empty().hide();
-    };
-
-    var _placeOrder = function() {
-      _toggleSpinner(true);
-
-      if (_checkForm() == false) {
-        _toggleSpinner(false);
-        return false;
-      }
-
-      var aoi_data = {
-        'object_name': self.options.object_name,
-        'aoi': self.aoi,
-        'consent': $("#consent-check").prop('checked'),
-        'emailAddress': $.trim(aoi_form.find('#email1').val()),
-        'projection': aoi_form.find('#map_projection').val(),
-        'format': format,
-        'featureItems': [
-          {'featureItem': self.options.object_name,'filterValue': ''}
-        ]
-      };
-
-      console.log(aoi_data);
-
-      $.ajax({
-        'url': self.options.aoi_create_order_url,
-        'method': 'POST',
-        'data': JSON.stringify({
-          'aoi_params': aoi_data
-        }),
-        'contentType': 'application/json; charset=utf-8',
-        'success': function(data, status) {
-          console.log(data)
-          var order_resp = data.order_response;
-
-          _removeAllErrorMsg();
-          _removeDebugMsg();
-
-          if (order_resp.Status == 'SUCCESS') {
-            modal_title.text('Order Success');
-            $('#mow-order').html('<h3>Success</h3><h4>The order has been placed and will be sent to the provided email address.</h4><p>Order ID: ' + order_resp.Value + '</p>');
-
-            $('#mow-order').show();
-            $('#mow-ready').hide();
-            modal_controls.find('#order-btn').remove();
-          }
-          else {
-            modal_title.text('Error');
-            $('#mow-err').html('<strong>Error:</strong> ' + order_resp.Description);
-
-            modal_controls.find('#order-btn').remove();
-
-            $('#mow-ready').hide();
-            $('#mow-err').show();
-
-            var debug_info = '';
-            debug_info += '<p>URL: ' + data.api_url + '</p>';
-
-            if (data.sm_url)
-              debug_info += '<p>SM URL: ' + data.sm_url + '</p>';
-
-            debug_info += '<p>Order Response: ' + data.order_response + '</p>' +
-                          '<pre>' +
-                          JSON.stringify(data.order_sent, function(key, value) {
-                            if (key == 'aoi') {
-                              return $("<div>").text(value).html();
-                            } else {
-                              return value;
-                            }
-                          }, '\t') + '</pre>';
-
-            $('#mow-debug').html(debug_info);
-            $('#mow-debug').show();
-          }
-
-          _toggleSpinner(false);
-        },
-        'error': function(jqXHR, textStatus, errorThrown) {
-          console.log(jqXHR);
-          console.log(jqXHR.responseText);
-
-          _removeAllErrorMsg();
-          _removeDebugMsg();
-
-          if (jqXHR.status === 400) {
-            var err = JSON.parse(jqXHR.responseText);
-
-            if (err) {
-              var error_html = '';
-              if (err.invalid_email) {
-                error_html += '<div><strong>Error:</strong> Please provide a valid email address.</div>';
-                $("#email").addClass('error error-missing');
-              }
-
-              if (err.no_consent) {
-                error_html += '<div><strong>Error:</strong> You must accept the term and conditions.</div>';
-                $("#consent").addClass('error error-missing');
-              }
-
-              if (err.order_failed) {
-                error_html += '<div><strong>Error:</strong> Order Failure - ' + err.order_response.Description;
-              }
-
-              if (err.sm_failed) {
-                error_html += '<div><strong>Error:</strong> SM secure order Failure - ' + err.sm_resp.Description;
-              }
-
-              if (err.api_url || err.order_response || err.order_sent || err.sm_url) {
-                var debug_info = '';
-
-                debug_info += '<p>Order URL: ' + err.api_url + '</p>';
-
-                if (err.sm_url)
-                  debug_info += '<p>Secure SM get URL: ' + err.sm_url + '</p>';
-
-                if (err.sm_uuid)
-                  debug_info += '<p>UUID: ' + err.sm_uuid + '</p>';
-
-                var response = null;
-                if (err.order_response) {
-                  response = err.order_response;
-                }
-                else if (err.sm_resp) {
-                  response = err.sm_resp;
-                }
-
-                debug_info += '<p>Order Response: ' + response + '</p>' +
-                              '<pre>' +
-                              JSON.stringify(err.order_sent, function(key, value) {
-                                if (key == 'aoi') {
-                                  return $("<div>").text(value).html();
-                                } else {
-                                  return value;
-                                }
-                              }, '\t') + '</pre>';
-
-                $('#mow-debug').html(debug_info);
-                $('#mow-debug').show();
-              }
-
-              $('#mow-err').html(error_html).show();
-            }
-
-          }
-
-          _toggleSpinner(false);
-        }
-      });
-     };
-
-    return {
-        options: {
-          // defaults
-        },
-        initialize: function() {
-            self = this;
-            modal = this.el;
-            content_body = this.$('#pow-content');
-            spinner = this.$('#pow-loading');
-            modal_title = this.$('#pow-modal-title');
-            modal_controls = this.$('.pow-modal-footer');
-            aoi_form = this.$('#aoi-order-form');
-
-            $.map($('.edc-pow-button'), function(button) {
-              $(button).on('click', function(event) {
-                // allows the button for the specified resource to give its format type to be passed to the server
-                event.preventDefault();
-                format = event.target.id;
-                $("#edc-pow").modal("show");
-                //_initStart();
-              });
-            });
-
-            //capture the bootstrap event fired when the modal window is actually
-            //shown.
-            //perform any initialization that can't be done until the modal window is actually
-            //visible
-            /*$("#edc-mow").on("shown.bs.tab", function(event) {
-              _initStart();
-            });*/
-        },
-        teardown: function() {}
-    };
+this.ckan.module('edc_pow', function($, _){
+	var self, opt, pkg, pow_order;
+
+	var pow_initialized = false;
+
+	var get_dwds_url = function(endpoint) {
+		const env = (opt.env) ? opt.env + '.' : '';
+		endpoint = (endpoint.charAt(0) !== '/') ? '/' + endpoint : endpoint;
+		return 'https://' + env + 'apps.gov.bc.ca/pub/dwds-ofi' + endpoint;
+	};
+
+	return {
+		options: {
+			env: 'delivery',
+			pkg: {
+				object_name: '',
+				id: '',
+				title: '',
+				name: '',
+			},
+			secure_site: false,
+			past_orders_nbr: '5',
+			custom_aoi_url: 'http://maps.gov.bc.ca/ess/hm/aoi/',
+			persist_config: true,
+			use_pow_ui: true
+		},
+
+		initialize: function() {
+			console.log('initializing module "edc_pow"');
+
+			// Ckan Issue #3287 -> https://github.com/ckan/ckan/issues/3287
+			// if data-module-* attributes are None from templates,
+			// an empty string, etc. these are initialized as `true` in `this.options`
+			//
+			// set an empty string for `env`, indicates to not use a bcgov subdomain environment
+			// eg. use prod if env isn't set in the config
+			this.options.env = (!(this.options.env instanceof String) || (this.options.env instanceof Boolean)) && '';
+
+			// convinence option vars
+			self = this;
+			opt = this.options;
+			pkg = this.options.pkg;
+
+			// load JS dependencies.
+			var scripts = [
+				'/script/lib/xdLocalStorage.min.js',
+				'/script/pow/dwds-POW-api.js'
+			];
+
+			scripts.map(function(script) {
+				var el = document.createElement('script');
+				el.type = 'text/javascript';
+				el.src = get_dwds_url(script);
+				document.body.appendChild(el);
+			});
+
+			$('.edc-pow-button').on('click', this.startOrder);
+		},
+
+		startOrder: function(event) {
+			console.log(
+				'Object Name: ' + pkg.object_name +
+				' Package_id: ' + pkg.id +
+				' Title: ' + pkg.title);
+
+			var public_url = get_dwds_url('/public/');
+			var secure_url = get_dwds_url('/secure/');
+
+			// Callback function once the dwds finishes initializing
+			var run_pow = (pow_initialized) ? self.runOrder : self.initPow;
+
+			dwdspowapi.initialize(public_url, secure_url, opt.custom_aoi_url, opt.past_orders_nbr, opt.secure_site, opt.persist_config, run_pow);
+		},
+
+		initPow: function(pow_ready) {
+			pow_initialized = pow_ready;
+
+			(!pow_ready)
+				? alert('The POW Configuration could not be read from the config cookie and URL parmaters were not provided.')
+				: console.log('dwdspowapi::initialize Initialized')
+
+			dwdspowapi.orderData = {
+				emailAddress: '',
+				aoiType: '4',
+				aoi: '',
+				orderingApplication: 'BCDC',
+				aoiName: '092B061,092C070',
+				formatType: '3',
+				crsType: '4',
+				clippingMethodType: '0',
+				useAOIBounds: '0',
+				prepackagedItems: '',
+				featureItems: [
+					{
+						featureItem: pkg.object_name,
+						filterValue: '',
+						layerMetadataUrl: null,
+						layerName: pkg.title,
+						filterType: 'Query Filter',
+						layerMetadataUrl: 'https://catalogue.data.gov.bc.ca/dataset/' + pkg.name,
+						pctOfMax: null
+					}
+				],
+			};
+
+			pow_order = new dwdspowapi.Order(dwdspowapi.orderData, opt.use_pow_ui);
+			console.log('dwdspowapi Order Pesisted');
+
+			self.runOrder(pow_ready);
+		},
+
+		runOrder: function(pow_ready) {
+			(opt.use_pow_ui)
+				? self.dwdsPowUi()
+				: pow_order.submitOrder(self.powOrderSuccess, self.powOrderFail)
+		},
+
+		dwdsPowUi: function() {
+			var qs = {
+				publicUrl: get_dwds_url('/public/'),
+				secureUrl: get_dwds_url('/secure/'),
+				customAoiUrl: opt.custom_aoi_url,
+				pastOrdersNbr: opt.past_orders_nbr,
+				secureSite: opt.secure_site,
+				orderSource: 'imap4m'
+			};
+
+			// Create url with query params from above
+			var url = get_dwds_url('/jsp/dwds_pow_current_order.jsp?') + $.param(qs);
+
+			window.open(url, "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10");
+		},
+
+		powOrderSuccess: function(orderID) {
+			alert('Order Id: ' + orderID);
+		},
+
+		powOrderFail: function(error) {
+			alert('Order Error: ' + error);
+		},
+	}
 });

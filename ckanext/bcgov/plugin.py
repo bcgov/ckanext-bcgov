@@ -1,7 +1,7 @@
 # Copyright  2015, Province of British Columbia
 # License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
 
-from ckan.common import  c, _
+from ckan.common import c, _
 
 import logging
 import pylons.config as config
@@ -12,51 +12,52 @@ import ckan.plugins.toolkit as toolkit
 from paste.deploy.converters import asbool
 from routes.mapper import SubMapper
 
-from ckanext.bcgov.util.util import (get_edc_tags,
-                                          edc_type_label,
-                                          get_state_values,
-                                          get_username,
-                                          get_user_orgs,
-                                          get_orgs_user_can_edit,
-                                          get_user_orgs_id,
-                                          get_user_toporgs,
-                                          get_organization_branches,
-                                          can_view_resource,
-                                          get_package_tracking,
-                                          get_resource_tracking
-                                          )
+from ckanext.bcgov.util.util import (
+    get_edc_tags,
+    edc_type_label,
+    get_state_values,
+    get_username,
+    get_user_orgs,
+    get_orgs_user_can_edit,
+    get_user_orgs_id,
+    get_user_toporgs,
+    get_organization_branches,
+    can_view_resource,
+    get_package_tracking,
+    get_resource_tracking)
 
-from ckanext.bcgov.util.helpers import (get_suborg_sector,
-                                             get_user_dataset_num,
-                                             get_package_data,
-                                             is_license_open,
-                                             get_record_type_label,
-                                             get_suborgs,
-                                             record_is_viewable,
-                                             set_projection_select,
-                                             get_facets_selected,
-                                             get_facets_unselected,
-                                             get_sectors_list,
-                                             get_dataset_type,
-                                             get_organizations,
-                                             get_organization_title,
-                                             get_espg_id,
-                                             get_edc_org,
-                                             get_iso_topic_values,
-                                             get_eas_login_url,
-                                             get_fqdn,
-                                             get_environment_name,
-                                             get_version,
-                                             get_bcgov_commit_id,
-                                             resource_prefix,
-                                             get_org_parent,
-                                             size_or_link,
-                                             debug_full_info_as_list,
-                                             remove_user_link,
-                                             get_ofi_config,
-                                             get_ofi_resources,
-                                             log_this
-                                             )
+from ckanext.bcgov.util.helpers import (
+    get_suborg_sector,
+    get_user_dataset_num,
+    get_package_data,
+    is_license_open,
+    get_record_type_label,
+    get_suborgs,
+    record_is_viewable,
+    get_facets_selected,
+    get_facets_unselected,
+    get_sectors_list,
+    get_dataset_type,
+    get_organizations,
+    get_organization_title,
+    get_espg_id,
+    get_edc_org,
+    get_iso_topic_values,
+    get_eas_login_url,
+    get_fqdn,
+    get_environment_name,
+    get_version,
+    get_bcgov_commit_id,
+    resource_prefix,
+    get_org_parent,
+    size_or_link,
+    debug_full_info_as_list,
+    remove_user_link,
+    get_ofi_config,
+    get_ofi_resources,
+    get_pow_config,
+    set_projection_select,
+    log_this)
 
 abort = base.abort
 
@@ -82,50 +83,51 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     def get_helpers(self):
         return {
-                "dataset_type" : get_dataset_type,
-                "edc_tags" : get_edc_tags,
-                "set_projection_select": set_projection_select,
-                "edc_orgs" : get_organizations,
-                "edc_org_branches" : get_organization_branches,
-                "edc_org_title" : get_organization_title,
-                "edc_type_label" : edc_type_label,
-                "edc_state_values" : get_state_values,
-                "edc_username": get_username,
-                "get_sector" : get_suborg_sector,
-                "get_user_orgs" : get_user_orgs,
-                "get_user_orgs_id" : get_user_orgs_id,
-                "get_user_toporgs": get_user_toporgs,
-                "get_suborg_sector" : get_suborg_sector,
-                "get_user_dataset_num" : get_user_dataset_num,
-                "get_edc_package" : get_package_data,
-                "is_license_open" : is_license_open,
-                "record_type_label" : get_record_type_label,
-                "get_suborgs": get_suborgs,
-                "record_is_viewable": record_is_viewable,
-                "get_espg_id" : get_espg_id,
-                "orgs_user_can_edit" : get_orgs_user_can_edit,
-                "get_facets_selected": get_facets_selected,
-                "get_facets_unselected" : get_facets_unselected,
-                "get_sectors_list": get_sectors_list,
-                "get_edc_org" : get_edc_org,
-                "get_iso_topic_values" : get_iso_topic_values,
-                "get_eas_login_url": get_eas_login_url,
-                "get_fqdn": get_fqdn,
-                "get_environment_name": get_environment_name,
-                "get_version": get_version,
-                "get_bcgov_commit_id": get_bcgov_commit_id,
-                "googleanalytics_resource_prefix": resource_prefix,
-                "get_parent_org": get_org_parent,
-                "size_or_link": size_or_link,
-                "debug_full_info_as_list": debug_full_info_as_list,
-                "remove_user_link": remove_user_link,
-                "get_ofi_config": get_ofi_config,
-                "get_ofi_resources": get_ofi_resources,
-                "can_view_resource": can_view_resource,
-                "get_package_tracking":get_package_tracking,
-                "get_resource_tracking":get_resource_tracking,
-                "log":log_this
-                }
+            "dataset_type": get_dataset_type,
+            "edc_tags": get_edc_tags,
+            "edc_orgs": get_organizations,
+            "edc_org_branches": get_organization_branches,
+            "edc_org_title": get_organization_title,
+            "edc_type_label": edc_type_label,
+            "edc_state_values": get_state_values,
+            "edc_username": get_username,
+            "get_sector": get_suborg_sector,
+            "get_user_orgs": get_user_orgs,
+            "get_user_orgs_id": get_user_orgs_id,
+            "get_user_toporgs": get_user_toporgs,
+            "get_suborg_sector": get_suborg_sector,
+            "get_user_dataset_num": get_user_dataset_num,
+            "get_edc_package": get_package_data,
+            "is_license_open": is_license_open,
+            "record_type_label": get_record_type_label,
+            "get_suborgs": get_suborgs,
+            "record_is_viewable": record_is_viewable,
+            "get_espg_id": get_espg_id,
+            "orgs_user_can_edit": get_orgs_user_can_edit,
+            "get_facets_selected": get_facets_selected,
+            "get_facets_unselected": get_facets_unselected,
+            "get_sectors_list": get_sectors_list,
+            "get_edc_org": get_edc_org,
+            "get_iso_topic_values": get_iso_topic_values,
+            "get_eas_login_url": get_eas_login_url,
+            "get_fqdn": get_fqdn,
+            "get_environment_name": get_environment_name,
+            "get_version": get_version,
+            "get_bcgov_commit_id": get_bcgov_commit_id,
+            "googleanalytics_resource_prefix": resource_prefix,
+            "get_parent_org": get_org_parent,
+            "size_or_link": size_or_link,
+            "debug_full_info_as_list": debug_full_info_as_list,
+            "remove_user_link": remove_user_link,
+            "get_ofi_config": get_ofi_config,
+            "get_ofi_resources": get_ofi_resources,
+            "can_view_resource": can_view_resource,
+            "get_pow_config": get_pow_config,
+            "set_projection_select": set_projection_select,
+            "get_package_tracking": get_package_tracking,
+            "get_resource_tracking": get_resource_tracking,
+            "log": log_this
+        }
 
     def update_config(self, config):
         toolkit.add_public_directory(config, 'public')
@@ -419,6 +421,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
     def before_create(self, context, resource):
         # preventative fix for #386 - make sure facet format types are always lowercase;
         resource['format'] = resource['format'].lower()
+
 
 class EDCDisqusPlugin(plugins.SingletonPlugin):
     # Declare that this class implements IConfigurer.
