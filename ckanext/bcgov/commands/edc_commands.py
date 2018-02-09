@@ -43,7 +43,7 @@ class EdcCommand(CkanCommand):
     usage = __doc__
 
     default_data_dir = os.path.join(
-        os.path.dirname(ckanext.bcgov.__file__),
+        ckanext.bcgov.__path__[0],
         'scripts/data'
         )
     default_vocab_file = os.path.join(default_data_dir, 'edc-vocabs.json')
