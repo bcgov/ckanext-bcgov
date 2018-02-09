@@ -246,9 +246,9 @@
 {
     "name":"spatial_datatypes",
     "tags":[
-                "sdo_geometry", 
-                "sed_binary",
-                "st_geometry"
+                "SDO_GEOMETRY",
+                "SDE_BINARY",
+                "ST_GEOMETRY"
     ]
 }
 ]
