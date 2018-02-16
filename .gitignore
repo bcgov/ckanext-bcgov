@@ -3,3 +3,6 @@ ckanext_bcgov.egg-info/
 requirements-ext.txt
 pip-requirements.txt
 *.DS_Store
+
+ckanext/bcgov/scripts/data/bcdc_sectors.json
+ckanext/bcgov/scripts/data/bcdc_licenses.json
