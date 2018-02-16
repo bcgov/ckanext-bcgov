@@ -55,7 +55,7 @@
       {% if res.url and h.is_url(res.url) %}
       <li>
         {% if pkg.type == 'Geographic' and res.ofi %}
-          <a href="#edc-mow" role="button" id="{{ res.format }}" class="edc-mow-button">
+          <a href="#edc-pow" role="button" id="{{ res.format }}" class="edc-pow-button">
             <i class="fa fa-external-link icon-external-link"></i>
             {{ _('Access / Download') }}
         {% elif res.has_views %}

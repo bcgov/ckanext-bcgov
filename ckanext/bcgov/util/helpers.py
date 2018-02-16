@@ -492,7 +492,7 @@ def debug_full_info_as_list(debug_info):
                             'start_response']
     debug_vars = debug_info['vars']
     for key in debug_vars.keys():
-        if not key in ignored_keys:
+        if key not in ignored_keys:
             data = pprint.pformat(debug_vars.get(key))
             data = data.decode('utf-8')
             out.append((key, data))
@@ -500,7 +500,7 @@ def debug_full_info_as_list(debug_info):
     if 'tmpl_context' in debug_vars:
         for key in debug_info['c_vars']:
 
-            if not key in ignored_context_keys:
+            if key not in ignored_context_keys:
                 data = pprint.pformat(getattr(debug_vars['tmpl_context'], key))
                 data = data.decode('utf-8')
                 out.append(('c.%s' % key, data))
@@ -508,14 +508,31 @@ def debug_full_info_as_list(debug_info):
     return out
 
 
+def get_namespace_config(namespace):
+    return dict([(k.replace(namespace, ''), v) for k, v in config.iteritems()
+                 if k.startswith(namespace)])
+
+
 def get_ofi_config():
     '''
     Returns a dict with all configuration options related to the
     OFI (ie those starting with 'bcgov.ofi.')
     '''
-    namespace = 'bcgov.ofi.'
-    return dict([(k.replace(namespace, ''), v) for k, v in config.iteritems()
-                 if k.startswith(namespace)])
+    return get_namespace_config('bcgov.ofi.')
+
+
+def get_pow_config():
+    '''
+    Return dict of all pow config options
+    eg.
+        bcgov.pow.env = delivery
+        bcgov.pow.secure_site = false
+        bcgov.pow.past_orders_nbr = 5
+        bcgov.pow.custom_aoi_url = http://maps.gov.bc.ca/ess/hm/aoi/
+        bcgov.pow.persist_config = true
+        bcgov.pow.use_pow_ui = true
+    '''
+    return get_namespace_config('bcgov.pow.')
 
 
 def _build_ofi_url(secure=False):
