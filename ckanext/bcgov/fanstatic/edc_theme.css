@@ -36,6 +36,7 @@ body {
   font-size: 13px;
   background-color: #fff;
   background-image: none;
+  --md-font-color:rgba(0,0,0,0.6);
 }
 
 .wrap {
@@ -323,7 +324,7 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
 
 #content .dataset-view .primary,
 #content .module-resource {
-  font-family: 'Century Gothic';
+  font-family: 'Century Gothic', 'Verdana' ,sans-serif;
   width: 100%;
   float: none;
 }
@@ -642,6 +643,9 @@ li.select2-results-dept-0.select2-result.select2-result-selectable.select2-disab
   margin-top:-10px;
   display:flex;
   flex-direction:row;
+  color: var(--md-font-color);
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .flex-1 {
