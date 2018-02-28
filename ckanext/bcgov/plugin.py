@@ -330,7 +330,10 @@ class SchemaPlugin(plugins.SingletonPlugin):
                         fq += ')'
                 #Public user can only view public and published records
                 else:
-                    fq += ' AND +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
+                    if not fq:
+                        fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
+                    else:
+                        fq += ' AND +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
 
         except Exception:
             if 'fq' in search_params:
