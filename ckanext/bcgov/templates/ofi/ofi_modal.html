@@ -20,7 +20,7 @@
 
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3>Manage BCGW Resources</h3>
+        <h3>Manage BCGW Resource</h3>
         <h4 id="modal-subtitle">
         {% if ofi['ofi_exists'] %}
             Manage
@@ -36,7 +36,7 @@
         <form id="ofi-lookup-form" class="form-horizontal">
             <div id="resources">
                 {% if ofi['ofi_exists'] %}
-                    <div>OFI Resources are present in this dataset.</div>
+                    <div>OFI Resource is present in this dataset.</div>
                 {% elif pkg_obj_name == '' %}
                     <div>No 'Object Name' exists for this dataset. Add an 'Object Name' to the dataset, for OFI.</div>
                     {#<h4 style="text-align:center;">No 'Object Name' exists for this dataset.</h4>#}
@@ -44,7 +44,7 @@
                 {% else %}
                     {% set content = ofi['content'] or false %}
                     {% if content['allowed'] %}
-                        <h4 style="text-align:center;">Object is available, would you like to add all the resource links?</h4>
+                        <h4 style="text-align:center;">Object is available, would you like to add the resource link?</h4>
                     {% else %}
                         <div>Object is not available, please contact your administrator.</div>
                     {% endif %}

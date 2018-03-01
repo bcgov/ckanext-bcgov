@@ -66,7 +66,7 @@ this.ckan.module('ofi_modal', function($, _) {
         'dataType': 'html',
         'success': function(data, status) {
           self._showResults(data);
-          modal_subtitle.text('Add OFI Resources');
+          modal_subtitle.text('Add OFI Resource');
 
           modal_controls.find('#ofi-confirm, #ofi-force-confirm')
             .off('click', self._getResourceForm)
@@ -127,8 +127,8 @@ this.ckan.module('ofi_modal', function($, _) {
       });
     },
     _removeOFIResources: function(event) {
-      self._showResults('<h4>Are you sure you want to remove all OFI resources for this dataset?</h4>');
-      modal_subtitle.text('Removing Resources');
+      self._showResults('<h4>Are you sure you want to remove the OFI resource for this dataset?</h4>');
+      modal_subtitle.text('Removing Resource');
 
       var back_button = $('<button id="ofi-back" class="btn btn-danger">No</button>');
       back_button.on('click', self._backToExistingStart);
