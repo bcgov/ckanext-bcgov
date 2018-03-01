@@ -333,7 +333,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
                     if not fq:
                         fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
                     else:
-                        fq += ' AND +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
+                        fq = 'q.op=AND&' + fq + ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
 
         except Exception:
             if 'fq' in search_params:
