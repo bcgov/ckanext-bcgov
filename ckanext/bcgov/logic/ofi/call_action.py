@@ -65,12 +65,8 @@ def crs_types(context, ofi_vars, ofi_resp):
 @ofi_logic.check_access
 def geo_resource_form(context, data):
     """
-    Returns the form for the OFI Manager create/edit of OFI resources.
+    Returns the form for the OFI Manager create/edit of OFI resource.
     """
-    file_formats = toolkit.get_action(u'file_formats')({}, {})
-
-    data.update(file_formats=file_formats)
-
     return toolkit.render('ofi/snippets/geo_resource_form.html',
                           extra_vars=data)
 

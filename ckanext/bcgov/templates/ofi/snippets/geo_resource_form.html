@@ -16,15 +16,6 @@
 	</div>
 {% endif %}
 
-<div id="formats" class="control-group control-full">
-	<label class="control-label">{{ _("Formats") }}</label>
-	<div class="controls">
-		{% for format in file_formats %}
-			<span class="label label-info">{{ format.formatname or format }}</span>
-		{% endfor %}
-	</div>
-</div>
-
 {{ form.markdown('description', id='field-description', label=_('Resource Description'), placeholder=_('Some useful notes about the data'), value=ofi_resource.description, error=errors.description) }}
 
 {% set update_cycle_error = errors.resource_update_cycle %}
