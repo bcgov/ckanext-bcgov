@@ -55,6 +55,7 @@ from ckanext.bcgov.util.helpers import (
     remove_user_link,
     get_ofi_config,
     get_ofi_resources,
+    get_non_ofi_resources,
     get_pow_config,
     set_projection_select,
     log_this)
@@ -121,6 +122,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             "remove_user_link": remove_user_link,
             "get_ofi_config": get_ofi_config,
             "get_ofi_resources": get_ofi_resources,
+            "get_non_ofi_resources": get_non_ofi_resources,
             "can_view_resource": can_view_resource,
             "get_pow_config": get_pow_config,
             "set_projection_select": set_projection_select,

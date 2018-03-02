@@ -32,6 +32,11 @@ OFIServiceError = ofi_logic.OFIServiceError
 log = logging.getLogger(u'ckanext.bcgov.logic.ofi')
 
 
+def _get_non_ofi_resource(resources):
+    return [i for i in resources if u'ofi' in i and i[u'ofi'] is False]
+
+
+
 @toolkit.side_effect_free
 @ofi_logic.check_access
 @ofi_logic.setup_ofi_action(u'/info/fileFormats')
@@ -231,17 +236,21 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
     to use as a basis for the edit form in the OFI Manager.
 
     POST will edit the ofi resources in the dataset.
+
+    This action has changed, it now handles conversions when editing the
+    resource using the web ui or the api endpoint.
     """
     pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
 
     results = {}
 
     # get all ofi resources in the dataset
-    ofi_resources = [i for i in pkg_dict[u'resources'] if u'ofi' in i and i[u'ofi']]
+    ofi_resources = edc_h.get_ofi_resources(pkg_dict)
+    non_ofi_resources = _get_non_ofi_resource(pkg_dict[u'resources'])
 
     if toolkit.request.method == 'GET':
         # get the first ofi resource, it doesn't matter which type it is
-        is_ofi_res = ofi_resources[0] or False
+        is_ofi_res =  len(ofi_resources) > 0
 
         # just the format names from the ofi api call
         # TODO: maybe store both the format name and id in the resource meta data?
@@ -251,7 +260,7 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
             results.update({
                 u'success': True,
                 u'render_form': True,
-                u'ofi_resource': is_ofi_res,
+                u'ofi_resource': ofi_resources[0],
                 u'file_formats': file_formats
             })
         else:
@@ -259,14 +268,35 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
             return results
     else:
         update_resources = []
-        for resource in pkg_dict[u'resources']:
+
+        ofi_config = edc_h.get_ofi_config()
+
+        if 'convert_to_single_res' in ofi_config:
+            single_res = toolkit.asbool(ofi_config['convert_to_single_res'])
+        else:
+            single_res = False
+
+        for resource in ofi_resources:
             # update only ofi resources
-            if u'ofi' in resource and resource[u'ofi']:
-                resource.update(ofi_vars[u'ofi_resource_info'])
+            resource.update(ofi_vars[u'ofi_resource_info'])
 
-            update_resources.append(resource)
+            if not single_res:
+                update_resources.append(resource)
+            else:
+                resource_name = 'BC Geographic Warehouse Custom Download'
+                file_format = 'other'
+                resource_url = h.url_for('ofi resource',
+                                         format=file_format,
+                                         qualified=True,
+                                         object_name=pkg_dict.get(u'object_name',
+                                                                  "__MISSING_OBJECT_NAME__"))
+                resource.update(name=resource_name,
+                                url=resource_url,
+                                format=file_format)
+                update_resources.append(resource)
+                break
 
-        pkg_dict[u'resources'] = update_resources
+        pkg_dict[u'resources'] = non_ofi_resources + update_resources
 
         try:
             updated_dataset = toolkit.get_action('package_update')(context, pkg_dict)

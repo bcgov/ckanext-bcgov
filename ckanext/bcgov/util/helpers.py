@@ -558,8 +558,17 @@ def _build_ofi_url(secure=False):
     return url
 
 
+def _ofi_resources_list(pkg, t_or_f=True):
+    return [i for i in pkg[u'resources'] if u'ofi' in i and i[u'ofi'] is t_or_f]
+
+
+def get_non_ofi_resources(pkg):
+    return _ofi_resources_list(pkg, False)
+
+
 def get_ofi_resources(pkg):
-    return [i for i in pkg[u'resources'] if u'ofi' in i and i[u'ofi']]
+    return _ofi_resources_list(pkg, True)
+
 
 def log_this(this):
     try:
