@@ -1,6 +1,8 @@
 {% set resources = added_resources or updated_resources or [] %}
 
 <div>
+{# legacy, for multiple ofi resources #}
+{% if resources %}
 	<h3>Success</h3>
 	<h4>Resources {% if updated %}Updated:{% else %}Added:{% endif %}</h4>
 	<ul>
@@ -8,4 +10,7 @@
 			<li>{{ resource['name'] }}</li>
 		{% endfor %}
 	</ul>
+{% else %}
+	<h3>Successfully added.</h3>
+{% endif %}
 </div>

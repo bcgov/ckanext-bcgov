@@ -1,5 +1,6 @@
 {% set ofi = ofi or {} %}
 
+{% set ofi_config = h.get_ofi_config() %}
 
 {# button for modal is in snippets/resource_form.html #}
 {#<a href="#ofi-results" role="button" class="btn btn-primary" data-toggle="modal">View OFI Results</a>#}
@@ -43,7 +44,7 @@
                     {#<h4 style="text-align:center;">Would you like to create the resources anyways?</h4>#}
                 {% else %}
                     {% set content = ofi['content'] or false %}
-                    {% if content['allowed'] %}
+                    {% if content['allowed'] or h.asbool(ofi_config['dev_secure_call_off']) %}
                         <h4 style="text-align:center;">Object is available, would you like to add the resource link?</h4>
                     {% else %}
                         <div>Object is not available, please contact your administrator.</div>
@@ -63,7 +64,7 @@
         {% else %}#}
         {% elif pkg_obj_name != '' %}
             {% set content = ofi['content'] or false %}
-            {% if content['allowed'] %}
+            {% if content['allowed'] or h.asbool(ofi_config['dev_secure_call_off']) %}
                 <button id="ofi-confirm" class="btn btn-primary">Yes</button>
             {% endif %}
         {% endif %}

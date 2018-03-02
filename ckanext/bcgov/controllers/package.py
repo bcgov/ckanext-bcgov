@@ -42,6 +42,8 @@ from pylons import config
 
 from ckanext.bcgov.logic.ofi import OFIServiceError
 
+import ckanext.bcgov.util.helpers as edc_h
+
 
 log = logging.getLogger('ckanext.edc_schema')
 
@@ -719,6 +721,9 @@ def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
     ofi_data = {}
 
     if 'type' in pkg_dict and pkg_dict[u'type'] == 'Geographic':
+        ofi_config = edc_h.get_ofi_config()
+        secure_call = True if not ofi_config[u'dev_secure_call_off'] else False
+
         ofi_resources = []
         for resource in pkg_dict[u'resources']:
             if 'ofi' in resource and resource[u'ofi']:
@@ -730,7 +735,7 @@ def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
                 u'object_name': pkg_dict.get(u'object_name', ""),
                 u'ofi_resources': ofi_resources,
                 u'ofi_exists': True,
-                u'secure': True,
+                u'secure': secure_call,
                 u'projections': projections,
                 u'open_modal': open_modal
             })
@@ -739,7 +744,7 @@ def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
             # TODO figure out the mechanism for turning on secure calls for ofi
             obj_data = {
                 u'object_name': pkg_dict[u'object_name'],
-                u'secure': True,
+                u'secure': secure_call,
             }
 
             ofi_data.update(get_action('check_object_name')(context, obj_data))

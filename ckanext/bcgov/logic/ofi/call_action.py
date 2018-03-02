@@ -79,19 +79,10 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
     """
     results = {}
 
-    # error handling for adding ofi resources
-    error = False
-    errors = {}
-
-    added_resources = []
-    failed_resources = []
-
     if u'ofi_resource_info' not in ofi_vars:
         results.update(_err_dict(_('Missing ofi resource metadata'),
                                  missing_meta=True))
         return results
-
-    file_formats = toolkit.get_action(u'file_formats')(context, ofi_vars)
 
     try:
         pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
@@ -139,53 +130,36 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
             break
 
     if not ofi_exists:
-        # Try to add all avaliable OFI formats
-        for file_format in file_formats:
-            resource_url = h.url_for('ofi resource',
-                                     format=file_format[u'formatname'],
-                                     object_name=pkg_dict.get(u'object_name',
-                                                              "__MISSING_OBJECT_NAME__"),
-                                     qualified=True)
-
-            resource_name = file_format[u'formatname']
-
-            resource_meta.update(name=resource_name,
-                                 url=resource_url,
-                                 format=file_format[u'formatname'])
-
-            try:
-                resource = toolkit.get_action(u'resource_create')(context, resource_meta)
-                added_resources.append(resource)
-
-            except ValidationError as e:
-                error = True
-                errors.update(e.error_dict)
-                failed_resources.append({
-                    u'resource': resource_meta,
-                    u'error_msg': _('ValidationError - resource_create'),
-                    u'errors': e.error_dict
-                })
-
-    if error:
-        results.update(_err_dict(_('Adding OFI resources failed.'),
-                                 errors=errors,
-                                 file_formats=file_formats,
-                                 failed_resources=failed_resources,
-                                 added_resources=added_resources))
-        return results
+        resource_name = 'BC Geographic Warehouse Custom Download'
+        file_format = 'other'
+        resource_url = h.url_for('ofi resource',
+                                 format=file_format,
+                                 qualified=True,
+                                 object_name=pkg_dict.get(u'object_name',
+                                                          "__MISSING_OBJECT_NAME__"))
+        resource_meta.update(name=resource_name,
+                             url=resource_url,
+                             format=file_format)
+        try:
+            resource = toolkit.get_action(u'resource_create')(context, resource_meta)
+        except ValidationError as e:
+            resource = {
+                u'resource': resource_meta,
+                u'error_msg': _('ValidationError - resource_create'),
+                u'errors': e.error_dict
+            }
+            results.update(_err_dict(_('Adding OFI resource failed.'),
+                                     errors=e.error_dict,
+                                     failed_resource=resource))
+            return results
 
     # Updates the dataset to be active and not a draft
     if u'object_name' in pkg_dict and pkg_dict['object_name']:
         pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
-
-        pkg_dict.update({
-            u'state': u'active'
-        })
+        pkg_dict.update({u'state': u'active'})
         pkg_dict = toolkit.get_action(u'package_update')(context, pkg_dict)
 
-    results.update(success=True,
-                   added_resources=added_resources,
-                   failed_resources=failed_resources)
+    results.update(success=True, added_resource=resource)
 
     return results
 

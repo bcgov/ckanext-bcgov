@@ -518,7 +518,7 @@ def get_ofi_config():
     Returns a dict with all configuration options related to the
     OFI (ie those starting with 'bcgov.ofi.')
     '''
-    return get_namespace_config('bcgov.ofi.')
+    return get_namespace_config('bcgov.ofi.api.')
 
 
 def get_pow_config():
