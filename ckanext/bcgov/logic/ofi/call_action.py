@@ -32,10 +32,6 @@ OFIServiceError = ofi_logic.OFIServiceError
 log = logging.getLogger(u'ckanext.bcgov.logic.ofi')
 
 
-def _get_non_ofi_resource(resources):
-    return [i for i in resources if u'ofi' in i and i[u'ofi'] is False]
-
-
 
 @toolkit.side_effect_free
 @ofi_logic.check_access
@@ -246,7 +242,7 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
 
     # get all ofi resources in the dataset
     ofi_resources = edc_h.get_ofi_resources(pkg_dict)
-    non_ofi_resources = _get_non_ofi_resource(pkg_dict[u'resources'])
+    non_ofi_resources = edc_h.get_non_ofi_resources(pkg_dict)
 
     if toolkit.request.method == 'GET':
         # get the first ofi resource, it doesn't matter which type it is
