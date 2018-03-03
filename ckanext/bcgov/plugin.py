@@ -328,14 +328,12 @@ class SchemaPlugin(plugins.SingletonPlugin):
                                 fq += ' OR ' + 'owner_org:(' + ' OR '.join(user_orgs) + ')'
 
                         fq += ')'
-
+                #Public user can only view public and published records
                 else:
-                    if fq:
-                        # Set the filter query default Operator to AND
-                        search_params['q'] += '&q.op=AND&'
-
-                    # Public user can only view public and published records
-                    fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
+                    if not fq:
+                        fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
+                    else:
+                        fq += ' AND +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
 
         except Exception:
             if 'fq' in search_params:
