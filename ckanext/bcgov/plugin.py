@@ -4,7 +4,6 @@
 from ckan.common import c, _
 
 import logging
-import re
 import pylons.config as config
 import ckan.lib.base as base
 import ckan.plugins as plugins
@@ -63,7 +62,6 @@ from ckanext.bcgov.util.helpers import (
 abort = base.abort
 
 log = logging.getLogger('ckanext.bcgov')
-filter_query_regex = re.compile(r'([^:]+:"[^"]+"\s?)')
 
 class SchemaPlugin(plugins.SingletonPlugin):
 
@@ -314,11 +312,9 @@ class SchemaPlugin(plugins.SingletonPlugin):
             #  There are no restrictions for sysadmin
             if c.userobj and c.userobj.sysadmin == True:
                 fq += ' '
-                fq = filter_query_regex.sub(r'+\1', fq)
             else:
                 if user_name != 'visitor':
                     if 'edc_state' not in fq :
-                        fq = filter_query_regex.sub(r'+\1', fq)
                         fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
 
                         if 'owner_org' not in fq :
@@ -335,8 +331,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
                 else:
                     if fq:
-                        # make all fieds in Filter Query minditory with '+'
-                        fq = filter_query_regex.sub(r'+\1', fq)
+                        # Set the filter query default Operator to AND
+                        search_params['q'] += '&q.op=AND&'
 
                     # Public user can only view public and published records
                     fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
