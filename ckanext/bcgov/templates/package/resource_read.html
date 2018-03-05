@@ -225,7 +225,7 @@
 
     {% if res.ofi %}
       {# Legacy, mow is off by default #}
-      {% if h.asbool(pow_config.get('enable_mow', false) %}
+      {% if h.asbool(pow_config.get('enable_mow', false)) %}
         {% snippet 'snippets/edc_mow.html', pkg_obj_name=pkg.object_name, pkg_id=pkg.id, projections=c.ofi.projections %}
       {% else %}
         <div class="hide"
