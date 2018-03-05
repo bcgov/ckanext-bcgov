@@ -722,7 +722,7 @@ def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
 
     if 'type' in pkg_dict and pkg_dict[u'type'] == 'Geographic':
         ofi_config = edc_h.get_ofi_config()
-        secure_call = ofi_config.get('dev_secure_call_off', False)
+        secure_call = toolkit.asbool(ofi_config.get('dev_secure_call_off', False))
 
         ofi_resources = []
         for resource in pkg_dict[u'resources']:
