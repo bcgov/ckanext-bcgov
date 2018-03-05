@@ -17,8 +17,8 @@
 	</div>
 {% endif %}
 
-{# Legacy, for multi ofi resources, single on by default #}
-{% if h.asbool(ofi_config.get('convert_to_single_res', true)) == false %}
+{# Legacy, for multi ofi resources #}
+{% if file_formats %}
 <div id="formats" class="control-group control-full">
 	<label class="control-label">{{ _("Formats") }}</label>
 	<div class="controls">
