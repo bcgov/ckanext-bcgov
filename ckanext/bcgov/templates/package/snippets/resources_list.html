@@ -24,17 +24,20 @@ Example:
       {%- if 'object_name' in pkg and pkg.object_name %}
         {%- set pow_config = h.get_pow_config() -%}
 
-        <div class="hide"
-          data-module="edc_pow"
-          data-module-env="{{ pow_config['env'] }}"
-          data-module-pkg="{{ h.dump_json(pkg) }}"
-          data-module-secure_site="{{ pow_config['secure_site'] }}"
-          data-module-past_orders_nbr="{{ pow_config['past_orders_nbr'] }}"
-          data-module-custom_aoi_url="{{ pow_config['custom_aoi_url'] }}"
-          data-module-persist_config="{{ pow_config['persist_config'] }}"
-          data-module-use_pow_ui="{{ pow_config['use_pow_ui'] }}"></div>
+        {# POW is on by default #}
+        {% if h.asbool(pow_config.get('enable_mow', true)) == false %}
+          <div class="hide"
+            data-module="edc_pow"
+            data-module-env="{{ pow_config['env'] }}"
+            data-module-pkg="{{ h.dump_json(pkg) }}"
+            data-module-secure_site="{{ pow_config['secure_site'] }}"
+            data-module-past_orders_nbr="{{ pow_config['past_orders_nbr'] }}"
+            data-module-custom_aoi_url="{{ pow_config['custom_aoi_url'] }}"
+            data-module-persist_config="{{ pow_config['persist_config'] }}"
+            data-module-use_pow_ui="{{ pow_config['use_pow_ui'] }}"></div>
 
-        {% resource 'edc_resource/edc_pow.js' %}
+          {% resource 'edc_resource/edc_pow.js' %}
+        {% endif %}
       {% endif -%}
     {% else %}
     	{% if h.check_access('package_update', {'id':pkg.id }) %}

@@ -32,6 +32,8 @@ OFIServiceError = ofi_logic.OFIServiceError
 log = logging.getLogger(u'ckanext.bcgov.logic.ofi')
 
 
+ofi_config = edc_h.get_ofi_config()
+
 
 @toolkit.side_effect_free
 @ofi_logic.check_access
@@ -68,6 +70,10 @@ def geo_resource_form(context, data):
     """
     Returns the form for the OFI Manager create/edit of OFI resource.
     """
+    if toolkit.asbool(ofi_config.get('convert_to_single_res', False)):
+        file_formats = toolkit.get_action(u'file_formats')({}, {})
+        data.update(file_formats=file_formats)
+
     return toolkit.render('ofi/snippets/geo_resource_form.html',
                           extra_vars=data)
 
@@ -80,7 +86,7 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
     """
     results = {}
 
-    if u'ofi_resource_info' not in ofi_vars:
+    if not ofi_vars.get('ofi_resource_info'):
         results.update(_err_dict(_('Missing ofi resource metadata'),
                                  missing_meta=True))
         return results
@@ -100,8 +106,8 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
 
     # If the dataset has no object name set, the `force_populate`
     #  parameter must be included in the request
-    if u'object_name' not in pkg_dict or not pkg_dict['object_name']:
-        if u'force_populate' not in ofi_vars or not ofi_vars['force_populate']:
+    if not pkg_dict.get('object_name'):
+        if not ofi_vars.get('force_populate'):
             msg = 'No Object Name in dataset. Must include `force_populate: true` parameter ' \
                   'in the request if you wish to create the DWDS resources without an object name.'
             error_dict = {
@@ -125,7 +131,7 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
 
     ofi_exists = False
     for resource in pkg_dict[u'resources']:
-        if u'ofi' in resource and resource['ofi']:
+        if resource.get('ofi', False):
             ofi_exists = True
             results.update(ofi_exists=ofi_exists)
             break
@@ -155,7 +161,7 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
             return results
 
     # Updates the dataset to be active and not a draft
-    if u'object_name' in pkg_dict and pkg_dict['object_name']:
+    if pkg_dict.get('object_name', False):
         pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
         pkg_dict.update({u'state': u'active'})
         pkg_dict = toolkit.get_action(u'package_update')(context, pkg_dict)
@@ -265,12 +271,7 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
     else:
         update_resources = []
 
-        ofi_config = edc_h.get_ofi_config()
-
-        if 'convert_to_single_res' in ofi_config:
-            single_res = toolkit.asbool(ofi_config['convert_to_single_res'])
-        else:
-            single_res = False
+        single_res = toolkit.asbool(ofi_config.get('convert_to_single_res', False))
 
         for resource in ofi_resources:
             # update only ofi resources
