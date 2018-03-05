@@ -44,7 +44,8 @@
                     {#<h4 style="text-align:center;">Would you like to create the resources anyways?</h4>#}
                 {% else %}
                     {% set content = ofi['content'] or false %}
-                    {% if content['allowed'] or h.asbool(ofi_config.get('dev_secure_call_off'), false) %}
+                    {# dev_secure_call is for vagrant use only, to workaround missing siteminer session  #}
+                    {% if content['allowed'] or h.asbool(ofi_config.get('dev_secure_call'), true) %}
                         <h4 style="text-align:center;">Object is available, would you like to add the resource link?</h4>
                     {% else %}
                         <div>Object is not available, please contact your administrator.</div>
@@ -64,7 +65,8 @@
         {% else %}#}
         {% elif pkg_obj_name != '' %}
             {% set content = ofi['content'] or false %}
-            {% if content['allowed'] or h.asbool(ofi_config.get('dev_secure_call_off'), false) %}
+            {# dev_secure_call is for vagrant use only, to workaround missing siteminer session #}
+            {% if content['allowed'] or h.asbool(ofi_config.get('dev_secure_call'), true) %}
                 <button id="ofi-confirm" class="btn btn-primary">Yes</button>
             {% endif %}
         {% endif %}

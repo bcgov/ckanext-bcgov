@@ -722,7 +722,8 @@ def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
 
     if 'type' in pkg_dict and pkg_dict[u'type'] == 'Geographic':
         ofi_config = edc_h.get_ofi_config()
-        secure_call = toolkit.asbool(ofi_config.get('dev_secure_call_off', False))
+        # dev_secure_call is for working around missing siteminer session, for vagrant use only
+        secure_call = toolkit.asbool(ofi_config.get('dev_secure_call', True))
 
         ofi_resources = []
         for resource in pkg_dict[u'resources']:
@@ -740,8 +741,7 @@ def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
                 u'open_modal': open_modal
             })
 
-        elif 'object_name' in pkg_dict and pkg_dict[u'object_name']:
-            # TODO figure out the mechanism for turning on secure calls for ofi
+        elif pkg_dict.get('object_name', False):
             obj_data = {
                 u'object_name': pkg_dict[u'object_name'],
                 u'secure': secure_call,
