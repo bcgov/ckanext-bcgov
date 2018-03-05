@@ -425,7 +425,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
     # IResourceController
     def before_create(self, context, resource):
         # preventative fix for #386 - make sure facet format types are always lowercase;
-        resource['format'] = resource['format'].lower()
+        resource['format'] = resource.get('format', '').lower()
 
 
 class EDCDisqusPlugin(plugins.SingletonPlugin):
