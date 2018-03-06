@@ -3,6 +3,7 @@
 {% set errors = errors or {} %}
 {% set error_summary = errors or {} %}
 {% set ofi_resource = ofi_resource or {} %}
+{% set ofi_config = h.get_ofi_config() or {} %}
 
 <!--Snippet ofi/snippets/geo_resource_form.html start -->
 {% if error_summary %}
@@ -16,6 +17,8 @@
 	</div>
 {% endif %}
 
+{# Legacy, for multi ofi resources #}
+{% if file_formats %}
 <div id="formats" class="control-group control-full">
 	<label class="control-label">{{ _("Formats") }}</label>
 	<div class="controls">
@@ -24,6 +27,7 @@
 		{% endfor %}
 	</div>
 </div>
+{% endif %}
 
 {{ form.markdown('description', id='field-description', label=_('Resource Description'), placeholder=_('Some useful notes about the data'), value=ofi_resource.description, error=errors.description) }}
 

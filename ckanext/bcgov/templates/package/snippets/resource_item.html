@@ -3,6 +3,7 @@
 {% set url = h.url_for(controller='package', action=url_action, id=pkg.name, resource_id=res.id) %}
 
 {% set archived = pkg.edc_state == "ARCHIVED" %}
+{%- set pow_config = h.get_pow_config() -%}
 
 <li class="resource-item" data-id="{{ res.id }}">
   {% block resource_item_title %}
@@ -17,7 +18,10 @@
   {% endblock %}
 
   {% if res.ofi %}
-    <p class="size">(from Geographic Warehouse)</p>
+    {# legacy, for multiple ofi resources #}
+    {% if h.get_ofi_resources(pkg)|length > 1 %}
+      <p class="size">(from Geographic Warehouse)</p>
+    {% endif %}
   {% else %}
     <p class="size">
       {% if res.size %}
@@ -55,7 +59,11 @@
       {% if res.url and h.is_url(res.url) %}
       <li>
         {% if pkg.type == 'Geographic' and res.ofi %}
-          <a href="#edc-pow" role="button" id="{{ res.format }}" class="edc-pow-button">
+          {% if h.asbool(pow_config['enable_mow']) %}
+            <a href="#edc-mow" role="button" id="{{ res.format }}" class="edc-mow-button">
+          {% else %}
+            <a href="#edc-pow" role="button" id="{{ res.format }}" class="edc-pow-button">
+          {% endif %}
             <i class="fa fa-external-link icon-external-link"></i>
             {{ _('Access / Download') }}
         {% elif res.has_views %}

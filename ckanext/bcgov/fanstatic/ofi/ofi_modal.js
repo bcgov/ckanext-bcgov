@@ -66,7 +66,7 @@ this.ckan.module('ofi_modal', function($, _) {
         'dataType': 'html',
         'success': function(data, status) {
           self._showResults(data);
-          modal_subtitle.text('Add OFI Resources');
+          modal_subtitle.text('Add OFI Resource');
 
           modal_controls.find('#ofi-confirm, #ofi-force-confirm')
             .off('click', self._getResourceForm)
@@ -127,8 +127,8 @@ this.ckan.module('ofi_modal', function($, _) {
       });
     },
     _removeOFIResources: function(event) {
-      self._showResults('<h4>Are you sure you want to remove all OFI resources for this dataset?</h4>');
-      modal_subtitle.text('Removing Resources');
+      self._showResults('<h4>Are you sure you want to remove the OFI resource for this dataset?</h4>');
+      modal_subtitle.text('Removing Resource');
 
       var back_button = $('<button id="ofi-back" class="btn btn-danger">No</button>');
       back_button.on('click', self._backToExistingStart);
@@ -146,7 +146,7 @@ this.ckan.module('ofi_modal', function($, _) {
     },
     _editOFIResources: function(event) {
       self._toggleSpinner(true);
-      modal_subtitle.text('Editing Resources');
+      modal_subtitle.text('Editing Resource');
 
       $.ajax({
         'url': self.options.ofi_edit_resources_url,
@@ -221,8 +221,8 @@ this.ckan.module('ofi_modal', function($, _) {
         'contentType': 'application/json; charset=utf-8',
         'success': function(data, status) {
           if(data.success) {
-            modal_subtitle.text('Removed Resources');
-            self._showResults('<h4>OFI resources have been removed from the dataset.</h4>');
+            modal_subtitle.text('Removed Resource');
+            self._showResults('<h4>OFI resource has been removed from the dataset.</h4>');
 
             modal_controls.find('#ofi-back').remove();
             modal_controls.find('#ofi-confirm-remove')
@@ -232,7 +232,7 @@ this.ckan.module('ofi_modal', function($, _) {
           }
         },
         'error': function(jqXHR, textStatus, errorThrown) {
-          self._showResults('<div>There was an error with removing ofi resources.</div>');
+          self._showResults('<div>There was an error with removing the ofi resource.</div>');
 
           modal_controls.find('#ofi-back').remove();
           modal_controls.find('#ofi-confirm-remove').remove();
@@ -253,7 +253,7 @@ this.ckan.module('ofi_modal', function($, _) {
        * This resets the modal to the begin if there's ofi resources in the dataset
        */
 
-      self._showResults('<div>OFI Resources are present in this dataset.</div>');
+      self._showResults('<div>OFI Resource is present in this dataset.</div>');
       modal_subtitle.text('Manage');
 
       modal_controls.find('#ofi-back').remove();

@@ -1,5 +1,7 @@
 {% ckan_extends %}
 
+{%- set pow_config = h.get_pow_config() -%}
+
 {% block content %}
 {% block search_input %}
     {% resource 'edc_resource/typeahead.bundle.js' %}
@@ -45,7 +47,11 @@
             {% if res.url and h.is_url(res.url) %}
               <li>
                 {% if pkg.type == 'Geographic' and res.ofi %}
-                  <a href="#edc-mow" class="btn btn-primary resource-type-{{ res.resource_type }} edc-mow-button" role="button" id="{{ res.format }}">
+                  {% if h.asbool(pow_config['enable_mow']) %}
+                    <a href="#edc-mow" class="btn btn-primary resource-type-{{ res.resource_type }} edc-mow-button" role="button" id="{{ res.format }}">
+                  {% else %}
+                    <a href="#edc-pow" class="btn btn-primary resource-type-{{ res.resource_type }} edc-pow-button" role="button" id="{{ res.format }}">
+                  {% endif %}
                 {% else %}
                   <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }}" href="{{ res.url }}" title="{{ h.size_or_link(res.url_type=='upload', res.size) }}">
                 {% endif %}
@@ -218,7 +224,22 @@
     {% endif %}
 
     {% if res.ofi %}
-      {% snippet 'snippets/edc_mow.html', pkg_obj_name=pkg.object_name, pkg_id=pkg.id, projections=c.ofi.projections %}
+      {# Legacy, mow is off by default #}
+      {% if h.asbool(pow_config.get('enable_mow', false)) %}
+        {% snippet 'snippets/edc_mow.html', pkg_obj_name=pkg.object_name, pkg_id=pkg.id, projections=c.ofi.projections %}
+      {% else %}
+        <div class="hide"
+          data-module="edc_pow"
+          data-module-env="{{ pow_config['env'] }}"
+          data-module-pkg="{{ h.dump_json(pkg) }}"
+          data-module-secure_site="{{ pow_config['secure_site'] }}"
+          data-module-past_orders_nbr="{{ pow_config['past_orders_nbr'] }}"
+          data-module-custom_aoi_url="{{ pow_config['custom_aoi_url'] }}"
+          data-module-persist_config="{{ pow_config['persist_config'] }}"
+          data-module-use_pow_ui="{{ pow_config['use_pow_ui'] }}"></div>
+
+        {% resource 'edc_resource/edc_pow.js' %}
+      {% endif %}
     {% endif %}
   {% endif %}
 

@@ -155,6 +155,9 @@
 
 {% block secondary_content %}
   {% if c.pkg_dict.type == 'Geographic' %}
-    {% snippet 'snippets/edc_mow.html', pkg_obj_name=pkg.object_name, pkg_id=pkg.id, projections=c.ofi.projections %}
+    {# Legacy, mow is off by default #}
+    {% if h.asbool(h.get_pow_config().get('enable_mow', false)) %}
+      {% snippet 'snippets/edc_mow.html', pkg_obj_name=pkg.object_name, pkg_id=pkg.id, projections=c.ofi.projections %}
+    {% endif %}
   {% endif %}
 {% endblock %}

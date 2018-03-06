@@ -518,7 +518,7 @@ def get_ofi_config():
     Returns a dict with all configuration options related to the
     OFI (ie those starting with 'bcgov.ofi.')
     '''
-    return get_namespace_config('bcgov.ofi.')
+    return get_namespace_config('bcgov.ofi.api.')
 
 
 def get_pow_config():
@@ -558,8 +558,13 @@ def _build_ofi_url(secure=False):
     return url
 
 
+def get_non_ofi_resources(pkg):
+    return [i for i in pkg[u'resources'] if u'ofi' not in i or i[u'ofi'] is False]
+
+
 def get_ofi_resources(pkg):
     return [i for i in pkg[u'resources'] if u'ofi' in i and i[u'ofi']]
+
 
 def log_this(this):
     try:
