@@ -476,6 +476,22 @@ def size_or_link(upload, size):
         return ''
 
 
+def sort_vocab_list(vocab_list):
+    '''
+    This may change, but for now hardcoding the sort order to bring
+    'EPSG_3005 - NAD83 BC Albers' to the top of the vocab list
+    '''
+    albers = 'EPSG_3005 - NAD83 BC Albers'
+    try:
+        _i = vocab_list.index(albers)
+        vocab_list.insert(0, vocab_list.pop(_i))
+
+    except ValueError as e:
+        print(e)
+
+    return vocab_list
+
+
 def debug_full_info_as_list(debug_info):
     ''' This dumps the template variables for debugging purposes only. '''
     out = []
