@@ -1,7 +1,8 @@
 {#
 	Display the tracking 'n view(s) (n recent)'
 
-	views - Object should contain 
+	views: int   - Total view count for the dataset or resource
+	recent: init - Recent view count for the dataset or resource
 #}
 {% macro display(views, recent) %}
 {% if views == 1 %}
