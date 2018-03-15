@@ -79,7 +79,7 @@
           {% set ts = h.get_resource_tracking(res['url'], res['id']) %}
           {% if ts %}
             <h4 class="description-tracking">
-              {{ tracking.display(ts.views.total, ts.views.recent) }}
+              {# {{ tracking.display(ts.views.total, ts.views.recent) }} #}
             </h4>
           {% endif %}
 
