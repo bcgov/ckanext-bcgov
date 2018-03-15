@@ -60,6 +60,12 @@ def add_admin(member, site_url, api_key):
 def get_edc_tags(vocab_id):
     '''
     Returns the list of tags for a given vocabulary.
+
+    Issue came up with sorting, there is no control mechanism for sorting
+    tag lists, however in the future if an issue as such arises again
+    can use this snippet of code to match the list ordering from edc_vocab.json
+
+    sorted(vocab_list_from_db, key=lambda x: edc_json_vocab_list.index(x))
     '''
     tags = []
     try:
