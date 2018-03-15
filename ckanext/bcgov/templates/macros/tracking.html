@@ -1,0 +1,12 @@
+{#
+	Display the tracking 'n view(s) (n recent)'
+
+	views - Object should contain 
+#}
+{% macro display(views, recent) %}
+{% if views == 1 %}
+	{{ views }} view ({{ recent }} recent)
+{% else %}
+	{{ views }} views ({{ recent }} recent)
+{% endif %}
+{% endmacro %}

@@ -1,5 +1,7 @@
 {% ckan_extends %}
 
+{% import 'macros/tracking.html' as tracking %}
+
 {% block wrapper_class %}{{ super() }} dataset-view{% endblock %}
 
 {% block breadcrumb_content %}
@@ -88,14 +90,10 @@
     </h1>
 
     
-    {% set tracking_summary = h.get_package_tracking(pkg['id']) %}
-    {% if tracking_summary %}
+    {% set ts = h.get_package_tracking(pkg['id']) %}
+    {% if ts %}
       <h4 class="description-tracking">
-        {% if tracking_summary.views.total == 1 %}
-          {{ tracking_summary.views.total}} view ({{ tracking_summary.views.recent }} recent)
-        {% else %}
-          {{ tracking_summary.views.total}} views ({{ tracking_summary.views.recent }} recent)
-        {% endif %}
+        {{ tracking.display(ts.views.total, ts.views.recent) }}
       </h4>
     {% endif %}
 
