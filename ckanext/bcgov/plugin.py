@@ -13,6 +13,7 @@ import ckan.plugins.toolkit as toolkit
 from paste.deploy.converters import asbool
 from routes.mapper import SubMapper
 
+
 from ckanext.bcgov.util.util import (
     get_edc_tags,
     edc_type_label,
@@ -59,13 +60,14 @@ from ckanext.bcgov.util.helpers import (
     get_ofi_resources,
     get_non_ofi_resources,
     get_pow_config,
-    set_projection_select,
     log_this)
+
 
 abort = base.abort
 
 log = logging.getLogger('ckanext.bcgov')
 filter_query_regex = re.compile(r'([^:]+:"[^"]+"\s?)')
+
 
 class SchemaPlugin(plugins.SingletonPlugin):
 
@@ -129,7 +131,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
             "get_non_ofi_resources": get_non_ofi_resources,
             "can_view_resource": can_view_resource,
             "get_pow_config": get_pow_config,
-            "set_projection_select": set_projection_select,
             "get_package_tracking": get_package_tracking,
             "get_resource_tracking": get_resource_tracking,
             "log": log_this
@@ -141,7 +142,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         toolkit.add_resource('fanstatic', 'edc_resource')
         toolkit.add_resource('public/scripts', 'theme_scripts')
 
-    #Customizing action mapping
+    # Customizing action mapping
     def before_map(self, map):
         from routes.mapper import SubMapper
 

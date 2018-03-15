@@ -33,14 +33,6 @@ from ckan.lib.helpers import unselected_facet_items
 def remove_user_link(actor):
     return wbtools.strip_links(actor)
 
-def set_projection_select(data_value, select_values):
-    if data_value:
-        return data_value
-    elif select_values.index('EPSG_3005 - NAD83 BC Albers') != -1:
-        return select_values[select_values.index('EPSG_3005 - NAD83 BC Albers')]
-    else:
-        return False
-    
 def get_suborgs(org_id):
     '''
     Returns the list of suborganizations of the given organization

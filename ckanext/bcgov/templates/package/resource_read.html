@@ -1,5 +1,7 @@
 {% ckan_extends %}
 
+{% import 'macros/tracking.html' as tracking %}
+
 {%- set pow_config = h.get_pow_config() -%}
 
 {% block content %}
@@ -74,12 +76,10 @@
         {% block resource_content %}
           {% block resource_read_title %}<h1 class="page-heading">{{ h.resource_display_name(res) | truncate(50) }}</h1>{% endblock %}
 
-          {% set tracking_summary = h.get_resource_tracking(res['url'], res['id']) %}
-          {% if tracking_summary %}
+          {% set ts = h.get_resource_tracking(res['url'], res['id']) %}
+          {% if ts %}
             <h4 class="description-tracking">
-            {% if tracking_summary.views.total > -1 %} <span class="flex-1">Total Views: {{ tracking_summary.views.total}}</span> {% endif %}
-            {% if tracking_summary.views.recent > -1 %} <span class="flex-1">Recent Views: {{ tracking_summary.views.recent }}</span> {% endif %}  
-            {% if tracking_summary.downloads > -1 %} <span class="flex-1">Downloads: {{ tracking_summary.downloads }}</span> {% endif %}  
+              {# {{ tracking.display(ts.views.total, ts.views.recent) }} #}
             </h4>
           {% endif %}
 
