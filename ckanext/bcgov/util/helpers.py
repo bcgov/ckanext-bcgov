@@ -487,7 +487,7 @@ def sort_vocab_list(vocab_list):
         vocab_list.insert(0, vocab_list.pop(_i))
 
     except ValueError as e:
-        print(e)
+        log.info(e)
 
     return vocab_list
 
