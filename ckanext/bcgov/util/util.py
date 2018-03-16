@@ -478,6 +478,7 @@ def can_view_resource(resource):
                 else:
                     return True
         except Exception, e:
+            log.error('can_view_resource:')
             log.error(e)
             return True
 
@@ -504,6 +505,7 @@ def get_resource_tracking(resource_url, resource_id):
         downloads = response_dict['result']['total']
 
     except Exception, e:
+        log.error('get_resource_tracking:')
         log.error(e)
         pass
 

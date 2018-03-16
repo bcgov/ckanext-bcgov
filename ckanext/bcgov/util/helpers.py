@@ -1,6 +1,7 @@
 # Copyright  2015, Province of British Columbia
 # License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
-
+import datetime
+import pytz
 import pprint
 import logging
 import ckan.lib.helpers
@@ -466,6 +467,13 @@ def size_or_link(upload, size):
         return '(%s)' % f.localised_filesize(size)
     else:
         return ''
+
+
+def display_pacific_time(date_str):
+    utc_datetime = toolkit.h.date_str_to_datetime(date_str).replace(tzinfo=pytz.UTC)
+    pacific = pytz.timezone('America/Vancouver')
+    p_datetime = utc_datetime.astimezone(pacific)
+    return p_datetime.strftime("%Y-%m-%d %H:%M:%S %Z")
 
 
 def sort_vocab_list(vocab_list):
