@@ -5,19 +5,16 @@ Usage:
 
 Arguments:
     <action>                Update, Create or Delete
-    [VOCAB ...]             List of vocabularys by name or id, if no VOCAB is
-                             is specified, all vocab items in the data-file
-                             will be used.
+    [VOCAB ...]             List of vocabularys by name or id
     -r --remote=URL         URL of CKAN server for remote actions
 
 Options:
     -h --help               Show Usage
-    --version               Show version
+    -V, --version           Show version
+    -v, --verbose           Show action messages
     -a, --apikey=APIKEY     API key to use for remote actions
     -d, --data-file=FILE    File location for the Vocabulary list
                              [default: ./data/edc-vocabs.json]
-    -f, --all-fields        For getting all info from fields in the
-                             vocabulary list [default: True]
 """
 import json
 
@@ -33,6 +30,7 @@ vocab_names = args.get('VOCAB')
 url = args.get('--remote')
 api_key = args.get('--apikey')
 all_fields = args.get('--all-fields', True)
+verbose = args.get('--verbose')
 
 edc_vocab_location = args.get('--data-file')
 edc_vocabs = None
@@ -50,25 +48,30 @@ def _new_tags(api, vocab_id, vocab_name):
     for new_item in new_vocab_list:
         tag = api.action.tag_create(name=new_item, vocabulary_id=vocab_id)
         yield tag
-        print(tag)
+        if verbose:
+            print(tag)
 
 
 def create_tags(api, vocab_name):
-    print("Creating vocabulary %s @ %s ..." % (vocab_name, url))
+    if verbose:
+        print("Creating vocabulary %s @ %s ..." % (vocab_name, url))
 
     created = api.action.vocabulary_create(name=vocab_name)
     print(created)
     vocab_id = created['id']
 
-    print('New vocabulary list %s created.' % created['name'])
+    if verbose:
+        print('New vocabulary list %s created.' % created['name'])
 
     new_tags = [tag for tag in _new_tags(api, vocab_id, vocab_name)]
 
-    print("Finished creating %s.\n" % vocab_name)
+    if verbose:
+        print("Finished creating %s.\n" % vocab_name)
 
 
 def update_tags(api, vocab_name):
-    print("Updating vocabulary %s @ %s ..." % (vocab_name, url))
+    if verbose:
+        print("Updating vocabulary %s @ %s ..." % (vocab_name, url))
 
     # Need to delete the tag item individually first because
     # deleting the vocabulary itself by id throws integraty error
@@ -76,11 +79,12 @@ def update_tags(api, vocab_name):
 
     new_tags = [tag for tag in _new_tags(api, vocab_id, vocab_name)]
 
-    print("Finished updating %s.\n" % vocab_name)
+    if verbose:
+        print("Finished updating %s.\n" % vocab_name)
 
 
 def delete_tags(api, vocab_name, tag_list=[], display_msg=True):
-    if display_msg:
+    if verbose and display_msg:
         print("Deleting vocabulary %s @ %s ..." % (vocab_name, url))
 
     vocab_id = api.action.vocabulary_show(id=vocab_name).get('id')
@@ -92,7 +96,7 @@ def delete_tags(api, vocab_name, tag_list=[], display_msg=True):
         api.action.tag_delete(id=tag['id'],
                               vocabulary_id=tag['vocabulary_id'])
 
-    if display_msg:
+    if verbose and display_msg:
         print("Finished deleting %s." % vocab_name)
 
     return vocab_id  # for usage in update_tags
@@ -114,3 +118,8 @@ if __name__ == '__main__':
                 print("%s is not an action. "
                       "Avaiable actions: update | create | delete" % action)
                 exit(1)
+
+        if verbose:
+            print("Done.")
+
+        exit(0)
