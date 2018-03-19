@@ -142,33 +142,8 @@
 
               <tr>
                 <th scope="row">{{ _('Resource Last Modified') }}</th>
-                <td class="convertToLocalTime hidden">{{ res.last_modified or res.created or _('unknown') }}</td>
-                <script type="text/javascript">
-                  
-                  let els = document.getElementsByClassName(`convertToLocalTime`);
-                  
-                  Array.from(els).forEach( function convertDate(item) {
-                    
-                    let timeZone = Intl.DateTimeFormat().resolvedOptions();
-                    let date = new Date(item.innerHTML);
-                    let dT = '';
-                    
-                    if( date instanceof Date && !isNaN(date.valueOf()) ) {
-                    
-                      dT = new Date(date).toLocaleString(timeZone.locale, { timeZone: timeZone.timeZone, timeZoneName:'short'});
-                      if( timeZone.locale === 'en-US' ) {
-                        date = dT.split(',')[0].split('/').reverse().join('-');
-                        dT = `${date}, ${dT.split(',')[1]}`;
-                      }
-
-                    }
-
-                    item.innerHTML = dT;
-                    item.classList.remove('hidden');
-
-                  });
-                  
-                </script>
+                {% set resource_timestamp = res.last_modified or res.created or _('unknown') %}
+                <td>{{ h.display_pacific_time(resource_timestamp) }}</td>
               </tr>
 
               <tr>
