@@ -202,16 +202,14 @@
  {
     "name": "resource_storage_location",
     "tags": [
-
-                "BCGW Data Store",
-                "EDC Data Store",
+                "BC Geographic Warehouse",
+                "Catalogue Data Store",
                 "pub.data.gov.bc.ca",
-                "External",
-                "Converge",
-                "GeoDB",
-                "SDE",
-                "SDO",
-                "X-Y"
+                "Ministry or Other Database",
+                "Esri ArcGIS Online",
+                "FTP Site",
+                "File System",
+                "Unspecified"
             ]
  },
  {
