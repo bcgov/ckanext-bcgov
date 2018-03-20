@@ -125,22 +125,6 @@ Example:
             {% endif %}
           </ul>
         {% endblock %}
-
-        {#
-        {% if tracking_summary %}
-          <ul class="dataset-dates">
-            {% if tracking_summary.views.total %}
-              <li class="flex-1">Total Views: {{ tracking_summary.views.total}}</li>
-            {% endif %}
-            {% if tracking_summary.views.recent %}
-              <li class="flex-1">Recent Views {{ tracking_summary.views.recent }}</li>
-            {% endif %}
-            {% if tracking_summary.downloads %}
-              <li class="flex-1">Downloads {{ tracking_summary.downloads }}</li>
-            {% endif %}
-          </ul>
-        {% endif %}
-        #}
       </div>
     {% endblock %}
   </li>
