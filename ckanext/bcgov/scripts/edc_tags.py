@@ -83,7 +83,7 @@ def update_tags(api, vocab_name):
         print("Finished updating %s.\n" % vocab_name)
 
 
-def delete_tags(api, vocab_name, tag_list=[], display_msg=True):
+def delete_tags(api, vocab_name, display_msg=True):
     if verbose and display_msg:
         print("Deleting vocabulary %s @ %s ..." % (vocab_name, url))
 
