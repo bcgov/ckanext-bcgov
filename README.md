@@ -43,6 +43,8 @@ Installation
         # (optional) Environment name
         edc.environment_name = MYDEVBOX
 
+        ...
+        
         # POW Settings
         bcgov.pow.env = test
         bcgov.pow.secure_site = false
