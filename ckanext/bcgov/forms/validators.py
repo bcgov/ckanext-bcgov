@@ -18,6 +18,8 @@ from validate_email import validate_email
 
 # should use the ckan toolkit for helpers
 from ckanext.bcgov.util.helpers import get_suborg_sector
+from ckanext.bcgov.util.util import get_edc_tags
+
 
 log = logging.getLogger('ckanext.edc_schema')
 
@@ -314,7 +316,7 @@ def check_extension(key, data, errors, context):
     # valid_formats = []
     res_url = data.get(key)
     if not res_url:
-        errors[key].appned('Resource file/url is missing')
+        errors[key].append('Resource file/url is missing')
         raise StopOnError
     if res_url:
         res_format = os.path.splitext(res_url)[1]
@@ -322,3 +324,17 @@ def check_extension(key, data, errors, context):
             errors[key].append("Unknown resource extension. "
                                "Please provide a file with a valid extension")
             raise StopOnError
+
+
+def resource_storage_location(key, data, errors, context):
+    print(data[key])
+
+    tags = get_edc_tags('resource_storage_location')
+    print(tags)
+
+    found = [tag for tag in tags if data[key] == tag]
+
+    if len(found) == 0:
+        errors[key].append("%s is an incorrect location. "
+                           "Please choose one of the following: %s" %
+                           (data[key], ', '.join(tags)))
