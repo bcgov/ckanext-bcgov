@@ -15,7 +15,8 @@ from validators import (valid_date,
                         check_empty,
                         check_extension,
                         latitude_validator,
-                        longitude_validator)
+                        longitude_validator,
+                        resource_storage_location)
 
 from ckan.logic.validators import url_validator
 
@@ -131,7 +132,7 @@ class EDC_GeoSpatialForm(edc_form.EDC_DatasetForm):
             'format': [not_empty, unicode],
             'edc_resource_type': [not_empty, convert_to_extras],
             'resource_storage_access_method': [not_empty, convert_to_extras],
-            'resource_storage_location': [not_empty, unicode, convert_to_extras],
+            'resource_storage_location': [not_empty, unicode, resource_storage_location, convert_to_extras],
             'data_collection_start_date': [ignore_missing, valid_date, convert_to_extras],
             'data_collection_end_date': [ignore_missing, valid_date, convert_to_extras],
             'ofi': [ignore_missing, bool, convert_to_extras]
@@ -232,7 +233,7 @@ class EDC_NonGeoSpatialForm(edc_form.EDC_DatasetForm):
             'format': [not_empty, unicode],
             'edc_resource_type': [not_empty, convert_to_extras],
             'resource_storage_access_method': [not_empty, convert_to_extras],
-            'resource_storage_location': [not_empty, unicode, convert_to_extras],
+            'resource_storage_location': [not_empty, unicode, convert_to_extras],  # TODO
             'data_collection_start_date': [ignore_missing, valid_date, convert_to_extras],
             'data_collection_end_date': [ignore_missing, valid_date, convert_to_extras],
         })

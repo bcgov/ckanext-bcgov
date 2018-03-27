@@ -54,7 +54,7 @@
 
 <ul id="mobile-nav-list" class="inline nav navbar-nav">
     <li><a href="http://www2.gov.bc.ca/gov/content/governments/about-the-bc-government/databc">What is DataBC?</a></li>
-    <li><a href="{{ h.url('/dataset') }}" title="{{ g.site_title }} Home">Data Catalogue</a></li>
+    <li><a href="{{ h.url_for(controller='ckanext.ga_report.controller:GaDatasetReport', action='read') }}">Dataset Usage</a></li>
     <li><a href="http://www2.gov.bc.ca/gov/content/governments/about-the-bc-government/databc/geographic-data-and-services">Geographic Services</a></li>
     <li><a href="https://engage.gov.bc.ca/data/">Blog</a></li>
     <li><a href="https://www.bcdevexchange.org/">Developers</a></li>
