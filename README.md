@@ -4,14 +4,14 @@
 <a rel="Delivery" href="https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md"><img alt="In production, but maybe in Alpha or Beta. Intended to persist and be supported." style="border-width:0" src="https://assets.bcdevexchange.org/images/badges/delivery.svg" title="In production, but maybe in Alpha or Beta. Intended to persist and be supported." /></a>
 
 ckanext-bcgov
-============= 
+=============
 
 This extension provides the basic customized features on the [BC Data Catalogue](http://catalogue.data.gov.bc.ca), such as schema updates, theme changes, etc.
 
 Installation
 ============
 
-1.  Activate virtual environment, e.g. 
+1.  Activate virtual environment, e.g.
 
         $ . /usr/lib/ckan/default/bin/activate
 
@@ -42,6 +42,17 @@ Installation
 
         # (optional) Environment name
         edc.environment_name = MYDEVBOX
+
+        ...
+        
+        # POW Settings
+        bcgov.pow.env = test
+        bcgov.pow.secure_site = false
+        bcgov.pow.past_orders_nbr = 5
+        bcgov.pow.custom_aoi_url = http://maps.gov.bc.ca/ess/hm/aoi/
+        bcgov.pow.persist_config = true
+        bcgov.pow.enable_mow = false
+        bcgov.pow.user_pow_ofi = true
 
 
 4.  Update (or create) `import.ini` file inside `ckanext-bcgov/ckanext/bcgov/scripts/config`. Add `api_key`, `site_url` options (they should be the same as in your CKAN `.ini` file).
