@@ -63,7 +63,7 @@
       <div class="controls">
       {% set storage_location_list = h.edc_tags(_('resource_storage_location')) %}
       {% set current_storage_location = data.resource_storage_location %}
-      <select id="field-resource_storage_location" name="resource_storage_location" data-module="autocomplete" onchange="javascript:check_storage_location();">
+      <select id="field-resource_storage_location" name="resource_storage_location" data-module="autocomplete" onchange="javascript:check_storage_location();" required>
         <option value="" {% if not selected_storage_location %} selected="selected" {% endif %}  disabled>Select a storage location</option>
             {% for storage_location in storage_location_list %}
               {% set selected_storage_location = (current_storage_location and current_storage_location == storage_location) %}
