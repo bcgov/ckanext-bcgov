@@ -83,14 +83,10 @@ this.ckan.module('edc_pow', function($, _){
 
 			dwdspowapi.orderData = {
 				emailAddress: '',
-				aoiType: '4',
-				aoi: '',
+				aoiType: '0',
 				orderingApplication: 'BCDC',
-				aoiName: '092B061,092C070',
 				formatType: '3',
 				crsType: '4',
-				clippingMethodType: '0',
-				useAOIBounds: '0',
 				prepackagedItems: '',
 				featureItems: [
 					{
@@ -98,7 +94,7 @@ this.ckan.module('edc_pow', function($, _){
 						filterValue: '',
 						layerMetadataUrl: null,
 						layerName: pkg.title,
-						filterType: 'Query Filter',
+						filterType: 'No Filter',
 						layerMetadataUrl: 'https://catalogue.data.gov.bc.ca/dataset/' + pkg.name,
 						pctOfMax: null
 					}
