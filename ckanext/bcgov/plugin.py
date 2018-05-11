@@ -309,9 +309,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
         #need to append solr param q.op to force an AND query
         if 'q' in search_params:
             q = search_params['q']
-            if q !='':
-                q = '{!lucene q.op=AND}' + q
-                search_params['q'] = q
         else:
             q = ''
 
