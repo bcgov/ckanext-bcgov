@@ -13,7 +13,8 @@ this.ckan.module('edc_pow', function($, _){
 
 	return {
 		options: {
-			env: 'delivery',
+			// // TODO: parameterize values from ckan.ini rather than hard-code
+			// env: 'delivery',
 			pkg: {
 				object_name: '',
 				id: '',
