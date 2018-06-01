@@ -557,17 +557,17 @@ def _build_ofi_url(secure=False):
     '''
     import urlparse
     ofi_config = get_ofi_config()
-    protocol = ofi_config.get(u'api.protocol', 'https')
-    domain = ofi_config.get(u'api.hostname', 'delivery.apps.gov.bc.ca')
-    port = ofi_config.get(u'api.port', '')
+    protocol = ofi_config.get(u'protocol', 'https')
+    domain = ofi_config.get(u'hostname', 'delivery.apps.gov.bc.ca')
+    port = ofi_config.get(u'port', '')
 
     if port != '':
         domain = u'{}:{}'.format(domain, port)
 
     if secure:
-        order_path = ofi_config.get(u'api.order_secure_path', '/pub/dwds-ofi/secure')
+        order_path = ofi_config.get(u'order_secure_path', '/pub/dwds-ofi/secure')
     else:
-        order_path = ofi_config.get(u'api.order_path', '/pub/dwds-ofi')
+        order_path = ofi_config.get(u'order_path', '/pub/dwds-ofi')
 
     url = urlparse.urlunparse((protocol, domain, order_path, '', '', ''))
     log.debug(u'OFI base API URL: %s', url)
