@@ -24,7 +24,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'pycurl',
+        'pycurl==7.43.0.1',
         'validate_email==1.2',
     ],
     entry_points=\
