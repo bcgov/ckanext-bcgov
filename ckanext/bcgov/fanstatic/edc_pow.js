@@ -85,6 +85,7 @@ this.ckan.module('edc_pow', function($, _){
 			dwdspowapi.orderData = {
 				emailAddress: '',
 				aoiType: '0',
+				aoi: '',
 				orderingApplication: 'BCDC',
 				formatType: '3',
 				crsType: '4',
