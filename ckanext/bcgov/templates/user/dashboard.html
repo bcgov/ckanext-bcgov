@@ -26,6 +26,10 @@
       {% block primary_content_inner %}
         <div data-module="dashboard">
           {# snippet 'user/snippets/followee_dropdown.html', context=c.dashboard_activity_stream_context, followees=c.followee_list #}
+          <button class="btn btn-primary" type="submit" name="save" id="save2" onclick="location.href = 'http://argg-dev.pathfinder.bcgov/';">
+            Register API
+          </button>
+
           <h2 class="page-heading">
             {% block page_heading %}
               {{ _('News feed') }}
