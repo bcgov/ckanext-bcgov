@@ -86,7 +86,7 @@
           {% block resource_read_url %}
             {% if res.url and h.is_url(res.url) %}
               {% if not (pkg.type == 'Geographic' and res.ofi) %}
-                <p class="muted ellipsis">{{ _('URL:') }} 
+                <p class="muted ellipsis">{{ _('URL:') }}
                   <a href="{{ res.url }}" class="resource-url-analytics" title="{{ res.url }}">{{ res.url }}</a>
                 </p>
               {% endif %}
@@ -207,7 +207,7 @@
           data-module="edc_pow"
           data-module-env="{{ pow_config['env'] }}"
           data-module-pkg="{{ h.dump_json(pkg) }}"
-          data-module-secure_site="{{ pow_config['secure_site'] }}"
+          data-module-secure_site="{{ True if c.user else False }}"
           data-module-past_orders_nbr="{{ pow_config['past_orders_nbr'] }}"
           data-module-custom_aoi_url="{{ pow_config['custom_aoi_url'] }}"
           data-module-persist_config="{{ pow_config['persist_config'] }}"
