@@ -13,9 +13,10 @@ this.ckan.module('edc_pow', function($, _){
 
 	return {
 		/*
-		I've parameterized default settings.
+		defaults have been parameterized.
 		Parameters passed to the module:
 
+		General params:
 		* env
 		* pkg
 		* secure_site
@@ -31,12 +32,12 @@ this.ckan.module('edc_pow', function($, _){
 		* ofi_endpoint_pow_ui_path
 
 		Order defaults:
-			aoi_type
-			aoi
-			ordering_application
-			format_type
-			crs_type
-			metada_url
+		* aoi_type
+		* aoi
+		* ordering_application
+		* format_type
+		* crs_type
+		* metada_url
 		*/
 
 		initialize: function() {
