@@ -44,15 +44,32 @@ Installation
         edc.environment_name = MYDEVBOX
 
         ...
-        
+
         # POW Settings
         bcgov.pow.env = test
-        bcgov.pow.secure_site = false
         bcgov.pow.past_orders_nbr = 5
-        bcgov.pow.custom_aoi_url = http://maps.gov.bc.ca/ess/hm/aoi/
+        bcgov.pow.custom_aoi_url = https://maps.gov.bc.ca/ess/hm/aoi/
         bcgov.pow.persist_config = true
         bcgov.pow.enable_mow = false
         bcgov.pow.user_pow_ofi = true
+        bcgov.pow.order_source = bcdc
+
+        # OFI endpoint defaults:
+        bcgov.pow.ofi_endpoint.url = apps.gov.bc.ca/pub/dwds-ofi
+        bcgov.pow.ofi_endpoint.protocol = https
+        bcgov.pow.ofi_endpoint.pow_ui_path = /jsp/dwds_pow_current_order.jsp?
+
+        # Order Defaults:
+        bcgov.pow.order_details.aoi_type = 0
+        bcgov.pow.order_details.aoi =
+        bcgov.pow.order_details.ordering_application = BCDC
+        bcgov.pow.order_details.format_type = 3
+        bcgov.pow.order_details.csr_type = 4
+        bcgov.pow.order_details.item.metadata_url = https://catalogue.data.gov.bc.ca/dataset/
+
+_Note:_
+* For `format_type` see https://github.com/bcgov/ckanext-bcgov/issues/400#issuecomment-367504526
+* For `CSR types` see https://apps.gov.bc.ca/pub/dwds-ofi/info/crsTypes
 
 
 4.  Update (or create) `import.ini` file inside `ckanext-bcgov/ckanext/bcgov/scripts/config`. Add `api_key`, `site_url` options (they should be the same as in your CKAN `.ini` file).
