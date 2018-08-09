@@ -214,12 +214,12 @@
           data-module-use_pow_ui="{{ pow_config['use_pow_ui'] }}"
           data-module-order_source="{{ pow_config['order_source'] }}"
 
-          {% OFI endpoint defaults %}
+          {# OFI endpoint defaults #}
           data-module-ofi_url="{{ pow_config['ofi_endpoint.url'] }}"
           data-module-ofi_protocol="{{ pow_config['ofi_endpoint.protocol'] }}"
           data-module-ofi_pow_ui_path="{{ pow_config['ofi_endpoint.pow_ui_path'] }}"
 
-          {% Order defaults %}
+          {# Order defaults #}
           data-module-aoi_type="{{ pow_config['order_details.aoi_type'] }}"
           data-module-aoi="{{ pow_config['order_details.aoi'] }}"
           data-module-ordering_application="{{ pow_config['order_details.ordering_application'] }}"
