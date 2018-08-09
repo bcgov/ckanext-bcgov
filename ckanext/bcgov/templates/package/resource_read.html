@@ -211,7 +211,23 @@
           data-module-past_orders_nbr="{{ pow_config['past_orders_nbr'] }}"
           data-module-custom_aoi_url="{{ pow_config['custom_aoi_url'] }}"
           data-module-persist_config="{{ pow_config['persist_config'] }}"
-          data-module-use_pow_ui="{{ pow_config['use_pow_ui'] }}"></div>
+          data-module-use_pow_ui="{{ pow_config['use_pow_ui'] }}"
+          data-module-order_source="{{ pow_config['order_source'] }}"
+
+          {% OFI endpoint defaults %}
+          data-module-ofi_url="{{ pow_config['ofi_endpoint.url'] }}"
+          data-module-ofi_protocol="{{ pow_config['ofi_endpoint.protocol'] }}"
+          data-module-ofi_pow_ui_path="{{ pow_config['ofi_endpoint.pow_ui_path'] }}"
+
+          {% Order defaults %}
+          data-module-aoi_type="{{ pow_config['order_details.aoi_type'] }}"
+          data-module-aoi="{{ pow_config['order_details.aoi'] }}"
+          data-module-ordering_application="{{ pow_config['order_details.ordering_application'] }}"
+          data-module-format_type="{{ pow_config['order_details.format_type'] }}"
+          data-module-csr_type="{{ pow_config['order_details.csr_type'] }}"
+          data-module-metadata_url="{{ pow_config['order_details.item.metadata_url'] }}"
+          >
+        </div>
 
         {% resource 'edc_resource/edc_pow.js' %}
       {% endif %}

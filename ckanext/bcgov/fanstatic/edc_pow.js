@@ -8,25 +8,36 @@ this.ckan.module('edc_pow', function($, _){
 	var get_dwds_url = function(endpoint) {
 		const env = (opt.env) ? opt.env + '.' : '';
 		endpoint = (endpoint.charAt(0) !== '/') ? '/' + endpoint : endpoint;
-		return 'https://' + env + 'apps.gov.bc.ca/pub/dwds-ofi' + endpoint;
+		return opt.ofi_protocol + '://' + env + opt.ofi_url + endpoint;
 	};
 
 	return {
-		options: {
-			// // TODO: parameterize values from ckan.ini rather than hard-code
-			// env: 'delivery',
-			pkg: {
-				object_name: '',
-				id: '',
-				title: '',
-				name: '',
-			},
-			secure_site: false,
-			past_orders_nbr: '5',
-			custom_aoi_url: 'http://maps.gov.bc.ca/ess/hm/aoi/',
-			persist_config: true,
-			use_pow_ui: true
-		},
+		/*
+		I've parameterized default settings.
+		Parameters passed to the module:
+
+		* env
+		* pkg
+		* secure_site
+		* past_orders_nbr
+		* custom_aoi_url
+		* persist_config
+		* user_pow_ui
+		* order_source
+
+		OFI Endpoint defaults:
+		* ofi_endpoint_url
+		* ofi_endpoint_protocol
+		* ofi_endpoint_pow_ui_path
+
+		Order defaults:
+			aoi_type
+			aoi
+			ordering_application
+			format_type
+			crs_type
+			metada_url
+		*/
 
 		initialize: function() {
 			console.log('initializing module "edc_pow"');
@@ -37,7 +48,11 @@ this.ckan.module('edc_pow', function($, _){
 			//
 			// set an empty string for `env`, indicates to not use a bcgov subdomain environment
 			// eg. use prod if env isn't set in the config
-			this.options.env = (!(this.options.env instanceof String) || (this.options.env instanceof Boolean)) && '';
+			this.options.env = (typeof this.options.env == "string" && this.options.env.length == 0) || typeof this.options.env == "boolean" ? '' : String(this.options.env)
+			// do the same for api
+			this.options.aoi = (typeof this.options.aoi == "string" && this.options.aoi.length == 0) || typeof this.options.aoi == "boolean" ? '' : String(this.options.aoi)
+			console.log("this.options");
+			console.log(this.options);
 
 			// convinence option vars
 			self = this;
@@ -84,11 +99,11 @@ this.ckan.module('edc_pow', function($, _){
 
 			dwdspowapi.orderData = {
 				emailAddress: '',
-				aoiType: '0',
-				aoi: '',
-				orderingApplication: 'BCDC',
-				formatType: '3',
-				crsType: '4',
+				aoiType: opt.api_type,
+				aoi: opt.aoi,
+				orderingApplication: opt.ordering_application,
+				formatType: opt.format_type,
+				crsType: opt.crs_type,
 				prepackagedItems: '',
 				featureItems: [
 					{
@@ -97,7 +112,7 @@ this.ckan.module('edc_pow', function($, _){
 						layerMetadataUrl: null,
 						layerName: pkg.title,
 						filterType: 'No Filter',
-						layerMetadataUrl: 'https://catalogue.data.gov.bc.ca/dataset/' + pkg.name,
+						layerMetadataUrl: opt.metadata_url + pkg.name,
 						pctOfMax: null
 					}
 				],
@@ -122,11 +137,11 @@ this.ckan.module('edc_pow', function($, _){
 				customAoiUrl: opt.custom_aoi_url,
 				pastOrdersNbr: opt.past_orders_nbr,
 				secureSite: opt.secure_site,
-				orderSource: 'imap4m'
+				orderSource: opt.order_source
 			};
 
 			// Create url with query params from above
-			var url = get_dwds_url('/jsp/dwds_pow_current_order.jsp?') + $.param(qs);
+			var url = get_dwds_url(opt.ofi_pow_ui_path) + $.param(qs);
 
 			window.open(url, "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10");
 		},
