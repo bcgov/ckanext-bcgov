@@ -88,7 +88,7 @@ this.ckan.module('edc_pow', function($, _){
 			// Callback function once the dwds finishes initializing
 			var run_pow = (pow_initialized) ? self.runOrder : self.initPow;
 
-			dwdspowapi.initialize(public_url, secure_url, opt.custom_aoi_url, opt.past_orders_nbr, opt.secure_site, opt.persist_config, run_pow);
+			dwdspowapi.initialize(public_url, secure_url, opt.custom_aoi_url, opt.past_orders_nbr, (opt.secure_site == "True"), opt.persist_config, run_pow);
 		},
 
 		initPow: function(pow_ready) {
@@ -137,7 +137,7 @@ this.ckan.module('edc_pow', function($, _){
 				secureUrl: get_dwds_url('/secure/'),
 				customAoiUrl: opt.custom_aoi_url,
 				pastOrdersNbr: opt.past_orders_nbr,
-				secureSite: opt.secure_site,
+				secureSite: (opt.secure_site == "True"),
 				orderSource: opt.order_source
 			};
 
