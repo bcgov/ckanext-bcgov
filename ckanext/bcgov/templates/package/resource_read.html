@@ -112,7 +112,6 @@
         #}
         {% if not (res.format == 'xlsx' or res.format == 'xls') %}
           {% block data_preview %}
-              {# {% resource 'edc_resource/recline_config.js' %} #}
               {{ super() }}
           {% endblock %}
       {% endif %}
