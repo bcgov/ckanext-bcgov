@@ -8,7 +8,13 @@ this.ckan.module('edc_pow', function($, _){
 	var get_dwds_url = function(endpoint) {
 		const env = (opt.env) ? opt.env + '.' : '';
 		endpoint = (endpoint.charAt(0) !== '/') ? '/' + endpoint : endpoint;
-		return opt.ofi_protocol + '://' + env + opt.ofi_url + endpoint;
+		if (opt.pkg['download_audience'] != 'Government') {
+			// public download
+			return opt.ofi_protocol + '://' + env + opt.ofi_url + endpoint;
+		} else {
+			// IDIR/BCeID restricted download
+			return opt.ofi_protocol + '://' + env + opt.ofi_secure_url + endpoint;
+		}
 	};
 
 	return {

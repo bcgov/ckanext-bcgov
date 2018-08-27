@@ -112,6 +112,7 @@
         #}
         {% if not (res.format == 'xlsx' or res.format == 'xls') %}
           {% block data_preview %}
+              {# {% resource 'edc_resource/recline_config.js' %} #}
               {{ super() }}
           {% endblock %}
       {% endif %}
@@ -216,6 +217,7 @@
 
           {# OFI endpoint defaults #}
           data-module-ofi_url="{{ pow_config['ofi_endpoint.url'] }}"
+          data-module-ofi_secure_url="{{ pow_config['ofi_endpoint.secure_url'] }}"
           data-module-ofi_protocol="{{ pow_config['ofi_endpoint.protocol'] }}"
           data-module-ofi_pow_ui_path="{{ pow_config['ofi_endpoint.pow_ui_path'] }}"
 
