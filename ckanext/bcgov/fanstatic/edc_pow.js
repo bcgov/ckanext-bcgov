@@ -5,10 +5,10 @@ this.ckan.module('edc_pow', function($, _){
 
 	var pow_initialized = false;
 
-	var get_dwds_url = function(endpoint) {
+	var get_dwds_url = function(endpoint, secure = false) {
 		const env = (opt.env) ? opt.env + '.' : '';
 		endpoint = (endpoint.charAt(0) !== '/') ? '/' + endpoint : endpoint;
-		if (opt.pkg['download_audience'] != 'Government') {
+		if (!secure) {
 			// public download
 			return opt.ofi_protocol + '://' + env + opt.ofi_url + endpoint;
 		} else {
@@ -68,14 +68,16 @@ this.ckan.module('edc_pow', function($, _){
 
 			// load JS dependencies.
 			var scripts = [
-				'/script/lib/xdLocalStorage.min.js',
+				//'/script/lib/xdLocalStorage.min.js',
+				'public/xdLocalStoragePostMessageApi.min.js',
 				'/script/pow/dwds-POW-api.js'
 			];
 
 			scripts.map(function(script) {
 				var el = document.createElement('script');
 				el.type = 'text/javascript';
-				el.src = get_dwds_url(script);
+				el.src = get_dwds_url(script, true);
+				console.log('map: ' + get_dwds_url(script, true));
 				document.body.appendChild(el);
 			});
 
@@ -148,7 +150,7 @@ this.ckan.module('edc_pow', function($, _){
 			};
 
 			// Create url with query params from above
-			var url = get_dwds_url(opt.ofi_pow_ui_path) + $.param(qs);
+			var url = get_dwds_url(opt.ofi_pow_ui_path, (opt.pkg['download_audience'] == 'Government')) + $.param(qs);
 
 			window.open(url, "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10");
 		},
