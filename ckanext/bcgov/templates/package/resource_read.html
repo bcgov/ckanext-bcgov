@@ -3,6 +3,7 @@
 {% import 'macros/tracking.html' as tracking %}
 
 {%- set pow_config = h.get_pow_config() -%}
+{%- set ofi_config = h.get_ofi_config() -%}
 
 {% block content %}
 {% block search_input %}
@@ -215,10 +216,13 @@
           data-module-order_source="{{ pow_config['order_source'] }}"
 
           {# OFI endpoint defaults #}
-          data-module-ofi_url="{{ pow_config['ofi_endpoint.url'] }}"
-          data-module-ofi_secure_url="{{ pow_config['ofi_endpoint.secure_url'] }}"
-          data-module-ofi_protocol="{{ pow_config['ofi_endpoint.protocol'] }}"
-          data-module-ofi_pow_ui_path="{{ pow_config['ofi_endpoint.pow_ui_path'] }}"
+          data-module-ofi_public_url="{{ ofi_config['public_url'] }}"
+          data-module-ofi_secure_url="{{ ofi_config['secure_url'] }}"
+
+          {# POW endpoint defaults #}
+          data-module-pow_public_url="{{ pow_config['public_url'] }}"
+          data-module-pow_secure_url="{{ pow_config['secure_url'] }}"
+          data-module-ofi_pow_ui_path="{{ pow_config['pow_ui_path'] }}"
 
           {# Order defaults #}
           data-module-aoi_type="{{ pow_config['order_details.aoi_type'] }}"
