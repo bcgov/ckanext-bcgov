@@ -21,18 +21,6 @@ this.ckan.module('edc_pow', function($, _){
 		}
 	}
 
-	var get_dwds_url = function(endpoint, secure = false) {
-		const env = (opt.env) ? opt.env + '.' : '';
-		endpoint = (endpoint.charAt(0) !== '/') ? '/' + endpoint : endpoint;
-		if (!secure) {
-			// public download
-			return opt.ofi_protocol + '://' + env + opt.ofi_url + endpoint;
-		} else {
-			// IDIR/BCeID restricted download
-			return opt.ofi_protocol + '://' + env + opt.ofi_secure_url + endpoint;
-		}
-	};
-
 	return {
 		/*
 		defaults have been parameterized.
@@ -85,16 +73,13 @@ this.ckan.module('edc_pow', function($, _){
 			// load JS dependencies.
 			var scripts = [
 				'/script/lib/xdLocalStorage.min.js',
-				//'public/xdLocalStoragePostMessageApi.min.js',
 				'/script/pow/dwds-POW-api.js'
 			];
 
 			scripts.map(function(script) {
 				var el = document.createElement('script');
 				el.type = 'text/javascript';
-				//el.src = get_dwds_url(script);
 				el.src = get_pow_url(script);
-				console.log('map: ' + get_pow_url(script));
 				document.body.appendChild(el);
 			});
 
@@ -107,8 +92,6 @@ this.ckan.module('edc_pow', function($, _){
 				' Package_id: ' + pkg.id +
 				' Title: ' + pkg.title);
 
-			//var public_url = get_dwds_url('/public/');
-			////var secure_url = get_dwds_url('/secure/');
 			var public_url = get_ofi_url('/public/');
 			var secure_url = get_ofi_url('/secure/');
 
@@ -164,12 +147,11 @@ this.ckan.module('edc_pow', function($, _){
 				secureUrl: get_ofi_url('/secure/'),
 				customAoiUrl: opt.custom_aoi_url,
 				pastOrdersNbr: opt.past_orders_nbr,
-				secureSite: (opt.secure_site == "True"),
+				secureSite: (opt.secure_site == "True")||(opt.pkg['download_audience'] == 'Government') ,
 				orderSource: opt.order_source
 			};
 
 			// Create url with query params from above
-			//var url = get_dwds_url(opt.ofi_pow_ui_path, (opt.pkg['download_audience'] == 'Government')) + $.param(qs);
 			var url = get_pow_url(opt.ofi_pow_ui_path,
 														(opt.pkg['download_audience'] == 'Government') // true == "user secure POW URL"
 													 ) + $.param(qs);
