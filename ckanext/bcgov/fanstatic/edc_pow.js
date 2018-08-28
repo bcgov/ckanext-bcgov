@@ -5,6 +5,22 @@ this.ckan.module('edc_pow', function($, _){
 
 	var pow_initialized = false;
 
+	var get_ofi_url = function(endpoint, secure = false) {
+		if (secure) {
+			return opt.ofi_secure_url + endpoint;
+		} else {
+			return opt.ofi_public_url + endpoint;
+		}
+	}
+
+	var get_pow_url = function(endpoint, secure = false) {
+		if (secure) {
+			return opt.pow_secure_url + endpoint;
+		} else {
+			return opt.pow_public_url + endpoint;
+		}
+	}
+
 	var get_dwds_url = function(endpoint, secure = false) {
 		const env = (opt.env) ? opt.env + '.' : '';
 		endpoint = (endpoint.charAt(0) !== '/') ? '/' + endpoint : endpoint;
@@ -68,16 +84,17 @@ this.ckan.module('edc_pow', function($, _){
 
 			// load JS dependencies.
 			var scripts = [
-				//'/script/lib/xdLocalStorage.min.js',
-				'public/xdLocalStoragePostMessageApi.min.js',
+				'/script/lib/xdLocalStorage.min.js',
+				//'public/xdLocalStoragePostMessageApi.min.js',
 				'/script/pow/dwds-POW-api.js'
 			];
 
 			scripts.map(function(script) {
 				var el = document.createElement('script');
 				el.type = 'text/javascript';
-				el.src = get_dwds_url(script, true);
-				console.log('map: ' + get_dwds_url(script, true));
+				//el.src = get_dwds_url(script);
+				el.src = get_pow_url(script);
+				console.log('map: ' + get_pow_url(script));
 				document.body.appendChild(el);
 			});
 
@@ -90,8 +107,10 @@ this.ckan.module('edc_pow', function($, _){
 				' Package_id: ' + pkg.id +
 				' Title: ' + pkg.title);
 
-			var public_url = get_dwds_url('/public/');
-			var secure_url = get_dwds_url('/secure/');
+			//var public_url = get_dwds_url('/public/');
+			////var secure_url = get_dwds_url('/secure/');
+			var public_url = get_ofi_url('/public/');
+			var secure_url = get_ofi_url('/secure/');
 
 			// Callback function once the dwds finishes initializing
 			var run_pow = (pow_initialized) ? self.runOrder : self.initPow;
@@ -141,8 +160,8 @@ this.ckan.module('edc_pow', function($, _){
 
 		dwdsPowUi: function() {
 			var qs = {
-				publicUrl: get_dwds_url('/public/'),
-				secureUrl: get_dwds_url('/secure/'),
+				publicUrl: get_ofi_url('/public/'),
+				secureUrl: get_ofi_url('/secure/'),
 				customAoiUrl: opt.custom_aoi_url,
 				pastOrdersNbr: opt.past_orders_nbr,
 				secureSite: (opt.secure_site == "True"),
@@ -150,7 +169,10 @@ this.ckan.module('edc_pow', function($, _){
 			};
 
 			// Create url with query params from above
-			var url = get_dwds_url(opt.ofi_pow_ui_path, (opt.pkg['download_audience'] == 'Government')) + $.param(qs);
+			//var url = get_dwds_url(opt.ofi_pow_ui_path, (opt.pkg['download_audience'] == 'Government')) + $.param(qs);
+			var url = get_pow_url(opt.ofi_pow_ui_path,
+														(opt.pkg['download_audience'] == 'Government') // true == "user secure POW URL"
+													 ) + $.param(qs);
 
 			window.open(url, "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10");
 		},
