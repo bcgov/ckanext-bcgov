@@ -31,7 +31,7 @@ Example:
             data-module="edc_pow"
             data-module-env="{{ pow_config['env'] }}"
             data-module-pkg="{{ h.dump_json(pkg) }}"
-            data-module-secure_site="{{ c.user or False  }}"
+            data-module-secure_site="{{ True if c.user else False  }}"
             data-module-past_orders_nbr="{{ pow_config['past_orders_nbr'] }}"
             data-module-custom_aoi_url="{{ pow_config['custom_aoi_url'] }}"
             data-module-persist_config="{{ pow_config['persist_config'] }}"
