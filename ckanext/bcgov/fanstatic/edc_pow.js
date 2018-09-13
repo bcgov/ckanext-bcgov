@@ -60,8 +60,10 @@ this.ckan.module('edc_pow', function($, _){
 			// set an empty string for `env`, indicates to not use a bcgov subdomain environment
 			// eg. use prod if env isn't set in the config
 			this.options.env = (typeof this.options.env == "string" && this.options.env.length == 0) || typeof this.options.env == "boolean" ? '' : String(this.options.env)
-			// do the same for api
+			// do the same for aoi
 			this.options.aoi = (typeof this.options.aoi == "string" && this.options.aoi.length == 0) || typeof this.options.aoi == "boolean" ? '' : String(this.options.aoi)
+			// set type to boolean value
+			this.options.secure_site = (this.options.secure_site == "True")
 			console.log("this.options");
 			console.log(this.options);
 
@@ -87,10 +89,12 @@ this.ckan.module('edc_pow', function($, _){
 		},
 
 		startOrder: function(event) {
+		/*
 			console.log(
 				'Object Name: ' + pkg.object_name +
 				' Package_id: ' + pkg.id +
 				' Title: ' + pkg.title);
+		*/
 
 			var public_url = get_ofi_url('/public/');
 			var secure_url = get_ofi_url('/secure/');
@@ -98,7 +102,7 @@ this.ckan.module('edc_pow', function($, _){
 			// Callback function once the dwds finishes initializing
 			var run_pow = (pow_initialized) ? self.runOrder : self.initPow;
 
-			dwdspowapi.initialize(public_url, secure_url, opt.custom_aoi_url, opt.past_orders_nbr, (opt.secure_site == "True"), opt.persist_config, run_pow);
+			dwdspowapi.initialize(public_url, secure_url, opt.custom_aoi_url, opt.past_orders_nbr, opt.secure_site, opt.persist_config, run_pow);
 		},
 
 		initPow: function(pow_ready) {
@@ -147,14 +151,14 @@ this.ckan.module('edc_pow', function($, _){
 				secureUrl: get_ofi_url('/secure/'),
 				customAoiUrl: opt.custom_aoi_url,
 				pastOrdersNbr: opt.past_orders_nbr,
-				secureSite: (opt.secure_site == "True")||(opt.pkg['download_audience'] == 'Government') ,
+				secureSite: opt.secure_site ||(opt.pkg['download_audience'] == 'Government') ,
 				orderSource: opt.order_source
 			};
 
 			// Create url with query params from above
-			var url = get_pow_url(opt.ofi_pow_ui_path,
-														(opt.pkg['download_audience'] == 'Government') // true == "user secure POW URL"
-													 ) + $.param(qs);
+			var url = get_pow_url( opt.ofi_pow_ui_path,
+															(opt.pkg['download_audience'] == 'Government') // true == "user secure POW URL"
+														) + $.param(qs);
 
 			window.open(url, "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10");
 		},
