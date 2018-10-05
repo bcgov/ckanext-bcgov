@@ -555,9 +555,9 @@ def _build_ofi_url(secure=False):
     ofi_config = get_ofi_config()
 
     if secure:
-        url = ofi_config.get(u'secure_url', 'https://delivery.apps.gov.bc.ca/pub/dwds-ofi/secure')
+        url = ofi_config.get(u'secure_url', 'https://apps.gov.bc.ca/pub/dwds-ofi/secure')
     else:
-        url = ofi_config.get(u'public_url', 'https://delivery.apps.gov.bc.ca/pub/dwds-ofi')
+        url = ofi_config.get(u'public_url', 'https://apps.gov.bc.ca/pub/dwds-ofi')
 
     log.debug(u'OFI base API URL: %s', url)
     return url
