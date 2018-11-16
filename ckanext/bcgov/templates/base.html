@@ -124,7 +124,7 @@
 
 
 </script>
-	  
+
    <!-- Snowplow starts plowing -->
    <script type="text/javascript">
    ;(function(p,l,o,w,i,n,g){if(!p[i]){p.GlobalSnowplowNamespace=p.GlobalSnowplowNamespace||[];
@@ -162,7 +162,6 @@
    </script>
    <!-- Snowplow stop plowing -->
 
-	  
 	<!-- Copyright (c) 1996-2009 WebTrends Inc. All rights reserved. -->
 	<!-- Version: 8.6.0 -->
 	<!-- Tag Builder Version: 2.1.0 -->
@@ -231,7 +230,7 @@
 
     {% block googleanalytics_event_tracking %}
       {% resource 'ckanext-googleanalytics/googleanalytics_event_tracking.js' %}
-      <div class="js-hide" data-module="google-analytics" 
+      <div class="js-hide" data-module="google-analytics"
         data-module-googleanalytics_resource_prefix="{{ h.googleanalytics_resource_prefix() }}">
       </div>
     {% endblock %}
