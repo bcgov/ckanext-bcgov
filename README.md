@@ -1,6 +1,4 @@
-[![Join us on Slack](https://cldup.com/jWUT4QFLnq.png)](https://devopspathfinder.slack.com/messages/C915T1NEP)
-[![Build Status](https://cis.data.gov.bc.ca/buildStatus/icon?job=bcdc/caddi)](https://cis.data.gov.bc.ca/job/bcdc/job/caddi/)[![License](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/bcgov/ckanext-bcgov/master/license)
-<a rel="Delivery" href="https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md"><img alt="In production, but maybe in Alpha or Beta. Intended to persist and be supported." style="border-width:0" src="https://assets.bcdevexchange.org/images/badges/delivery.svg" title="In production, but maybe in Alpha or Beta. Intended to persist and be supported." /></a>
+[![Join us on Slack](https://cldup.com/jWUT4QFLnq.png)](https://devopspathfinder.slack.com/messages/C915T1NEP)[![Build Status](https://cis.data.gov.bc.ca/buildStatus/icon?job=bcdc/caddi)](https://cis.data.gov.bc.ca/job/bcdc/job/caddi/)[![License](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/bcgov/ckanext-bcgov/master/license)<a rel="Delivery" href="https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md"><img alt="In production, but maybe in Alpha or Beta. Intended to persist and be supported." style="border-width:0" src="https://assets.bcdevexchange.org/images/badges/delivery.svg" title="In production, but maybe in Alpha or Beta. Intended to persist and be supported." /></a>
 
 ckanext-bcgov
 =============
