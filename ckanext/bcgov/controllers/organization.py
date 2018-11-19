@@ -86,6 +86,7 @@ class EDCOrganizationController(OrganizationController):
 
         # Get the subgorgs of this org
         org_id = c.group_dict.get('id')
+        hide_desc = False
         
         q = c.q = request.params.get('q', '')
 
@@ -96,7 +97,6 @@ class EDCOrganizationController(OrganizationController):
             sort_by = 'record_publish_date desc, metadata_modified desc'
         else:
             sort_by = request.params.get('sort', None)
-
 
         suborgs = ['"' + org + '"' for org in get_suborgs(org_id)]
         if suborgs != []:
@@ -303,31 +303,34 @@ class EDCOrganizationController(OrganizationController):
             h.flash_error(e.error_summary)
         return render('organization/member_new.html', extra_vars={'errors': errors})
 
-
     def about(self, id):
         c.group_dict = self._get_group_dict(id)
         group_type = c.group_dict['type']
-         
- 
+
         context = {'model': model, 'session': model.Session,
                    'user': c.user or c.author, 'for_view': True,
                    'with_private': False}
- 
+
         if c.userobj:
             context['user_id'] = c.userobj.id
             context['user_is_admin'] = c.userobj.sysadmin
- 
-        #Search_result list contains all orgs matched with search criteria including orgs and suborgs.
-        data_dict = {'all_fields': True}
-        search_result = self._action('organization_list')(context, data_dict)
-         
-        org_pkg_count_dict = {}
-        for org in search_result :
-            org_pkg_count_dict[org['id']] = org['packages']
-             
-        c.org_pkg_count = org_pkg_count_dict
-         
-        c.group_dict['package_count'] = len(c.group_dict.get('packages', []))
+
+        org_id = c.group_dict.get('id')
+        q = c.q = request.params.get('q', '')
+        suborgs = ['"' + org + '"' for org in get_suborgs(org_id)]
+        if suborgs != []:
+            q += ' owner_org:("' + org_id + '" OR ' + ' OR '.join(suborgs) + ')'
+        else:
+            q += ' owner_org:"%s"' % org_id
+
+        data_dict = {
+            'q': q
+        }
+
+        query = get_action('package_search')(context, data_dict)
+
+        c.group_dict['package_count'] = query['count']
+
         self._setup_template_variables(context, {'id': id},
                                        group_type=group_type)
         return render(self._about_template(group_type))
