@@ -116,7 +116,7 @@ this.ckan.module('edc_pow', function($, _){
 				emailAddress: '',
 				aoiType: opt.api_type,
 				aoi: opt.aoi,
-				clippingMethodTypeId: opt.clipping_method_type_id,
+				clippingMethodType: opt.clipping_method_type_id,
 				orderingApplication: opt.ordering_application,
 				formatType: opt.format_type,
 				crsType: opt.crs_type,
