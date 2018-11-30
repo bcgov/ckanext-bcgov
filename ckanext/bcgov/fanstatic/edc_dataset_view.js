@@ -9,6 +9,23 @@
             (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq); 
             
       });
+
+        $('#permalinkLink').click(function(e){
+            $('#permalinkModal').modal();
+            $('#permalinkModal').show();
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        $('#permalinkModal span.close').click(function(e){
+            $('#permalinkModal').hide();
+        });
+        
+        $('#copyPermalink').click(function(e) {
+            $('#permalinkLinkInput').select();
+            document.execCommand("copy");
+            $('#permalinkCopiedStatus').innerHTML = "Copied";
+        });
     });
     
 /*    $("#comment-submit").click(function() {
