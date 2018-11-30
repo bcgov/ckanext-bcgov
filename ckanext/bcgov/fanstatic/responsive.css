@@ -525,3 +525,9 @@ a:visited {
     display: none!important;
   }
 }
+
+/* This is a bit unrelated but it needed to be on a css file that's always loaded, overrides bootstrap defaults so popover works in modal */
+.popover {
+    position: fixed !important;
+    z-index: 1060 !important;
+}
