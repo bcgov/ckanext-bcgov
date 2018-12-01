@@ -158,7 +158,7 @@ this.ckan.module('edc_pow', function($, _){
 
 			// Create url with query params from above
 			var url = get_pow_url( opt.ofi_pow_ui_path,
-															(opt.pkg['download_audience'] == 'Government') // true == "user secure POW URL"
+															(opt.pkg['download_audience'] != 'Public') // true == "user secure POW URL"
 														) + $.param(qs);
 
 			window.open(url, "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10");
