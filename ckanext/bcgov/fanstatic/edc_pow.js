@@ -152,13 +152,13 @@ this.ckan.module('edc_pow', function($, _){
         secureUrl: get_ofi_url('/secure/'),
         customAoiUrl: opt.custom_aoi_url,
         pastOrdersNbr: opt.past_orders_nbr,
-        secureSite: opt.secure_site ||(opt.pkg['download_audience'] == 'Government') ,
+        secureSite: opt.secure_site ||(opt.pkg['download_audience'] != 'Public') ,
         orderSource: opt.order_source
       };
 
       // Create url with query params from above
       var url = get_pow_url( opt.ofi_pow_ui_path,
-                              (opt.pkg['download_audience'] != 'Government') // true == "user secure POW URL"
+                              (opt.pkg['download_audience'] != 'Public') // true == "user secure POW URL"
                             ) + $.param(qs);
 
       window.open(url, "_blank", "resizable=yes, scrollbars=yes, titlebar=yes, width=800, height=900, top=10, left=10");
