@@ -274,10 +274,12 @@ class EDCPackageController(PackageController):
 
         if save_action == 'finish' and not is_an_update and package_type == 'Geographic':
             return self._new_dataset_only(package_type, data_dict, errors, error_summary)
+        elif save_action == 'add_data' and not is_an_update and package_type == 'Geographic':
+            return self._new_dataset_only(package_type, data_dict, errors, error_summary, 'resources')
         else:
             return super(EDCPackageController, self).new(data, errors, error_summary)
 
-    def _new_dataset_only(self, package_type, data_dict=None, errors=None, error_summary=None):
+    def _new_dataset_only(self, package_type, data_dict=None, errors=None, error_summary=None, redirect_link='dataset_read'):
         """
         This method is for creating the actual dataset and redirecting
         to the read dataset without adding any resources
@@ -317,7 +319,7 @@ class EDCPackageController(PackageController):
 
             log.info('`finish` save param included, skipping add data view, going to dataset read view.')
 
-            toolkit.redirect_to('dataset_read', id=pkg_dict['name'])
+            toolkit.redirect_to(redirect_link, id=pkg_dict['name'])
 
         except NotAuthorized:
             toolkit.abort(401, _('Unauthorized to read package %s') % '')
