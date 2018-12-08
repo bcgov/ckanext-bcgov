@@ -77,7 +77,7 @@ $(function() {
 		$primaryDiv.html('');
 
 		// Insert a warning
-		var warningText = "You are attempting to update or edit Data Catalogue content with a non-supported web browser. Catalogue Editors must use either <a href=\"https://www.google.com/chrome/\" target=\"_blank\">Google Chrome</a> or <a href=\"https://www.mozilla.org/en-US/firefox/new/\" target=\"_blank\">Firefox</a> when editing catalogue content. OCIO provides copies of these web browsers that can be downloaded and installed by all end users on government workstations in its <a href=\"https://selfservecentre.gov.bc.ca/\">Self-Serve Centre</a> – or they may be obtained directly from <a href=\"https://www.google.com/chrome/\" target=\"_blank\">https://www.google.com/chrome/</a> or <a href=\"https://www.mozilla.org/en-US/firefox/new/\" target=\"_blank\">https://www.mozilla.org/en-US/firefox/new/</a>.";
+		var warningText = "You are attempting to update or edit BC Data Catalogue content using a non-supported web browser or version. Supported browsers are Google Chrome (downloadable from <a href=\"https://www.google.com/chrome/\" target=\"_blank\">https://www.google.com/chrome/</a>) and Firefox (downloadable from <a href=\"https://www.mozilla.org/en-US/firefox/new/\" target=\"_blank\">https://www.mozilla.org/en_US/firefox/new/</a>). Not all version of these browsers are supported. If you are seeing this message and you are using Firefox or Chrome, then please report this problem to DataBC Catalogue Services.";
 		var $warningDiv = $('<div>' + warningText + "</div>").addClass('alert alert-danger');
 		$primaryDiv.prepend($warningDiv);
 		
