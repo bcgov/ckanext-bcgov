@@ -683,7 +683,7 @@ def import_odsi_records(con):
                         if resource_url.startswith('http://pub.data.gov.bc.ca/datasets') :
                             resource_rec['resource_storage_location'] = 'pub.data.gov.bc.ca'
                         elif resource_url.startswith('https://apps.gov.bc.ca/pub/dwds') :
-                            resource_rec['resource_storage_location'] = 'BCGW Data Store'
+                            resource_rec['resource_storage_location'] = 'BC Geographic Warehouse'
 
             #----------------------------------------------------------< Resource Projection Name >--------------------------------------------------------------------
                     if edc_record.get('type') == 'Geographic':
@@ -1180,7 +1180,7 @@ def save_discovery_records(con, discovery_data_filename):
 
             is_bcgw_record = False
             if storage_location and 'LRDW' in storage_location :
-                storage_location = "BCGW Data Store"
+                storage_location = "BC Geographic Warehouse"
                 resource_rec['resource_storage_location'] = storage_location
                 is_bcgw_record = True
             else :
