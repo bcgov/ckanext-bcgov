@@ -16,4 +16,4 @@
 	{% set branch_title = branch.title %}
 	{% set branch_name = branch.name %}
 {% endif %}
-<a href="/organization/{{ org_name }}">{{ org_title }}</a>{% if branch_title and branch_name %} - <a href="{{ h.url_for(controller='package', action='search', organization=branch_name) }}">{{ branch_title }}</a> {% endif %}
+<a href="/organization/{{ org_name }}">{{ org_title }}</a>{% if branch_title and branch_name %} - <a href="/organization/{{ branch_name }}">{{ branch_title }}</a> {% endif %}
