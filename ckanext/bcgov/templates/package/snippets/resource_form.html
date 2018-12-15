@@ -7,6 +7,7 @@
 
 {% resource 'edc_resource/edc_schema.css' %}
 {% resource 'edc_resource/edc-file-upload.js' %}
+{% resource 'edc_resource/edc_dataset.js' %}
 {% set archived = (state == 'ARCHIVED') %}
 <form class="dataset-form dataset-resource-form form-horizontal {% if archived %} archived {% endif %}" method="post" action="{{ action }}" data-module="basic-form resource-form" enctype="multipart/form-data">
   {% block stages %}
