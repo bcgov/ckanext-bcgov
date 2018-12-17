@@ -122,7 +122,7 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
     resource_meta = {
         u'package_id': pkg_dict['id'],
         u'resource_storage_access_method': u'Indirect Access',
-        u'resource_storage_location': u'BCGW DataStore',
+        u'resource_storage_location': u'BC Geographic Warehouse',
         u'projection_name': u'EPSG_3005 - NAD83 BC Albers',
         u'edc_resource_type': u'Data',
         u'ofi': True,
