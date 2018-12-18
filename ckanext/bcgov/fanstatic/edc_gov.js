@@ -193,7 +193,7 @@ $(document).ready(function(event) {
     })
     //navigate menu with keyboard
     $(document).keydown(function(e) {
-    	if($("#govNavMenu").is(":visible") && !$("#govNavMenu input").is(":focus")) {
+    	if($("#header .navbar-toggle").is(":visible") && !$("#govNavMenu input").is(":focus")) {
     		var currentItem= $("#govNavMenu :focus").closest("li");
     	    switch(e.which) {
     	    	case 9: //tab - close menu

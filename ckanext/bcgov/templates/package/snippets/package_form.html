@@ -91,7 +91,11 @@ then itself be extended to add/remove blocks of functionality. #}
 
   {% block form_actions_header %}
     <div class="form-actions-header">
+      {% if dataset_type == 'Geographic' %}
+      <button id="add_data1" class="btn btn-primary btn-sm" type="submit" name="save" value="add_data">{{ _('Next: Add Data') }}</button>
+      {% else %}
       <button class="btn btn-primary btn-sm" type="submit" name="save" id="save1" onclick="this.style.visibility = 'hidden';document.getElementById('save1').style.visibility='hidden';">{% block save_button_text_header %}{{ _('Next: Add Data') }}{% endblock %}</button>
+      {% endif %}
     </div>
   {% endblock %}
 
@@ -143,8 +147,10 @@ then itself be extended to add/remove blocks of functionality. #}
       {% endblock %}
       {% if dataset_type == 'Geographic' %}
       <button id="finish" class="btn" type="submit" name="save" value="finish">{{ _('Save Dataset') }}</button>
-      {% endif %}
+      <button id="add_data2" class="btn btn-primary" type="submit" name="save" value="add_data">{{ _('Next: Add Data') }}</button>
+      {% else %}
       <button class="btn btn-primary" type="submit" name="save" id="save2" onclick="this.style.visibility = 'hidden';document.getElementById('save2').style.visibility='hidden';">{% block save_button_text %}{{ _('Next: Add Data') }}{% endblock %}</button>
+      {% endif %}
     </div>
   {% endblock %}
 

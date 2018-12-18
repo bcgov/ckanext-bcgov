@@ -274,10 +274,12 @@ class EDCPackageController(PackageController):
 
         if save_action == 'finish' and not is_an_update and package_type == 'Geographic':
             return self._new_dataset_only(package_type, data_dict, errors, error_summary)
+        elif save_action == 'add_data' and not is_an_update and package_type == 'Geographic':
+            return self._new_dataset_only(package_type, data_dict, errors, error_summary, 'resources')
         else:
             return super(EDCPackageController, self).new(data, errors, error_summary)
 
-    def _new_dataset_only(self, package_type, data_dict=None, errors=None, error_summary=None):
+    def _new_dataset_only(self, package_type, data_dict=None, errors=None, error_summary=None, redirect_link='dataset_read'):
         """
         This method is for creating the actual dataset and redirecting
         to the read dataset without adding any resources
@@ -317,7 +319,7 @@ class EDCPackageController(PackageController):
 
             log.info('`finish` save param included, skipping add data view, going to dataset read view.')
 
-            toolkit.redirect_to('dataset_read', id=pkg_dict['name'])
+            toolkit.redirect_to(redirect_link, id=pkg_dict['name'])
 
         except NotAuthorized:
             toolkit.abort(401, _('Unauthorized to read package %s') % '')
@@ -723,7 +725,7 @@ def _setup_ofi(id, context=None, pkg_dict=None, open_modal=True):
     if 'type' in pkg_dict and pkg_dict[u'type'] == 'Geographic':
         ofi_config = edc_h.get_ofi_config()
         # dev_secure_call is for working around missing siteminer session, for vagrant use only
-        secure_call = toolkit.asbool(ofi_config.get('dev_secure_call', True))
+        secure_call = toolkit.asbool(ofi_config.get('dev_secure_call', False))
 
         ofi_resources = []
         for resource in pkg_dict[u'resources']:

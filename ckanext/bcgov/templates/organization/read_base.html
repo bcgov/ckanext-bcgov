@@ -21,7 +21,7 @@
 {% endblock %}
 
 {% block secondary_content %}
-  {% snippet 'snippets/organization.html', organization=c.group_dict, show_nums=true %}
+  {% snippet 'snippets/organization.html', organization=c.group_dict, show_nums=True, hide_desc=hide_desc %}
   {% block organization_facets %}{% endblock %}
 {% endblock %}
 

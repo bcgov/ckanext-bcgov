@@ -1,5 +1,7 @@
 {% ckan_extends %}
 
+{%- set dashboard_config = h.get_dashboard_config() -%}
+
 {% block primary %}
   <div class="dashboard">
   {% block page_header %}
@@ -26,7 +28,7 @@
       {% block primary_content_inner %}
         <div data-module="dashboard">
           {# snippet 'user/snippets/followee_dropdown.html', context=c.dashboard_activity_stream_context, followees=c.followee_list #}
-          <button class="btn btn-primary" type="submit" name="save" id="save2" onclick="location.href = 'http://argg-dev.pathfinder.bcgov/';">
+          <button class="btn btn-primary" type="submit" name="save" id="save2" onclick="location.href = '{{ dashboard_config['api_url'] }}';">
             Register API
           </button>
 
