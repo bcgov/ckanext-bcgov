@@ -21,48 +21,53 @@ Installation
 
 4.  Add the following lines to ini file to the search setting section if they don’t exist:
 
-        search.facets.limit = 500
-        search.facets.default = 20
-        ckan.search.show_all_types = true
+```
+# solr related settings
+search.facets.limit = 500
+search.facets.default = 20
+ckan.search.show_all_types = true
+ckan.api_key = your-sysadmin-api-key
 
-        ...
+# licenses and sectors JSON files, e.g.:
+licenses_group_url = https://${BCDC_LICENSE_API_ENDPOINT}/bcdc_licenses.json
+sectors_file_url = https://${BCDC_LICENSE_API_ENDPOINT}/bcdc_sectors.json
 
-        ckan.api_key = your-sysadmin-api-key
+# (optional) Environment name
+edc.environment_name = MYDEVBOX
 
-        ...
+# Dashboard settings
+bcgov.dashboard.api_url = https://argg.apps.gov.bc.ca/int/
 
-        # Path for licenses and sectors JSON files, e.g.:
-        licenses_group_url = https://${BCDC_LICENSE_API_ENDPOINT}/bcdc_licenses.json
-        sectors_file_url = https://${BCDC_LICENSE_API_ENDPOINT}/bcdc_sectors.json
+# OFI Service endpoint
+bcgov.ofi.api.public_url = https://apps.gov.bc.ca/pub/dwds-ofi
+bcgov.ofi.api.secure_url = https://apps.gov.bc.ca/pub/dwds-ofi/secure
+bcgov.ofi.api.convert_to_single_res = true
 
-        ...
+# POW Service Endpoints
+bcgov.pow.public_url = https://apps.gov.bc.ca/pub/dwds-ofi
+# Siteminder enabled POW is enabled.
+bcgov.pow.secure_url = https://apps.gov.bc.ca/ext/dwds-pow
+bcgov.pow.pow_ui_path = /jsp/dwds_pow_current_order.jsp?
 
-        # (optional) Environment name
-        edc.environment_name = MYDEVBOX
+# POW Settings
+bcgov.pow.env = prod
+bcgov.pow.past_orders_nbr = 5
+bcgov.pow.custom_aoi_url = http://maps.gov.bc.ca/ess/hm/aoi/
+bcgov.pow.persist_config = true
+bcgov.pow.enable_mow = false
+bcgov.pow.user_pow_ofi = true
+bcgov.pow.order_source = bcdc
 
-        ...
+# POW Order Defaults
+bcgov.pow.order_details.aoi_type = 0
+bcgov.pow.order_details.aoi =
+bcgov.pow.order_details.clipping_method_type_id = 1
+bcgov.pow.order_details.ordering_application = BCDC
+bcgov.pow.order_details.format_type = 3
+bcgov.pow.order_details.csr_type = 4
+bcgov.pow.order_details.item.metadata_url = https://catalogue.data.gov.bc.ca/dataset/
 
-        # POW Settings
-        bcgov.pow.env = test
-        bcgov.pow.past_orders_nbr = 5
-        bcgov.pow.custom_aoi_url = https://maps.gov.bc.ca/ess/hm/aoi/
-        bcgov.pow.persist_config = true
-        bcgov.pow.enable_mow = false
-        bcgov.pow.user_pow_ofi = true
-        bcgov.pow.order_source = bcdc
-
-        # OFI endpoint defaults:
-        bcgov.pow.ofi_endpoint.url = apps.gov.bc.ca/pub/dwds-ofi
-        bcgov.pow.ofi_endpoint.protocol = https
-        bcgov.pow.ofi_endpoint.pow_ui_path = /jsp/dwds_pow_current_order.jsp?
-
-        # Order Defaults:
-        bcgov.pow.order_details.aoi_type = 0
-        bcgov.pow.order_details.aoi =
-        bcgov.pow.order_details.ordering_application = BCDC
-        bcgov.pow.order_details.format_type = 3
-        bcgov.pow.order_details.csr_type = 4
-        bcgov.pow.order_details.item.metadata_url = https://catalogue.data.gov.bc.ca/dataset/
+```
 
 _Note:_
 * For `format_type` see https://github.com/bcgov/ckanext-bcgov/issues/400#issuecomment-367504526
