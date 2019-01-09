@@ -32,8 +32,8 @@ Installation
         ...
 
         # Path for licenses and sectors JSON files, e.g.:
-        licenses_group_url = https://$GOGS_URL/bcdc-licenses-data/edc_licenses.json
-        sectors_file_url = https://$GOGS_URL/bcdc-licenses-data/edc_sectors.json
+        licenses_group_url = https://${BCDC_LICENSE_API_ENDPOINT}/bcdc_licenses.json
+        sectors_file_url = https://${BCDC_LICENSE_API_ENDPOINT}/bcdc_sectors.json
 
         ...
 
