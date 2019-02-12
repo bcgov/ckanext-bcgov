@@ -157,7 +157,7 @@
 	</noscript>
 	<!-- END OF SmartSource Data Collector TAG -->
 
-  {% if h.get_environment_name() != 'DLV' and h.get_environment_name() == 'TST' %}
+  {% if h.get_environment_name() != 'DLV' and h.get_environment_name() != 'TST' %}
   // <!-- Snowplow starts plowing - Standalone Search v1.2.9.3 -->
   <script type="text/javascript">
   ;(function(p,l,o,w,i,n,g){if(!p[i]){p.GlobalSnowplowNamespace=p.GlobalSnowplowNamespace||[];
