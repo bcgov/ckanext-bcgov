@@ -344,26 +344,33 @@ $(document).on('change', '.contact-org', function() {
 	var org_id = $(this).val();
 
 	var branches = [];
+	var replace = false;
 	for (var i = 0; i < contacts_org_branches.length; i++) {
 		if (contacts_org_branches[i].id == org_id) {
 			branches = contacts_org_branches[i].branches;
+			replace = true;
 			break;
 		}
 	}
 
-	var options = "<option></option>";
-	for (var i = 0; i < branches.length; i++) {
-		options += '<option value="' + branches[i].id + '">' + branches[i].name + '</option>';
-	}
+	console.log("hi");
 
-	var container = $(this).closest('.control-group.contact');
-	var id = container.attr('id').replace('contact_', '');
+	if (replace) {
+        var container = $(this).closest('.control-group.contact');
+        var id = container.attr('id').replace('contact_', '');
 
-	$("#field-contacts-" + id + "-branch").find('option').remove().end().append(options);
-	$("#field-contacts-" + id + "-branch").select2({
-									placeholder : "Select a sub-organization",
-									width : "220px"
-								});
+        var options = "<option></option>";
+        for (var i = 0; i < branches.length; i++) {
+            options += '<option value="' + branches[i].id + '">' + branches[i].name + '</option>';
+        }
+
+
+        $("#field-contacts-" + id + "-branch").find('option').remove().end().append(options);
+        $("#field-contacts-" + id + "-branch").select2({
+            placeholder: "Select a sub-organization",
+            width: "220px"
+        });
+    }
 
 });
 
@@ -394,7 +401,7 @@ $("#form-edc_dataset").submit(function( event ) {
 var previous_state;
 
 $("#field-edc_state").change(function() {
-	var selected_state = $("#field-edc_state").val()
+	var selected_state = $("#field-edc_state").val();
 
 	if (selected_state == "PENDING PUBLISH") {
 		$("#state_confirm_dialog").dialog({
