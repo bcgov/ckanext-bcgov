@@ -92,7 +92,50 @@
     {% endblock %}
 
 
-<script type="text/javascript">
+  {{ h.googleanalytics_header() }}
+
+  </head>
+
+  {# Allows custom attributes to be added to the <body> tag #}
+  <body{% block bodytag %} class="grid-12" data-site-root="{{ h.url('/', locale='default', qualified=true) }}" data-locale-root="{{ h.url('/', qualified=true) }}" {% endblock %}>
+
+    {#
+    The page block allows you to add content to the page. Most of the time it is
+    recommended that you extend one of the page.html templates in order to get
+    the site header and footer. If you need a clean page then this is the
+    block to use.
+
+    Example:
+
+      {% block page %}
+        <div>Some other page content</div>
+      {% endblock %}
+    #}
+    {%- block page %}{% endblock -%}
+
+    {#
+    DO NOT USE THIS BLOCK FOR ADDING SCRIPTS
+    Scripts should be loaded by the {% resource %} tag except in very special
+    circumstances
+    #}
+    {%- block scripts %}
+    {% endblock -%}
+
+    {% block body_extras -%}
+      {# defined in the config.ini under "ckan.template_footer_end" #}
+      {{ g.template_footer_end | safe }}
+    {%- endblock %}
+
+    {% block googleanalytics_event_tracking %}
+      {% resource 'ckanext-googleanalytics/googleanalytics_event_tracking.js' %}
+      <div class="js-hide" data-module="google-analytics"
+        data-module-googleanalytics_resource_prefix="{{ h.googleanalytics_resource_prefix() }}">
+      </div>
+    {% endblock %}
+
+  </body>
+  <footer>
+	<script type="text/javascript">
 	var IDLE_TIMEOUT = 14400; //seconds =  4 hours
 	var _idleSecondsCounter = 0;
 	document.onclick = function() {
@@ -121,9 +164,7 @@
 			document.location.href = "/user/_logout";
 		}
 	}
-
-
-</script>
+	</script>
 
 	<!-- Copyright (c) 1996-2009 WebTrends Inc. All rights reserved. -->
 	<!-- Version: 8.6.0 -->
@@ -199,46 +240,6 @@
   <!-- Snowplow stop plowing -->
   {% endif %}
 
-  {{ h.googleanalytics_header() }}
+  </footer>
 
-  </head>
-
-  {# Allows custom attributes to be added to the <body> tag #}
-  <body{% block bodytag %} class="grid-12" data-site-root="{{ h.url('/', locale='default', qualified=true) }}" data-locale-root="{{ h.url('/', qualified=true) }}" {% endblock %}>
-
-    {#
-    The page block allows you to add content to the page. Most of the time it is
-    recommended that you extend one of the page.html templates in order to get
-    the site header and footer. If you need a clean page then this is the
-    block to use.
-
-    Example:
-
-      {% block page %}
-        <div>Some other page content</div>
-      {% endblock %}
-    #}
-    {%- block page %}{% endblock -%}
-
-    {#
-    DO NOT USE THIS BLOCK FOR ADDING SCRIPTS
-    Scripts should be loaded by the {% resource %} tag except in very special
-    circumstances
-    #}
-    {%- block scripts %}
-    {% endblock -%}
-
-    {% block body_extras -%}
-      {# defined in the config.ini under "ckan.template_footer_end" #}
-      {{ g.template_footer_end | safe }}
-    {%- endblock %}
-
-    {% block googleanalytics_event_tracking %}
-      {% resource 'ckanext-googleanalytics/googleanalytics_event_tracking.js' %}
-      <div class="js-hide" data-module="google-analytics"
-        data-module-googleanalytics_resource_prefix="{{ h.googleanalytics_resource_prefix() }}">
-      </div>
-    {% endblock %}
-
-  </body>
 </html>
