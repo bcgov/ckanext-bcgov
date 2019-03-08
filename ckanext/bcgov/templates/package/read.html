@@ -38,8 +38,8 @@
       </div>
       <div class="modal-body">
         <div id="permalinkDivContainer">
-          <input type="text" id="permalinkLinkInput" readonly="readonly" value="{{ request.host }}{% url_for controller='package', action='read', id=pkg.id %}" />
-          <a class="btn hidden-sm hidden-xs" href="#" id="copyPermalink"><i class="fa fa-copy"></i> </a>
+          <input type="text" id="permalinkLinkInput" readonly="readonly" value="{{ request.host_url }}{% url_for controller='package', action='read', id=pkg.id %}" />
+          <a class="btn hidden-sm hidden-xs" href="#" id="copyPermalink" title="Copy Link to Clipboard"><i class="fa fa-copy"></i> </a>
           <div id="permalinkCopiedStatus"></div>
         </div>
       </div>
