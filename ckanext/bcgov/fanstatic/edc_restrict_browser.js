@@ -70,16 +70,17 @@ function isUsingSupportedBrowser() {
 }
 
 $(function() {
-	if(!isUsingSupportedBrowser()) {
-		
-		// Remove page content
-		var $primaryDiv = $('.primary div.module-content')
-		$primaryDiv.html('');
-
-		// Insert a warning
-		var warningText = "You are attempting to update or edit BC Data Catalogue content using a non-supported web browser or version. Supported browsers are Google Chrome (downloadable from <a href=\"https://www.google.com/chrome/\" target=\"_blank\">https://www.google.com/chrome/</a>) and Firefox (downloadable from <a href=\"https://www.mozilla.org/en-US/firefox/new/\" target=\"_blank\">https://www.mozilla.org/en_US/firefox/new/</a>). Not all version of these browsers are supported. If you are seeing this message and you are using Firefox or Chrome, then please report this problem to DataBC Catalogue Services.";
-		var $warningDiv = $('<div>' + warningText + "</div>").addClass('alert alert-danger');
-		$primaryDiv.prepend($warningDiv);
-		
-	}
+	//Ckanext-bcgov#685 remove check
+	// if(!isUsingSupportedBrowser()) {
+	//
+	// 	// Remove page content
+	// 	var $primaryDiv = $('.primary div.module-content')
+	// 	$primaryDiv.html('');
+	//
+	// 	// Insert a warning
+	// 	var warningText = "You are attempting to update or edit BC Data Catalogue content using a non-supported web browser or version. Supported browsers are Google Chrome (downloadable from <a href=\"https://www.google.com/chrome/\" target=\"_blank\">https://www.google.com/chrome/</a>) and Firefox (downloadable from <a href=\"https://www.mozilla.org/en-US/firefox/new/\" target=\"_blank\">https://www.mozilla.org/en_US/firefox/new/</a>). Not all version of these browsers are supported. If you are seeing this message and you are using Firefox or Chrome, then please report this problem to DataBC Catalogue Services.";
+	// 	var $warningDiv = $('<div>' + warningText + "</div>").addClass('alert alert-danger');
+	// 	$primaryDiv.prepend($warningDiv);
+	//
+	// }
 });
