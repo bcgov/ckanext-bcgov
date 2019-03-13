@@ -14,13 +14,13 @@
  * Supported browsers:
  * - Google Chrome
  * - Mozilla Firefox
- * 
+ *
  * @return {Boolean}
  */
 function isUsingSupportedBrowser() {
 
 	// Detect browser via feature detection rather than userAgent
-	
+
 	// Firefox API to install add-ons
 	var isFirefox = typeof InstallTrigger !== 'undefined';
 
@@ -37,7 +37,7 @@ function isUsingSupportedBrowser() {
 	// so use the below updated condition
 	//as of Chrome 71 chrome no longer has the window.chrome.webstore that used to be the way this checked
 	//https://stackoverflow.com/a/13348618/9627526 has a continuously updated check
-	
+
 	var isChromium = window.chrome;
 	var winNav = window.navigator;
 	var vendorName = winNav.vendor;
