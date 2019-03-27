@@ -84,7 +84,7 @@
 
 {% block primary_content_inner %}
   {% block package_description %}
-    
+
     {% if pkg.private %}
       <span class="dataset-private label label-inverse pull-right">
         <i class="fa fa-lock icon-lock"></i>
@@ -94,7 +94,7 @@
 
     {# Displaying Dataset information in colorful markers #}
 
-    
+
     {% block package_markers %}
       {% set iso_topic_values = h.get_iso_topic_values(pkg.get('iso_topic_string')) %}
       {% snippet 'package/snippets/markers.html', type=pkg.type, iso_topic_cat=iso_topic_values, branch=pkg.sub_org %}
@@ -109,7 +109,7 @@
       {% endblock %}
     </h1>
 
-    
+
     {% set ts = h.get_package_tracking(pkg['id']) %}
     {% if ts %}
       <h4 class="description-tracking">
@@ -118,10 +118,10 @@
     {% endif %}
 
     {# Displaying Organization and Branch names #}
-    
+
     {% block package_org %}
       {% set org = h.get_edc_org(pkg.org) %}
-      {% set branch = h.get_edc_org(pkg.sub_org) %}  
+      {% set branch = h.get_edc_org(pkg.sub_org) %}
       Published by the {% snippet 'package/snippets/org_view.html', org=org, branch=branch %}
     {% endblock %}
     {% block package_license %}
@@ -129,7 +129,7 @@
       Licensed under
       {% snippet "snippets/license.html", pkg_dict=pkg %}
     {% endblock %}
-    
+
     {% block package_notes %}
       {% if pkg.notes %}
         <div class="notes embedded-content">
