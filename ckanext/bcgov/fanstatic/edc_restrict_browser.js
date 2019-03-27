@@ -37,7 +37,11 @@ function isUsingSupportedBrowser() {
 	// so use the below updated condition
 	//as of Chrome 71 chrome no longer has the window.chrome.webstore that used to be the way this checked
 	//https://stackoverflow.com/a/13348618/9627526 has a continuously updated check
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> brandon/ckanext-653
 	var isChromium = window.chrome;
 	var winNav = window.navigator;
 	var vendorName = winNav.vendor;
