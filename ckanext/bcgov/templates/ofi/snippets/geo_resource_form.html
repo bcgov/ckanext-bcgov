@@ -74,6 +74,15 @@
 </div>
 
 <!-- This is to force the popover to activate in the modal, it doesn't work without for some reason -->
-<script type="text/javascript">$(document).ready(function(){$('a[href="#markdown"]').popover()});</script>
+<script type="text/javascript">
+	$(document).ready(function(){$('a[href="#markdown"]').popover()});
+	$('body').on('click', function (e) {
+		//did not click a popover toggle or popover
+		if ($(e.target).data('target') !== 'popover'
+			&& $(e.target).parents('.popover.in').length === 0) {
+			$('[data-original-title]').popover('hide');
+		}
+	});
+</script>
 
 <!--Snippet ofi/snippets/geo_resource_form.html end -->
