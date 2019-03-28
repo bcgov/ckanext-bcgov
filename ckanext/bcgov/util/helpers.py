@@ -529,6 +529,14 @@ def get_namespace_config(namespace):
                  if k.startswith(namespace)])
 
 
+def get_dashboard_config():
+    '''
+    Returns a dict with all configuration options related to the
+    Dashboard (ie those starting with 'bcgov.dashboard.')
+    '''
+    return get_namespace_config('bcgov.dashboard.')
+
+
 def get_ofi_config():
     '''
     Returns a dict with all configuration options related to the

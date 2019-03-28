@@ -28,6 +28,7 @@ Example:
         </div>
       {% endblock %}
       <h1 class="heading">{{ organization.title or organization.name }}</h1>
+      {% if not hide_desc %}
       {% if organization.description %}
         <p>
           {{ h.markdown_extract(organization.description, 180) }}
@@ -35,6 +36,7 @@ Example:
         </p>
       {% else %}
         <p class="empty">{{ _('There is no description for this organization') }}</p>
+      {% endif %}
       {% endif %}
 
       {% if organization.url %}

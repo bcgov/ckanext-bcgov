@@ -1,24 +1,29 @@
   <h3>Additional Information</h3>
   <div id="additional-information">
     {% block pakage_purpose %}
-      {% if pkg.purpose %}
-      <h2>Purpose</h2>
-      <div id="purpose">
-        {{ h.render_markdown(pkg.purpose) }}
-      </div>
-      {% endif %}
-
-      {% if pkg.type == "Geographic" or pkg.type == "Dataset" %}
+      {% if pkg.purpose or pkg.type == "Geographic" or pkg.type == "Dataset" %}
         <table class="table dataset_view">
-          <tr>
-            <td width="150px"><strong>Data Quality</strong></td>
-            <td>{{ h.render_markdown(pkg.data_quality) }}</td>
-          </tr>
+          {% if pkg.purpose %}
+            <tr>
+              <td width="150px"><strong>Purpose</strong></td>
+              <td>{{ h.render_markdown(pkg.purpose) }}</td>
+            </tr>
+          {% endif %}
 
-          <tr>
-            <td><strong>Lineage Statement</strong></td>
-            <td>{{ h.render_markdown(pkg.lineage_statement) }}</td>
-          </tr>
+          {% if pkg.type == "Geographic" or pkg.type == "Dataset" %}
+            {% if pkg.data_quality %}
+            <tr>
+              <td width="150px"><strong>Data Quality</strong></td>
+              <td>{{ h.render_markdown(pkg.data_quality) }}</td>
+            </tr>
+            {% endif %}
+            {% if pkg.lineage_statement %}
+            <tr>
+              <td><strong>Lineage Statement</strong></td>
+              <td>{{ h.render_markdown(pkg.lineage_statement) }}</td>
+            </tr>
+            {% endif %}
+          {% endif %}
         </table>
       {% endif %}
     {% endblock %}

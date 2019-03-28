@@ -62,6 +62,10 @@ class EDCUserController(UserController):
 
 
     def read(self, id=None):
+
+        if c.userobj == None:
+            return render('package/auth_error.html')
+
         if c.userobj and c.userobj.sysadmin == True:
             fq = ''
         else:
