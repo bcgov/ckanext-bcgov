@@ -37,9 +37,5 @@ setup(
     edc_geo = ckanext.bcgov.forms.edc_datasets:EDC_GeoSpatialForm
     edc_ngeo = ckanext.bcgov.forms.edc_datasets:EDC_NonGeoSpatialForm
     edc_webservice = ckanext.bcgov.forms.edc_datasets:EDC_WebServiceForm
-    edc_disqus = ckanext.bcgov.plugin:EDCDisqusPlugin
-
-    [paste.paster_command]
-    edc_command = ckanext.bcgov.commands.edc_commands:EdcCommand
     """,
 )

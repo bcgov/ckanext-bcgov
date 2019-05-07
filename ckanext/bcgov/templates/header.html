@@ -70,9 +70,11 @@
                                                     <li>
                                                         <a href="{{ h.url_for(controller='ckanext.edc_rss.controllers.rss:RSSController', action='recent') }}" title="Subscribe to New data">Subscribe to New Data</a><span class="no-trigger visible-xs-block"></span>
                                                     </li>
+                                                    {% if 'edc_disqus' in g.plugins %}
                                                     <li>
                                                         <a href="http://{{ h.disqus_get_forum_name() }}.disqus.com/latest.rss">Subscribe to Comments</a><span class="no-trigger visible-xs-block"></span>
                                                     </li>
+                                                    {% endif %}
                                                     <li>
                                                         <a href="http://engage.gov.bc.ca/data/feed/" target="_blank">Subscribe to Blog Posts</a><span class="no-trigger visible-xs-block"></span>
                                                     </li>
