@@ -1,4 +1,4 @@
-[![Join us on Slack](https://img.shields.io/badge/Join%20us%20on-Slack-ff69b4.svg)](https://devopspathfinder.slack.com/messages/C915T1NEP)
+[![Find us on Mattermost](https://img.shields.io/badge/Find%20updates%20on-Mattermost-lightblue.svg?style=popout&logo=appveyor)](https://chat.pathfinder.gov.bc.ca/bcdc)
 [![Build Status](https://cis.data.gov.bc.ca/buildStatus/icon?job=bcdc/caddi)](https://cis.data.gov.bc.ca/job/bcdc/job/caddi/)
 [![License](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/bcgov/ckanext-bcgov/master/license)
 [![Delivery](https://assets.bcdevexchange.org/images/badges/delivery.svg)](https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md)
