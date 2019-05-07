@@ -5,7 +5,11 @@ this.ckan.module('edc_pow', function($, _){
 
   var pow_initialized = false;
 
-  var get_ofi_url = function(endpoint, secure = false) {
+  var get_ofi_url = function(endpoint, secure) {
+    if (typeof(secure) === "undefined"){
+      secure = false;
+    }
+
     if (secure) {
       return opt.ofi_secure_url + endpoint;
     } else {
@@ -13,7 +17,10 @@ this.ckan.module('edc_pow', function($, _){
     }
   }
 
-  var get_pow_url = function(endpoint, secure = false) {
+  var get_pow_url = function(endpoint, secure) {
+    if (typeof(secure) === "undefined"){
+      secure = false;
+    }
     if (secure) {
       return opt.pow_secure_url + endpoint;
     } else {
@@ -83,6 +90,7 @@ this.ckan.module('edc_pow', function($, _){
         el.type = 'text/javascript';
         el.src = get_pow_url(script);
         document.body.appendChild(el);
+        return script;
       });
 
       $('.edc-pow-button').on('click', this.startOrder);
@@ -125,7 +133,6 @@ this.ckan.module('edc_pow', function($, _){
           {
             featureItem: pkg.object_name,
             filterValue: '',
-            layerMetadataUrl: null,
             layerName: pkg.title,
             filterType: 'No Filter',
             layerMetadataUrl: opt.metadata_url + pkg.name,
