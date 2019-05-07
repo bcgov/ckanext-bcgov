@@ -1,4 +1,4 @@
-[![Find us on Mattermost](https://img.shields.io/badge/Find%20updates%20on-Mattermost-lightblue.svg?style=popout&logo=appveyor)](https://chat.pathfinder.gov.bc.ca/bcdc)</br>
+[![Find us on Mattermost](https://img.shields.io/badge/Find%20updates%20on-Mattermost-lightblue.svg?style=popout&logo=appveyor)](https://chat.apps.gov.bc.ca/bcdc)</br>
 [![Build Status](https://cis.data.gov.bc.ca/buildStatus/icon?job=bcdc/caddi)](https://cis.data.gov.bc.ca/job/bcdc/job/caddi/)
 [![License](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/bcgov/ckanext-bcgov/master/license)
 [![Delivery](https://assets.bcdevexchange.org/images/badges/delivery.svg)](https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md)
