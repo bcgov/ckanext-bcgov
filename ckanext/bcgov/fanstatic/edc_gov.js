@@ -1123,6 +1123,9 @@ function closeTileFlyouts() {
       if (userAgent.browser_name == 'ie') {
         return false;
       }
+      if (userAgent.browser_name == 'unknown') {
+        return false;
+      }
       if (userAgent.browser_name == 'firefox' && userAgent.browser_version < 12) {
         return false;
       }
@@ -1142,6 +1145,7 @@ function closeTileFlyouts() {
           'padding': '10px 0px',
           'background': '#FFEEA9',
 		  'position': "absolute",
+		  'z-index': "9001",
 		  'top': "0px",
     	  'width': "100%",
 		  'padding-top': '40px',
