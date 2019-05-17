@@ -18,15 +18,15 @@
   {{ super() }}
   {% resource 'edc_resource/edc_dataset_view.css' %}
   <li class="dropdown share-this-record">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-share icon-share-alt"></i> Share this Record</a>
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-share icon-share-alt" aria-hidden="true"></i> Share this Record</a>
     {% snippet "snippets/social.html" %}
   </li>
   <li>
     <a id="permalinkLink" href="#"
-      ><i class="fa fa-link icon-link"></i> Permalink</a>
+      ><i class="fa fa-link icon-link" aria-hidden="true"></i> Permalink</a>
   </li>
   {#
-  <li><a href="#"><i class="icon-rss"></i> RSS</a></li> #}
+  <li><a href="#"><i class="icon-rss" aria-hidden="true"></i> RSS</a></li> #}
 
 
 <div class="modal fade" id="permalinkModal" tabindex="-1" role="dialog" aria-labelledby="comment-terms-modal-label" aria-hidden="true">
@@ -39,7 +39,7 @@
       <div class="modal-body">
         <div id="permalinkDivContainer">
           <input type="text" id="permalinkLinkInput" readonly="readonly" value="{{ request.host_url }}{% url_for controller='package', action='read', id=pkg.id %}" />
-          <a class="btn hidden-sm hidden-xs" href="#" id="copyPermalink" title="Copy Link to Clipboard"><i class="fa fa-copy"></i> </a>
+          <a class="btn hidden-sm hidden-xs" href="#" id="copyPermalink" title="Copy Link to Clipboard"><i class="fa fa-copy" aria-hidden="true"></i> </a>
           <div id="permalinkCopiedStatus"></div>
         </div>
       </div>
@@ -71,7 +71,7 @@
     <div class="search-input control-group search-giant">
       <input type="text" class="search" name="q" autocomplete="off" placeholder="Search datasets...">
       <button type="submit" value="search">
-        <i class="fa fa-icon icon-search"></i>
+        <i class="fa fa-icon icon-search" aria-hidden="true"></i>
         <span>{{ _('Submit') }}</span>
       </button>
     </div>
@@ -84,17 +84,17 @@
 
 {% block primary_content_inner %}
   {% block package_description %}
-    
+
     {% if pkg.private %}
       <span class="dataset-private label label-inverse pull-right">
-        <i class="fa fa-lock icon-lock"></i>
+        <i class="fa fa-lock icon-lock" aria-hidden="true"></i>
         {{ _('Private') }}
       </span>
     {% endif %}
 
     {# Displaying Dataset information in colorful markers #}
 
-    
+
     {% block package_markers %}
       {% set iso_topic_values = h.get_iso_topic_values(pkg.get('iso_topic_string')) %}
       {% snippet 'package/snippets/markers.html', type=pkg.type, iso_topic_cat=iso_topic_values, branch=pkg.sub_org %}
@@ -109,7 +109,7 @@
       {% endblock %}
     </h1>
 
-    
+
     {% set ts = h.get_package_tracking(pkg['id']) %}
     {% if ts %}
       <h4 class="description-tracking">
@@ -118,10 +118,10 @@
     {% endif %}
 
     {# Displaying Organization and Branch names #}
-    
+
     {% block package_org %}
       {% set org = h.get_edc_org(pkg.org) %}
-      {% set branch = h.get_edc_org(pkg.sub_org) %}  
+      {% set branch = h.get_edc_org(pkg.sub_org) %}
       Published by the {% snippet 'package/snippets/org_view.html', org=org, branch=branch %}
     {% endblock %}
     {% block package_license %}
@@ -129,7 +129,7 @@
       Licensed under
       {% snippet "snippets/license.html", pkg_dict=pkg %}
     {% endblock %}
-    
+
     {% block package_notes %}
       {% if pkg.notes %}
         <div class="notes embedded-content">

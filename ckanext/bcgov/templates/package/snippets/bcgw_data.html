@@ -48,8 +48,10 @@
       {% endif %}
     {% endif %}
 
-  {% if (pkg.edc_state.upper() == 'PUBLISHED' or pkg.edc_state.upper() == 'PENDING ARCHIVE') %}
-      {% block edc_disqus_comments %}
-          {{ h.comments_block() }}
-      {% endblock %}
+  {% if 'edc_disqus' in g.plugins %}
+      {% if (pkg.edc_state.upper() == 'PUBLISHED' or pkg.edc_state.upper() == 'PENDING ARCHIVE') %}
+          {% block edc_disqus_comments %}
+              {{ h.comments_block() }}
+          {% endblock %}
+      {% endif %}
   {% endif %}

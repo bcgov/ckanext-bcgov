@@ -11,15 +11,18 @@
           {% endif %}
 
           {% if pkg.type == "Geographic" or pkg.type == "Dataset" %}
-           <tr>
+            {% if pkg.data_quality %}
+            <tr>
               <td width="150px"><strong>Data Quality</strong></td>
               <td>{{ h.render_markdown(pkg.data_quality) }}</td>
             </tr>
-
+            {% endif %}
+            {% if pkg.lineage_statement %}
             <tr>
               <td><strong>Lineage Statement</strong></td>
               <td>{{ h.render_markdown(pkg.lineage_statement) }}</td>
             </tr>
+            {% endif %}
           {% endif %}
         </table>
       {% endif %}

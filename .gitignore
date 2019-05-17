@@ -6,3 +6,4 @@ pip-requirements.txt
 
 ckanext/bcgov/scripts/data/bcdc_sectors.json
 ckanext/bcgov/scripts/data/bcdc_licenses.json
+redis*
