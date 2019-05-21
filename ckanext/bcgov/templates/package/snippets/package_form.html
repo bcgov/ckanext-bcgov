@@ -163,3 +163,16 @@ then itself be extended to add/remove blocks of functionality. #}
 		<a href="http://www.cio.gov.bc.ca/local/cio/kis/pdfs/open_data.pdf">http://www.cio.gov.bc.ca/local/cio/kis/pdfs/open_data.pdf</a>
   </div>
 </form>
+
+<script type="text/javascript">
+	window.onload = function(){
+	    $('a[href="#markdown"]').popover()
+        $('body').on('click', function (e) {
+            //did not click a popover toggle or popover
+            if ($(e.target).data('target') !== 'popover'
+                && $(e.target).parents('.popover.in').length === 0) {
+                $('[data-original-title]').popover('hide');
+            }
+        });
+    };
+</script>
