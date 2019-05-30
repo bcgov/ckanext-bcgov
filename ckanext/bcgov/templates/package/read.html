@@ -23,30 +23,11 @@
     {% snippet "snippets/social.html" %}
   </li>
   <li>
-    <a id="permalinkLink" href="#"
-      ><i class="fa fa-link icon-link" aria-hidden="true"></i> Permalink</a>
+    <a href="{% url_for controller='package', action='read', id=pkg.id %}"
+      ><i class="fa fa-link icon-link"></i> Show the Permalink</a>
   </li>
   {#
-  <li><a href="#"><i class="icon-rss" aria-hidden="true"></i> RSS</a></li> #}
-
-
-<div class="modal fade" id="permalinkModal" tabindex="-1" role="dialog" aria-labelledby="comment-terms-modal-label" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="comment-terms-modal-label">Copy Permalink</h4>
-      </div>
-      <div class="modal-body">
-        <div id="permalinkDivContainer">
-          <input type="text" id="permalinkLinkInput" readonly="readonly" value="{{ request.host_url }}{% url_for controller='package', action='read', id=pkg.id %}" />
-          <a class="btn hidden-sm hidden-xs" href="#" id="copyPermalink" title="Copy Link to Clipboard"><i class="fa fa-copy" aria-hidden="true"></i> </a>
-          <div id="permalinkCopiedStatus"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+  <li><a href="#"><i class="icon-rss"></i> RSS</a></li> #}
 {% endblock %}
 
 
