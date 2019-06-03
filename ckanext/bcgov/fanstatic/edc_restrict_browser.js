@@ -214,7 +214,7 @@ $(function() {
 	// 	$primaryDiv.html('');
 	//
 	// 	// Insert a warning
-		var warningText = "You are using an unsupported browser, some functionality may not work as expected if you encounter difficulties please update your browser. Supported browsers are <a href=\"https://www.google.com/chrome/\" target=\"_blank\">Google Chrome</a>, <a href=\"https://www.mozilla.org/en-US/firefox/new/\" target=\"_blank\">Firefox</a>, <a href=\"https://www.microsoft.com/en-ca/windows/microsoft-edge\" target=\"_blank\">Edge</a>, and <a href=\"https://support.apple.com/downloads/safari\" target=\"_blank\">Safari</a>";
+		var warningText = "You are using an unsupported browser.  Some functionality may not work as expected.  Supported browsers include current versions of Edge, Opera, Firefox, Safari and Chrome.";
 		var $warningDiv = $('<div>' + warningText + "</div>").addClass('alert alert-danger');
 		$primaryDiv.prepend($warningDiv);
 	//
