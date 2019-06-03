@@ -1,1 +1,88 @@
-ckanapi
+Babel==2.3.4
+Beaker==1.8.1
+beakeredis==0.1.0
+bleach==1.5.0
+cachetools==3.1.1
+-e git+https://github.com/ckan/ckan.git@ckan-2.7.2#egg=ckan
+-e git+https://github.com/okfn/ckanext-envvars.git@8602376a92a77b4f2d41763b6823d041469fa08e#egg=ckanext_envvars
+-e git+https://github.com/bcgov/ckanext-ga-report@89312ec513846e6b8966ba2a6e25d8c5bb910352#egg=ckanext_ga_report
+-e git+https://github.com/ckan/ckanext-geoview@v0.0.15#egg=ckanext_geoview
+-e git+https://github.com/bcgov/ckanext-googleanalytics@33356b9dec1ce33374b1004479d2b1c255028120#egg=ckanext_googleanalytics
+-e git+https://github.com/bcgov/ckanext-hierarchy@2e80d6790e7bbd95fea3fd1966adbb0f56af1104#egg=ckanext_hierarchy
+-e git+https://github.com/bcgov/ckanext-openapiviewer@a1de937dcdf50af924ea36111b0bf49200eab5c2#egg=ckanext_openapi
+ckanext-pdfview==0.0.5
+-e git+https://github.com/bcgov/ckanext-sso@76235f2acccf92c870c3d21639329aa403072034#egg=ckanext_sso
+click==6.7
+decorator==4.0.6
+ecdsa==0.13.2
+fanstatic==0.12
+Flask==0.11.1
+FormEncode==1.3.0
+funcsigs==1.0.2
+future==0.17.1
+gdata==2.0.18
+Genshi==0.7.3
+gevent==1.4.0
+google-api-python-client==1.7.9
+google-auth==1.6.3
+google-auth-httplib2==0.0.3
+greenlet==0.4.15
+gunicorn==19.9.0
+html5lib==0.9999999
+httplib2==0.12.3
+itsdangerous==0.24
+Jinja2==2.8
+Mako==1.0.4
+Markdown==2.6.7
+MarkupSafe==0.23
+nose==1.3.7
+oauth2client==4.1.3
+ofs==0.4.2
+ordereddict==1.1
+Pairtree===0.7.1-T
+passlib==1.6.5
+Paste==1.7.5.1
+PasteDeploy==1.5.2
+PasteScript==2.0.2
+pbr==1.10.0
+polib==1.0.7
+psycopg2==2.4.5
+pyasn1==0.4.5
+pyasn1-modules==0.2.5
+pycurl==7.43.0.1
+Pygments==2.1.3
+PyJWT==1.7.1
+Pylons==0.9.7
+pysolr==3.6.0
+python-dateutil==1.5
+python-jose==3.0.1
+python-keycloak==0.16.0
+python-keycloak-client==0.1.3
+python-magic==0.4.12
+pytz==2016.7
+pyutilib.component.core==4.6.4
+redis==2.10.5
+repoze.lru==0.6
+repoze.who==2.3
+repoze.who-friendlyform==1.0.8
+requests==2.11.1
+Routes==1.13
+rq==0.6.0
+rsa==4.0
+simplejson==3.10.0
+six==1.10.0
+SQLAlchemy==0.9.6
+sqlalchemy-migrate==0.10.0
+sqlparse==0.2.2
+Tempita==0.5.2
+tzlocal==1.3
+unicodecsv==0.14.1
+uritemplate==3.0.0
+validate-email==1.2
+vdm==0.13
+WebError==0.13.1
+WebHelpers==1.3
+WebOb==1.0.8
+WebTest==1.4.3
+Werkzeug==0.11.10
+zope.interface==4.3.2
