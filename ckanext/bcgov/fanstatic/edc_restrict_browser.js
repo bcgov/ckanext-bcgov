@@ -214,7 +214,7 @@ $(function() {
 	// 	$primaryDiv.html('');
 	//
 	// 	// Insert a warning
-		var warningText = "This operation is not supported by your browser. Supported browsers include current versions of Edge, Opera, Firefox, Safari and Chrome.";
+		var warningText = "You are using an unsupported browser.  Some functionality may not work as expected.  Supported browsers include current versions of Edge, Opera, Firefox, Safari and Chrome.";
 		var $warningDiv = $('<div>' + warningText + "</div>").addClass('alert alert-danger');
 		$primaryDiv.prepend($warningDiv);
 	//
