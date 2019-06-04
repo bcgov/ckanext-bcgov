@@ -16,7 +16,7 @@ click==6.7
 decorator==4.0.6
 ecdsa==0.13.2
 fanstatic==0.12
-Flask==0.11.1
+flask==0.12.4
 FormEncode==1.3.0
 funcsigs==1.0.2
 future==0.17.1
@@ -31,7 +31,7 @@ gunicorn==19.9.0
 html5lib==0.9999999
 httplib2==0.12.3
 itsdangerous==0.24
-Jinja2==2.8
+Jinja2==2.10.1
 Mako==1.0.4
 Markdown==2.6.7
 MarkupSafe==0.23
@@ -46,7 +46,7 @@ PasteDeploy==1.5.2
 PasteScript==2.0.2
 pbr==1.10.0
 polib==1.0.7
-psycopg2==2.4.5
+psycopg2==2.7.3.2
 pyasn1==0.4.5
 pyasn1-modules==0.2.5
 pycurl==7.43.0.1
@@ -65,14 +65,14 @@ redis==2.10.5
 repoze.lru==0.6
 repoze.who==2.3
 repoze.who-friendlyform==1.0.8
-requests==2.11.1
+requests==2.22.0
 Routes==1.13
 rq==0.6.0
 rsa==4.0
 simplejson==3.10.0
 six==1.10.0
-SQLAlchemy==0.9.6
-sqlalchemy-migrate==0.10.0
+SQLAlchemy==1.1.11
+sqlalchemy-migrate==0.12.0
 sqlparse==0.2.2
 Tempita==0.5.2
 tzlocal==1.3
