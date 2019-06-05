@@ -4,10 +4,10 @@ beakeredis==0.1.0
 bleach==1.5.0
 cachetools==3.1.1
 -e git+https://github.com/ckan/ckan.git@ckan-2.7.2#egg=ckan
--e git+https://github.com/ckan/ckanext-edc-rss.git@v1.0.0#egg=ckanext-edc-rss
--e git+https://github.com/okfn/ckanext-envvars.git@8602376a92a77b4f2d41763b6823d041469fa08e#egg=ckanext_envvars
--e git+https://github.com/bcgov/ckanext-ga-report@89312ec513846e6b8966ba2a6e25d8c5bb910352#egg=ckanext_ga_report
 -e git+https://github.com/ckan/ckanext-geoview@v0.0.15#egg=ckanext_geoview
+-e git+https://github.com/okfn/ckanext-envvars.git@8602376a92a77b4f2d41763b6823d041469fa08e#egg=ckanext_envvars
+-e git+https://github.com/bcgov/ckanext-edc-rss.git@v1.0.0#egg=ckanext-edc-rss
+-e git+https://github.com/bcgov/ckanext-ga-report@89312ec513846e6b8966ba2a6e25d8c5bb910352#egg=ckanext_ga_report
 -e git+https://github.com/bcgov/ckanext-googleanalytics@33356b9dec1ce33374b1004479d2b1c255028120#egg=ckanext_googleanalytics
 -e git+https://github.com/bcgov/ckanext-hierarchy@2e80d6790e7bbd95fea3fd1966adbb0f56af1104#egg=ckanext_hierarchy
 -e git+https://github.com/bcgov/ckanext-openapiviewer@a1de937dcdf50af924ea36111b0bf49200eab5c2#egg=ckanext_openapi
