@@ -399,7 +399,11 @@ def get_espg_id(espg_string):
     import re
     a = re.compile("_([0-9]+)")
     espg_id = a.findall(espg_string)
-    return espg_id[0]
+    if len(espg_id)>0:
+        return espg_id[0]
+    else:
+        return ""
+
 
 
 def get_iso_topic_values(iso_topic_str):
