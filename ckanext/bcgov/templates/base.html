@@ -201,7 +201,7 @@
     	<!-- END OF SmartSource Data Collector TAG -->
 
       {% if h.get_environment_name() != 'DLV' and h.get_environment_name() != 'TST' %}
-      <!-- Snowplow starts plowing - Standalone Search vA.2.10.2 -->
+      <!-- Snowplow starts plowing - Standalone Search vB.2.10.2 -->
        <script type="text/javascript">
        ;(function(p,l,o,w,i,n,g){if(!p[i]){p.GlobalSnowplowNamespace=p.GlobalSnowplowNamespace||[];
        p.GlobalSnowplowNamespace.push(i);p[i]=function(){(p[i].q=p[i].q||[]).push(arguments)
@@ -223,7 +223,7 @@
        window.snowplow('trackPageView');
        // Change the 'Search term parameter' to what is being used on the site, generally it is q.
        var searchParameter = 'q';
-       if (window.location.search.indexOf(searchParameter) > -1) {
+       if (window.location.search.indexOf(searchParameter  + '=') > -1) {
          window.snowplow('trackSiteSearch',
              getUrlParamArray(searchParameter,'')
          );
