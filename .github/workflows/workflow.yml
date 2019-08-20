@@ -1,8 +1,18 @@
 name: workflow for Codecov
 on: [push]
 jobs:
-  run:
+  sonarCloudscan:
+    name: SonarCloud Scan
     runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_CLOUD_TOKEN }}
+  Codecov:
+    runs-on: ubuntu-latest
+    needs: sonarCloudscan
     steps:
     - uses: actions/checkout@master
     - name: Setup Python  
