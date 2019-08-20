@@ -126,18 +126,18 @@ def _group_or_org_list(context, data_dict, is_org=False):
 
     groups = query.all()
 
-    if all_fields:
-        action = 'organization_show' if is_org else 'group_show'
-        group_list = []
-        for group in groups:
-            data_dict['id'] = group.id
-            for key in ('include_extras', 'include_tags', 'include_users',
-                        'include_groups', 'include_followers'):
-                if key not in data_dict:
-                    data_dict[key] = False
-
-            group_list.append(logic.get_action(action)(context, data_dict))
-    else:
-        group_list = [getattr(group, ref_group_by) for group in groups]
+    action = 'organization_show' if is_org else 'group_show'
+    group_list = []
+    for group in groups:
+        data_dict['id'] = group.id
+        data_dict['include_extras'] = True
+        for key in ('include_tags', 'include_users',
+                    'include_groups', 'include_followers'):
+            if key not in data_dict:
+                data_dict[key] = False
+        group_detail = logic.get_action(action)(context, data_dict)
+        if 'private' in group_detail and not context['user']:
+            continue
+        group_list.append(group_detail if all_fields else getattr(group, ref_group_by))
 
     return group_list
