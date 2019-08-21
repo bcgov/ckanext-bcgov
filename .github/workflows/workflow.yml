@@ -1,5 +1,8 @@
-name: workflow for Codecov
-on: [push]
+name: BCDC GitHub CI
+on: 
+  push:
+  - master
+  - dev
 jobs:
   sonarCloudscan:
     name: SonarCloud Scan
