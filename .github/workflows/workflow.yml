@@ -1,8 +1,11 @@
 name: BCDC GitHub CI
+
 on: 
   push:
-  - master
-  - dev
+    branches:
+    - master
+    - dev
+    
 jobs:
   sonarCloudscan:
     name: SonarCloud Scan
