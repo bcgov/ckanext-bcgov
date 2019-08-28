@@ -16,7 +16,6 @@ Example:
 {% set truncate = truncate or 180 %}
 {% set truncate_title = truncate_title or 80 %}
 {% set title = package.title or package.name %}
-{% set tracking_summary = h.get_package_tracking(package['id']) %}
 {% set notes = h.markdown_extract(package.notes, extract_length=truncate) %}
 
 {% block package_item %}
@@ -71,8 +70,6 @@ Example:
               {{ h.link_to(h.truncate(title, truncate_title), h.url_for(controller='package', action='read', id=package.name)) }}
             {% endblock %}
 
-            {{ h.popular('recent views', package.tracking_summary.recent, min=10) if package.tracking_summary }}
-            
             {% if package.org and package.sub_org %}
               {% block heading_orgs %}
                 <div class="dataset-heading-orgs">
