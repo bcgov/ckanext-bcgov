@@ -4,7 +4,7 @@
   {% resource 'edc_resource/search.js' %}
 	{% if h.check_access('package_create') %}
 		<div class="page_primary_action">
-			{% link_for _('Add Dataset'), controller='ckanext.bcgov.controllers.package:EDCPackageController', action='typeSelect', class_='btn btn-primary', icon='plus-square' %}
+			{% link_for _('Add Dataset'), controller='ckanext.bcgov.controllers.package:EDCPackageController', action='new', class_='btn btn-primary', icon='plus-square' %}
 			<script id="change-add-dataset-button">
 			// This adds the id attribute to the Add Dataset button
 			//  because link_for doesn't have a way to add an id attribute

@@ -10,7 +10,7 @@ import ckan.lib.base as base
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 
-from paste.deploy.converters import asbool
+# from paste.deploy.converters import asbool
 from routes.mapper import SubMapper
 
 
@@ -41,6 +41,7 @@ from ckanext.bcgov.util.helpers import (
     get_sectors_list,
     get_dataset_type,
     get_organizations,
+    get_orgs_form,
     get_organization_title,
     get_espg_id,
     get_edc_org,
@@ -64,7 +65,6 @@ from ckanext.bcgov.util.helpers import (
     get_pow_config,
     log_this)
 
-
 abort = base.abort
 
 log = logging.getLogger('ckanext.bcgov')
@@ -72,21 +72,13 @@ filter_query_regex = re.compile(r'([^:]+:"[^"]+"\s?)')
 
 
 class SchemaPlugin(plugins.SingletonPlugin):
-
     plugins.implements(plugins.IConfigurer)
-
     plugins.implements(plugins.IRoutes, inherit=True)
-
     plugins.implements(plugins.ITemplateHelpers, inherit=False)
-
     plugins.implements(plugins.IPackageController, inherit=True)
-
     plugins.implements(plugins.IFacets, inherit=True)
-
     plugins.implements(plugins.IActions, inherit=True)
-
     plugins.implements(plugins.IAuthFunctions)
-
     plugins.implements(plugins.IResourceController, inherit=True)
 
     def get_helpers(self):
@@ -94,6 +86,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             "dataset_type": get_dataset_type,
             "edc_tags": get_edc_tags,
             "edc_orgs": get_organizations,
+            "edc_orgs_form": get_orgs_form,
             "edc_org_branches": get_organization_branches,
             "edc_org_title": get_organization_title,
             "edc_type_label": edc_type_label,
@@ -162,17 +155,17 @@ class SchemaPlugin(plugins.SingletonPlugin):
         map.connect('package_index', '/', controller=package_controller, action='index')
 
         with SubMapper(map, controller=package_controller) as m:
-            m.connect('/dataset/add', action='typeSelect')
-            m.connect('add dataset', '/dataset/new', action='new')
-            #m.connect('new edc dataset', '/{dataset_type}/new', action='new',
+            # m.connect('/dataset/add', action='typeSelect')
+            m.connect('add dataset', '/bcdc_dataset/new', action='new')
+            # m.connect('new edc dataset', '/{dataset_type}/new', action='new',
             #          requirements=dict(dataset_type='|'.join([
             #            'Dataset',
             #            'Geographic',
             #            'WebService',
             #            'Application'
             #            ])))
-            #m.connect('search', '/dataset', action='search', highlight_actions='index search')
-            #m.connect('dataset_read', '/dataset/{id}', action='read', ckan_icon='sitemap')
+            # m.connect('search', '/dataset', action='search', highlight_actions='index search')
+            # m.connect('dataset_read', '/dataset/{id}', action='read', ckan_icon='sitemap')
             # m.connect('read edc dataset', '/{dataset_type}/{id}', action='read', ckan_icon='sitemap',
             #           requirements=dict(dataset_type='|'.join([
             #             'Dataset',
@@ -180,34 +173,35 @@ class SchemaPlugin(plugins.SingletonPlugin):
             #             'WebService',
             #             'Application'
             #             ])))
-            #m.connect('duplicate', '/dataset/duplicate/{id}/{package_type}', action='duplicate')
-            #m.connect('/dataset/{id}/resource/{resource_id}', action='resource_read')
-            #m.connect('/dataset/{id}/resource_delete/{resource_id}', action='resource_delete')
+            # m.connect('duplicate', '/dataset/duplicate/{id}/{package_type}', action='duplicate')
+            # m.connect('/dataset/{id}/resource/{resource_id}', action='resource_read')
+            # m.connect('/dataset/{id}/resource_delete/{resource_id}', action='resource_delete')
             m.connect('/authorization-error', action='auth_error')
-            #m.connect('resource_edit', '/dataset/{id}/resource_edit/{resource_id}', action='resource_edit', ckan_icon='edit')
-            #m.connect('new_resource', '/dataset/new_resource/{id}', action='new_resource')
-            #m.connect('resources', '/dataset/resources/{id}', action='resources')
+            # m.connect('resource_edit', '/dataset/{id}/resource_edit/{resource_id}',
+            #           action='resource_edit', ckan_icon='edit')
+            # m.connect('new_resource', '/dataset/new_resource/{id}', action='new_resource')
+            # m.connect('resources', '/dataset/resources/{id}', action='resources')
 
         with SubMapper(map, controller=user_controller) as m:
             m.connect('user_dashboard_unpublished', '/dashboard/unpublished',
-                  action='dashboard_unpublished', ckan_icon='group')
+                      action='dashboard_unpublished', ckan_icon='group')
             m.connect('/user/edit', action='edit')
             m.connect('/user/activity/{id}/{offset}', action='activity')
             m.connect('user_activity_stream', '/user/activity/{id}',
-                  action='activity', ckan_icon='time')
+                      action='activity', ckan_icon='time')
             m.connect('user_dashboard', '/dashboard', action='dashboard',
-                  ckan_icon='list')
+                      ckan_icon='list')
             m.connect('user_dashboard_datasets', '/dashboard/datasets',
-                  action='dashboard_datasets', ckan_icon='sitemap')
+                      action='dashboard_datasets', ckan_icon='sitemap')
             m.connect('user_dashboard_organizations', '/dashboard/organizations',
-                  action='dashboard_organizations', ckan_icon='building')
+                      action='dashboard_organizations', ckan_icon='building')
             m.connect('/dashboard/{offset}', action='dashboard')
             m.connect('user_follow', '/user/follow/{id}', action='follow')
             m.connect('/user/unfollow/{id}', action='unfollow')
             m.connect('user_followers', '/user/followers/{id:.*}',
-                  action='followers', ckan_icon='group')
+                      action='followers', ckan_icon='group')
             m.connect('user_edit', '/user/edit/{id:.*}', action='edit',
-                  ckan_icon='cog')
+                      ckan_icon='cog')
             m.connect('user_delete', '/user/delete/{id}', action='delete')
             m.connect('/user/reset/{id:.*}', action='perform_reset')
             m.connect('register', '/user/register', action='register')
@@ -220,7 +214,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('/user/me', action='me')
             m.connect('/user/set_lang/{lang}', action='set_lang')
             m.connect('user_datasets', '/user/{id:.*}', action='read',
-                  ckan_icon='sitemap')
+                      ckan_icon='sitemap')
             m.connect('user_index', '/user', action='index')
 
         with SubMapper(map, controller=org_controller) as m:
@@ -228,32 +222,30 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('/organization/list', action='list')
             m.connect('/organization/new', action='new')
             m.connect('/organization/{action}/{id}',
-                  requirements=dict(action='|'.join([
-                      'delete',
-                      'admins',
-                      'member_new',
-                      'member_delete',
-                      'history'
-                  ])))
+                      requirements=dict(action='|'.join([
+                          'delete',
+                          'admins',
+                          'member_new',
+                          'member_delete',
+                          'history'
+                      ])))
             m.connect('organization_activity', '/organization/activity/{id}',
-                   action='activity', ckan_icon='time')
+                      action='activity', ckan_icon='time')
             m.connect('organization_about', '/organization/about/{id}',
-                  action='about', ckan_icon='info-sign')
+                      action='about', ckan_icon='info-sign')
             m.connect('organization_edit', '/organization/edit/{id}',
-                   action='edit', ckan_icon='edit')
+                      action='edit', ckan_icon='edit')
             m.connect('organization_members', '/organization/members/{id}',
-                   action='members', ckan_icon='group')
-            m.connect('organization_bulk_process',
-                   '/organization/bulk_process/{id}',
-                   action='bulk_process', ckan_icon='sitemap')
+                      action='members', ckan_icon='group')
+            m.connect('organization_bulk_process', '/organization/bulk_process/{id}',
+                      action='bulk_process', ckan_icon='sitemap')
             m.connect('organization_read', '/organization/{id}',
-                   action='read', ckan_icon='sitemap')
+                      action='read', ckan_icon='sitemap')
 
-        map.connect('sitemap','/sitemap.html', controller=site_map_controller, action='view')
-        map.connect('sitemap','/sitemap.xml', controller=site_map_controller, action='read')
+        map.connect('sitemap', '/sitemap.html', controller=site_map_controller, action='view')
+        map.connect('sitemap', '/sitemap.xml', controller=site_map_controller, action='read')
 
-        with SubMapper(map, controller=api_controller, path_prefix='/api{ver:/1|/2|/3|}',
-          ver='/1') as m:
+        with SubMapper(map, controller=api_controller, path_prefix='/api{ver:/1|/2|/3|}', ver='/1') as m:
             m.connect('/i18n/{lang}', action='i18n_js_translations')
             m.connect('/')
 
@@ -264,8 +256,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         m.connect('/action/{logic_function}', action='action', conditions=GET_POST)
 
         map.connect('/admin/trash', controller='admin', action='trash')
-        map.connect('ckanadmin_trash', '/admin/trash', controller='admin',
-                action='trash', ckan_icon='trash')
+        map.connect('ckanadmin_trash', '/admin/trash', controller='admin', action='trash', ckan_icon='trash')
 
         return map
 
@@ -273,13 +264,13 @@ class SchemaPlugin(plugins.SingletonPlugin):
         return map
 
     def before_index(self, pkg_dict):
-        '''
+        """
         Makes the sort by name case insensitive.
         Note that the search index must be rebuild for the first time in order for the changes to take affect.
-        '''
+        """
         title = pkg_dict['title']
         if title:
-            #Assign title to title_string with all characters switched to lower case.
+            # Assign title to title_string with all characters switched to lower case.
             pkg_dict['title_string'] = title.lower()
 
         res_format = pkg_dict.get('res_format', [])
@@ -290,94 +281,83 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
         return pkg_dict
 
+    # IPackageController
     def before_search(self, search_params):
-        '''
+        """
         Customizes package search and applies filters based on the dataset metadata-visibility
         and user roles.
-        '''
+        """
 
-        #Change the default sort order when no query passed
+        # Change the default sort order when no query passed
         if not search_params.get('q') and search_params.get('sort') in (None, 'rank'):
             search_params['sort'] = 'record_publish_date desc, metadata_modified desc'
 
-
-        #Change the query filter depending on the user
-
+        # Change the query filter depending on the user
         if 'fq' in search_params:
             fq = search_params['fq']
         else:
             fq = ''
 
-        #need to append solr param q.op to force an AND query
-        if 'q' in search_params:
-            q = search_params['q']
-        else:
-            q = ''
-
-        try :
-            user_name = c.user or 'visitor'
-
-            #  There are no restrictions for sysadmin
-            if c.userobj and c.userobj.sysadmin == True:
-                fq += ' '
-                fq = filter_query_regex.sub(r'+\1', fq)
-            else:
-                if user_name != 'visitor':
-                    if 'edc_state' not in fq :
-                        fq = filter_query_regex.sub(r'+\1', fq)
-                        fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
-
-                        if 'owner_org' not in fq :
-                            #IDIR users can also see private records of their organizations
-                            user_id = c.userobj.id
-                            #Get the list of orgs that the user is an admin or editor of
-                            user_orgs = get_orgs_user_can_edit(c.userobj) #['"' + org + '"' for org in get_orgs_user_can_edit()]
-                            #user_orgs = ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'admin')]
-                            #user_orgs += ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'editor')]
-                            if user_orgs != []:
-                                fq += ' OR ' + 'owner_org:(' + ' OR '.join(user_orgs) + ')'
-
-                        fq += ')'
-
-                else:
-                    if fq:
-                        # make all fieds in Filter Query minditory with '+'
-                        fq = filter_query_regex.sub(r'+\1', fq)
-
-                    # Public user can only view public and published records
-                    fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
-
-        except Exception:
-            if 'fq' in search_params:
-                fq = search_params['fq']
-            else:
-                fq = ''
-            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
+        # try:
+        #     # There are no restrictions for sysadmin
+        #     if c.userobj and c.userobj.sysadmin is True:
+        #         fq += ' '
+        #         fq = filter_query_regex.sub(r'+\1', fq)
+        #     else:
+        #         user_name = c.user or 'visitor'
+        #         if user_name != 'visitor':
+        #             if 'edc_state' not in fq:
+        #                 fq = filter_query_regex.sub(r'+\1', fq)
+        #                 fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
+        #
+        #                 if 'owner_org' not in fq:
+        #                     # IDIR users can also see private records of their organizations
+        #                     # Get the list of orgs that the user is an admin or editor of
+        #                     user_orgs = get_orgs_user_can_edit(c.userobj)
+        #                     if user_orgs != []:
+        #                         fq += ' OR ' + 'owner_org:(' + ' OR '.join(user_orgs) + ')'
+        #                 fq += ')'
+        #         else:
+        #             if fq:
+        #                 # make all fields in Filter Query mandatory with '+'
+        #                 fq = filter_query_regex.sub(r'+\1', fq)
+        #
+        #             # Public user can only view public and published records
+        #             fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
+        #
+        # except Exception:
+        #     if 'fq' in search_params:
+        #         fq = search_params['fq']
+        #     else:
+        #         fq = ''
+        #     fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
 
         search_params['fq'] = fq
-
+        search_params['include_private'] = False
+        log.debug("Search Params: {0}".format(search_params))
         return search_params
 
+    # IPackageController
     def before_view(self, pkg_dict):
         # CITZEDC808
-        if not record_is_viewable(pkg_dict, c.userobj):
-            abort(401, _('Unauthorized to read package %s') % pkg_dict.get("title"))
+        # if not record_is_viewable(pkg_dict, c.userobj):
+        #     abort(401, _('Unauthorized to read package %s') % pkg_dict.get("title"))
 
         return pkg_dict
 
-    #def after_update(self, context, pkg_dict):
+    # def after_update(self, context, pkg_dict):
         # If there are no resources added, redirect to the "add resource" page after saving
         # if len(pkg_dict.get('resources', [])) == 0:
         #    toolkit.redirect_to(controller='package', action='new_resource', id=pkg_dict['id'])
 
     def dataset_facets(self, facet_dict, package_type):
-        '''
+        """
         Customizes search facet list.
-        '''
+        """
 
         from collections import OrderedDict
         facet_dict = OrderedDict()
-        #Add dataset types and organization sectors to the facet list
+        # Add dataset types and organization sectors to the facet list
         facet_dict['license_id'] = _('License')
         facet_dict['sector'] = _('Sectors')
         facet_dict['type'] = _('Dataset types')
@@ -391,9 +371,9 @@ class SchemaPlugin(plugins.SingletonPlugin):
         return facet_dict
 
     def group_facets(self, facet_dict, group_type, package_type):
-        '''
+        """
         Use the same facets for filtering datasets within group pages
-        '''
+        """
         return self.dataset_facets(facet_dict, package_type)
 
     def get_actions(self):
@@ -403,7 +383,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'organization_list': edc_action.organization_list,
             'edc_package_update': edc_action.edc_package_update,
             'edc_package_update_bcgw': edc_action.edc_package_update_bcgw,
-            'package_update': edc_action.package_update,
+            # 'package_update': edc_action.package_update,
             'package_autocomplete': edc_action.package_autocomplete,
             'check_object_name': ofi.check_object_name,
             'file_formats': ofi.file_formats,
@@ -413,7 +393,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'remove_ofi_resources': ofi.remove_ofi_resources,
             'edit_ofi_resources': ofi.edit_ofi_resources,
             'get_max_aoi': ofi.get_max_aoi,
-            'ofi_create_order': ofi.ofi_create_order
+            'ofi_create_order': ofi.ofi_create_order,
+            'tag_autocomplete_by_vocab': edc_action.tag_autocomplete_by_vocab
         }
 
     def get_auth_functions(self):

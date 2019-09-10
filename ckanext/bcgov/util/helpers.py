@@ -125,27 +125,26 @@ def get_index(seq, attr, value):
     return next(index for (index, d) in enumerate(seq) if d[attr] == value)
 
 def record_is_viewable(pkg_dict, userobj):
-    '''
+    """
     Checks if the user is authorized to view the dataset.
     Public users can only see published or pending archive records and only if the metadata-visibility is public.
     Government users who are not admins or editors can only see the published or pending  archive records.
     Editors and admins can see all the records of their organizations in addition to what government users can see.
-    '''
+    """
 
-    from ckanext.bcgov.util.util import get_user_orgs, get_orgs_user_can_edit
+    from ckanext.bcgov.util.util import get_orgs_user_can_edit  # , get_user_orgs
 
-    #Sysadmin can view all records
-    if userobj and userobj.sysadmin == True :
+    # Sysadmin can view all records
+    if userobj and userobj.sysadmin is True:
         return True
 
-    #Anonymous user (visitor) can only view published public records
+    # Anonymous user (visitor) can only view published public records
     published_state = ['PUBLISHED', 'PENDING ARCHIVE']
 
-    # CITZEDC-832
-    # Checking in `extras` for custom schema fields
-    metadata_visibility = ''
-    edc_state = ''
-    owner_org = ''
+    log.debug("Before View on: {0}".format(pkg_dict))
+    # log.debug("Checking View on: {0}".format(pkg_dict['title']))
+    # log.debug("EDC State: {0}".format(pkg_dict['edc_state']))
+    # log.debug("Metadata Visibility: {0}".format(pkg_dict['metadata_visibility']))
 
     if 'metadata_visibility' in pkg_dict:
         metadata_visibility = pkg_dict['metadata_visibility']
@@ -162,17 +161,13 @@ def record_is_viewable(pkg_dict, userobj):
     else:
         owner_org = get_package_extras_by_key('owner_org', pkg_dict)
 
-
     if metadata_visibility == 'Public' and edc_state in published_state:
         return True
-    if userobj  :
-
+    if userobj:
         if metadata_visibility == 'IDIR' and edc_state in published_state:
             return True
 
         user_orgs = get_orgs_user_can_edit(userobj)
-        #user_orgs = [org.get('id') for org in get_user_orgs(userobj.id, 'editor') ]
-        #user_orgs += [org.get('id') for org in get_user_orgs(userobj.id, 'admin') ]
         if owner_org in user_orgs:
             return True
 
@@ -372,17 +367,25 @@ def get_organizations():
 
 def get_edc_org(org_id):
     return model.Group.get(org_id)
-    '''
-    context = {'model': model, 'session': model.Session,
-               'user': c.user or c.author, 'auth_user_obj': c.userobj}
+    # context = {'model': model, 'session': model.Session,
+    #            'user': c.user or c.author, 'auth_user_obj': c.userobj}
+    # try:
+    #     org = get_action('organization_show')(context, {'id': org_id, 'include_datasets': False})
+    # except NotFound:
+    #     org = None
+    # return org
 
-    try:
-        org = get_action('organization_show')(context, {'id': org_id, 'include_datasets': False})
-    except NotFound:
-        org = None
 
-    '''
-    return org
+def get_orgs_form(field = None):
+    """Designed to get available orgs for scheming fields as parameters cannot be defined in choices_helper functions"""
+    orgs = []
+    for org in ckan.lib.helpers.organizations_available('create_dataset'):
+        orgs.append({
+            'value': org['id'],
+            'label': org['display_name']
+        })
+    return orgs
+
 
 def get_organization_title(org_id):
     '''

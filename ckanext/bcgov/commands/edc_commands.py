@@ -10,6 +10,8 @@ from ckan.lib.cli import CkanCommand
 from ckan.logic import get_action, NotFound
 from ckan.lib.datapreview import (get_default_view_plugins,
                                   add_views_to_dataset_resources)
+import ckan.lib.dictization.model_save as model_save
+
 
 import logging
 import re
@@ -42,7 +44,8 @@ class EdcCommand(CkanCommand):
         delete-all-orgs     Delete all organizations
         purge-records       Purge all already-deleted datasets
         purge-revisions     Purge all already-deleted revisions
-        create-views         Create CKAN 2.3 resource views
+        create-views        Create CKAN 2.3 resource views
+        migrate-to-scheming Migrate Classic EDC Datasets to use ckanext_scheming
     '''
     summary = __doc__.split('\n')[0]
     usage = __doc__
@@ -90,6 +93,8 @@ class EdcCommand(CkanCommand):
             self.purge_revisions()
         elif cmd == 'create-views':
             self.create_views()
+        elif cmd == 'migrate-to-scheming':
+            self.migrate_to_scheming()
         else:
             log.error('Command "%s" not defined' % (cmd, ))
 
@@ -269,7 +274,7 @@ class EdcCommand(CkanCommand):
             # packages initially just avoided purging revisions
             # where non-deleted packages were affected
             # however this lead to confusing outcomes e.g.
-            # we succesfully deleted revision in which package
+            # we successfully deleted revision in which package
             # was deleted (so package now active again) but no
             # other revisions
             problem = False
@@ -345,3 +350,32 @@ class EdcCommand(CkanCommand):
 
             add_views_to_dataset_resources(
                 {}, package, view_types=view_plugins)
+
+    def migrate_to_scheming(self):
+        context = {
+            'model': model,
+            'session': model.Session,
+            'user': self.user_name
+        }
+        packages = model.Session.query(model.Package)
+        for package in packages:
+            context['package'] = package
+            data = self.api.action.package_show(name_or_id=package.id)
+            package_type = data['type']
+            if len(package_type) < 1 or package_type == 'bcdc_dataset':
+                continue
+            data['dataset_type'] = package_type
+            data['type'] = 'bcdc_dataset'
+
+            rev = model.repo.new_revision()
+            rev.message = _(u"EDC Command: Update object %s") % data['name']
+
+            pkg = model_save.package_dict_save(data, context)
+
+            if pkg.type == 'bcdc_dataset':
+                model.repo.commit()
+                print "Successfully updated {0} to BCDC Dataset".format(pkg.name)
+            else:
+                print "Failed to update {0} to BCDC Dataset".format(pkg.name)
+
+        print '----------------------------- Migration complete -----------------------------'
