@@ -737,3 +737,15 @@ def package_autocomplete(context, data_dict):
         pkg_list.append(result_dict)
 
     return pkg_list
+
+
+@toolkit.side_effect_free
+def tag_autocomplete_by_vocab(context, data_dict):
+    tag_names = get_action('tag_autocomplete')(context, data_dict)
+
+    resultSet = {
+        'ResultSet': {
+            'Result': [{'Name': tag} for tag in tag_names]
+        }
+    }
+    return resultSet

@@ -154,15 +154,16 @@ class EDCPackageController(PackageController):
         '''
         Redirects to appropriate dataset creation form based on the given dataset type.
         '''
-        form_urls = {'Application' : '../Application/new',
-                     'Geographic Dataset' : '../Geographic/new',
-                     'Dataset' : '../Dataset/new',
-                     'Web Service - API' : '../WebService/new'}
+        # form_urls = {'Application' : '../Application/new',
+        #              'Geographic Dataset' : '../Geographic/new',
+        #              'Dataset' : '../Dataset/new',
+        #              'Web Service - API' : '../WebService/new'}
+        form_url = '../bcdc_dataset/new'
 
         if org_id:
-            redirect(h.url_for(form_urls[dataset_type], group=org_id))
+            redirect(h.url_for(form_url, group=org_id))
         else:
-            redirect(toolkit.url_for(form_urls[dataset_type]))
+            redirect(toolkit.url_for(form_url))
 
     def resources(self, id):
         if request.method == 'GET':
@@ -244,40 +245,41 @@ class EDCPackageController(PackageController):
 
         return result
 
-    def new(self, data=None, errors=None, error_summary=None):
-        """
-        This overrides the PackageController method to redirect
-        to the show dataset view without having to go to the add data view.
-
-        The difference is the inclusion of what the dataset type is.
-        If the save param finish is included or any exceptions happen it
-        will either abort or call the super new method.
-        """
-        log.info('ckanext-bcgov.controllers.package:EDCPackageController.new overriding ckan\'s method')
-
-        save_action = toolkit.request.params.get('save')
-
-        data_dict = logic.clean_dict(
-                        dict_fns.unflatten(
-                            logic.tuplize_dict(
-                                logic.parse_params(toolkit.request.POST,
-                                                   ignore_keys=CACHE_PARAMETERS))))
-
-        log.debug('EDCPackageController data from toolkit.request.POST %s' % data_dict)
-
-        is_an_update = data_dict.get('pkg_name', False)
-
-        if data and 'type' in data and data['type']:
-            package_type = data['type']
-        else:
-            package_type = self._guess_package_type(True)
-
-        if save_action == 'finish' and not is_an_update and package_type == 'Geographic':
-            return self._new_dataset_only(package_type, data_dict, errors, error_summary)
-        elif save_action == 'add_data' and not is_an_update and package_type == 'Geographic':
-            return self._new_dataset_only(package_type, data_dict, errors, error_summary, 'resources')
-        else:
-            return super(EDCPackageController, self).new(data, errors, error_summary)
+    # def new(self, data=None, errors=None, error_summary=None):
+    #     """
+    #     This overrides the PackageController method to redirect
+    #     to the show dataset view without having to go to the add data view.
+    #
+    #     The difference is the inclusion of what the dataset type is.
+    #     If the save param finish is included or any exceptions happen it
+    #     will either abort or call the super new method.
+    #     """
+    #     # log.info('ckanext-bcgov.controllers.package:EDCPackageController.new overriding ckan\'s method')
+    #     #
+    #     # save_action = toolkit.request.params.get('save')
+    #     #
+    #     # data_dict = logic.clean_dict(
+    #     #                 dict_fns.unflatten(
+    #     #                     logic.tuplize_dict(
+    #     #                         logic.parse_params(toolkit.request.POST,
+    #     #                                            ignore_keys=CACHE_PARAMETERS))))
+    #     #
+    #     # log.debug('EDCPackageController data from toolkit.request.POST %s' % data_dict)
+    #     #
+    #     # is_an_update = data_dict.get('pkg_name', False)
+    #     #
+    #     # # if data and 'type' in data and data['type']:
+    #     # #     package_type = data['type']
+    #     # # else:
+    #     # package_type = 'EDC Dataset'  # self._guess_package_type(True)
+    #     #
+    #     # if save_action == 'finish' and not is_an_update and package_type == 'Geographic':
+    #     #     return self._new_dataset_only(package_type, data_dict, errors, error_summary)
+    #     # elif save_action == 'add_data' and not is_an_update and package_type == 'Geographic':
+    #     #     return self._new_dataset_only(package_type, data_dict, errors, error_summary, 'resources')
+    #     # else:
+    #     # data['type'] = 'EDC Dataset'
+    #     return super(EDCPackageController, self).new(data, errors, error_summary)
 
     def _new_dataset_only(self, package_type, data_dict=None, errors=None, error_summary=None, redirect_link='dataset_read'):
         """

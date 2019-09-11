@@ -10,7 +10,7 @@
 
 {# This provides a full page that renders a form for adding a dataset. It can
 then itself be extended to add/remove blocks of functionality. #}
-
+{% resource 'edc_resource/edc_dataset.js' %}
 <form id="form-edc_dataset" class="dataset-form {% if archived %} archived {% endif %}" method="post" action="{{ action }}" data-module="basic-form" enctype="multipart/form-data">
 
   {% block stages %}

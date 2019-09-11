@@ -191,6 +191,10 @@ class EDCApiController(ApiController):
             if pkg['organization']:
                 pkg['organization']['full_title'] = org_title + ', ' + branch_title
 
+            if pkg['type'] != 'bcdc_dataset':
+                pkg['dataset_type'] = pkg['type']
+                pkg['type'] = 'bcdc_dataset'
+
             from ckanext.bcgov.util.helpers import record_is_viewable
 
             if not record_is_viewable(pkg, c.userobj) :
@@ -311,6 +315,7 @@ class EDCApiController(ApiController):
             return_dict['error'] = error_dict
             return self._finish(200, return_dict, content_type='json')
 
+
     def action(self, logic_function, ver=None):
         # FIXME: remove this method when functions called below are removed
 
@@ -329,13 +334,13 @@ class EDCApiController(ApiController):
         context = {'model': model, 'session': model.Session, 'user': c.user,
                    'api_version': ver, 'auth_user_obj': c.userobj}
 
-        if logic_function == 'package_show':
-            return self._package_show(context, request_data['id'])
-        elif logic_function == 'package_list':
-            return self._get_package_list(context, ver)
-        elif logic_function == 'current_package_list_with_resources':
-            return self._get_package_list_with_resources(context, ver)
-        elif logic_function == 'recently_changed_packages_activity_list':
+        # if logic_function == 'package_show':
+        #     return self._package_show(context, request_data['id'])
+        # elif logic_function == 'package_list':
+        #     return self._get_package_list(context, ver)
+        # if logic_function == 'current_package_list_with_resources':
+        #     return self._get_package_list_with_resources(context, ver)
+        if logic_function == 'recently_changed_packages_activity_list':
             return self._get_recently_changed_packages_activity_list(context, ver)
         elif logic_function == 'vocabulary_list':
             return self._get_vocabulary_list(context, ver)
