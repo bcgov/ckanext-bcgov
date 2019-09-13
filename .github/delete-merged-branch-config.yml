@@ -1,0 +1,6 @@
+exclude: 
+  - dev
+  - master
+  - feature-*
+  - gh-pages
+delete_closed_pr: true
