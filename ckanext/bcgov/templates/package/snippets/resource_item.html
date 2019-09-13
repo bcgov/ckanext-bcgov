@@ -67,11 +67,11 @@
             <i class="fa fa-external-link icon-external-link"></i>
             {{ _('Access / Download') }}
         {% elif res.has_views %}
-          <a href="{{ res.url }}" class="resource-url-analytics" target="_blank">
+          <a href="{{ res.url }}" class="resource-url-analytics" target="_blank" rel="noopener noreferrer">
             <i class="fa fa-download icon-download"></i>
             {{ _('Download') }}
         {% else %}
-          <a href="{{ res.url }}" class="resource-url-analytics" target="_blank">
+          <a href="{{ res.url }}" class="resource-url-analytics" target="_blank" rel="noopener noreferrer">
             <i class="fa fa-external-link icon-external-link"></i>
             {{ _('Access / Download') }}
         {% endif %}
