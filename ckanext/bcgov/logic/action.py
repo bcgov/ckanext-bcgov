@@ -29,6 +29,8 @@ import paste.deploy.converters
 from ckan.lib.mailer import MailerException
 import ckan.model as model
 
+from ckanext.bcgov.logic.get import (_group_or_org_list)
+
 import pprint
 
 
@@ -45,6 +47,7 @@ log = logging.getLogger('ckanext.edc_schema')
 _or_ = sqlalchemy.or_
 
 
+
 @toolkit.side_effect_free
 def organization_list(context, data_dict):
     '''
@@ -52,7 +55,6 @@ def organization_list(context, data_dict):
     See github issue #353
     To replace the bcgov ckan fork modification from https://github.com/bcgov/ckan/pull/16
     '''
-    from ckanext.bcgov.logic.get import (_group_or_org_list)
 
     toolkit.check_access('organization_list', context, data_dict)
     groups = data_dict.get('organizations', 'None')
@@ -66,6 +68,15 @@ def organization_list(context, data_dict):
 
     data_dict.setdefault('type', 'organization')
     return _group_or_org_list(context, data_dict, is_org=True)
+
+@toolkit.side_effect_free
+def group_list(context, data_dict):
+    '''
+        This is being overridden from core so we can use our own _group_or_org_list, probs a better way to do this but
+        this needed to be done timely and this is minimally impactful
+    '''
+    _check_access('group_list', context, data_dict)
+    return _group_or_org_list(context, data_dict, is_org=False)
 
 
 '''
