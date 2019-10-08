@@ -21,7 +21,7 @@ ckanext-pdfview==0.0.5
 -e git+https://github.com/EnviDat/ckanext-composite@23a060b03d2432a58cc66968d93a15f5f1654055#egg=ckanext_composite
 click==6.7
 decorator==4.0.6
-ecdsa==0.13.2
+ecdsa==0.13.3
 fanstatic==0.12
 flask==0.12.4
 FormEncode==1.3.0
