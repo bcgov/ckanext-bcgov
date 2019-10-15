@@ -384,7 +384,6 @@ def edc_package_update_bcgw(context, input_data_dict):
     '''
     import json
     input_dict_str = json.dumps(input_data_dict, ensure_ascii=False)
-
     input_data_dict = json.loads(input_dict_str, encoding="cp1252")
 
     update = {}
@@ -393,19 +392,18 @@ def edc_package_update_bcgw(context, input_data_dict):
     fq = ''
     offset = 0
     limit = 2
-    sort = 'metadata_modified desc'
+    sort = 'name asc'
 
     try:
         data_dict = {
-            'q': q,
-            'fq': fq,
-            'start': offset,
-            'rows': limit,
-            'sort': sort
+            'query': q,
+            'offset': offset,
+            'limit': limit,
+            'order_by': sort
         }
 
         # Use package_search to filter the list
-        query = get_action('package_search')(context, data_dict)
+        query = get_action('resource_search')(context, data_dict)
     except SearchError, se:
         log.error('Search error : %s', str(se))
         raise SearchError(str(se))
@@ -424,15 +422,15 @@ def edc_package_update_bcgw(context, input_data_dict):
     update = None
 
     # need the right data package
-    package_dict = get_action('package_show')(
+    resource_dict = get_action('resource_show')(
         context, {'id': results[0]['id']})
 
-    if package_dict['edc_state'] == 'ARCHIVED':
-        return_dict = {}
-        return_dict['results'] = None
-        return return_dict
+    # if package_dict['edc_state'] == 'ARCHIVED':
+    #     return_dict = {}
+    #     return_dict['results'] = None
+    #     return return_dict
 
-    if not package_dict:
+    if not resource_dict:
         return_dict = {}
         return_dict['success'] = False
         return_dict['error'] = True
@@ -440,48 +438,49 @@ def edc_package_update_bcgw(context, input_data_dict):
 
     # Check if input_data has been modified and is not the same as package data
     data_changed = False
-    current_details = package_dict.get('details')
-    curent_obj_short_name = package_dict.get('object_short_name')
-    current_obj_table_comments = package_dict.get('object_table_comments')
+    current_details = resource_dict.get('details')
+    curent_obj_short_name = resource_dict.get('object_short_name')
+    current_obj_table_comments = resource_dict.get('object_table_comments')
+    new_details = json.dumps(input_data_dict.get('details'))
 
-    if current_details != input_data_dict.get('details'):
-        log.info('Dataset details have been changed for dataset {0}.'.format(
-            package_dict.get('title')))
+    if current_details != new_details:
+        log.info('Resource details have been changed for resource {0}.'.format(
+            resource_dict.get('name')))
         log.info('Current Details : ')
         log.info(current_details)
         log.info('New details :')
         log.info(input_data_dict.get('details'))
 
-        package_dict['details'] = input_data_dict.get('details')
+        resource_dict['details'] = new_details
         data_changed = True
 
     if curent_obj_short_name != input_data_dict.get('object_short_name'):
-        log.info('Dataset object_short_name has been changed for dataset {0}.'.format(
-            package_dict.get('title')))
+        log.info('Resource object_short_name has been changed for resource {0}.'.format(
+            resource_dict.get('name')))
         log.info('Current object_short_name :')
         log.info(curent_obj_short_name)
         log.info('New object_short_name :')
         log.info(input_data_dict.get('object_short_name'))
-        package_dict['object_short_name'] = input_data_dict.get(
+        resource_dict['object_short_name'] = input_data_dict.get(
             'object_short_name')
         data_changed = True
 
     if current_obj_table_comments != input_data_dict.get('object_table_comments'):
-        log.info('Dataset current_obj_table_comments has been changed for dataset {0}.'.format(
-            package_dict.get('title')))
+        log.info('Resource current_obj_table_comments has been changed for resource {0}.'.format(
+            resource_dict.get('name')))
         log.info('Current object_table_comments :')
         log.info(current_obj_table_comments)
         log.info('New object_table_comments :')
         log.info(input_data_dict.get('object_table_comments'))
-        package_dict['object_table_comments'] = input_data_dict.get(
+        resource_dict['object_table_comments'] = input_data_dict.get(
             'object_table_comments')
         data_changed = True
 
     if data_changed:
-        log.info('Updating data dictionary for dataset {0}'.format(
-            package_dict.get('title')))
+        log.info('Updating data dictionary for resource {0}'.format(
+            resource_dict.get('name')))
 
-        update = get_action('package_update')(context, package_dict)
+        update = get_action('resource_update')(context, resource_dict)
 
     response_dict = {}
     response_dict['results'] = update

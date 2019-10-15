@@ -162,32 +162,8 @@ class SchemaPlugin(plugins.SingletonPlugin, DefaultGroupForm):
         map.connect('package_index', '/', controller=package_controller, action='index')
 
         with SubMapper(map, controller=package_controller) as m:
-            # m.connect('/dataset/add', action='typeSelect')
             m.connect('add dataset', '/bcdc_dataset/new', action='new')
-            # m.connect('new edc dataset', '/{dataset_type}/new', action='new',
-            #          requirements=dict(dataset_type='|'.join([
-            #            'Dataset',
-            #            'Geographic',
-            #            'WebService',
-            #            'Application'
-            #            ])))
-            # m.connect('search', '/dataset', action='search', highlight_actions='index search')
-            # m.connect('dataset_read', '/dataset/{id}', action='read', ckan_icon='sitemap')
-            # m.connect('read edc dataset', '/{dataset_type}/{id}', action='read', ckan_icon='sitemap',
-            #           requirements=dict(dataset_type='|'.join([
-            #             'Dataset',
-            #             'Geographic',
-            #             'WebService',
-            #             'Application'
-            #             ])))
-            # m.connect('duplicate', '/dataset/duplicate/{id}/{package_type}', action='duplicate')
-            # m.connect('/dataset/{id}/resource/{resource_id}', action='resource_read')
-            # m.connect('/dataset/{id}/resource_delete/{resource_id}', action='resource_delete')
             m.connect('/authorization-error', action='auth_error')
-            # m.connect('resource_edit', '/dataset/{id}/resource_edit/{resource_id}',
-            #           action='resource_edit', ckan_icon='edit')
-            # m.connect('new_resource', '/dataset/new_resource/{id}', action='new_resource')
-            # m.connect('resources', '/dataset/resources/{id}', action='resources')
 
         with SubMapper(map, controller=user_controller) as m:
             m.connect('user_dashboard_unpublished', '/dashboard/unpublished',
@@ -425,6 +401,7 @@ class SchemaPlugin(plugins.SingletonPlugin, DefaultGroupForm):
     def before_create(self, context, resource):
         # preventative fix for #386 - make sure facet format types are always lowercase;
         resource['format'] = resource.get('format', '').lower()
+
 
     # IGroupForm
     def group_types(self):
