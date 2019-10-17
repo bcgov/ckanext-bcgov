@@ -343,7 +343,6 @@ class SchemaPlugin(plugins.SingletonPlugin, DefaultGroupForm):
         # Add dataset types and organization sectors to the facet list
         facet_dict['license_id'] = _('License')
         facet_dict['sector'] = _('Sectors')
-        facet_dict['type'] = _('Dataset types')
         facet_dict['res_format'] = _('Format')
         facet_dict['organization'] = _('Organizations')
         facet_dict['download_audience'] = _('Download permission')
