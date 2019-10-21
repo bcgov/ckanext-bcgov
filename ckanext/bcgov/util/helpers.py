@@ -135,43 +135,25 @@ def record_is_viewable(pkg_dict, userobj):
     from ckanext.bcgov.util.util import get_orgs_user_can_edit  # , get_user_orgs
 
     # Sysadmin can view all records
-    if userobj and userobj.sysadmin is True:
+    if userobj:
         return True
 
     # Anonymous user (visitor) can only view published public records
     published_state = ['PUBLISHED', 'PENDING ARCHIVE']
-
-    log.debug("Before View on: {0}".format(pkg_dict))
-    # log.debug("Checking View on: {0}".format(pkg_dict['title']))
-    # log.debug("EDC State: {0}".format(pkg_dict['edc_state']))
-    # log.debug("Metadata Visibility: {0}".format(pkg_dict['metadata_visibility']))
 
     if 'metadata_visibility' in pkg_dict:
         metadata_visibility = pkg_dict['metadata_visibility']
     else:
         metadata_visibility = get_package_extras_by_key('metadata_visibility', pkg_dict)
 
-    if 'edc_state' in pkg_dict:
-        edc_state = pkg_dict['edc_state']
+    if 'publish_state' in pkg_dict:
+        publish_state = pkg_dict['publish_state']
     else:
-        edc_state = get_package_extras_by_key('edc_state', pkg_dict)
+        publish_state = get_package_extras_by_key('publish_state', pkg_dict)
 
-    if 'owner_org' in pkg_dict:
-        owner_org = pkg_dict['owner_org']
-    else:
-        owner_org = get_package_extras_by_key('owner_org', pkg_dict)
-
-    if metadata_visibility == 'Public' and edc_state in published_state:
+    if metadata_visibility == 'Public' and publish_state in published_state:
         return True
-    if userobj:
-        if metadata_visibility == 'IDIR' and edc_state in published_state:
-            return True
 
-        user_orgs = get_orgs_user_can_edit(userobj)
-        if owner_org in user_orgs:
-            return True
-
-        return True
     return False
 
 

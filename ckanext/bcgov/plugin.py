@@ -281,39 +281,39 @@ class SchemaPlugin(plugins.SingletonPlugin, DefaultGroupForm):
         else:
             fq = ''
 
-        # try:
-        #     # There are no restrictions for sysadmin
-        #     if c.userobj and c.userobj.sysadmin is True:
-        #         fq += ' '
-        #         fq = filter_query_regex.sub(r'+\1', fq)
-        #     else:
-        #         user_name = c.user or 'visitor'
-        #         if user_name != 'visitor':
-        #             if 'edc_state' not in fq:
-        #                 fq = filter_query_regex.sub(r'+\1', fq)
-        #                 fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
-        #
-        #                 if 'owner_org' not in fq:
-        #                     # IDIR users can also see private records of their organizations
-        #                     # Get the list of orgs that the user is an admin or editor of
-        #                     user_orgs = get_orgs_user_can_edit(c.userobj)
-        #                     if user_orgs != []:
-        #                         fq += ' OR ' + 'owner_org:(' + ' OR '.join(user_orgs) + ')'
-        #                 fq += ')'
-        #         else:
-        #             if fq:
-        #                 # make all fields in Filter Query mandatory with '+'
-        #                 fq = filter_query_regex.sub(r'+\1', fq)
-        #
-        #             # Public user can only view public and published records
-        #             fq += ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
-        #
-        # except Exception:
-        #     if 'fq' in search_params:
-        #         fq = search_params['fq']
-        #     else:
-        #         fq = ''
-        #     fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
+        try:
+            # There are no restrictions for sysadmin
+            if c.userobj and c.userobj.sysadmin is True:
+                fq += ' '
+                fq = filter_query_regex.sub(r'+\1', fq)
+            else:
+                user_name = c.user or 'visitor'
+                if user_name != 'visitor':
+                    if 'publish_state' not in fq:
+                        fq = filter_query_regex.sub(r'+\1', fq)
+                        fq += ' +(publish_state:("PUBLISHED" OR "PENDING ARCHIVE")'
+
+                        if 'owner_org' not in fq:
+                            # IDIR users can also see private records of their organizations
+                            # Get the list of orgs that the user is an admin or editor of
+                            user_orgs = get_orgs_user_can_edit(c.userobj)
+                            if user_orgs != []:
+                                fq += ' OR ' + 'owner_org:(' + ' OR '.join(user_orgs) + ')'
+                        fq += ')'
+                else:
+                    if fq:
+                        # make all fields in Filter Query mandatory with '+'
+                        fq = filter_query_regex.sub(r'+\1', fq)
+
+                    # Public user can only view public and published records
+                    fq += ' +(publish_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
+
+        except Exception:
+            if 'fq' in search_params:
+                fq = search_params['fq']
+            else:
+                fq = ''
+            fq += ' +publish_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
 
         search_params['fq'] = fq
         search_params['include_private'] = False
@@ -323,8 +323,8 @@ class SchemaPlugin(plugins.SingletonPlugin, DefaultGroupForm):
     # IPackageController
     def before_view(self, pkg_dict):
         # CITZEDC808
-        # if not record_is_viewable(pkg_dict, c.userobj):
-        #     abort(401, _('Unauthorized to read package %s') % pkg_dict.get("title"))
+        if not record_is_viewable(pkg_dict, c.userobj):
+            abort(401, _('Unauthorized to read package %s') % pkg_dict.get("title"))
 
         return pkg_dict
 
