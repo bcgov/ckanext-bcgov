@@ -108,7 +108,7 @@ def get_orgs_user_can_edit(userobj) :
     orgs = [org['id'] for org in orgs]
     
     '''
-    orgs =  userobj.get_group_ids('organization', 'editor') +  c.userobj.get_group_ids('organization', 'admin')
+    orgs = userobj.get_group_ids('organization', 'editor') + c.userobj.get_group_ids('organization', 'admin')
     return orgs
 
 def get_user_toporgs(user_id, role=None):
