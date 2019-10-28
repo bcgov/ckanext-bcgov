@@ -77,7 +77,7 @@ log = logging.getLogger('ckanext.bcgov')
 filter_query_regex = re.compile(r'([^:]+:"[^"]+"\s?)')
 
 
-class SchemaPlugin(plugins.SingletonPlugin, DefaultGroupForm):
+class SchemaPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IRoutes, inherit=True)
     plugins.implements(plugins.ITemplateHelpers, inherit=False)
@@ -86,7 +86,6 @@ class SchemaPlugin(plugins.SingletonPlugin, DefaultGroupForm):
     plugins.implements(plugins.IActions, inherit=True)
     plugins.implements(plugins.IAuthFunctions)
     plugins.implements(plugins.IResourceController, inherit=True)
-    plugins.implements(plugins.IGroupForm, inherit=True)
 
     def get_helpers(self):
         return {
@@ -400,38 +399,3 @@ class SchemaPlugin(plugins.SingletonPlugin, DefaultGroupForm):
     def before_create(self, context, resource):
         # preventative fix for #386 - make sure facet format types are always lowercase;
         resource['format'] = resource.get('format', '').lower()
-
-
-    # IGroupForm
-    def group_types(self):
-        return ('group',)
-
-    def form_to_db_schema_options(self, options):
-
-        # Get the default organization schema
-        schema = super(SchemaPlugin, self).form_to_db_schema_options(options)
-
-        if not schema:
-            from ckan.logic.schema import group_form_schema
-            schema = group_form_schema()
-
-        # Add custom fields to organization schema
-        schema.update({
-            'private': [ignore_missing, unicode, cnvrt_to_ext]
-        })
-
-        return schema
-
-    def db_to_form_schema_options(self, options):
-        # Get the default organization schema
-        schema = super(SchemaPlugin, self).db_to_form_schema_options(options)
-
-        if not schema:
-            from ckan.logic.schema import default_group_schema
-            schema = default_group_schema()
-
-        # Add custom fileds to organization schema
-        schema.update({
-            'private': [cnvrt_from_ext, ignore_missing, unicode]
-        })
-        return schema
