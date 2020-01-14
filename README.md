@@ -23,7 +23,7 @@ Installation
         python setup.py develop
 
 
-3.  Update config file and add the following plugins to `ckan.plugins` list : `edc_app` `edc_geo` `edc_ngeo` `edc_webservice` `edc_disqus`.
+3.  Update the config file and add the following plugins to `ckan.plugins` list : `edc_app` `edc_geo` `edc_ngeo` `edc_webservice` `edc_disqus`.
 
 4.  Add the following lines to ini file to the search setting section if they don’t exist:
 
