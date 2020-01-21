@@ -9,7 +9,7 @@ ckanext-bcgov
 
 This extension provides the basic customized features on the [BC Data Catalogue](http://catalogue.data.gov.bc.ca), such as schema updates, theme changes, etc.
 
-ckan core and other required ckan extensions including python modules are included as part of requirement.txt
+Ckan core and other required ckan extensions including python modules are included as part of requirement.txt.
 
 Installation
 ============
