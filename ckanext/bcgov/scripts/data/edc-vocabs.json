@@ -71,7 +71,11 @@
 					"MEDIUM-SENSITIVITY",
 					"MEDIUM-PERSONAL",
 					"LOW-SENSITIVITY",
-					"LOW-PUBLIC"
+					"LOW-PUBLIC",
+					"PUBLIC",
+					"PROTECTED A",
+					"PROTECTED B",
+					"PROTECTED C"
 				  ]
 	},
  {
