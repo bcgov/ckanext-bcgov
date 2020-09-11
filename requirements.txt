@@ -15,7 +15,7 @@ ckantoolkit
 ckanapi
 ckanext-pdfview==0.0.5
 -e git+https://github.com/bcgov/ckanext-sso@9176400cca6ddfc9312c8e33eff3289bb054ab1f#egg=ckanext_sso
--e git+https://github.com/bcgov/ckanext-bcgov-schema@19a8fdcfe5f3c1494e602fcf4fa85f16e733402a#egg=ckanext_bcgov_schema
+-e git+https://github.com/bcgov/ckanext-bcgov-schema@04ec0945d21cb383511882836e248b0e8055536d#egg=ckanext_bcgov_schema
 -e git+https://github.com/ckan/ckanext-scheming@1a096dd963424884bbaf70fa28da5c1de058d27d#egg=ckanext_scheming
 -e git+https://github.com/open-data/ckanext-repeating@291295557ff74b26784f6271c1a1b4ffdb990f43#egg=ckanext_repeating
 -e git+https://github.com/EnviDat/ckanext-composite@23a060b03d2432a58cc66968d93a15f5f1654055#egg=ckanext_composite
