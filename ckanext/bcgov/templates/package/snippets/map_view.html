@@ -24,7 +24,7 @@
         	{% if map_service_url %}
           {% set wmsservice_url = map_service_url + "&wmslayers=" + pkg.layer_name + "&ll=" + pkg.preview_latitude + "," + pkg.preview_longitude + "&z=" + pkg.preview_zoom_level %}
           {% set wmsservice_url = pkg.layer_name + "&smk-show-tool=zoom|pan|baseMaps&smk-center=" + pkg.preview_longitude + "," + pkg.preview_latitude + "," + pkg.preview_zoom_level %}
-      		{% set resource_url = "https://bcdcsmk-prd-rt-dbc-bcdc-prod.pathfinder.gov.bc.ca/?smk-layer=wms,https://openmaps.gov.bc.ca/geo/pub/wms,pub:" + wmsservice_url %}
+      		{% set resource_url = "https://bcdc-smk.data.gov.bc.ca/?smk-layer=wms,https://openmaps.gov.bc.ca/geo/pub/wms,pub:" + wmsservice_url %}
       			<iframe src="{{resource_url}}" frameborder="0" width="100%" data-module="data-viewer" height="400px"></iframe>
        	{% endif %}
       {% endif %}
