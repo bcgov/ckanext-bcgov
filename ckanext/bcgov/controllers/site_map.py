@@ -83,7 +83,7 @@ class GsaSitemapController(BaseController):
         user_name = c.user or 'visitor'
         fq = ''    
         if user_name == 'visitor':
-            fq += ' +edc_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
+            fq += ' +publish_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
 
         max_results = 1000000
         data_dict = {
