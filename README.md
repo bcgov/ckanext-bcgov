@@ -4,7 +4,7 @@
 [![Delivery](https://assets.bcdevexchange.org/images/badges/delivery.svg)](https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md)
 
 
-ckanext-bcgov - test
+ckanext-bcgov
 =============
 
 This extension provides the basic customized features on the [BC Data Catalogue](http://catalogue.data.gov.bc.ca), such as schema updates, theme changes, etc.
