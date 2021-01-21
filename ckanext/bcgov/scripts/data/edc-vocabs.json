@@ -105,7 +105,7 @@
  	"tags" : [
  				"Public",
  				"Government",
-                "Government and Business BCeID",
+              			"Government and Business BCeID",
  				"Named users"
  			]
  },
@@ -114,9 +114,9 @@
  	"tags" : [
  				"Public",
  				"Government",
-                "Government and Business BCeID",
+                		"Government and Business BCeID",
  				"Named users",
-                "Not downloadable"
+                		"Not downloadable"
  			]
  },
  {
@@ -148,7 +148,7 @@
  	"name" : "metadata_visibility",
  	"tags" : [
  				"Public",
-                "IDIR"
+                		"IDIR"
  			  ]
  },
  {
@@ -173,9 +173,12 @@
  	"name" : "contact_roles",
  	"tags" : [
  				"custodian",
+				"dataManager",
  				"pointOfContact",
  				"distributor",
-                "businessExpert"
+                		"businessExpert",
+				"dataSteward"
+	
  			 ]
  },
  {
