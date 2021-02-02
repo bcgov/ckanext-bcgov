@@ -1,7 +1,7 @@
 Babel==2.3.4
 Beaker==1.8.1
 beakeredis==0.1.0
-bleach==1.5.0
+bleach==3.3.0
 cachetools==3.1.1
 -e git+https://github.com/ckan/ckan.git@ckan-2.7.5#egg=ckan
 -e git+https://github.com/ckan/ckanext-geoview@v0.0.15#egg=ckanext_geoview
