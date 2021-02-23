@@ -179,17 +179,14 @@ class EDCApiController(ApiController):
 
             #add the top-level org to the organization
             #'organization, branch'
-            org = model.Group.get(pkg['org'])
-            branch = model.Group.get(pkg['sub_org'])
+            org = model.Group.get(pkg['owner_org'])
+            
             org_title = ''
-            branch_title = ''
             if org :
                 org_title = org.title
-            if branch :
-                branch_title = branch.title
 
             if pkg['organization']:
-                pkg['organization']['full_title'] = org_title + ', ' + branch_title
+                pkg['organization']['full_title'] = org_title
 
             if pkg['type'] != 'bcdc_dataset':
                 pkg['dataset_type'] = pkg['type']
@@ -199,8 +196,8 @@ class EDCApiController(ApiController):
 
             if not record_is_viewable(pkg, c.userobj) :
                 return_dict['success'] = False
-                return_dict['error'] = {'__type': 'Authorization Error', 'message': _('Access denied')}
-                return self._finish(403, return_dict, content_type='json')
+                return_dict['error'] = {'__type': 'Not Found Error', 'message': _('Not found')}
+                return self._finish(404, return_dict, content_type='json')
             return_dict['success'] = True
             return_dict['result'] = pkg
         except NotFound, e:
@@ -317,8 +314,7 @@ class EDCApiController(ApiController):
 
 
     def action(self, logic_function, ver=None):
-        # FIXME: remove this method when functions called below are removed
-
+        
         try:
             function = get_action(logic_function)
         except KeyError:
@@ -334,8 +330,8 @@ class EDCApiController(ApiController):
         context = {'model': model, 'session': model.Session, 'user': c.user,
                    'api_version': ver, 'auth_user_obj': c.userobj}
 
-        # if logic_function == 'package_show':
-        #     return self._package_show(context, request_data['id'])
+        if logic_function == 'package_show':
+            return self._package_show(context, request_data['id'])
         # elif logic_function == 'package_list':
         #     return self._get_package_list(context, ver)
         # if logic_function == 'current_package_list_with_resources':
