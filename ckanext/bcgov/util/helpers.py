@@ -131,12 +131,7 @@ def record_is_viewable(pkg_dict, userobj):
     Government users who are not admins or editors can only see the published or pending  archive records.
     Editors and admins can see all the records of their organizations in addition to what government users can see.
     """
-
     from ckanext.bcgov.util.util import get_orgs_user_can_edit  # , get_user_orgs
-
-    # Sysadmin can view all records
-    if userobj:
-        return True
 
     # Anonymous user (visitor) can only view published public records
     published_state = ['PUBLISHED', 'PENDING ARCHIVE']
@@ -152,6 +147,18 @@ def record_is_viewable(pkg_dict, userobj):
         publish_state = get_package_extras_by_key('publish_state', pkg_dict)
 
     if metadata_visibility == 'Public' and publish_state in published_state:
+        return True
+    if userobj  :
+
+        if metadata_visibility == 'IDIR' and publish_state in published_state:
+            return True
+
+        user_orgs = get_orgs_user_can_edit(userobj)
+        #user_orgs = [org.get('id') for org in get_user_orgs(userobj.id, 'editor') ]
+        #user_orgs += [org.get('id') for org in get_user_orgs(userobj.id, 'admin') ]
+        if owner_org in user_orgs:
+            return True
+
         return True
 
     return False
