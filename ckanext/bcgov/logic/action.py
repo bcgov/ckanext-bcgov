@@ -748,3 +748,24 @@ def tag_autocomplete_by_vocab(context, data_dict):
         }
     }
     return resultSet
+
+@toolkit.side_effect_free
+def member_list(context, data_dict):
+    import ckan.authz as authz
+    from ckan.logic.auth.create import _check_group_auth
+    user_object = context['user']
+    authorized = True
+
+    #Do not authorize anonymous users
+    if authz.auth_is_anon_user(context):
+        authorized = False
+
+    check2 = _check_group_auth(context,data_dict)
+    if not check2:
+        authorized = False
+
+    if authorized:
+        return _get_action('member_list')(context, data_dict)
+
+    return {"error": "Not found"}
+    

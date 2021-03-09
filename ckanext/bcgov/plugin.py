@@ -376,7 +376,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'edit_ofi_resources': ofi.edit_ofi_resources,
             'get_max_aoi': ofi.get_max_aoi,
             'ofi_create_order': ofi.ofi_create_order,
-            'tag_autocomplete_by_vocab': edc_action.tag_autocomplete_by_vocab
+            'tag_autocomplete_by_vocab': edc_action.tag_autocomplete_by_vocab,
+            'member_list': edc_action.member_list
         }
 
     def get_auth_functions(self):
