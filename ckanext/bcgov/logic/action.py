@@ -33,6 +33,11 @@ from ckanext.bcgov.logic.get import (_group_or_org_list)
 
 import pprint
 
+NotFound = logic.NotFound
+NotAuthorized = logic.NotAuthorized
+ValidationError = logic.ValidationError
+_get_or_bust = logic.get_or_bust
+
 
 # shortcuts
 get_action = logic.get_action
@@ -765,7 +770,37 @@ def member_list(context, data_dict):
         authorized = False
 
     if authorized:
-        return _get_action('member_list')(context, data_dict)
+        model = context['model']
+
+        group = model.Group.get(_get_or_bust(data_dict, 'id'))
+        if not group:
+            raise NotFound
+
+        obj_type = data_dict.get('object_type', None)
+        capacity = data_dict.get('capacity', None)
+
+        # User must be able to update the group to remove a member from it
+        _check_access('group_show', context, data_dict)
+
+        q = model.Session.query(model.Member).\
+            filter(model.Member.group_id == group.id).\
+            filter(model.Member.state == "active")
+
+        if obj_type:
+            q = q.filter(model.Member.table_name == obj_type)
+        if capacity:
+            q = q.filter(model.Member.capacity == capacity)
+
+        trans = authz.roles_trans()
+
+        def translated_capacity(capacity):
+            try:
+                return trans[capacity]
+            except KeyError:
+                return capacity
+
+        return [(m.table_id, m.table_name, translated_capacity(m.capacity))
+                for m in q.all()]
 
     return {"error": "Not found"}
     
