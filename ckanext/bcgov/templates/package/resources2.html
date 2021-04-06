@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block page_primary_action %}
-{% if pkg.edc_state != "ARCHIVED" %}
+{% if pkg.publish_state != "ARCHIVED" %}
   {% if c.record_type == 'Geographic' %}
     <a href="#ofi-results" role="button" class="btn btn-primary" data-toggle="modal">{{ _('Manage BCGW Resources') }}</a>
   {% endif %}

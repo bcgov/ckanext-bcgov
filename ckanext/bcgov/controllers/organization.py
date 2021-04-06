@@ -172,7 +172,7 @@ class EDCOrganizationController(OrganizationController):
             facets = OrderedDict()
 
             default_facet_titles = {'organization': _('Organizations'),
-                                    'edc_state': _('States'),
+                                    'publish_state': _('States'),
                                     'tags': _('Tags'),
                                     'res_format': _('Formats'),
                                     'license_id': _('Licenses'),

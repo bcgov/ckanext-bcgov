@@ -310,7 +310,7 @@ def import_odsi_records(con):
                 discovery_record = discovery_data.get(str(result[22]))
 
             #-------------------------------------------------------------------< Dataset State >---------------------------------------------------------------------
-            edc_record['edc_state'] = result[21] or 'DRAFT'
+            edc_record['publish_state'] = result[21] or 'DRAFT'
 
             if (not result[2]):
                 import_log_file.write('Record is not imported. No title is given.\n')
@@ -321,9 +321,9 @@ def import_odsi_records(con):
                 continue
                 
             #Ignore DRAFT records or records with no title
-            if (edc_record.get('edc_state') == 'DRAFT' or edc_record.get('edc_state') == 'PENDING PUBLISH'):
-                import_log_file.write('Record is not imported. The record state is ' + edc_record.get('edc_state') + '.\n')
-                print 'Record is not imported. The record state is ' + edc_record.get('edc_state') + '.\n'
+            if (edc_record.get('publish_state') == 'DRAFT' or edc_record.get('publish_state') == 'PENDING PUBLISH'):
+                import_log_file.write('Record is not imported. The record state is ' + edc_record.get('publish_state') + '.\n')
+                print 'Record is not imported. The record state is ' + edc_record.get('publish_state') + '.\n'
                 import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
                 print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
                 index += 1
@@ -439,7 +439,7 @@ def import_odsi_records(con):
                 #Adding record publish date
                 edc_record['record_publish_date'] = result[17]
 
-            #elif edc_record['edc_state'] == 'PUBLISHED' :
+            #elif edc_record['publish_state'] == 'PUBLISHED' :
                 #edc_record['record_publish_date'] = str(datetime.date.today())
                 
             if edc_record.get('type') == 'Geographic' or edc_record.get('type') == 'Dataset':
@@ -951,7 +951,7 @@ def save_discovery_records(con, discovery_data_filename):
 
             #---------------------------------------------------------------------<< Record state >>-----------------------------------------------------------------------
             state_convert_dict = {'Draft': 'DRAFT', 'Approve': 'PENDING PUBLISH', 'Published': 'PUBLISHED', 'ZPublished': 'PUBLISHED'}
-            edc_record['edc_state'] = state_convert_dict.get(result[3])
+            edc_record['publish_state'] = state_convert_dict.get(result[3])
 
 
             #---------------------------------------------------------------------<< Record Author >>----------------------------------------------------------------------
@@ -1111,7 +1111,7 @@ def save_discovery_records(con, discovery_data_filename):
                 edc_record['record_create_date'] = result[30]
 
             #Add the publish date for records with publish state.
-            if edc_record.get('edc_state') == 'PUBLISHED' :
+            if edc_record.get('publish_state') == 'PUBLISHED' :
                 edc_record['record_publish_date'] = str(datetime.date.today())
 
             if result[50] :
@@ -1395,9 +1395,9 @@ def import_discovery_records():
  
          
         # Ignore DRAFT, Pending Publiash and Theme records (Records with Theme in title).
-        if edc_record.get('edc_state') == 'DRAFT' or edc_record.get('edc_state') == 'PENDING PUBLISH':
-            import_log_file.write('Record is not imported. The record state is ' + edc_record.get('edc_state') + '.\n')
-            print 'Record is not imported. The record state is ' + edc_record.get('edc_state') + '.\n'
+        if edc_record.get('publish_state') == 'DRAFT' or edc_record.get('publish_state') == 'PENDING PUBLISH':
+            import_log_file.write('Record is not imported. The record state is ' + edc_record.get('publish_state') + '.\n')
+            print 'Record is not imported. The record state is ' + edc_record.get('publish_state') + '.\n'
             import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
             print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
             index += 1

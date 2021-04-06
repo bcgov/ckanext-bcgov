@@ -1,6 +1,6 @@
 {% import 'macros/form.html' as form %}
 
-{% set current_state = data.edc_state or _('DRAFT') %}
+{% set current_state = data.publish_state or _('DRAFT') %}
 {% set archived = current_state == "ARCHIVED" %}
 {% set action = c.form_action or '' %}
 {% set record_type = data.type or c.record_type %}
@@ -99,11 +99,11 @@ then itself be extended to add/remove blocks of functionality. #}
     </div>
   {% endblock %}
 
-	{% set state_options = h.edc_state_values(c.userobj, data) %}
+	{% set state_options = h.publish_state(c.userobj, data) %}
 	<div class="control-group form-horizontal">
-		<label class="control-label" for="field-edc_state">State</label>
+		<label class="control-label" for="field-publish_state">State</label>
 		<div class="controls">
-        <select id="field-edc_state" name="edc_state" data-module="autocomplete" class="required">
+        <select id="field-publish_state" name="publish_state" data-module="autocomplete" class="required">
       		{% for state in state_options %}
       			{% set selected_state = (current_state and current_state == state) %}
       			<option value="{{ state }}"

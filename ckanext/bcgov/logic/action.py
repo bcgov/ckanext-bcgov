@@ -93,10 +93,10 @@ def get_msg_content(msg_dict):
 
     from string import Template
 
-    msg = ('<p>As a BC Data Catalogue $user_role for the $org - $sub_org, '
+    msg = ('<p>As a BC Data Catalogue $user_role for the $org, '
            'please be advised that the publication state of this record: '
-           '<a href="$dataset_url">$dataset_url</a> is now "$dataset_state".<br><br>'
-           'If you are no longer an $user_role for $org - $sub_org or if you have a question or concern regarding this message '
+           '<a href="$dataset_url">$name</a> is now "$dataset_state" (previously $prev_state).<br><br>'
+           'If you are no longer an $user_role for $org or if you have a question or concern regarding this message '
            'please contact DataBC Catalogue Services <a href="&quot;mailto:datacat@gov.bc.ca">datacat@gov.bc.ca</a> .<br><br>Thanks.</p>')
 
     msg_template = Template(msg)
@@ -211,7 +211,7 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
         - Removed the nested for loops for finding and sending notification to members (Replaced by a single for loop).
     '''
 
-    new_state = new_data['edc_state']
+    new_state = new_data['publish_state']
 
     # If dataset's state has not been changed do nothing
     if (old_state == new_state):
@@ -220,11 +220,11 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
     '''
     Get the organization and sub-organization data
     '''
-    org_id = new_data.get('org')
-    sub_org_id = new_data.get('sub_org')
+    org_id = new_data.get('owner_org')
+    #sub_org_id = new_data.get('sub_org')
 
     org = model.Group.get(org_id)
-    sub_org = model.Group.get(sub_org_id)
+    #sub_org = model.Group.get(sub_org_id)
 
     # Do not send emails for "DRAFT" datasets
     if new_state == "DRAFT":
@@ -233,7 +233,7 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
     # Basic dataset info
     dataset_title = new_data['title']
     org_title = org.title
-    sub_org_title = sub_org.title
+    sub_org_title = ''#sub_org.title
 
     # Prepare email
     subject = ''
@@ -246,12 +246,12 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
         role = 'editor'
 
     if new_state in ['PENDING PUBLISH', 'REJECTED', 'PUBLISHED', 'PENDING ARCHIVE', 'ARCHIVED']:
-        subject = 'EDC - ' + new_state + ' ' + dataset_title
+        subject = 'BCDC - ' + new_state + ' ' + dataset_title
 
     # Prepare the dictionary for email content template
 
     msg_dict = dict(org=org_title, sub_org=sub_org_title, user_role=role,
-                    dataset_url=dataset_url, dataset_state=new_state)
+                    dataset_url=dataset_url, dataset_state=new_state, prev_state=old_state, name=new_data['title'])
     msg_body = get_msg_content(msg_dict)
 
     email_dict = {'subject': subject, 'body': msg_body}
@@ -268,7 +268,7 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
     query = model.Session.query(model.User) \
         .join(model.Member, model.User.id == model.Member.table_id) \
         .filter(model.Member.capacity == role) \
-        .filter(model.Member.group_id == sub_org.id) \
+        .filter(model.Member.group_id == org.id) \
         .filter(model.Member.state == 'active') \
         .filter(model.User.state == 'active')
 
@@ -349,7 +349,7 @@ def edc_package_update(context, input_data_dict):
         # Upadted by Khalegh Mamakani to update the i-map link only if it has
         # not been done already.
         new_imap_link = None
-        if (package_dict['edc_state'] != 'ARCHIVED'):
+        if (package_dict['publish_state'] != 'ARCHIVED'):
             if (visibility == 'Public'):
                 if (input_data_dict.get("imap_layers_pub")):
                     new_imap_link = public_map_link + \
@@ -430,7 +430,7 @@ def edc_package_update_bcgw(context, input_data_dict):
     resource_dict = get_action('resource_show')(
         context, {'id': results[0]['id']})
 
-    # if package_dict['edc_state'] == 'ARCHIVED':
+    # if package_dict['publish_state'] == 'ARCHIVED':
     #     return_dict = {}
     #     return_dict['results'] = None
     #     return return_dict
@@ -523,6 +523,11 @@ def package_update(context, data_dict):
     if pkg is None:
         raise NotFound(_('Package was not found.'))
     context["package"] = pkg
+    package_plugin = lib_plugins.lookup_package_plugin(pkg.type)
+    if 'schema' in context:
+        schema = context['schema']
+    else:
+        schema = package_plugin.update_package_schema()
     data_dict["id"] = pkg.id
 
     # FIXME: first modifications to package_updade begin here:
@@ -531,80 +536,26 @@ def package_update(context, data_dict):
     # image upload support has also been added here
     old_data = get_action('package_show')(context, {'id': pkg.id})
 
-    '''
-    Constructing the tag_string from the given tags.
-    There must be at least one tag, otherwise the tag_string will be empty and a validation error
-    will be raised.
-    '''
-    if not data_dict.get('tag_string'):
-        data_dict['tag_string'] = ', '.join(
-            h.dict_list_reduce(data_dict.get('tags', {}), 'name'))
-
     for key, value in old_data.iteritems():
         if key not in data_dict:
             data_dict[key] = value
-
-    # data_dict['resources'] = data_dict.get('resources', old_data.get('resources'))
-
-
-#     iso_topic_cat = data_dict.get('iso_topic_string', [])
-#     if isinstance(iso_topic_cat, basestring):
-#         iso_topic_cat = [iso_topic_cat]
-#
-#     data_dict['iso_topic_string'] = ','.join(iso_topic_cat)
 
     # Set the package last modified date
     data_dict['record_last_modified'] = str(datetime.date.today())
 
     # If the Created Date has not yet been set, then set it
-    if data_dict['edc_state'] == 'DRAFT' and not data_dict.get('record_create_date'):
+    if data_dict['publish_state'] == 'DRAFT' and not data_dict.get('record_create_date'):
         data_dict['record_create_date'] = str(datetime.date.today())
 
     # If the Publish Date has not yet been set, then set it
-    if data_dict['edc_state'] == 'PUBLISHED' and not data_dict.get('record_publish_date'):
+    if data_dict['publish_state'] == 'PUBLISHED' and not data_dict.get('record_publish_date'):
         data_dict['record_publish_date'] = str(datetime.date.today())
 
     # If the Archive Date has not yet been set, then set it
-    if data_dict['edc_state'] == 'ARCHIVED' and not data_dict.get('record_archive_date'):
+    if data_dict['publish_state'] == 'ARCHIVED' and not data_dict.get('record_archive_date'):
         data_dict['record_archive_date'] = str(datetime.date.today())
 
     _check_access('package_update', context, data_dict)
-
-    # get the schema
-    package_plugin = lib_plugins.lookup_package_plugin(pkg.type)
-    if 'schema' in context:
-        schema = context['schema']
-    else:
-        schema = package_plugin.update_package_schema()
-
-    image_url = old_data.get('image_url', None)
-
-    upload = uploader.Upload('edc', image_url)
-    upload.update_data_dict(data_dict, 'image_url',
-                            'image_upload', 'clear_upload')
-
-    # Adding image display url for the uploaded image
-    image_url = data_dict.get('image_url')
-    data_dict['image_display_url'] = image_url
-
-    if image_url and not image_url.startswith('http'):
-        image_url = munge.munge_filename(image_url)
-        data_dict['image_display_url'] = h.url_for_static(
-            'uploads/edc/%s' % data_dict.get('image_url'), qualified=True)
-
-    if 'api_version' not in context:
-        # check_data_dict() is deprecated. If the package_plugin has a
-        # check_data_dict() we'll call it, if it doesn't have the method we'll
-        # do nothing.
-        check_data_dict = getattr(package_plugin, 'check_data_dict', None)
-        if check_data_dict:
-            try:
-                package_plugin.check_data_dict(data_dict, schema)
-            except TypeError:
-                # Old plugins do not support passing the schema so we need
-                # to ensure they still work.
-                package_plugin.check_data_dict(data_dict)
-    # FIXME: modifications to package_update end here^
 
     data, errors = lib_plugins.plugin_validate(
         package_plugin, context, data_dict, schema, 'package_update')
@@ -642,8 +593,6 @@ def package_update(context, data_dict):
         item.edit(pkg)
 
         item.after_update(context, data)
-
-    upload.upload(uploader.get_max_image_size())
 
     # TODO the next two blocks are copied from ckan/ckan/logic/action/update.py
     # This codebase is currently hard to maintain because large chunks of the
@@ -684,13 +633,13 @@ def package_update(context, data_dict):
     Using a thread to run the job in the background so that package_update will not wait for notifications sending.
     '''
 
-    old_state = old_data.get('edc_state')
+    old_state = old_data.get('publish_state')
 
     context = {'model': model, 'session': model.Session,
                'user': c.user or c.author, 'auth_user_obj': c.userobj}
 
     dataset_url = config.get(
-        'ckan.site_url') + h.url_for(controller='package', action="read", id=data_dict['name'])
+        'ckan.site_url') + h.url_for(controller='package', action="read", id=data_dict['id'])
     import threading
 
     notify_thread = threading.Thread(target=check_record_state, args=(

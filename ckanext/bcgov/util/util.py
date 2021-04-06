@@ -402,7 +402,7 @@ def get_state_values(userobj, pkg):
     else :
         admins = []
 
-    current_state = pkg['edc_state']
+    current_state = pkg['publish_state']
 
     if current_state == 'DRAFT':
         states = ['DRAFT', 'PENDING PUBLISH']
