@@ -93,11 +93,11 @@ def get_msg_content(msg_dict):
 
     from string import Template
 
-    msg = ('<p>As a BC Data Catalogue $user_role for the $org, '
-           'please be advised that the publication state of this record: '
-           '<a href="$dataset_url">$name</a> is now "$dataset_state" (previously $prev_state).<br><br>'
+    msg = ('<p>As a BC Data Catalogue $user_role for $org, '
+           'please be advised that the publication state of this record is now "$dataset_state" (previously $prev_state)<br /><br />: '
+           '<b>$name</b> (<a href="$dataset_url">$dataset_url</a>)<br />'
            'If you are no longer an $user_role for $org or if you have a question or concern regarding this message '
-           'please contact DataBC Catalogue Services <a href="&quot;mailto:datacat@gov.bc.ca">datacat@gov.bc.ca</a> .<br><br>Thanks.</p>')
+           'please contact DataBC Discovery Services <a href="&quot;mailto:datacat@gov.bc.ca">datacat@gov.bc.ca</a> .<br><br>Thanks.</p>')
 
     msg_template = Template(msg)
 
