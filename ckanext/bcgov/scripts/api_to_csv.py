@@ -19,7 +19,7 @@ def write_packages_to_file(pakages, csv_writer):
         Get selected fields of the package
         '''
         dataset_type = pkg.get('type')
-        edc_state = pkg.get('edc_state')
+        edc_state = pkg.get('publish_state')
         record_publish_date = pkg.get('record_publish_date')
         record_create_date = pkg.get('record_create_date')
         name = pkg.get('name')
@@ -98,7 +98,7 @@ Creating the csv file and adding the header row
 '''
 csv_file = open("package_list.csv", 'wb')
 csv_writer = csv.writer(csv_file)
-csv_writer.writerow(['dataset_type','edc_state','record_publish_date','record_create_date','name','odsi_uid','metastar_uid'])
+csv_writer.writerow(['dataset_type','publish_state','record_publish_date','record_create_date','name','odsi_uid','metastar_uid'])
 
 '''
 Gets search results in chunks of 1000 records and

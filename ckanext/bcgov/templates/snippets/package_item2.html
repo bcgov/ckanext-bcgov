@@ -48,9 +48,9 @@ Example:
         {% endblock %}
 
         {% if logged_in and is_editor %}
-          {% set edc_state_class = package.edc_state|lower|replace(" ", "") %}
+          {% set edc_state_class = package.publish_state|lower|replace(" ", "") %}
           <div class="edc-state {{ edc_state_class }}">
-            {{ package.edc_state }}
+            {{ package.publish_state }}
           </div>
         {% endif %}
 

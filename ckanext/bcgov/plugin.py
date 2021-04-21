@@ -347,7 +347,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         facet_dict['download_audience'] = _('Download permission')
 
         if c.userobj and c.userobj.sysadmin:
-            facet_dict['edc_state'] = _('States')
+            facet_dict['publish_state'] = _('States')
 
         return facet_dict
 
@@ -365,7 +365,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'group_list': edc_action.group_list,
             'edc_package_update': edc_action.edc_package_update,
             'edc_package_update_bcgw': edc_action.edc_package_update_bcgw,
-            # 'package_update': edc_action.package_update,
+            'package_update': edc_action.package_update,
             'package_autocomplete': edc_action.package_autocomplete,
             'check_object_name': ofi.check_object_name,
             'file_formats': ofi.file_formats,

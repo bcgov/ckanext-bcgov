@@ -94,7 +94,7 @@ def get_user_dataset_num(userobj):
         fq = ''
     else :
         #Include only datsset created by this user or those from the orgs that the user has the admin role.
-        fq = ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
+        fq = ' +(publish_state:("PUBLISHED" OR "PENDING ARCHIVE")'
 
         user_orgs = get_orgs_user_can_edit(userobj) #['"' + org + '"' for org in get_orgs_user_can_edit()]
         #user_orgs = ['"' + org.get('id') + '"' for org in get_user_orgs(user_id, 'admin')]

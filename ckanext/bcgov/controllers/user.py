@@ -43,7 +43,7 @@ class EDCUserController(UserController):
 
         user_id = c.userobj.id 
 
-        fq = ' +edc_state:("DRAFT" OR "PENDING PUBLISH" OR "REJECTED")'
+        fq = ' +publish_state:("DRAFT" OR "PENDING PUBLISH" OR "REJECTED")'
 
         # Get the list of organizations that this user is the admin
         if not c.userobj.sysadmin :
@@ -69,7 +69,7 @@ class EDCUserController(UserController):
         if c.userobj and c.userobj.sysadmin == True:
             fq = ''
         else:
-            fq = ' +(edc_state:("PUBLISHED" OR "PENDING ARCHIVE")'
+            fq = ' +(publish_state:("PUBLISHED" OR "PENDING ARCHIVE")'
             if c.userobj:
                 user_id = c.userobj.id
                 user_orgs = get_orgs_user_can_edit(c.userobj)
@@ -160,7 +160,7 @@ class EDCUserController(UserController):
 
             default_facet_titles = {
                     'organization': _('Organizations'),
-                    'edc_state': _('States'),
+                    'publish_state': _('States'),
                     'tags': _('Tags'),
                     'res_format': _('Formats'),
                     }
