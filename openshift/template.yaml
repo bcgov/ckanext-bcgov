@@ -1,0 +1,858 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: bcdc-ckan-template
+message: |-
+  The following service(s) have been created in your project:
+    1. ${CKAN_SERVICE_NAME}-main
+    2. ${CKAN_SERVICE_NAME}-paster
+    3. ${CKAN_SERVICE_NAME}-solr
+    4. ${CKAN_SERVICE_NAME}-db
+metadata:
+  name: bcdc-ckan
+  annotations:
+    openshift.io/display-name: bcdc-ckan
+    openshift.io/long-description: >
+      This template provides a bcdc-ckan instance.
+    description: >
+      This is a bcdc-ckan deployment.
+parameters:
+- name: CKAN_SERVICE_NAME
+  displayName: BCDC Ckan Service Name
+  description: A prefix appended to all objects
+  required: true
+  value: bcdc-ckan
+- name: NAMESPACE_PREFIX
+  displayName: Namespace Prefix
+  description: The namespace prefix
+  required: true
+  value: 40db83
+- name: NAMESPACE_SUFIX
+  displayName: Namespace Sufix
+  description: The namespace sufix dev, test, or prod
+  required: true
+  value: dev
+objects:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: ${CKAN_SERVICE_NAME}
+    name: ${CKAN_SERVICE_NAME}
+  spec:
+    lookupPolicy:
+      local: false
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      description: buildconfig for bcdc ckan
+      template.alpha.openshift.io/wait-for-ready: 'true'
+    labels:
+      app: ${CKAN_SERVICE_NAME}
+    name: ${CKAN_SERVICE_NAME}
+  spec:
+    completionDeadlineSeconds: 3600
+    failedBuildsHistoryLimit: 5
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: 'bcdc-ckan:latest'
+    resources:
+      limits:
+        cpu: '1'
+        memory: 4Gi
+      requests:
+        cpu: 100m
+        memory: 1Gi
+    postCommit: {}
+    runPolicy: Serial
+    source:
+      dockerfile: >-
+        FROM python-27:latest
+
+
+        RUN git clone -b ${BCDC_BRANCH} --single-branch
+        https://github.com/bcgov/ckanext-bcgov
+
+        RUN pip install -r ./ckanext-bcgov/requirements.txt
+
+
+        ENV APP_DIR=/opt/app-root \
+          SRC_DIR=/opt/app-root/src \
+          PIP_SRC=${SRC_DIR} \
+          EXREA_PY_MODULE='genshi beakeredis gevent uwsgi'
+
+        WORKDIR ${APP_DIR}
+
+        RUN for i in ${BCDC_INT_EXT}; do pip install -q --no-cache-dir -e
+        git+https://${GOGS_TOKEN}@gogs.data.gov.bc.ca/bcdc/${i}@master#egg=${i};
+        done && \
+          pip install --no-cache-dir -e git+https://github.com/bcgov/ckanext-bcgov@${BCDC_BRANCH}#egg=ckanext-bcgov && \
+          pip install --no-cache-dir ${EXREA_PY_MODULE} && \
+          chmod -R 777 ${SRC_DIR}/ckan/ckan/public/base/* ${SRC_DIR}/ckan/ckanext/datatablesview/public
+      type: Dockerfile
+    strategy:
+      dockerStrategy:
+        env:
+          - name: CKAN_STORAGE_PATH
+            value: /var/lib/ckan
+          - name: CKAN_SITE_URL
+            value: 'https://cati.data.gov.bc.ca'
+          - name: CKAN_INI
+            value: /conf/ckan.ini
+          - name: BCDC_INT_EXT
+            value: ckanext-edc-idir
+          - name: GOGS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                key: g.token
+                name: ${CKAN_SERVICE_NAME}-gogs-token
+          - name: BCDC_BRANCH
+            value: dev
+        from:
+          kind: ImageStreamTag
+          name: 'python-27:latest'
+          namespace: ${NAMESPACE_PREFIX}-tools
+        noCache: true
+      type: Docker
+    successfulBuildsHistoryLimit: 5
+    triggers: []
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: ${CKAN_SERVICE_NAME}-db
+    labels:
+      app: ${CKAN_SERVICE_NAME}
+  spec:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 35Gi
+    storageClassName: netapp-file-standard
+    volumeMode: Filesystem
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: ${CKAN_SERVICE_NAME}-db
+  data:
+    database-name: Y2thbg==
+    database-password: aHNPcjdPaGFic1RCMXBQbA==
+    database-user: Y2thbg==
+  type: Opaque
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      template.alpha.openshift.io/wait-for-ready: 'true'
+    labels:
+      app: ${CKAN_SERVICE_NAME}
+      app.kubernetes.io/part-of: ${CKAN_SERVICE_NAME}-app
+    name: ${CKAN_SERVICE_NAME}-db
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      name: ${CKAN_SERVICE_NAME}-db
+    strategy:
+      activeDeadlineSeconds: 21600
+      recreateParams:
+        timeoutSeconds: 3600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          name: ${CKAN_SERVICE_NAME}-db
+      spec:
+        containers:
+          - env:
+              - name: POSTGRESQL_USER
+                valueFrom:
+                  secretKeyRef:
+                    key: database-user
+                    name: ${CKAN_SERVICE_NAME}-db
+              - name: POSTGRESQL_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    key: database-password
+                    name: ${CKAN_SERVICE_NAME}-db
+              - name: POSTGRESQL_DATABASE
+                valueFrom:
+                  secretKeyRef:
+                    key: database-name
+                    name: ${CKAN_SERVICE_NAME}-db
+            imagePullPolicy: IfNotPresent
+            name: postgresql
+            ports:
+              - containerPort: 5432
+                protocol: TCP
+            resources:
+              limits:
+                cpu: '1'
+                memory: 4Gi
+              requests:
+                cpu: '1'
+                memory: 2Gi
+            securityContext:
+              capabilities: {}
+              privileged: false
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+              - mountPath: /var/lib/pgsql/data
+                name: ${CKAN_SERVICE_NAME}-db-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+          - name: ${CKAN_SERVICE_NAME}-db-data
+            persistentVolumeClaim:
+              claimName: ${CKAN_SERVICE_NAME}-db
+    test: false
+    triggers:
+      - imageChangeParams:
+          automatic: true
+          containerNames:
+            - postgresql
+          from:
+            kind: ImageStreamTag
+            name: 'postgresql:9.6'
+            namespace: openshift
+        type: ImageChange
+      - type: ConfigChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: ${CKAN_SERVICE_NAME}-db
+    labels:
+      app: ${CKAN_SERVICE_NAME}
+  spec:
+    ports:
+      - name: postgresql
+        protocol: TCP
+        port: 5432
+        targetPort: 5432
+    selector:
+      name: ${CKAN_SERVICE_NAME}-db
+    type: ClusterIP
+    sessionAffinity: None
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: bcdc-solr-core
+    labels:
+      app: ${CKAN_SERVICE_NAME}
+  spec:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 1Gi
+    storageClassName: netapp-file-standard
+    volumeMode: Filesystem
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: ${CKAN_SERVICE_NAME}-gogs-token
+  data:
+    conf.repo.url: >-
+      aHR0cHM6Ly84MjYyMTY5ZjZjOTkyMWZiMGNjNGVjYTVkMjFmZDYxZjk4NjkxYmIxQGdvZ3MuZGF0YS5nb3YuYmMuY2EvYmNkYy9iY2RjLWNvbmZpZy1yZWxlYXNlLmdpdA==
+    g.token: ODI2MjE2OWY2Yzk5MjFmYjBjYzRlY2E1ZDIxZmQ2MWY5ODY5MWJiMQ==
+  type: Opaque
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: ${CKAN_SERVICE_NAME}-caddy-config
+  data:
+    caddifile: |-
+      0.0.0.0 {
+      git {$CONF_REPO_URL} /ckan {
+      branch {$MAIN_BRANCH}
+      }
+      git {$CONF_REPO_URL} /solr {
+      branch {$SOLR_BRANCH}
+      }
+      root /tmp
+      gzip
+      }
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: ${CKAN_SERVICE_NAME}
+      app.kubernetes.io/part-of: ${CKAN_SERVICE_NAME}-app
+    name: ${CKAN_SERVICE_NAME}-solr
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      app: ${CKAN_SERVICE_NAME}
+      deploymentconfig: ${CKAN_SERVICE_NAME}-solr
+      name: ${CKAN_SERVICE_NAME}-solr
+    strategy:
+      activeDeadlineSeconds: 21600
+      recreateParams:
+        timeoutSeconds: 600
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: ${CKAN_SERVICE_NAME}
+          deploymentconfig: ${CKAN_SERVICE_NAME}-solr
+          name: ${CKAN_SERVICE_NAME}-solr
+      spec:
+        containers:
+          - env:
+              - name: SOLR_JAVA_MEM
+                value: '-Xms6g -Xmx6g'
+              - name: TZ
+                value: America/Vancouver
+            image: 'solr:6-alpine'
+            imagePullPolicy: IfNotPresent
+            livenessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /solr/mycores/admin/ping
+                port: 8983
+                scheme: HTTP
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1
+            name: solr
+            ports:
+              - containerPort: 8983
+                name: solr
+                protocol: TCP
+            resources:
+              limits:
+                cpu: '1'
+                memory: 6Gi
+              requests:
+                cpu: 400m
+                memory: 2Gi
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+              - mountPath: /opt/solr/server/solr/mycores
+                name: solrcore
+              - mountPath: /opt/solr/server/logs
+                name: solr-logs
+              - mountPath: /opt/solr/server/solr/mycores/conf
+                name: bcdc-solr-conf
+        dnsPolicy: ClusterFirst
+        initContainers:
+          - command:
+              - /bin/sh
+              - '-c'
+              - 'git clone -b ${SOLR_BRANCH} ${CONF_REPO_URL} /solr'
+            env:
+              - name: GIT_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    key: g.token
+                    name: ${CKAN_SERVICE_NAME}-gogs-token
+              - name: CONF_REPO_URL
+                valueFrom:
+                  secretKeyRef:
+                    key: conf.repo.url
+                    name: ${CKAN_SERVICE_NAME}-gogs-token
+              - name: SOLR_BRANCH
+                value: cati-solr
+              - name: TZ
+                value: America/Vancouver
+            image: 'abiosoft/caddy:no-stats'
+            imagePullPolicy: IfNotPresent
+            name: solr-conf
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+              - mountPath: /solr
+                name: bcdc-solr-conf
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+          - emptyDir: {}
+            name: solr-logs
+          - name: solrcore
+            persistentVolumeClaim:
+              claimName: bcdc-solr-core
+          - configMap:
+              defaultMode: 420
+              items:
+                - key: caddifile
+                  path: Caddyfile
+              name: ${CKAN_SERVICE_NAME}-caddy-config
+            name: ${CKAN_SERVICE_NAME}-caddy-conf
+          - emptyDir: {}
+            name: bcdc-conf
+          - emptyDir: {}
+            name: bcdc-solr-conf
+    test: false
+    triggers:
+      - type: ConfigChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: ${CKAN_SERVICE_NAME}-solr
+    labels:
+      app: ${CKAN_SERVICE_NAME}
+  spec:
+    ports:
+      - name: solr
+        protocol: TCP
+        port: 8983
+        targetPort: 8983
+    selector:
+      name: ${CKAN_SERVICE_NAME}-solr
+    type: ClusterIP
+    sessionAffinity: None
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: ${CKAN_SERVICE_NAME}-sqlalchemy-connection
+  data:
+    bcdc-connection.dsr: cG9zdGdyZXNxbDovL2RhdGFzdG9yZTpkYXRhc3RvcmVAYmNkYy1ja2FuLWRiOjU0MzIvZGF0YXN0b3Jl
+    bcdc-connection.dsw: cG9zdGdyZXNxbDovL2NrYW46aHNPcjdPaGFic1RCMXBQbEBiY2RjLWNrYW4tZGI6NTQzMi9kYXRhc3RvcmU=
+    bcdc-connection.main: cG9zdGdyZXNxbDovL2NrYW46aHNPcjdPaGFic1RCMXBQbEBiY2RjLWNrYW4tZGI6NTQzMi9ja2Fu
+  type: Opaque
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: ${CKAN_SERVICE_NAME}
+      app.kubernetes.io/part-of: ${CKAN_SERVICE_NAME}-app
+    name: ${CKAN_SERVICE_NAME}-paster
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      app: ${CKAN_SERVICE_NAME}
+      deploymentconfig: ${CKAN_SERVICE_NAME}-paster
+      name: ${CKAN_SERVICE_NAME}-paster
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: ${CKAN_SERVICE_NAME}
+          deploymentconfig: ${CKAN_SERVICE_NAME}-paster
+          name: ${CKAN_SERVICE_NAME}-paster
+      spec:
+        containers:
+          - command:
+              - /bin/sh
+              - '-c'
+              - paster --plugin=ckan jobs worker
+            env:
+              - name: CKAN_SOLR_URL
+                value: 'http://${CKAN_SERVICE_NAME}-solr:8983/solr/mycores'
+              - name: CKAN_REDIS_URL
+                value: 'redis://${CKAN_SERVICE_NAME}-main:6379/0'
+              - name: CKAN_SQLALCHEMY_URL
+                valueFrom:
+                  secretKeyRef:
+                    key: bcdc-connection.main
+                    name: ${CKAN_SERVICE_NAME}-sqlalchemy-connection
+              - name: CKAN_DATASTORE_WRITE_URL
+                valueFrom:
+                  secretKeyRef:
+                    key: bcdc-connection.dsw
+                    name: ${CKAN_SERVICE_NAME}-sqlalchemy-connection
+              - name: CKAN_DATASTORE_READ_URL
+                valueFrom:
+                  secretKeyRef:
+                    key: bcdc-connection.dsr
+                    name: ${CKAN_SERVICE_NAME}-sqlalchemy-connection
+            image: >-
+              image-registry.openshift-image-registry.svc:5000/${NAMESPACE_PREFIX}-${NAMESPACE_SUFIX}/${CKAN_SERVICE_NAME}
+            imagePullPolicy: Always
+            name: paster
+            resources:
+              limits:
+                cpu: 150m
+              requests:
+                cpu: 50m
+                memory: 200Mi
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+              - mountPath: /conf/
+                name: bcdc-conf
+                readOnly: true
+        dnsPolicy: ClusterFirst
+        initContainers:
+          - command:
+              - /bin/sh
+              - '-c'
+              - 'git clone -b ${MAIN_BRANCH} ${CONF_REPO_URL} /ckan'
+            env:
+              - name: GIT_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    key: g.token
+                    name: ${CKAN_SERVICE_NAME}-gogs-token
+              - name: CONF_REPO_URL
+                valueFrom:
+                  secretKeyRef:
+                    key: conf.repo.url
+                    name: ${CKAN_SERVICE_NAME}-gogs-token
+              - name: MAIN_BRANCH
+                value: cati-main
+              - name: SOLR_BRANCH
+                value: cati-solr
+            image: 'abiosoft/caddy:no-stats'
+            imagePullPolicy: IfNotPresent
+            name: paster-conf
+            resources:
+              limits:
+                cpu: 10m
+                memory: 64Mi
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+              - mountPath: /ckan
+                name: bcdc-conf
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+          - emptyDir: {}
+            name: bcdc-conf
+    test: false
+    triggers:
+      - imageChangeParams:
+          automatic: true
+          containerNames:
+            - paster
+          from:
+            kind: ImageStreamTag
+            name: 'bcdc-ckan:latest'
+            namespace: ${NAMESPACE_PREFIX}-${NAMESPACE_SUFIX}
+        type: ImageChange
+      - type: ConfigChange
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: ${CKAN_SERVICE_NAME}-file-store
+    labels:
+      app: ${CKAN_SERVICE_NAME}
+  spec:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 5Gi
+    storageClassName: netapp-file-standard
+    volumeMode: Filesystem
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: ${CKAN_SERVICE_NAME}-cache
+  data:
+    redis.conf: |-
+      appendonly no
+      protected-mode no
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: ${CKAN_SERVICE_NAME}
+      app.kubernetes.io/part-of: ${CKAN_SERVICE_NAME}-app
+    name: ${CKAN_SERVICE_NAME}-main
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      app: ${CKAN_SERVICE_NAME}
+      deploymentconfig: ${CKAN_SERVICE_NAME}-main
+      name: ${CKAN_SERVICE_NAME}-main
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: ${CKAN_SERVICE_NAME}
+          deploymentconfig: ${CKAN_SERVICE_NAME}-main
+          name: ${CKAN_SERVICE_NAME}-main
+      spec:
+        containers:
+          - command:
+              - /bin/sh
+              - '-c'
+              - uwsgi --ini /conf/uwsgi.ini
+            env:
+              - name: CKAN_SITE_ID
+                value: cati
+              - name: CKAN_SITE_URL
+                value: 'https://cati.data.gov.bc.ca'
+              - name: CKAN_SOLR_URL
+                value: 'http://${CKAN_SERVICE_NAME}-solr:8983/solr/mycores'
+              - name: CKAN_REDIS_URL
+                value: 'redis://localhost:6379/0'
+              - name: CKAN_SQLALCHEMY_URL
+                valueFrom:
+                  secretKeyRef:
+                    key: bcdc-connection.main
+                    name: ${CKAN_SERVICE_NAME}-sqlalchemy-connection
+              - name: CKAN_DATASTORE_WRITE_URL
+                valueFrom:
+                  secretKeyRef:
+                    key: bcdc-connection.dsw
+                    name: ${CKAN_SERVICE_NAME}-sqlalchemy-connection
+              - name: CKAN_DATASTORE_READ_URL
+                valueFrom:
+                  secretKeyRef:
+                    key: bcdc-connection.dsr
+                    name: ${CKAN_SERVICE_NAME}-sqlalchemy-connection
+              - name: TZ
+                value: America/Vancouver
+            image: 'image-registry.openshift-image-registry.svc:5000/${NAMESPACE_PREFIX}-${NAMESPACE_SUFIX}/${CKAN_SERVICE_NAME}'
+            imagePullPolicy: Always
+            livenessProbe:
+              failureThreshold: 3
+              initialDelaySeconds: 120
+              periodSeconds: 10
+              successThreshold: 1
+              tcpSocket:
+                port: 5000
+              timeoutSeconds: 1
+            name: ckan
+            ports:
+              - containerPort: 5000
+                name: ckan
+                protocol: TCP
+            readinessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /api/action/status_show
+                port: 5000
+                scheme: HTTP
+              initialDelaySeconds: 70
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1
+            resources:
+              limits:
+                cpu: '1'
+                memory: 6Gi
+              requests:
+                cpu: 500m
+                memory: 2Gi
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+              - mountPath: /var/lib/ckan
+                name: ckan-filestore
+              - mountPath: /conf
+                name: bcdc-conf
+          - command:
+              - python
+              - datapusher/main.py
+              - /conf/datapusher_settings.py
+            env:
+              - name: DP_HOME
+                value: /app/src/datapusher/datapusher/main.py
+              - name: JOB_CONFIG
+                value: /conf/datapusher_settings.py
+              - name: TZ
+                value: America/Vancouver
+            image: 'image-registry.openshift-image-registry.svc:5000/${NAMESPACE_PREFIX}-tools/datapusher'
+            imagePullPolicy: Always
+            livenessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /
+                port: 8800
+                scheme: HTTP
+              initialDelaySeconds: 15
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1
+            name: datapusher
+            ports:
+              - containerPort: 8800
+                name: datapusher
+                protocol: TCP
+            readinessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /status
+                port: 8800
+                scheme: HTTP
+              initialDelaySeconds: 25
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1
+            resources:
+              limits:
+                cpu: 100m
+                memory: 2Gi
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+              - mountPath: /conf
+                name: bcdc-conf
+          - command:
+              - redis-server
+              - /conf/redis.conf
+            env:
+              - name: TZ
+                value: America/Vancouver
+            image: redis
+            imagePullPolicy: Always
+            livenessProbe:
+              exec:
+                command:
+                  - sh
+                  - '-c'
+                  - redis-cli -h $(hostname) ping
+              failureThreshold: 3
+              initialDelaySeconds: 20
+              periodSeconds: 3
+              successThreshold: 1
+              timeoutSeconds: 1
+            name: redis
+            ports:
+              - containerPort: 6379
+                name: redis-cli
+                protocol: TCP
+            readinessProbe:
+              exec:
+                command:
+                  - sh
+                  - '-c'
+                  - redis-cli -h $(hostname) ping
+              failureThreshold: 3
+              initialDelaySeconds: 15
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 5
+            resources:
+              limits:
+                cpu: 100m
+                memory: 256Mi
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+              - mountPath: /conf
+                name: redis-conf
+              - mountPath: /data
+                name: redis-data
+        dnsPolicy: ClusterFirst
+        initContainers:
+          - command:
+              - /bin/sh
+              - '-c'
+              - 'git clone -b ${MAIN_BRANCH} ${CONF_REPO_URL} /ckan'
+            env:
+              - name: GIT_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    key: g.token
+                    name: ${CKAN_SERVICE_NAME}-gogs-token
+              - name: CONF_REPO_URL
+                valueFrom:
+                  secretKeyRef:
+                    key: conf.repo.url
+                    name: ${CKAN_SERVICE_NAME}-gogs-token
+              - name: MAIN_BRANCH
+                value: cati-main
+              - name: SOLR_BRANCH
+                value: cati-solr
+              - name: TZ
+                value: America/Vancouver
+            image: 'abiosoft/caddy:no-stats'
+            imagePullPolicy: IfNotPresent
+            name: bcdc-conf
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+              - mountPath: /ckan
+                name: bcdc-conf
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+          - emptyDir: {}
+            name: redis-data
+          - name: ckan-filestore
+            persistentVolumeClaim:
+              claimName: ${CKAN_SERVICE_NAME}-file-store
+          - emptyDir: {}
+            name: bcdc-conf
+          - configMap:
+              defaultMode: 420
+              items:
+                - key: redis.conf
+                  path: redis.conf
+              name: ${CKAN_SERVICE_NAME}-cache
+            name: redis-conf
+    test: false
+    triggers:
+      - imageChangeParams:
+          automatic: true
+          containerNames:
+            - datapusher
+          from:
+            kind: ImageStreamTag
+            name: 'datapusher:latest'
+            namespace: ${NAMESPACE_PREFIX}-tools
+        type: ImageChange
+      - type: ConfigChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: ${CKAN_SERVICE_NAME}-main
+    labels:
+      app: ${CKAN_SERVICE_NAME}
+  spec:
+    ports:
+      - name: ckan
+        protocol: TCP
+        port: 5000
+        targetPort: 5000
+      - name: datapusher
+        protocol: TCP
+        port: 8800
+        targetPort: 8800
+      - name: ckan-cache
+        protocol: TCP
+        port: 6379
+        targetPort: 6379
+    selector:
+      name: ${CKAN_SERVICE_NAME}-main
+    type: ClusterIP
+    sessionAffinity: None
