@@ -163,7 +163,7 @@ def record_is_viewable(pkg_dict, userobj):
         if owner_org in user_orgs:
             return True
 
-        return True
+        return False
 
     return False
 

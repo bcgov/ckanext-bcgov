@@ -279,6 +279,10 @@ class SchemaPlugin(plugins.SingletonPlugin):
         permission_fq = '(' + " OR ".join(permission_fq_arr) + ')'
                 
         search_params['fq_list'] = [permission_fq]
+        if c.userobj is not None:
+            search_params['fq_list'].append('metadata_visibility:(Public OR IDIR)')
+        else:
+            search_params['fq_list'].append('metadata_visibility:(Public)')
 
         #TODO: investigate if this is needed it checks capacity public but currently all records are reporting public capacity
         search_params['include_private'] = False
