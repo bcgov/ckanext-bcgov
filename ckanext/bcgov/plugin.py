@@ -263,60 +263,28 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
         return pkg_dict
 
+
     # IPackageController
     def before_search(self, search_params):
-        """
-        Customizes package search and applies filters based on the dataset metadata-visibility
-        and user roles.
-        """
+        
+        if c.userobj and c.userobj.sysadmin is True:
+            return search_params
+        
+        permission_fq_arr = ['publish_state:("PUBLISHED" OR "PENDING ARCHIVE")']
+        
+        user_orgs = get_orgs_user_can_edit(c.userobj)
+        for org in user_orgs:
+            permission_fq_arr.append('owner_org:(' + org + ')')
 
-        # Change the default sort order when no query passed
-        if not search_params.get('q') and search_params.get('sort') in (None, 'rank'):
-            search_params['sort'] = 'record_publish_date desc, metadata_modified desc'
+        permission_fq = '(' + " OR ".join(permission_fq_arr) + ')'
+                
+        search_params['fq_list'] = [permission_fq]
 
-        # Change the query filter depending on the user
-        if 'fq' in search_params:
-            fq = search_params['fq']
-        else:
-            fq = ''
-
-        try:
-            # There are no restrictions for sysadmin
-            if c.userobj and c.userobj.sysadmin is True:
-                fq += ' '
-                fq = filter_query_regex.sub(r'+\1', fq)
-            else:
-                user_name = c.user or 'visitor'
-                if user_name != 'visitor':
-                    if 'publish_state' not in fq:
-                        fq = filter_query_regex.sub(r'+\1', fq)
-                        fq += ' +(publish_state:("PUBLISHED" OR "PENDING ARCHIVE")'
-
-                        if 'owner_org' not in fq:
-                            # IDIR users can also see private records of their organizations
-                            # Get the list of orgs that the user is an admin or editor of
-                            user_orgs = get_orgs_user_can_edit(c.userobj)
-                            if user_orgs != []:
-                                fq += ' OR ' + 'owner_org:(' + ' OR '.join(user_orgs) + ')'
-                        fq += ')'
-                else:
-                    if fq:
-                        # make all fields in Filter Query mandatory with '+'
-                        fq = filter_query_regex.sub(r'+\1', fq)
-
-                    # Public user can only view public and published records
-                    fq += ' +(publish_state:("PUBLISHED" OR "PENDING ARCHIVE") AND metadata_visibility:("Public"))'
-
-        except Exception:
-            if 'fq' in search_params:
-                fq = search_params['fq']
-            else:
-                fq = ''
-            fq += ' +publish_state:("PUBLISHED" OR "PENDING ARCHIVE") +metadata_visibility:("Public")'
-
-        search_params['fq'] = fq
+        #TODO: investigate if this is needed it checks capacity public but currently all records are reporting public capacity
         search_params['include_private'] = False
-        log.debug("Search Params: {0}".format(search_params))
+            
+
+        log.debug("Before Search {0}".format(search_params))
         return search_params
 
     # IPackageController
