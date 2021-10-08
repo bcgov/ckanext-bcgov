@@ -98,17 +98,11 @@ def get_orgs_user_can_edit(userobj) :
 
     orgs = []
 
-    '''
-    context = {'model': model, 'session': model.Session,
-               'user': c.user or c.author, 'auth_user_obj': c.userobj}
-
     perm_dict = {'permission' : 'create_dataset'}
     orgs = toolkit.get_action('organization_list_for_user')(data_dict=perm_dict)
 
     orgs = [org['id'] for org in orgs]
     
-    '''
-    orgs = userobj.get_group_ids('organization', 'editor') + c.userobj.get_group_ids('organization', 'admin')
     return orgs
 
 def get_user_toporgs(user_id, role=None):
