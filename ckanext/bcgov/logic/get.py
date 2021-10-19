@@ -11,6 +11,8 @@ import ckan.logic as logic
 import ckan.lib.navl.dictization_functions
 import ckan.model as model
 
+from ckan.logic import NotAuthorized
+
 from ckan.logic.action.get import ( _unpick_search )
 
 log = logging.getLogger('ckanext.bcgov.logic.bcgov.override')
@@ -135,9 +137,12 @@ def _group_or_org_list(context, data_dict, is_org=False):
                     'include_groups', 'include_followers'):
             if key not in data_dict:
                 data_dict[key] = False
-        group_detail = logic.get_action(action)(context, data_dict)
-        if 'private' in group_detail and not context['user']:
+
+        try:
+            group_detail = logic.get_action(action)(context, data_dict)
+        except NotAuthorized:
             continue
+
         group_list.append(group_detail if all_fields else getattr(group, ref_group_by))
 
     return group_list
