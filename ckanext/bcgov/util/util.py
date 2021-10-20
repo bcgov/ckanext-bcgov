@@ -509,6 +509,20 @@ def get_resource_tracking(resource_url, resource_id):
 def can_access_group(group_id):
     try:
         result = logic.check_access("group_show", { "user": c.user }, { "id": group_id })
-        return result
+
+        # Unlike with the check_access function, which we want to permit 404s,
+        # we have to return false for groups that don't exist, as otherwise
+        # group name changes could reveal groups in search facets.
+
+        # This raises a NotFound error if the group cannot be located.
+        group = toolkit.get_action('group_show')(
+            { 'ignore_auth': True },
+            { 'id': group_id })
+
+        return True
+
     except logic.NotAuthorized:
-        return False    
+        return False
+
+    except logic.NotFound:
+        return False
