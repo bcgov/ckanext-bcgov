@@ -504,3 +504,11 @@ def get_resource_tracking(resource_url, resource_id):
         pass
 
     return ({'views':model.TrackingSummary.get_for_resource(resource_url), 'downloads':downloads})
+
+
+def can_access_group(group_id):
+    try:
+        result = logic.check_access("group_show", { "user": c.user }, { "id": group_id })
+        return result
+    except logic.NotAuthorized:
+        return False    

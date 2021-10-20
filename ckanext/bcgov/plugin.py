@@ -20,6 +20,9 @@ from ckan.lib.navl.validators import (ignore_missing)
 from routes.mapper import SubMapper
 
 
+import ckan.logic as logic
+
+
 from ckanext.bcgov.util.util import (
     get_edc_tags,
     edc_type_label,
@@ -291,6 +294,49 @@ class SchemaPlugin(plugins.SingletonPlugin):
         log.debug("Before Search {0}".format(search_params))
         return search_params
 
+
+    # IPackageController
+    def after_search(self, search_results, data_dict=None):
+
+        """
+
+        Filters private groups out of unauthenticated search
+
+        """
+
+        from ckanext.bcgov.util.util import can_access_group
+
+        # filter simplified { group: count } facets
+        facets = search_results.get("facets")
+        results = search_results.get("results")
+        if facets and facets.get("groups"):
+            for group in facets["groups"].keys():
+                if not can_access_group(group):
+                    del facets["groups"][group]
+
+        # filtered full facet info
+        full_facets = search_results.get("search_facets").get(u"groups")
+        if full_facets:
+            full_facets["items"] = [group for group in full_facets["items"]
+                                    if can_access_group(group["name"])]
+
+        # remove private groups from individual search results
+        for result in results:
+            result["groups"] = [group for group in result["groups"]
+                                if can_access_group(group["id"])]
+
+        return search_results
+
+
+    # IPackageController
+    def after_show(self, context, pkg_dict):
+        from ckanext.bcgov.util.util import can_access_group
+        if pkg_dict.get("groups"):
+            pkg_dict["groups"] = [group for group in pkg_dict["groups"]
+                                  if can_access_group(group["id"])]
+
+
+
     # IPackageController
     def before_view(self, pkg_dict):
         # CITZEDC808
@@ -353,6 +399,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         }
 
     def get_auth_functions(self):
+        from ckanext.bcgov.logic.auth.get import group_show
         from ckanext.bcgov.logic.auth import create as edc_auth_create
         from ckanext.bcgov.logic.auth.ofi import call_action as ofi
         return {
@@ -365,7 +412,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'remove_ofi_resources': ofi.remove_ofi_resources,
             'edit_ofi_resources': ofi.edit_ofi_resources,
             'get_max_aoi': ofi.get_max_aoi,
-            'ofi_create_order': ofi.ofi_create_order
+            'ofi_create_order': ofi.ofi_create_order,
+            'group_show': group_show
         }
 
     # IResourceController
