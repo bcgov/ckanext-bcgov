@@ -52,6 +52,81 @@ log = logging.getLogger('ckanext.edc_schema')
 _or_ = sqlalchemy.or_
 
 
+@toolkit.side_effect_free
+def organization_structure(context, data_dict):
+    """
+
+    Returns a structured list of organizations
+
+    """
+
+    model = context["model"]
+
+    org_query_result = model.Session.execute("""
+
+        select g2.name as parent_org, g1.id, g1.name, g1.title
+        from "group" g1
+
+        left join member
+        on member.group_id = g1.id and
+           member.state = 'active' and
+           member.table_name = 'group'
+
+        left join "group" g2
+        on member.table_id = g2.id and
+           g2.is_organization = true and
+           g2.state = 'active' and
+           g2.approval_status = 'approved'
+
+        where g1.is_organization = true and
+              g1.state = 'active' and
+              g1.approval_status = 'approved';
+
+    """)
+
+    all_orgs = {}
+
+    # gather all organizations, add default values
+    for org in org_query_result:
+        all_orgs[org.name] = dict(org)
+        all_orgs[org.name][u"children"] = {}
+        all_orgs[org.name][u"count"] = 0
+
+    # query for facets to get counts
+    orgs_in_search_results = toolkit.get_action("package_search")(
+        context,
+        { "q": "", "rows": "0", "facet.field": ["organization"]}) \
+    .get("search_facets", {}) \
+    .get("organization", {}) \
+    .get("items", [])
+
+    # associate base counts to all orgs list. Does not include aggregate counts
+    # for parent orgs.
+    for org in orgs_in_search_results:
+        all_orgs[org["name"]][u"count"] = org["count"]
+
+    # copy orgs to the children list of their parent organization
+    for org_name, org in all_orgs.items():
+        if org[u"parent_org"] and org[u"count"]:
+            parent = all_orgs[org[u"parent_org"]]
+            if parent:
+                all_orgs[org[u"parent_org"]][u"children"][org[u"name"]] = org
+                del org[u"children"]
+
+    # remove orgs with no parent from top level
+    for org_name, org in all_orgs.items():
+        if org[u"parent_org"]:
+            del all_orgs[org_name]
+
+
+    for org in all_orgs.values():
+        org[u"count"] = sum(suborg[u"count"] for suborg in org[u"children"].values())
+        del org[u"parent_org"]
+
+
+    return { "orgs": all_orgs }
+
+
 
 @toolkit.side_effect_free
 def organization_list(context, data_dict):
