@@ -269,6 +269,9 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     # IPackageController
     def before_search(self, search_params):
+
+        if not search_params.get('defType', ''):
+            search_params['defType'] = 'edismax' # use edismax if query type unspecified
         
         if c.userobj and c.userobj.sysadmin is True:
             return search_params
