@@ -53,7 +53,7 @@ _or_ = sqlalchemy.or_
 
 
 @toolkit.side_effect_free
-def organization_structure(context, data_dict):
+def organization_structure_show(context, data_dict):
     """
 
     Returns a structured list of organizations
@@ -64,7 +64,12 @@ def organization_structure(context, data_dict):
 
     org_query_result = model.Session.execute("""
 
-        select g2.name as parent_org, g1.id, g1.name, g1.title
+        select g2.name as parent_org, g1.id, g1.name, g1.title,
+               g1.title display_name, -- duplicating functionality of organization_show_related, but don't know why this field is needed
+               g1.image_url, g1.is_organization, g1.description, 'organization' as type,
+               case when g1.image_url <> '' then concat('/uploads/group/', g1.image_url) else '' end as image_display_url,
+               g1.state, coalesce(url.value, '') as url
+
         from "group" g1
 
         left join member
@@ -77,6 +82,11 @@ def organization_structure(context, data_dict):
            g2.is_organization = true and
            g2.state = 'active' and
            g2.approval_status = 'approved'
+
+        left join "group_extra" url
+        on g1.id = url.group_id and
+           url.key = 'url' and
+           url.state = 'active'
 
         where g1.is_organization = true and
               g1.state = 'active' and
@@ -104,6 +114,33 @@ def organization_structure(context, data_dict):
     # for parent orgs.
     for org in orgs_in_search_results:
         all_orgs[org["name"]][u"count"] = org["count"]
+
+
+    # Add all the other fields that organization_show provides.
+    # To optimize this further, could probably use inner joins in the
+    # original SQL query, but that would mean lose the ability to use plugins to
+    # mutate the result.
+    # 
+    # Most of the speed gain comes from disabling include_dataset_count, as that's
+    # what triggers additional solr searches.
+    if data_dict.get('all_fields', 'False') == 'True':
+        organization_show = toolkit.get_action("organization_show")
+        for org in all_orgs.values():
+            try:
+                result = organization_show(context, {
+                        "id": org["id"],
+                        "include_datasets": False,
+                        "include_dataset_count": False,
+                        "include_tags": False,
+                        "include_users": False,
+                        "include_groups": False,
+                        "include_extras": True,
+                        "include_followers": False
+                    })
+                for k, v in result.items():
+                    org[k] = v
+            except Exception:
+                pass
 
     # copy orgs to the children list of their parent organization
     for org_name, org in all_orgs.items():
@@ -138,6 +175,7 @@ def organization_list(context, data_dict):
 
     toolkit.check_access('organization_list', context, data_dict)
     groups = data_dict.get('organizations', 'None')
+
 
     try:
         import ast

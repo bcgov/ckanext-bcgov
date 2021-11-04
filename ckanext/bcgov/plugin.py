@@ -382,7 +382,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         import ckanext.bcgov.logic.action as edc_action
         from ckanext.bcgov.logic.ofi import call_action as ofi
         return {
-            'organization_structure': edc_action.organization_structure,
+            'organization_structure_show': edc_action.organization_structure_show,
             'organization_list': edc_action.organization_list,
             'group_list': edc_action.group_list,
             'edc_package_update': edc_action.edc_package_update,
