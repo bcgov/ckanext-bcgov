@@ -1,8 +1,0 @@
-.visible-lg,
-.visible-md {
-    display: block!important;
-}
-
-.pnl-btn.hidden-md.hidden-lg {
-    display: none!important;
-}
