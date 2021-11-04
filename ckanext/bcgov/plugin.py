@@ -325,8 +325,9 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
         # remove private groups from individual search results
         for result in results:
-            result["groups"] = [group for group in result["groups"]
-                                if can_access_group(group["id"])]
+            if result.get("groups"):
+                result["groups"] = [group for group in result["groups"]
+                                    if can_access_group(group["id"])]
 
         return search_results
 
