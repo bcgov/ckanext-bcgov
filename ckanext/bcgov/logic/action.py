@@ -51,20 +51,43 @@ log = logging.getLogger('ckanext.edc_schema')
 
 _or_ = sqlalchemy.or_
 
-
 @toolkit.side_effect_free
-def organization_structure_show(context, data_dict):
-    """
+def organization_list_related(context, data_dict):
+    '''Return a list of the names of the site's organizations.
 
-    Returns a structured list of organizations
+    :param order_by: the field to sort the list by, must be ``'name'`` or 
 
-    """
+     ``'packages'`` (optional, default: ``'name'``) Deprecated use sort. 
+
+    :type order_by: string 
+
+    :param sort: sorting of the search results.  Optional.  Default:
+
+    'name asc' string of field name and sort-order. The allowed fields are 
+
+    'name' and 'packages' 
+
+    :type sort: string 
+
+    :param organizations: a list of names of the groups to return, if given only 
+
+    groups whose names are in this list will be returned (optional) 
+
+    :type organizations: list of strings 
+
+    :param all_fields: return full group dictionaries instead of just names 
+
+    (optional, default: ``False``) 
+
+    :type all_fields: boolean 
+
+    :rtype: list of strings'''
 
     model = context["model"]
 
     org_query_result = model.Session.execute("""
 
-        select g2.name as parent_org, g1.id, g1.name, g1.title,
+        select g2.name as parent_org, g1.id, g1.name, g1.revision_id, g1.title,
                g1.title display_name, -- duplicating functionality of organization_show_related, but don't know why this field is needed
                g1.image_url, g1.is_organization, g1.description, 'organization' as type,
                case when g1.image_url <> '' then concat('/uploads/group/', g1.image_url) else '' end as image_display_url,
@@ -161,8 +184,32 @@ def organization_structure_show(context, data_dict):
         del org[u"parent_org"]
 
 
-    return { "orgs": all_orgs }
+    return _flattened_org_list(all_orgs.values())
 
+
+def _flattened_org_list(orgs):
+    result = []
+
+    for org in orgs:
+        if not "parent_of" in org: org["parent_of"] = []
+        if not "child_of" in org: org["child_of"] = []
+        for suborg in org["children"].values():
+            if not "parent_of" in suborg: suborg["parent_of"] = []
+            if not "child_of" in suborg: suborg["child_of"] = []            
+            org["parent_of"].append({
+                "title": suborg["title"]
+            })
+            suborg["child_of"].append({
+                "title": org["title"]
+            })
+            result.append(suborg)
+        result.append(org)
+
+    for org in result:
+        if "children" in org: del org["children"]
+        if "parent_org" in org: del org["parent_org"]
+
+    return result
 
 
 @toolkit.side_effect_free

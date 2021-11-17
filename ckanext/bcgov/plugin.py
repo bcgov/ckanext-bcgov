@@ -237,7 +237,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
         map.connect('ofi api', '/api/ofi/{call_action}', controller=ofi_controller, action='action', conditions=GET_POST)
         map.connect('ofi resource', '/api/ofi/{format}/{object_name}', action='action')
 
-        m.connect('/action/organization_list_related', action='organization_list_related', conditions=GET_POST)
         m.connect('/action/{logic_function}', action='action', conditions=GET_POST)
 
         map.connect('/admin/trash', controller='admin', action='trash')
@@ -382,7 +381,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
         import ckanext.bcgov.logic.action as edc_action
         from ckanext.bcgov.logic.ofi import call_action as ofi
         return {
-            'organization_structure_show': edc_action.organization_structure_show,
             'organization_list': edc_action.organization_list,
             'group_list': edc_action.group_list,
             'edc_package_update': edc_action.edc_package_update,
@@ -399,7 +397,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'get_max_aoi': ofi.get_max_aoi,
             'ofi_create_order': ofi.ofi_create_order,
             'tag_autocomplete_by_vocab': edc_action.tag_autocomplete_by_vocab,
-            'member_list': edc_action.member_list
+            'member_list': edc_action.member_list,
+            'organization_list_related': edc_action.organization_list_related
         }
 
     def get_auth_functions(self):
