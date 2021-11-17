@@ -81,7 +81,6 @@ filter_query_regex = re.compile(r'([^:]+:"[^"]+"\s?)')
 
 
 class SchemaPlugin(plugins.SingletonPlugin):
-    plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IRoutes, inherit=True)
     plugins.implements(plugins.ITemplateHelpers, inherit=False)
     plugins.implements(plugins.IPackageController, inherit=True)
@@ -141,12 +140,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
             "get_resource_tracking": get_resource_tracking,
             "log": log_this
         }
-
-    def update_config(self, config):
-        toolkit.add_public_directory(config, 'public')
-        toolkit.add_template_directory(config, 'templates')
-        toolkit.add_resource('fanstatic', 'edc_resource')
-        toolkit.add_resource('public/scripts', 'theme_scripts')
 
     # Customizing action mapping
     def before_map(self, map):
@@ -324,8 +317,9 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
         # remove private groups from individual search results
         for result in results:
-            result["groups"] = [group for group in result["groups"]
-                                if can_access_group(group["id"])]
+            if result.get("groups"):
+                result["groups"] = [group for group in result["groups"]
+                                    if can_access_group(group["id"])]
 
         return search_results
 
