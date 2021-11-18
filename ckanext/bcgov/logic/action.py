@@ -167,15 +167,14 @@ def organization_list_related(context, data_dict):
 
     # copy orgs to the children list of their parent organization
     for org_name, org in all_orgs.items():
-        if org[u"parent_org"] and org[u"count"]:
+        if org[u"parent_org"]:
             parent = all_orgs[org[u"parent_org"]]
             if parent:
                 all_orgs[org[u"parent_org"]][u"children"][org[u"name"]] = org
-                del org[u"children"]
 
-    # remove orgs with no parent from top level
+    # remove orgs with no parent and no children from top level
     for org_name, org in all_orgs.items():
-        if org[u"parent_org"]:
+        if org[u"parent_org"] and not org[u"children"]:
             del all_orgs[org_name]
 
 
