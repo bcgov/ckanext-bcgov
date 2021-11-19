@@ -64,26 +64,6 @@ def whoami(context, data_dict):
 def organization_list_related(context, data_dict):
     '''Return a list of the names of the site's organizations.
 
-    :param order_by: the field to sort the list by, must be ``'name'`` or 
-
-     ``'packages'`` (optional, default: ``'name'``) Deprecated use sort. 
-
-    :type order_by: string 
-
-    :param sort: sorting of the search results.  Optional.  Default:
-
-    'name asc' string of field name and sort-order. The allowed fields are 
-
-    'name' and 'packages' 
-
-    :type sort: string 
-
-    :param organizations: a list of names of the groups to return, if given only 
-
-    groups whose names are in this list will be returned (optional) 
-
-    :type organizations: list of strings 
-
     :param all_fields: return full group dictionaries instead of just names 
 
     (optional, default: ``False``) 
@@ -131,8 +111,9 @@ def organization_list_related(context, data_dict):
     # gather all organizations, add default values
     for org in org_query_result:
         all_orgs[org.name] = dict(org)
-        all_orgs[org.name][u"children"] = {}
-        all_orgs[org.name][u"count"] = 0
+        all_orgs[org.name][u"parent_of"] = []
+        all_orgs[org.name][u"child_of"] = []
+        all_orgs[org.name][u"package_count"] = 0
 
     # query for facets to get counts
     orgs_in_search_results = toolkit.get_action("package_search")(
@@ -145,8 +126,7 @@ def organization_list_related(context, data_dict):
     # associate base counts to all orgs list. Does not include aggregate counts
     # for parent orgs.
     for org in orgs_in_search_results:
-        all_orgs[org["name"]][u"count"] = org["count"]
-
+        all_orgs[org["name"]][u"package_count"] = org["count"]
 
     # Add all the other fields that organization_show provides.
     # To optimize this further, could probably use inner joins in the
@@ -174,50 +154,20 @@ def organization_list_related(context, data_dict):
             except Exception:
                 pass
 
-    # copy orgs to the children list of their parent organization
+    # set parent and children orgs & update counts
     for org_name, org in all_orgs.items():
         if org[u"parent_org"]:
-            parent = all_orgs[org[u"parent_org"]]
+            parent = all_orgs.get(org[u"parent_org"], None)
             if parent:
-                all_orgs[org[u"parent_org"]][u"children"][org[u"name"]] = org
+                parent[u"parent_of"].append({ "title": org[u"title"], "name": org[u"name"] })
+                org[u"child_of"].append({ "title": parent[u"title"], "name": parent[u"name"] })
+                parents = [{ u"name": parent[u"name"] }]
+                while parents:
+                    o = parents.pop(0)
+                    parents.extend(all_orgs[o[u"name"]][u"child_of"])
+                    all_orgs[o[u"name"]][u"package_count"] += org[u"package_count"]
 
-    # remove orgs with no parent and no children from top level
-    for org_name, org in all_orgs.items():
-        if org[u"parent_org"] and not org[u"children"]:
-            del all_orgs[org_name]
-
-
-    for org in all_orgs.values():
-        org[u"count"] = sum(suborg[u"count"] for suborg in org[u"children"].values())
-        del org[u"parent_org"]
-
-
-    return _flattened_org_list(all_orgs.values())
-
-
-def _flattened_org_list(orgs):
-    result = []
-
-    for org in orgs:
-        if not "parent_of" in org: org["parent_of"] = []
-        if not "child_of" in org: org["child_of"] = []
-        for suborg in org["children"].values():
-            if not "parent_of" in suborg: suborg["parent_of"] = []
-            if not "child_of" in suborg: suborg["child_of"] = []            
-            org["parent_of"].append({
-                "title": suborg["title"]
-            })
-            suborg["child_of"].append({
-                "title": org["title"]
-            })
-            result.append(suborg)
-        result.append(org)
-
-    for org in result:
-        if "children" in org: del org["children"]
-        if "parent_org" in org: del org["parent_org"]
-
-    return result
+    return all_orgs.values()
 
 
 @toolkit.side_effect_free
