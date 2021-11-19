@@ -392,7 +392,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'ofi_create_order': ofi.ofi_create_order,
             'tag_autocomplete_by_vocab': edc_action.tag_autocomplete_by_vocab,
             'member_list': edc_action.member_list,
-            'organization_list_related': edc_action.organization_list_related
+            'organization_list_related': edc_action.organization_list_related,
+            'whoami': edc_action.whoami
         }
 
     def get_auth_functions(self):
