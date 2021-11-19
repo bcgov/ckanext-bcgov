@@ -52,6 +52,15 @@ log = logging.getLogger('ckanext.edc_schema')
 _or_ = sqlalchemy.or_
 
 @toolkit.side_effect_free
+def whoami(context, data_dict):
+    '''Get the user id for the currently logged in user
+
+    :rtype string'''
+
+
+    return toolkit.c.user
+
+@toolkit.side_effect_free
 def organization_list_related(context, data_dict):
     '''Return a list of the names of the site's organizations.
 
