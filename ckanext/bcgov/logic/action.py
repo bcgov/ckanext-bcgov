@@ -51,6 +51,123 @@ log = logging.getLogger('ckanext.edc_schema')
 
 _or_ = sqlalchemy.or_
 
+@toolkit.side_effect_free
+def whoami(context, data_dict):
+    '''Get the user id for the currently logged in user
+
+    :rtype string'''
+
+
+    return toolkit.c.user
+
+@toolkit.side_effect_free
+def organization_list_related(context, data_dict):
+    '''Return a list of the names of the site's organizations.
+
+    :param all_fields: return full group dictionaries instead of just names 
+
+    (optional, default: ``False``) 
+
+    :type all_fields: boolean 
+
+    :rtype: list of strings'''
+
+    model = context["model"]
+
+    org_query_result = model.Session.execute("""
+
+        select g2.name as parent_org, g1.id, g1.name, g1.revision_id, g1.title,
+               g1.title display_name, -- duplicating functionality of organization_show_related, but don't know why this field is needed
+               g1.image_url, g1.is_organization, g1.description, 'organization' as type,
+               case when g1.image_url <> '' then concat('/uploads/group/', g1.image_url) else '' end as image_display_url,
+               g1.state, coalesce(url.value, '') as url
+
+        from "group" g1
+
+        left join member
+        on member.group_id = g1.id and
+           member.state = 'active' and
+           member.table_name = 'group'
+
+        left join "group" g2
+        on member.table_id = g2.id and
+           g2.is_organization = true and
+           g2.state = 'active' and
+           g2.approval_status = 'approved'
+
+        left join "group_extra" url
+        on g1.id = url.group_id and
+           url.key = 'url' and
+           url.state = 'active'
+
+        where g1.is_organization = true and
+              g1.state = 'active' and
+              g1.approval_status = 'approved';
+
+    """)
+
+    all_orgs = {}
+
+    # gather all organizations, add default values
+    for org in org_query_result:
+        all_orgs[org.name] = dict(org)
+        all_orgs[org.name][u"parent_of"] = []
+        all_orgs[org.name][u"child_of"] = []
+        all_orgs[org.name][u"package_count"] = 0
+
+    # query for facets to get counts
+    orgs_in_search_results = toolkit.get_action("package_search")(
+        context,
+        { "q": "", "rows": "0", "facet.field": ["organization"]}) \
+    .get("search_facets", {}) \
+    .get("organization", {}) \
+    .get("items", [])
+
+    # associate base counts to all orgs list. Does not include aggregate counts
+    # for parent orgs.
+    for org in orgs_in_search_results:
+        all_orgs[org["name"]][u"package_count"] = org["count"]
+
+    # Add all the other fields that organization_show provides.
+    # To optimize this further, could probably use inner joins in the
+    # original SQL query, but that would mean lose the ability to use plugins to
+    # mutate the result.
+    # 
+    # Most of the speed gain comes from disabling include_dataset_count, as that's
+    # what triggers additional solr searches.
+    if data_dict.get('all_fields', 'False') == 'True':
+        organization_show = toolkit.get_action("organization_show")
+        for org in all_orgs.values():
+            try:
+                result = organization_show(context, {
+                        "id": org["id"],
+                        "include_datasets": False,
+                        "include_dataset_count": False,
+                        "include_tags": False,
+                        "include_users": False,
+                        "include_groups": False,
+                        "include_extras": True,
+                        "include_followers": False
+                    })
+                for k, v in result.items():
+                    org[k] = v
+            except Exception:
+                pass
+
+    # set parent and children orgs & update counts
+    for org_name, org in all_orgs.items():
+        if org[u"parent_org"]:
+            parent = all_orgs.get(org[u"parent_org"], None)
+            if parent:
+                parent[u"parent_of"].append({ "title": org[u"title"], "name": org[u"name"] })
+                org[u"child_of"].append({ "title": parent[u"title"], "name": parent[u"name"] })
+                parents = [{ u"name": parent[u"name"] }]
+                while parents:
+                    o = parents.pop(0)
+                    parents.extend(all_orgs[o[u"name"]][u"child_of"])
+                    all_orgs[o[u"name"]][u"package_count"] += org[u"package_count"]
+
+    return all_orgs.values()
 
 
 @toolkit.side_effect_free
@@ -63,6 +180,7 @@ def organization_list(context, data_dict):
 
     toolkit.check_access('organization_list', context, data_dict)
     groups = data_dict.get('organizations', 'None')
+
 
     try:
         import ast

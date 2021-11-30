@@ -81,7 +81,6 @@ filter_query_regex = re.compile(r'([^:]+:"[^"]+"\s?)')
 
 
 class SchemaPlugin(plugins.SingletonPlugin):
-    plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IRoutes, inherit=True)
     plugins.implements(plugins.ITemplateHelpers, inherit=False)
     plugins.implements(plugins.IPackageController, inherit=True)
@@ -141,12 +140,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
             "get_resource_tracking": get_resource_tracking,
             "log": log_this
         }
-
-    def update_config(self, config):
-        toolkit.add_public_directory(config, 'public')
-        toolkit.add_template_directory(config, 'templates')
-        toolkit.add_resource('fanstatic', 'edc_resource')
-        toolkit.add_resource('public/scripts', 'theme_scripts')
 
     # Customizing action mapping
     def before_map(self, map):
@@ -237,7 +230,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
         map.connect('ofi api', '/api/ofi/{call_action}', controller=ofi_controller, action='action', conditions=GET_POST)
         map.connect('ofi resource', '/api/ofi/{format}/{object_name}', action='action')
 
-        m.connect('/action/organization_list_related', action='organization_list_related', conditions=GET_POST)
         m.connect('/action/{logic_function}', action='action', conditions=GET_POST)
 
         map.connect('/admin/trash', controller='admin', action='trash')
@@ -325,8 +317,9 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
         # remove private groups from individual search results
         for result in results:
-            result["groups"] = [group for group in result["groups"]
-                                if can_access_group(group["id"])]
+            if result.get("groups"):
+                result["groups"] = [group for group in result["groups"]
+                                    if can_access_group(group["id"])]
 
         return search_results
 
@@ -398,7 +391,9 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'get_max_aoi': ofi.get_max_aoi,
             'ofi_create_order': ofi.ofi_create_order,
             'tag_autocomplete_by_vocab': edc_action.tag_autocomplete_by_vocab,
-            'member_list': edc_action.member_list
+            'member_list': edc_action.member_list,
+            'organization_list_related': edc_action.organization_list_related,
+            'whoami': edc_action.whoami
         }
 
     def get_auth_functions(self):
