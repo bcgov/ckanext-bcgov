@@ -393,7 +393,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'tag_autocomplete_by_vocab': edc_action.tag_autocomplete_by_vocab,
             'member_list': edc_action.member_list,
             'organization_list_related': edc_action.organization_list_related,
-            'whoami': edc_action.whoami
+            'whoami': edc_action.whoami,
+            'update_resource_refresh_timestamp': edc_action.update_resource_refresh_timestamp
         }
 
     def get_auth_functions(self):
