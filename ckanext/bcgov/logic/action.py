@@ -889,6 +889,7 @@ def update_resource_refresh_timestamp(context, input_data_dict):
         resource_dict['last_modified'] = datetime.datetime.strptime(input_data_dict.get("timestamp"), "%Y-%m-%d %H:%M:%S")
         log.debug('Updated object %s' % resource_dict)
         get_action('resource_update')(context, resource_dict)
+        resource_dict = get_action('resource_show')(context, {'id': input_data_dict.get("id")})
 
     return resource_dict
     
