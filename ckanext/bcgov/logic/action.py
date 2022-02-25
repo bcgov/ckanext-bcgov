@@ -870,4 +870,25 @@ def member_list(context, data_dict):
                 for m in q.all()]
 
     return {"error": "Not found"}
+ 
+    
+def update_resource_refresh_timestamp(context, input_data_dict):
+    '''
+    Updates resource last_modified timstamp
+    Parameters:
+        id: resource_id
+        timestamp: new timestamp for resource updated in format 2022-02-14 00:00:00
+    '''
+    log.debug('Params %s' % input_data_dict)
+    try:
+        resource_dict = get_action('resource_show')(context, {'id': input_data_dict.get("id")})
+    except NotFound:
+        raise NotFound(_('Resource was not found.'))
+
+    if (not resource_dict['datastore_active']):
+        resource_dict['last_modified'] = datetime.datetime.strptime(input_data_dict.get("timestamp"), "%Y-%m-%d %H:%M:%S")
+        log.debug('Updated object %s' % resource_dict)
+        get_action('resource_update')(context, resource_dict)
+
+    return resource_dict
     
