@@ -30,6 +30,7 @@ from ckan.lib.mailer import MailerException
 import ckan.model as model
 
 from ckanext.bcgov.logic.get import (_group_or_org_list)
+from ckanext.bcgov.util.helpers import (get_org_parent)
 
 import pprint
 
@@ -215,7 +216,7 @@ def get_msg_content(msg_dict):
            'please be advised that the publication state of this record is now "$dataset_state" (previously $prev_state)<br /><br />: '
            '<b>$name</b> (<a href="$dataset_url">$dataset_url</a>)<br />'
            'If you are no longer an $user_role for $org or if you have a question or concern regarding this message '
-           'please contact DataBC Discovery Services <a href="&quot;mailto:datacat@gov.bc.ca">datacat@gov.bc.ca</a> .<br><br>Thanks.</p>')
+           'please open a ticket with <a href="&quot;https://dpdd.atlassian.net/servicedesk/customer/portal/1">Data Systems and Services request system</a> .<br><br>Thanks.</p>')
 
     msg_template = Template(msg)
 
@@ -342,7 +343,7 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
     #sub_org_id = new_data.get('sub_org')
 
     org = model.Group.get(org_id)
-    #sub_org = model.Group.get(sub_org_id)
+    parent_org = get_org_parent(org.id)
 
     # Do not send emails for "DRAFT" datasets
     if new_state == "DRAFT":
@@ -383,10 +384,14 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
     log.info(
         'Sending state change notification to organization users with role %s' % (role,))
 
+    org_ids = [org.id]
+    if (parent_org and parent_org.id):
+        org_ids.append(parent_org.id)
+
     query = model.Session.query(model.User) \
         .join(model.Member, model.User.id == model.Member.table_id) \
         .filter(model.Member.capacity == role) \
-        .filter(model.Member.group_id == org.id) \
+        .filter(model.Member.group_id.in_(org_ids)) \
         .filter(model.Member.state == 'active') \
         .filter(model.User.state == 'active')
 
@@ -870,4 +875,26 @@ def member_list(context, data_dict):
                 for m in q.all()]
 
     return {"error": "Not found"}
+ 
+    
+def update_resource_refresh_timestamp(context, input_data_dict):
+    '''
+    Updates resource last_modified timstamp
+    Parameters:
+        id: resource_id
+        timestamp: new timestamp for resource updated in format 2022-02-14 00:00:00
+    '''
+    log.debug('Params %s' % input_data_dict)
+    try:
+        resource_dict = get_action('resource_show')(context, {'id': input_data_dict.get("id")})
+    except NotFound:
+        raise NotFound(_('Resource was not found.'))
+
+    if (not resource_dict['datastore_active']):
+        resource_dict['last_modified'] = datetime.datetime.strptime(input_data_dict.get("timestamp"), "%Y-%m-%d %H:%M:%S")
+        log.debug('Updated object %s' % resource_dict)
+        get_action('resource_update')(context, resource_dict)
+        resource_dict = get_action('resource_show')(context, {'id': input_data_dict.get("id")})
+
+    return resource_dict
     
