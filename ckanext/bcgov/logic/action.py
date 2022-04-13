@@ -388,9 +388,6 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
     if (parent_org and parent_org.id):
         org_ids.append(parent_org.id)
 
-    log.info(
-        'Sending state change notification to organization ids %s' % (org_ids,))
-
     query = model.Session.query(model.User) \
         .join(model.Member, model.User.id == model.Member.table_id) \
         .filter(model.Member.capacity == role) \
@@ -399,9 +396,6 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
         .filter(model.User.state == 'active')
 
     members = query.all()
-
-    log.info(
-        'Sending state change notification to %s users' % (len(members),))
 
     send_state_change_notifications(members, email_dict, site_title, site_url)
 
