@@ -388,7 +388,7 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
     if (parent_org and parent_org.id):
         org_ids.append(parent_org.id)
 
-    log.warn(
+    log.info(
         'Sending state change notification to organization ids %s' % (org_ids,))
 
     query = model.Session.query(model.User) \
@@ -400,7 +400,7 @@ def check_record_state(context, old_state, new_data, site_title, site_url, datas
 
     members = query.all()
 
-    log.warn(
+    log.info(
         'Sending state change notification to %s users' % (len(members),))
 
     send_state_change_notifications(members, email_dict, site_title, site_url)
