@@ -212,7 +212,7 @@ def get_msg_content(msg_dict):
     from string import Template
 
     msg = ('<p>As a BC Data Catalogue $user_role for $org, '
-           'please be advised that the publication state of this record is now "$dataset_state" (previously $prev_state)<br /><br />: '
+           'please be advised that the publication state of this record is now "$dataset_state" (previously $prev_state):<br /><br />'
            '<b>$name</b> (<a href="$dataset_url">$dataset_url</a>)<br />'
            'If you are no longer an $user_role for $org or if you have a question or concern regarding this message '
            'please open a ticket with <a href="&quot;https://dpdd.atlassian.net/servicedesk/customer/portal/1">Data Systems and Services request system</a> .<br><br>Thanks.</p>')
