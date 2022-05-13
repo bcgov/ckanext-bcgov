@@ -121,7 +121,7 @@ class GsaSitemapController(BaseController):
 
         return output   
             
-    @beaker_cache(expire=3600*24, type="dbm", invalidate_on_startup=True)
+#    @beaker_cache(expire=3600*24, type="dbm", invalidate_on_startup=True)
     def _render_gsa_sitemap(self):
         return self.create_sitemap('html')
         
