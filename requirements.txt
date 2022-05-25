@@ -14,7 +14,7 @@ cachetools==3.1.1
 ckantoolkit
 ckanapi
 ckanext-pdfview==0.0.5
--e git+https://github.com/bcgov/ckanext-sso@cbe47d031caf5563fdcae23ab0b1b71705330999#egg=ckanext_sso
+-e git+https://github.com/bcgov/ckanext-sso@d091bfa399088d7ccb59fd02e6f87dadd4714dfa#egg=ckanext_sso
 -e git+https://github.com/bcgov/ckanext-bcgov-schema@839fc5e091b4c37801f4b1c987801fe342e134c9#egg=ckanext_bcgov_schema
 -e git+https://github.com/ckan/ckanext-scheming@1a096dd963424884bbaf70fa28da5c1de058d27d#egg=ckanext_scheming
 -e git+https://github.com/open-data/ckanext-repeating@291295557ff74b26784f6271c1a1b4ffdb990f43#egg=ckanext_repeating
