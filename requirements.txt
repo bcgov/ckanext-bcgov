@@ -35,7 +35,7 @@ google-auth==1.6.3
 google-auth-httplib2==0.0.3
 greenlet==0.4.15
 gunicorn==19.9.0
-html5lib==0.9999999
+html5lib==0.999999999
 httplib2==0.12.3
 itsdangerous==0.24
 Jinja2==2.10.1
