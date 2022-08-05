@@ -1,9 +1,9 @@
 Babel==2.3.4
 Beaker==1.8.1
 beakeredis==0.1.0
-bleach==1.5.0
+bleach==2.1.2
 cachetools==3.1.1
--e git+https://github.com/ckan/ckan.git@ckan-2.7.5#egg=ckan
+-e git+https://github.com/ckan/ckan.git@ckan-2.8.0#egg=ckan
 -e git+https://github.com/okfn/ckanext-envvars.git@8602376a92a77b4f2d41763b6823d041469fa08e#egg=ckanext_envvars
 -e git+https://github.com/bcgov/ckanext-edc-rss.git@v2.0.0#egg=ckanext-edc-rss
 -e git+https://github.com/bcgov/ckanext-ga-report@1ddfcdcee5e7a21fe0f756f0942a1cf1b9ad4692#egg=ckanext_ga_report
@@ -15,7 +15,7 @@ ckanapi
 -e git+https://github.com/bcgov/ckanext-bcgov-schema@5727d655eb2aee6427c03a7c581f31885d9f872b#egg=ckanext_bcgov_schema
 -e git+https://github.com/ckan/ckanext-scheming@1a096dd963424884bbaf70fa28da5c1de058d27d#egg=ckanext_scheming
 -e git+https://github.com/open-data/ckanext-repeating@291295557ff74b26784f6271c1a1b4ffdb990f43#egg=ckanext_repeating
--e git+https://github.com/EnviDat/ckanext-composite@23a060b03d2432a58cc66968d93a15f5f1654055#egg=ckanext_composite
+-e git+https://github.com/EnviDat/ckanext-composite@a14fdaf6c59558ac1fb7a1cc6fc47bf7cd407e15#egg=ckanext_composite
 click==6.7
 decorator==4.0.6
 ecdsa==0.13.2
@@ -32,7 +32,7 @@ google-auth==1.6.3
 google-auth-httplib2==0.0.3
 greenlet==0.4.15
 gunicorn==19.9.0
-html5lib==0.9999999
+html5lib==1.0.1
 httplib2==0.12.3
 itsdangerous==0.24
 Jinja2==2.10.1
@@ -75,7 +75,7 @@ rq==0.6.0
 rsa==4.0
 simplejson==3.10.0
 six==1.10.0
-SQLAlchemy==0.9.6
+SQLAlchemy==1.1.11
 sqlalchemy-migrate==0.10.0
 sqlparse==0.2.2
 Tempita==0.5.2
@@ -83,7 +83,8 @@ tzlocal==1.3
 unicodecsv==0.14.1
 uritemplate==3.0.0
 validate-email==1.2
-vdm==0.13
+vdm==0.14
+webencodings==0.5.1
 WebError==0.13.1
 WebHelpers==1.3
 WebOb==1.0.8
