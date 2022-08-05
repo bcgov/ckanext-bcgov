@@ -1,3 +1,4 @@
+argparse==1.4.0
 Babel==2.3.4
 Beaker==1.8.1
 beakeredis==0.1.0
@@ -20,7 +21,8 @@ click==6.7
 decorator==4.0.6
 ecdsa==0.13.2
 fanstatic==0.12
-flask==0.12.4
+Flask==0.11.1
+Flask-Babel==0.11.2
 FormEncode==1.3.0
 funcsigs==1.0.2
 future==0.17.1
