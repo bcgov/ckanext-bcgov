@@ -1,11 +1,14 @@
+alembic==1.0.0
 argparse==1.4.0
-Babel==2.3.4
-Beaker==1.9.0
+babel==2.7.0
+beaker==1.10.1
 beakeredis==0.1.0
-bleach==2.1.3
+bleach==3.1.4
 cachetools==3.1.1
--e git+https://github.com/ckan/ckan.git@ckan-2.8.4#egg=ckan
--e git+https://github.com/okfn/ckanext-envvars.git@8602376a92a77b4f2d41763b6823d041469fa08e#egg=ckanext_envvars
+certifi==2019.3.9
+chardet==3.0.4
+-e git+https://github.com/ckan/ckan.git@ckan-2.9.5#egg=ckan
+-e git+https://github.com/okfn/ckanext-envvars.git@c892ccb67d8e1d315f7a0babbed44446fec75d0b#egg=ckanext_envvars
 -e git+https://github.com/bcgov/ckanext-edc-rss.git@v2.0.0#egg=ckanext-edc-rss
 -e git+https://github.com/bcgov/ckanext-ga-report@1ddfcdcee5e7a21fe0f756f0942a1cf1b9ad4692#egg=ckanext_ga_report
 -e git+https://github.com/bcgov/ckanext-googleanalytics@33356b9dec1ce33374b1004479d2b1c255028120#egg=ckanext_googleanalytics
@@ -14,18 +17,21 @@ ckantoolkit
 ckanapi
 -e git+https://github.com/bcgov/ckanext-sso@d2d0bbe1c3ded9ec0893ce8fb7e848a6ed996f4d#egg=ckanext_sso
 -e git+https://github.com/bcgov/ckanext-bcgov-schema@5727d655eb2aee6427c03a7c581f31885d9f872b#egg=ckanext_bcgov_schema
--e git+https://github.com/ckan/ckanext-scheming@1a096dd963424884bbaf70fa28da5c1de058d27d#egg=ckanext_scheming
+-e git+https://github.com/ckan/ckanext-scheming@cee49eea5e69c800403432785ec4086a0611641c#egg=ckanext_scheming
 -e git+https://github.com/open-data/ckanext-repeating@291295557ff74b26784f6271c1a1b4ffdb990f43#egg=ckanext_repeating
--e git+https://github.com/EnviDat/ckanext-composite@a14fdaf6c59558ac1fb7a1cc6fc47bf7cd407e15#egg=ckanext_composite
-click==6.7
-decorator==4.2.1
+-e git+https://github.com/EnviDat/ckanext-composite@1e6d7bb8fbe7d607376505860985c29816e64d36#egg=ckanext_composite
+click==7.1.2
+decorator==4.4.0
+dominate==2.4.0
 ecdsa==0.13.2
 fanstatic==0.12
-Flask==0.12.4
+Flask==1.1.1
 Flask-Babel==0.11.2
+flask-multistatic==1.0
+feedgen==0.9.0
 FormEncode==1.3.1
 funcsigs==1.0.2
-future==0.17.1
+future==0.18.2
 gdata==2.0.18
 Genshi==0.7.3
 gevent==1.4.0
@@ -36,11 +42,13 @@ greenlet==0.4.15
 gunicorn==19.9.0
 html5lib==1.0.1
 httplib2==0.12.3
-itsdangerous==0.24
+idna==2.8
+itsdangerous==1.1.0
 Jinja2==2.10.1
-Mako==1.0.4
+lxml==4.4.2
+Mako==1.0.9
 Markdown==2.6.7
-MarkupSafe==1.0
+MarkupSafe==1.1.1
 nose==1.3.7
 oauth2client==4.1.3
 ofs==0.4.2
@@ -48,48 +56,54 @@ ordereddict==1.1
 Pairtree===0.7.1-T
 passlib==1.6.5
 Paste==1.7.5.1
-PasteDeploy==1.5.2
+PasteDeploy==2.0.1
 PasteScript==2.0.2
-pbr==1.10.0
+pbr==5.2.0
 polib==1.0.7
-psycopg2==2.7.3.2
+psycopg2==2.8.2
 pyasn1==0.4.5
 pyasn1-modules==0.2.5
 pycurl==7.43.0.1
-Pygments==2.2.0
+Pygments==2.3.1
 PyJWT==1.7.1
 Pylons==0.9.7
 pysolr==3.6.0
-python-dateutil==1.5
+python-dateutil==2.8.0
+python-editor==1.0.4
 python-jose==3.0.1
 python-keycloak==0.16.0
 python-keycloak-client==0.1.3
 python-magic==0.4.15
+python2-secrets==1.0.5
 pytz==2016.7
-pyutilib.component.core==4.6.4
-redis==2.10.6
+pyutilib==5.7.1
+pyyaml==5.3.1
+redis==3.2.1
 repoze.lru==0.7
 repoze.who==2.3
 repoze.who-friendlyform==1.0.8
 requests==2.22.0
 Routes==1.13
-rq==0.6.0
+rq==1.0
 rsa==4.0
 simplejson==3.10.0
-six==1.11.0
-SQLAlchemy==1.1.11
-sqlalchemy-migrate==0.10.0
+six==1.12.0
+SQLAlchemy==1.3.5
+sqlalchemy-migrate==0.12.0
 sqlparse==0.2.2
 Tempita==0.5.2
 tzlocal==1.3
 unicodecsv==0.14.1
 uritemplate==3.0.0
+urllib3==1.25.8
 validate-email==1.2
 vdm==0.14
+watchdog==0.10.2
+webassets==0.12.1
 webencodings==0.5.1
 WebError==0.13.1
 WebHelpers==1.3
 WebOb==1.0.8
 WebTest==1.4.3
-Werkzeug==0.14.1
+Werkzeug==0.15.5
 zope.interface==4.3.2
