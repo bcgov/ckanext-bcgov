@@ -5,6 +5,8 @@ from ckan.config.middleware import make_app
 from ckan.cli import CKANConfigLoader
 from logging.config import fileConfig as loggingFileConfig
 
+print '**************THE INI IS AT', os.environ.get(u'CKAN_INI')
+
 if os.environ.get(u'CKAN_INI'):
     config_path = os.environ[u'CKAN_INI']
 else:
