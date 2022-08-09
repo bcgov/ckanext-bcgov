@@ -16,6 +16,8 @@ else:
 if not os.path.exists(config_path):
     raise RuntimeError(u'CKAN config option not found: {}'.format(config_path))
 
+print '**************THE CONFIG PATH IS AT', config_path
+
 loggingFileConfig(config_path)
 config = CKANConfigLoader(config_path).get_config()
 
