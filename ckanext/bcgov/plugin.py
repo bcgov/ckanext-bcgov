@@ -230,6 +230,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         map.connect('ofi api', '/api/ofi/{call_action}', controller=ofi_controller, action='action', conditions=GET_POST)
         map.connect('ofi resource', '/api/ofi/{format}/{object_name}', action='action')
 
+        m.connect('/action/organization_list_related', action='organization_list_related', conditions=GET_POST)
         m.connect('/action/{logic_function}', action='action', conditions=GET_POST)
 
         map.connect('/admin/trash', controller='admin', action='trash')
@@ -392,7 +393,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'ofi_create_order': ofi.ofi_create_order,
             'tag_autocomplete_by_vocab': edc_action.tag_autocomplete_by_vocab,
             'member_list': edc_action.member_list,
-            'organization_list_related': edc_action.organization_list_related,
             'whoami': edc_action.whoami,
             'update_resource_refresh_timestamp': edc_action.update_resource_refresh_timestamp
         }
