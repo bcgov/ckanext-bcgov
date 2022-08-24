@@ -14,6 +14,7 @@ import ckan.model as model
 from ckan.logic import NotAuthorized
 
 from ckan.logic.action.get import ( _unpick_search )
+from ckanext.bcgov.util.util import (get_organization_branches, get_parent_orgs)
 
 log = logging.getLogger('ckanext.bcgov.logic.bcgov.override')
 
@@ -146,3 +147,35 @@ def _group_or_org_list(context, data_dict, is_org=False):
         group_list.append(group_detail if all_fields else getattr(group, ref_group_by))
 
     return group_list
+
+def organization_list_related(context, data_dict):
+        '''
+        Returns the list of organizations including parent_of and child_of relationships.
+        '''
+        org_list = get_action('organization_list')(context, data_dict)
+
+        # Add the child orgs to the response:
+        for org in org_list:
+            children = []
+            branches = get_organization_branches(org['id'])
+            group_list = model_dictize.group_list_dictize(branches, context)
+            for branch in group_list:
+                d = {}
+                d['title'] = branch['title']
+                children.append(d)
+
+            org['parent_of'] = children
+
+            parents = []
+            branches = get_parent_orgs(org['id'])
+            group_list = model_dictize.group_list_dictize(branches, context)
+            for branch in group_list:
+                d = {}
+                d['title'] = branch['title']
+                parents.append(d)
+            org['child_of'] = parents
+
+        return_dict = {}
+        return_dict['success'] = True
+        return_dict['result'] = org_list
+        return return_dict
