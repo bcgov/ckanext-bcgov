@@ -154,7 +154,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
         GET_POST = dict(method=['GET', 'POST'])
 
-        map.connect('package_index', '/', controller=package_controller, action='index')
+        # map.connect('package_index', '/', controller=package_controller, action='index')
 
         with SubMapper(map, controller=package_controller) as m:
             m.connect('add dataset', '/bcdc_dataset/new', action='new')
@@ -193,10 +193,10 @@ class SchemaPlugin(plugins.SingletonPlugin):
             m.connect('/user/set_lang/{lang}', action='set_lang')
             m.connect('user_datasets', '/user/{id:.*}', action='read',
                       ckan_icon='sitemap')
-            m.connect('user_index', '/user', action='index')
+            # m.connect('user_index', '/user', action='index')
 
         with SubMapper(map, controller=org_controller) as m:
-            m.connect('organizations_index', '/organization', action='index')
+            # m.connect('organizations_index', '/organization', action='index')
             m.connect('/organization/list', action='list')
             m.connect('/organization/new', action='new')
             m.connect('/organization/{action}/{id}',
