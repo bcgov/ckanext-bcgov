@@ -247,21 +247,21 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
 
     # IPackageController
-    def after_show(self, context, pkg_dict):
-        from ckanext.bcgov.util.util import can_access_group
-        if pkg_dict.get("groups"):
-            pkg_dict["groups"] = [group for group in pkg_dict["groups"]
-                                  if can_access_group(group["id"])]
+    # def after_show(self, context, pkg_dict):
+    #     from ckanext.bcgov.util.util import can_access_group
+    #     if pkg_dict.get("groups"):
+    #         pkg_dict["groups"] = [group for group in pkg_dict["groups"]
+    #                               if can_access_group(group["id"])]
 
 
 
     # IPackageController
-    def before_view(self, pkg_dict):
-        # CITZEDC808
-        if not record_is_viewable(pkg_dict, c.userobj):
-            abort(401, _('Unauthorized to read package %s') % pkg_dict.get("title"))
+    # def before_view(self, pkg_dict):
+    #     # CITZEDC808
+    #     if not record_is_viewable(pkg_dict, c.userobj):
+    #         abort(401, _('Unauthorized to read package %s') % pkg_dict.get("title"))
 
-        return pkg_dict
+    #     return pkg_dict
 
     # def after_update(self, context, pkg_dict):
         # If there are no resources added, redirect to the "add resource" page after saving
