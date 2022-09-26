@@ -817,7 +817,7 @@ def organization_list_related(context, data_dict):
             parents.append(d)
         org['child_of'] = parents
         if len(parents) > 0:
-            org['parent_org'] = parents[1]['name']
+            org['parent_org'] = parents[0]['name']
         else:
             org['parent_org'] = None
 
