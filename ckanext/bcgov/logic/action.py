@@ -30,6 +30,7 @@ from ckan.lib.mailer import MailerException
 import ckan.model as model
 
 from ckanext.bcgov.logic.get import (_group_or_org_list)
+from ckanext.bcgov.util.util import (get_organization_branches, get_parent_orgs)
 
 import pprint
 
@@ -785,33 +786,33 @@ def update_resource_refresh_timestamp(context, input_data_dict):
     
 @toolkit.side_effect_free
 def organization_list_related(context, data_dict):
-        '''
-        Returns the list of organizations including parent_of and child_of relationships.
-        '''
-        org_list = get_action('organization_list')(context, data_dict)
+    '''
+    Returns the list of organizations including parent_of and child_of relationships.
+    '''
+    org_list = get_action('organization_list')(context, data_dict)
 
-        # Add the child orgs to the response:
-        for org in org_list:
-            children = []
-            branches = get_organization_branches(org['id'])
-            group_list = model_dictize.group_list_dictize(branches, context)
-            for branch in group_list:
-                d = {}
-                d['title'] = branch['title']
-                children.append(d)
+    # Add the child orgs to the response:
+    for org in org_list:
+        children = []
+        branches = get_organization_branches(org['id'])
+        group_list = model_dictize.group_list_dictize(branches, context)
+        for branch in group_list:
+            d = {}
+            d['title'] = branch['title']
+            children.append(d)
 
-            org['parent_of'] = children
+        org['parent_of'] = children
 
-            parents = []
-            branches = get_parent_orgs(org['id'])
-            group_list = model_dictize.group_list_dictize(branches, context)
-            for branch in group_list:
-                d = {}
-                d['title'] = branch['title']
-                parents.append(d)
-            org['child_of'] = parents
+        parents = []
+        branches = get_parent_orgs(org['id'])
+        group_list = model_dictize.group_list_dictize(branches, context)
+        for branch in group_list:
+            d = {}
+            d['title'] = branch['title']
+            parents.append(d)
+        org['child_of'] = parents
 
-        return_dict = {}
-        return_dict['success'] = True
-        return_dict['result'] = org_list
-        return return_dict
+    return_dict = {}
+    return_dict['success'] = True
+    return_dict['result'] = org_list
+    return return_dict
