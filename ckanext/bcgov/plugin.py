@@ -5,7 +5,6 @@ from ckan.common import c, _
 
 import logging
 import re
-import pylons.config as config
 import ckan.lib.base as base
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
@@ -183,68 +182,68 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
 
     # IPackageController
-    def before_search(self, search_params):
+    # def before_search(self, search_params):
 
-        if not search_params.get('defType', ''):
-            search_params['defType'] = 'edismax' # use edismax if query type unspecified
+    #     if not search_params.get('defType', ''):
+    #         search_params['defType'] = 'edismax' # use edismax if query type unspecified
         
-        if c.userobj and c.userobj.sysadmin is True:
-            return search_params
+    #     if c.userobj and c.userobj.sysadmin is True:
+    #         return search_params
         
-        permission_fq_arr = ['publish_state:("PUBLISHED" OR "PENDING ARCHIVE")']
+    #     permission_fq_arr = ['publish_state:("PUBLISHED" OR "PENDING ARCHIVE")']
         
-        user_orgs = get_orgs_user_can_edit(c.userobj)
-        for org in user_orgs:
-            permission_fq_arr.append('owner_org:(' + org + ')')
+    #     user_orgs = get_orgs_user_can_edit(c.userobj)
+    #     for org in user_orgs:
+    #         permission_fq_arr.append('owner_org:(' + org + ')')
 
-        permission_fq = '(' + " OR ".join(permission_fq_arr) + ')'
+    #     permission_fq = '(' + " OR ".join(permission_fq_arr) + ')'
                 
-        search_params['fq_list'] = [permission_fq]
-        if c.userobj is not None:
-            search_params['fq_list'].append('metadata_visibility:(Public OR IDIR)')
-        else:
-            search_params['fq_list'].append('metadata_visibility:(Public)')
+    #     search_params['fq_list'] = [permission_fq]
+    #     if c.userobj is not None:
+    #         search_params['fq_list'].append('metadata_visibility:(Public OR IDIR)')
+    #     else:
+    #         search_params['fq_list'].append('metadata_visibility:(Public)')
 
-        #TODO: investigate if this is needed it checks capacity public but currently all records are reporting public capacity
-        search_params['include_private'] = False
+    #     #TODO: investigate if this is needed it checks capacity public but currently all records are reporting public capacity
+    #     search_params['include_private'] = False
             
 
-        log.debug("Before Search {0}".format(search_params))
+    #     log.debug("Before Search {0}".format(search_params))
         return search_params
 
 
     # IPackageController
-    def after_search(self, search_results, data_dict=None):
+    # def after_search(self, search_results, data_dict=None):
 
-        """
+    #     """
 
-        Filters private groups out of unauthenticated search
+    #     Filters private groups out of unauthenticated search
 
-        """
+    #     """
 
-        from ckanext.bcgov.util.util import can_access_group
+    #     from ckanext.bcgov.util.util import can_access_group
 
-        # filter simplified { group: count } facets
-        facets = search_results.get("facets")
-        results = search_results.get("results")
-        if facets and facets.get("groups"):
-            for group in facets["groups"].keys():
-                if not can_access_group(group):
-                    del facets["groups"][group]
+    #     # filter simplified { group: count } facets
+    #     facets = search_results.get("facets")
+    #     results = search_results.get("results")
+    #     if facets and facets.get("groups"):
+    #         for group in facets["groups"].keys():
+    #             if not can_access_group(group):
+    #                 del facets["groups"][group]
 
-        # filtered full facet info
-        full_facets = search_results.get("search_facets").get(u"groups")
-        if full_facets:
-            full_facets["items"] = [group for group in full_facets["items"]
-                                    if can_access_group(group["name"])]
+    #     # filtered full facet info
+    #     full_facets = search_results.get("search_facets").get(u"groups")
+    #     if full_facets:
+    #         full_facets["items"] = [group for group in full_facets["items"]
+    #                                 if can_access_group(group["name"])]
 
-        # remove private groups from individual search results
-        for result in results:
-            if result.get("groups"):
-                result["groups"] = [group for group in result["groups"]
-                                    if can_access_group(group["id"])]
+    #     # remove private groups from individual search results
+    #     for result in results:
+    #         if result.get("groups"):
+    #             result["groups"] = [group for group in result["groups"]
+    #                                 if can_access_group(group["id"])]
 
-        return search_results
+    #     return search_results
 
 
     # IPackageController
@@ -296,7 +295,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     def get_actions(self):
         import ckanext.bcgov.logic.action as edc_action
-        import ckanext.bcgov.logic.get as edc_get
+        # import ckanext.bcgov.logic.get as edc_get
         from ckanext.bcgov.logic.ofi import call_action as ofi
         return {
             'organization_list': edc_action.organization_list,
@@ -318,7 +317,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'member_list': edc_action.member_list,
             'whoami': edc_action.whoami,
             'update_resource_refresh_timestamp': edc_action.update_resource_refresh_timestamp,
-            'organization_list_related': edc_get.organization_list_related
+            'organization_list_related': edc_action.organization_list_related
         }
 
     def get_auth_functions(self):
