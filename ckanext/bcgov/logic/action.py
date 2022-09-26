@@ -30,7 +30,7 @@ import paste.deploy.converters
 from ckan.lib.mailer import MailerException
 import ckan.model as model
 
-from ckanext.bcgov.logic.get import (_group_or_org_list)
+# from ckanext.bcgov.logic.get import (_group_or_org_list)
 from ckanext.bcgov.util.util import (get_organization_branches, get_parent_orgs)
 
 import pprint
@@ -62,36 +62,36 @@ def whoami(context, data_dict):
 
     return toolkit.c.user
 
-@toolkit.side_effect_free
-def organization_list(context, data_dict):
-    '''
-    Overriding the `organization_list` action,
-    See github issue #353
-    To replace the bcgov ckan fork modification from https://github.com/bcgov/ckan/pull/16
-    '''
+# @toolkit.side_effect_free
+# def organization_list(context, data_dict):
+#     '''
+#     Overriding the `organization_list` action,
+#     See github issue #353
+#     To replace the bcgov ckan fork modification from https://github.com/bcgov/ckan/pull/16
+#     '''
 
-    toolkit.check_access('organization_list', context, data_dict)
-    groups = data_dict.get('organizations', 'None')
+#     toolkit.check_access('organization_list', context, data_dict)
+#     groups = data_dict.get('organizations', 'None')
 
 
-    try:
-        import ast
-        data_dict['groups'] = ast.literal_eval(groups)
-    except Exception as e:
-        from ckan.lib.navl.dictization_functions import DataError
-        raise DataError('organizations is not parsable, each value must have double or single quotes.')
+#     try:
+#         import ast
+#         data_dict['groups'] = ast.literal_eval(groups)
+#     except Exception as e:
+#         from ckan.lib.navl.dictization_functions import DataError
+#         raise DataError('organizations is not parsable, each value must have double or single quotes.')
 
-    data_dict.setdefault('type', 'organization')
-    return _group_or_org_list(context, data_dict, is_org=True)
+#     data_dict.setdefault('type', 'organization')
+#     return _group_or_org_list(context, data_dict, is_org=True)
 
-@toolkit.side_effect_free
-def group_list(context, data_dict):
-    '''
-        This is being overridden from core so we can use our own _group_or_org_list, probs a better way to do this but
-        this needed to be done timely and this is minimally impactful
-    '''
-    _check_access('group_list', context, data_dict)
-    return _group_or_org_list(context, data_dict, is_org=False)
+# @toolkit.side_effect_free
+# def group_list(context, data_dict):
+#     '''
+#         This is being overridden from core so we can use our own _group_or_org_list, probs a better way to do this but
+#         this needed to be done timely and this is minimally impactful
+#     '''
+#     _check_access('group_list', context, data_dict)
+#     return _group_or_org_list(context, data_dict, is_org=False)
 
 
 '''
@@ -791,6 +791,7 @@ def organization_list_related(context, data_dict):
     Returns the list of organizations including parent_of and child_of relationships.
     '''
     data_dict['all_fields'] = True
+    data_dict['include_extras'] = False
     org_list = get_action('organization_list')(context, data_dict)
 
     # Add the child orgs to the response:
@@ -800,6 +801,7 @@ def organization_list_related(context, data_dict):
         group_list = model_dictize.group_list_dictize(branches, context)
         for branch in group_list:
             d = {}
+            d['name'] = branch['name']
             d['title'] = branch['title']
             children.append(d)
 
@@ -810,11 +812,13 @@ def organization_list_related(context, data_dict):
         group_list = model_dictize.group_list_dictize(branches, context)
         for branch in group_list:
             d = {}
+            d['name'] = branch['name']
             d['title'] = branch['title']
             parents.append(d)
         org['child_of'] = parents
+        if len(parents) > 0:
+            org['parent_org'] = parents[1]['name']
+        else:
+            org['parent_org'] = None
 
-    return_dict = {}
-    return_dict['success'] = True
-    return_dict['result'] = org_list
-    return return_dict
+    return org_list
