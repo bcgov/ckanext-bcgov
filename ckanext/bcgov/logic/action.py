@@ -20,6 +20,7 @@ from pylons import config
 from ckan.common import _, c, g
 import ckan.lib.plugins as lib_plugins
 import ckan.lib.dictization.model_save as model_save
+import ckan.lib.dictization.model_dictize as model_dictize
 
 import ckan.lib.uploader as uploader
 import ckan.lib.helpers as h
