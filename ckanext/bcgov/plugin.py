@@ -145,95 +145,18 @@ class SchemaPlugin(plugins.SingletonPlugin):
     def before_map(self, map):
         from routes.mapper import SubMapper
 
-        package_controller = 'ckanext.bcgov.controllers.package:EDCPackageController'
-        user_controller = 'ckanext.bcgov.controllers.user:EDCUserController'
-        org_controller = 'ckanext.bcgov.controllers.organization:EDCOrganizationController'
         site_map_controller = 'ckanext.bcgov.controllers.site_map:GsaSitemapController'
-        api_controller = 'ckanext.bcgov.controllers.api:EDCApiController'
         ofi_controller = 'ckanext.bcgov.controllers.ofi:EDCOfiController'
 
         GET_POST = dict(method=['GET', 'POST'])
 
         # map.connect('package_index', '/', controller=package_controller, action='index')
 
-        with SubMapper(map, controller=package_controller) as m:
-            m.connect('add dataset', '/bcdc_dataset/new', action='new')
-            m.connect('/authorization-error', action='auth_error')
-
-        with SubMapper(map, controller=user_controller) as m:
-            m.connect('user_dashboard_unpublished', '/dashboard/unpublished',
-                      action='dashboard_unpublished', ckan_icon='group')
-            m.connect('/user/edit', action='edit')
-            m.connect('/user/activity/{id}/{offset}', action='activity')
-            m.connect('user_activity_stream', '/user/activity/{id}',
-                      action='activity', ckan_icon='time')
-            m.connect('user_dashboard', '/dashboard', action='dashboard',
-                      ckan_icon='list')
-            m.connect('user_dashboard_datasets', '/dashboard/datasets',
-                      action='dashboard_datasets', ckan_icon='sitemap')
-            m.connect('user_dashboard_organizations', '/dashboard/organizations',
-                      action='dashboard_organizations', ckan_icon='building')
-            m.connect('/dashboard/{offset}', action='dashboard')
-            m.connect('user_follow', '/user/follow/{id}', action='follow')
-            m.connect('/user/unfollow/{id}', action='unfollow')
-            m.connect('user_followers', '/user/followers/{id:.*}',
-                      action='followers', ckan_icon='group')
-            m.connect('user_edit', '/user/edit/{id:.*}', action='edit',
-                      ckan_icon='cog')
-            m.connect('user_delete', '/user/delete/{id}', action='delete')
-            m.connect('/user/reset/{id:.*}', action='perform_reset')
-            m.connect('register', '/user/register', action='register')
-            m.connect('login', '/user/login', action='login')
-            m.connect('/user/_logout', action='logout')
-            m.connect('/user/logged_in', action='logged_in')
-            m.connect('/user/logged_out', action='logged_out')
-            m.connect('/user/logged_out_redirect', action='logged_out_page')
-            m.connect('/user/reset', action='request_reset')
-            m.connect('/user/me', action='me')
-            m.connect('/user/set_lang/{lang}', action='set_lang')
-            m.connect('user_datasets', '/user/{id:.*}', action='read',
-                      ckan_icon='sitemap')
-            # m.connect('user_index', '/user', action='index')
-
-        with SubMapper(map, controller=org_controller) as m:
-            # m.connect('organizations_index', '/organization', action='index')
-            m.connect('/organization/list', action='list')
-            m.connect('/organization/new', action='new')
-            m.connect('/organization/{action}/{id}',
-                      requirements=dict(action='|'.join([
-                          'delete',
-                          'admins',
-                          'member_new',
-                          'member_delete',
-                          'history'
-                      ])))
-            m.connect('organization_activity', '/organization/activity/{id}',
-                      action='activity', ckan_icon='time')
-            m.connect('organization_about', '/organization/about/{id}',
-                      action='about', ckan_icon='info-sign')
-            m.connect('organization_edit', '/organization/edit/{id}',
-                      action='edit', ckan_icon='edit')
-            m.connect('organization_members', '/organization/members/{id}',
-                      action='members', ckan_icon='group')
-            m.connect('organization_bulk_process', '/organization/bulk_process/{id}',
-                      action='bulk_process', ckan_icon='sitemap')
-            m.connect('organization_read', '/organization/{id}',
-                      action='read', ckan_icon='sitemap')
-
         map.connect('sitemap', '/sitemap.html', controller=site_map_controller, action='view')
         map.connect('sitemap', '/sitemap.xml', controller=site_map_controller, action='read')
 
-        with SubMapper(map, controller=api_controller, path_prefix='/api{ver:/1|/2|/3|}', ver='/1') as m:
-            m.connect('/i18n/{lang}', action='i18n_js_translations')
-            m.connect('/')
-
         map.connect('ofi api', '/api/ofi/{call_action}', controller=ofi_controller, action='action', conditions=GET_POST)
         map.connect('ofi resource', '/api/ofi/{format}/{object_name}', action='action')
-
-        m.connect('/action/{logic_function}', action='action', conditions=GET_POST)
-
-        map.connect('/admin/trash', controller='admin', action='trash')
-        map.connect('ckanadmin_trash', '/admin/trash', controller='admin', action='trash', ckan_icon='trash')
 
         return map
 
