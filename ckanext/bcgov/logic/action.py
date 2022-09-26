@@ -791,7 +791,7 @@ def organization_list_related(context, data_dict):
     Returns the list of organizations including parent_of and child_of relationships.
     '''
     data_dict['all_fields'] = True
-    data_dict['include_extras'] = False
+    data_dict['limit'] = 1000
     org_list = get_action('organization_list')(context, data_dict)
 
     # Add the child orgs to the response:
