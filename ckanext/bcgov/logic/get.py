@@ -148,6 +148,7 @@ def _group_or_org_list(context, data_dict, is_org=False):
 
     return group_list
 
+@toolkit.side_effect_free
 def organization_list_related(context, data_dict):
         '''
         Returns the list of organizations including parent_of and child_of relationships.

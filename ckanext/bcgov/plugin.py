@@ -163,23 +163,23 @@ class SchemaPlugin(plugins.SingletonPlugin):
     def after_map(self, map):
         return map
 
-    def before_index(self, pkg_dict):
-        """
-        Makes the sort by name case insensitive.
-        Note that the search index must be rebuild for the first time in order for the changes to take affect.
-        """
-        title = pkg_dict['title']
-        if title:
-            # Assign title to title_string with all characters switched to lower case.
-            pkg_dict['title_string'] = title.lower()
+    # def before_index(self, pkg_dict):
+    #     """
+    #     Makes the sort by name case insensitive.
+    #     Note that the search index must be rebuild for the first time in order for the changes to take affect.
+    #     """
+    #     title = pkg_dict['title']
+    #     if title:
+    #         # Assign title to title_string with all characters switched to lower case.
+    #         pkg_dict['title_string'] = title.lower()
 
-        res_format = pkg_dict.get('res_format', [])
-        if 'other' in res_format:
-            # custom download (other) supports a number of formats
-            res_format.remove('other')
-            res_format.extend(['shp', 'fgdb', 'e00'])
+    #     res_format = pkg_dict.get('res_format', [])
+    #     if 'other' in res_format:
+    #         # custom download (other) supports a number of formats
+    #         res_format.remove('other')
+    #         res_format.extend(['shp', 'fgdb', 'e00'])
 
-        return pkg_dict
+    #     return pkg_dict
 
 
     # IPackageController
