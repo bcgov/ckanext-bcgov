@@ -30,6 +30,7 @@ from ckan.lib.mailer import MailerException
 import ckan.model as model
 
 from ckanext.bcgov.logic.get import (_group_or_org_list)
+from ckanext.bcgov.util.util import (get_organization_branches, get_parent_orgs)
 
 import pprint
 
