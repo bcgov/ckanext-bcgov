@@ -30,7 +30,6 @@ import paste.deploy.converters
 from ckan.lib.mailer import MailerException
 import ckan.model as model
 
-# from ckanext.bcgov.logic.get import (_group_or_org_list)
 from ckanext.bcgov.util.util import (get_organization_branches, get_parent_orgs)
 
 import pprint
@@ -62,42 +61,10 @@ def whoami(context, data_dict):
 
     return toolkit.c.user
 
-# @toolkit.side_effect_free
-# def organization_list(context, data_dict):
-#     '''
-#     Overriding the `organization_list` action,
-#     See github issue #353
-#     To replace the bcgov ckan fork modification from https://github.com/bcgov/ckan/pull/16
-#     '''
-
-#     toolkit.check_access('organization_list', context, data_dict)
-#     groups = data_dict.get('organizations', 'None')
-
-
-#     try:
-#         import ast
-#         data_dict['groups'] = ast.literal_eval(groups)
-#     except Exception as e:
-#         from ckan.lib.navl.dictization_functions import DataError
-#         raise DataError('organizations is not parsable, each value must have double or single quotes.')
-
-#     data_dict.setdefault('type', 'organization')
-#     return _group_or_org_list(context, data_dict, is_org=True)
-
-# @toolkit.side_effect_free
-# def group_list(context, data_dict):
-#     '''
-#         This is being overridden from core so we can use our own _group_or_org_list, probs a better way to do this but
-#         this needed to be done timely and this is minimally impactful
-#     '''
-#     _check_access('group_list', context, data_dict)
-#     return _group_or_org_list(context, data_dict, is_org=False)
-
 
 '''
 Checking package status and sending a notification if the state is changed.
 '''
-
 
 def get_msg_content(msg_dict):
 
@@ -784,6 +751,7 @@ def update_resource_refresh_timestamp(context, input_data_dict):
         resource_dict = get_action('resource_show')(context, {'id': input_data_dict.get("id")})
 
     return resource_dict
+    
     
 @toolkit.side_effect_free
 def organization_list_related(context, data_dict):
