@@ -37,7 +37,6 @@ from ckanext.bcgov.util.util import (
     get_resource_tracking)
 
 from ckanext.bcgov.util.helpers import (
-    get_suborg_sector,
     get_user_dataset_num,
     get_package_data,
     is_license_open,
@@ -46,7 +45,6 @@ from ckanext.bcgov.util.helpers import (
     record_is_viewable,
     get_facets_selected,
     get_facets_unselected,
-    get_sectors_list,
     get_dataset_type,
     get_organizations,
     get_orgs_form,
@@ -99,11 +97,9 @@ class SchemaPlugin(plugins.SingletonPlugin):
             "edc_type_label": edc_type_label,
             "edc_state_values": get_state_values,
             "edc_username": get_username,
-            "get_sector": get_suborg_sector,
             "get_user_orgs": get_user_orgs,
             "get_user_orgs_id": get_user_orgs_id,
             "get_user_toporgs": get_user_toporgs,
-            "get_suborg_sector": get_suborg_sector,
             "get_user_dataset_num": get_user_dataset_num,
             "get_edc_package": get_package_data,
             "is_license_open": is_license_open,
@@ -114,7 +110,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
             "orgs_user_can_edit": get_orgs_user_can_edit,
             "get_facets_selected": get_facets_selected,
             "get_facets_unselected": get_facets_unselected,
-            "get_sectors_list": get_sectors_list,
             "get_edc_org": get_edc_org,
             "get_iso_topic_values": get_iso_topic_values,
             "get_eas_login_url": get_eas_login_url,
@@ -180,93 +175,30 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     #     return pkg_dict
 
-
     # IPackageController
-    # def before_search(self, search_params):
+    def before_search(self, search_params):
 
-    #     if not search_params.get('defType', ''):
-    #         search_params['defType'] = 'edismax' # use edismax if query type unspecified
+        if not search_params.get('defType', ''):
+            search_params['defType'] = 'edismax' # use edismax if query type unspecified
         
-    #     if c.userobj and c.userobj.sysadmin is True:
-    #         return search_params
+        if c.userobj and c.userobj.sysadmin is True:
+            return search_params
         
-    #     permission_fq_arr = ['publish_state:("PUBLISHED" OR "PENDING ARCHIVE")']
+        permission_fq_arr = ['publish_state:("PUBLISHED" OR "PENDING ARCHIVE")']
         
-    #     user_orgs = get_orgs_user_can_edit(c.userobj)
-    #     for org in user_orgs:
-    #         permission_fq_arr.append('owner_org:(' + org + ')')
+        user_orgs = get_orgs_user_can_edit(c.userobj)
+        for org in user_orgs:
+            permission_fq_arr.append('owner_org:(' + org + ')')
 
-    #     permission_fq = '(' + " OR ".join(permission_fq_arr) + ')'
+        permission_fq = '(' + " OR ".join(permission_fq_arr) + ')'
                 
-    #     search_params['fq_list'] = [permission_fq]
-    #     if c.userobj is not None:
-    #         search_params['fq_list'].append('metadata_visibility:(Public OR IDIR)')
-    #     else:
-    #         search_params['fq_list'].append('metadata_visibility:(Public)')
+        search_params['fq_list'] = [permission_fq]
+        if c.userobj is not None:
+            search_params['fq_list'].append('metadata_visibility:(Public OR IDIR)')
+        else:
+            search_params['fq_list'].append('metadata_visibility:(Public)')
 
-    #     #TODO: investigate if this is needed it checks capacity public but currently all records are reporting public capacity
-    #     search_params['include_private'] = False
-            
-
-    #     log.debug("Before Search {0}".format(search_params))
         return search_params
-
-
-    # IPackageController
-    # def after_search(self, search_results, data_dict=None):
-
-    #     """
-
-    #     Filters private groups out of unauthenticated search
-
-    #     """
-
-    #     from ckanext.bcgov.util.util import can_access_group
-
-    #     # filter simplified { group: count } facets
-    #     facets = search_results.get("facets")
-    #     results = search_results.get("results")
-    #     if facets and facets.get("groups"):
-    #         for group in facets["groups"].keys():
-    #             if not can_access_group(group):
-    #                 del facets["groups"][group]
-
-    #     # filtered full facet info
-    #     full_facets = search_results.get("search_facets").get(u"groups")
-    #     if full_facets:
-    #         full_facets["items"] = [group for group in full_facets["items"]
-    #                                 if can_access_group(group["name"])]
-
-    #     # remove private groups from individual search results
-    #     for result in results:
-    #         if result.get("groups"):
-    #             result["groups"] = [group for group in result["groups"]
-    #                                 if can_access_group(group["id"])]
-
-    #     return search_results
-
-
-    # IPackageController
-    # def after_show(self, context, pkg_dict):
-    #     from ckanext.bcgov.util.util import can_access_group
-    #     if pkg_dict.get("groups"):
-    #         pkg_dict["groups"] = [group for group in pkg_dict["groups"]
-    #                               if can_access_group(group["id"])]
-
-
-
-    # IPackageController
-    # def before_view(self, pkg_dict):
-    #     # CITZEDC808
-    #     if not record_is_viewable(pkg_dict, c.userobj):
-    #         abort(401, _('Unauthorized to read package %s') % pkg_dict.get("title"))
-
-    #     return pkg_dict
-
-    # def after_update(self, context, pkg_dict):
-        # If there are no resources added, redirect to the "add resource" page after saving
-        # if len(pkg_dict.get('resources', [])) == 0:
-        #    toolkit.redirect_to(controller='package', action='new_resource', id=pkg_dict['id'])
 
     def dataset_facets(self, facet_dict, package_type):
         """
@@ -275,9 +207,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
         from collections import OrderedDict
         facet_dict = OrderedDict()
-        # Add dataset types and organization sectors to the facet list
+        # Add dataset types
         facet_dict['license_id'] = _('License')
-        facet_dict['sector'] = _('Sectors')
         facet_dict['res_format'] = _('Format')
         facet_dict['organization'] = _('Organizations')
         facet_dict['download_audience'] = _('Download permission')
@@ -321,7 +252,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         }
 
     def get_auth_functions(self):
-        from ckanext.bcgov.logic.auth.get import group_show
+        from ckanext.bcgov.logic.auth.get import group_show, package_show
         from ckanext.bcgov.logic.auth import create as edc_auth_create
         from ckanext.bcgov.logic.auth.ofi import call_action as ofi
         return {
@@ -335,7 +266,8 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'edit_ofi_resources': ofi.edit_ofi_resources,
             'get_max_aoi': ofi.get_max_aoi,
             'ofi_create_order': ofi.ofi_create_order,
-            'group_show': group_show
+            'group_show': group_show,
+            'package_show': package_show
         }
 
     # IResourceController
