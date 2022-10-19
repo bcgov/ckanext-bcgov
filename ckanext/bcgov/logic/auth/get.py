@@ -3,6 +3,9 @@ import ckan.plugins.toolkit as toolkit
 
 from ckan.logic import NotFound
 
+from ckanext.bcgov.util.helpers import record_is_viewable
+
+
 @logic.auth_allow_anonymous_access
 def group_show(context, data_dict=None):
 
@@ -33,7 +36,7 @@ def package_show(context: Context, data_dict: DataDict) -> AuthResult:
     user = context.get('user')
     user_object = context.get('auth_user_obj')
     package = get_package_object(context, data_dict)
-    authorized = package.metadata_visibility == 'Public' or user_object.email
+    authorized = record_is_viewable(package, user_object)
 
     if not authorized:
         return {
