@@ -468,55 +468,8 @@ def edc_package_update_bcgw(context, input_data_dict):
     response_dict['results'] = update
     return response_dict
 
-
-def package_update(context, data_dict):
-    '''Update a dataset (package).
-
-    You must be authorized to edit the dataset and the groups that it belongs
-    to.
-
-    Plugins may change the parameters of this function depending on the value
-    of the dataset's ``type`` attribute, see the ``IDatasetForm`` plugin
-    interface.
-
-    For further parameters see ``package_create()``.
-
-    :param id: the name or id of the dataset to update
-    :type id: string
-
-    :returns: the updated dataset (if 'return_package_dict' is True in the
-              context, which is the default. Otherwise returns just the
-              dataset id)
-    :rtype: dictionary
-
-    '''
-
-    model = context['model']
-    user = context['user']
-    name_or_id = data_dict.get("id") or data_dict['name']
-
-    pkg = model.Package.get(name_or_id)
-
-    if pkg is None:
-        raise NotFound(_('Package was not found.'))
-    context["package"] = pkg
-    package_plugin = lib_plugins.lookup_package_plugin(pkg.type)
-    if 'schema' in context:
-        schema = context['schema']
-    else:
-        schema = package_plugin.update_package_schema()
-    data_dict["id"] = pkg.id
-
-    # FIXME: first modifications to package_updade begin here:
-    # tag strings are reconstructed because validators are stripping
-    # tags passed and only taking tags as tag_string values
-    # image upload support has also been added here
-    old_data = get_action('package_show')(context, {'id': pkg.id})
-
-    for key, value in old_data.iteritems():
-        if key not in data_dict:
-            data_dict[key] = value
-
+@toolkit.chained_action
+def package_update(original_action, context, data_dict):
     # Set the package last modified date
     data_dict['record_last_modified'] = str(datetime.date.today())
 
@@ -532,98 +485,7 @@ def package_update(context, data_dict):
     if data_dict['publish_state'] == 'ARCHIVED' and not data_dict.get('record_archive_date'):
         data_dict['record_archive_date'] = str(datetime.date.today())
 
-    _check_access('package_update', context, data_dict)
-
-    data, errors = lib_plugins.plugin_validate(
-        package_plugin, context, data_dict, schema, 'package_update')
-    log.debug('package_update validate_errs=%r user=%s package=%s data=%r',
-              errors, context.get('user'),
-              context.get('package').name if context.get('package') else '',
-              data)
-
-    if errors:
-        model.Session.rollback()
-        raise ValidationError(errors)
-
-    rev = model.repo.new_revision()
-    rev.author = user
-    if 'message' in context:
-        rev.message = context['message']
-    else:
-        rev.message = _(u'REST API: Update object %s') % data.get("name")
-
-    # avoid revisioning by updating directly
-    model.Session.query(model.Package).filter_by(id=pkg.id).update(
-        {"metadata_modified": datetime.datetime.utcnow()})
-    model.Session.refresh(pkg)
-
-    pkg = model_save.package_dict_save(data, context)
-
-    context_org_update = context.copy()
-    context_org_update['ignore_auth'] = True
-    context_org_update['defer_commit'] = True
-    _get_action('package_owner_org_update')(context_org_update,
-                                            {'id': pkg.id,
-                                             'organization_id': pkg.owner_org})
-
-    for item in plugins.PluginImplementations(plugins.IPackageController):
-        item.edit(pkg)
-
-        item.after_update(context, data)
-
-    # TODO the next two blocks are copied from ckan/ckan/logic/action/update.py
-    # This codebase is currently hard to maintain because large chunks of the
-    # CKAN action API and the CKAN controllers are simply overriden. This is
-    # probably worse than just forking CKAN would have been, because in that
-    # case at least we could track changes. - @deniszgonjanin
-
-    # Needed to let extensions know the new resources ids
-    model.Session.flush()
-    if data.get('resources'):
-        for index, resource in enumerate(data['resources']):
-            resource['id'] = pkg.resources[index].id
-
-    # Create default views for resources if necessary
-    if data.get('resources'):
-        logic.get_action('package_create_default_resource_views')(
-            {'model': context['model'], 'user': context['user'],
-             'ignore_auth': True},
-            {'package': data})
-
-    if not context.get('defer_commit'):
-        model.repo.commit()
-
-    log.debug('Updated object %s' % pkg.name)
-
-    return_id_only = context.get('return_id_only', False)
-
-    # Make sure that a user provided schema is not used on package_show
-    context.pop('schema', None)
-
-    # we could update the dataset so we should still be able to read it.
-    context['ignore_auth'] = True
-    output = data_dict['id'] if return_id_only \
-        else _get_action('package_show')(context, {'id': data_dict['id'], 'include_tracking':True})
-
-    '''
-    Send state change notifications if required; Added by Khalegh Mamakani
-    Using a thread to run the job in the background so that package_update will not wait for notifications sending.
-    '''
-
-    old_state = old_data.get('publish_state')
-
-    context = {'model': model, 'session': model.Session,
-               'user': c.user or c.author, 'auth_user_obj': c.userobj}
-
-    dataset_url = config.get(
-        'ckan.site_url') + h.url_for(controller='package', action="read", id=data_dict['id'])
-    import threading
-
-    notify_thread = threading.Thread(target=check_record_state, args=(
-        context, old_state, data_dict, g.site_title, g.site_url, dataset_url))
-    notify_thread.start()
-
-    return output
+    return original_action(context, data_dict)
 
 
 @toolkit.side_effect_free
