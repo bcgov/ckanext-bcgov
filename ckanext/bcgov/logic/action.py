@@ -470,6 +470,7 @@ def edc_package_update_bcgw(context, input_data_dict):
 
 @toolkit.chained_action
 def package_update(original_action, context, data_dict):
+    log.debug('Updating package %s' % data_dict['name'])
     # Set the package last modified date
     data_dict['record_last_modified'] = str(datetime.date.today())
 
@@ -484,6 +485,21 @@ def package_update(original_action, context, data_dict):
     # If the Archive Date has not yet been set, then set it
     if data_dict['publish_state'] == 'ARCHIVED' and not data_dict.get('record_archive_date'):
         data_dict['record_archive_date'] = str(datetime.date.today())
+
+    '''
+    Send state change notifications if required; Added by Khalegh Mamakani
+    Using a thread to run the job in the background so that package_update will not wait for notifications sending.
+    '''
+    old_data = get_action('package_show')(context, {'id': data_dict['id']})
+    old_state = old_data.get('publish_state')
+
+    dataset_url = config.get(
+        'ckan.site_url') + h.url_for(controller='package', action="read", id=data_dict['id'])
+    import threading
+
+    notify_thread = threading.Thread(target=check_record_state, args=(
+        context, old_state, data_dict, g.site_title, g.site_url, dataset_url))
+    notify_thread.start()
 
     return original_action(context, data_dict)
 
