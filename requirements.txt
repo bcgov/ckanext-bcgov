@@ -72,7 +72,7 @@ repoze.who-friendlyform==1.0.8
 requests==2.22.0
 Routes==1.13
 rq==0.6.0
-rsa==4.0
+rsa==4.7
 simplejson==3.10.0
 six==1.10.0
 SQLAlchemy==0.9.6
