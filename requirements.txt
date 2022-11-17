@@ -1,4 +1,4 @@
-Babel==2.3.4
+Babel==2.9.1
 Beaker==1.8.1
 beakeredis==0.1.0
 bleach==1.5.0
