@@ -1,5 +1,6 @@
 import ckan.logic as logic
 import ckan.plugins.toolkit as toolkit
+from ckan.logic.auth import get_package_object
 
 from ckan.logic import NotFound
 
