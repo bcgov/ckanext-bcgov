@@ -32,16 +32,16 @@ def group_show(context, data_dict=None):
     return { 'success': False }
 
 
-@logic.auth_allow_anonymous_access
-def package_show(context: Context, data_dict: DataDict) -> AuthResult:
-    user = context.get('user')
-    user_object = context.get('auth_user_obj')
-    package = get_package_object(context, data_dict)
-    authorized = record_is_viewable(package, user_object)
+# @logic.auth_allow_anonymous_access
+# def package_show(context: Context, data_dict: DataDict) -> AuthResult:
+#     user = context.get('user')
+#     user_object = context.get('auth_user_obj')
+#     package = get_package_object(context, data_dict)
+#     authorized = record_is_viewable(package, user_object)
 
-    if not authorized:
-        return {
-            'success': False,
-            'msg': _('User %s not authorized to read package %s') % (user, package.id)}
-    else:
-        return {'success': True}
+#     if not authorized:
+#         return {
+#             'success': False,
+#             'msg': _('User %s not authorized to read package %s') % (user, package.id)}
+#     else:
+#         return {'success': True}
