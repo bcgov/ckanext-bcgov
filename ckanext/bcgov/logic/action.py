@@ -486,6 +486,11 @@ def package_update(original_action, context, data_dict):
     if data_dict['publish_state'] == 'ARCHIVED' and not data_dict.get('record_archive_date'):
         data_dict['record_archive_date'] = str(datetime.date.today())
 
+    if data_dict['metadata_visibility'] == 'IDIR':
+        data_dict['private'] = True;
+    else:
+        data_dict['private'] = False;
+
     '''
     Send state change notifications if required; Added by Khalegh Mamakani
     Using a thread to run the job in the background so that package_update will not wait for notifications sending.
