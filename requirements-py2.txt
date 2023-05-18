@@ -15,7 +15,7 @@ chardet==3.0.4
 -e git+https://github.com/bcgov/ckanext-hierarchy@2e80d6790e7bbd95fea3fd1966adbb0f56af1104#egg=ckanext_hierarchy
 ckantoolkit
 ckanapi
--e git+https://github.com/bcgov/ckanext-sso@e3ed2c747b2109d8ba41a0c520312f8501e2a6d6#egg=ckanext_sso
+-e git+https://github.com/bcgov/ckanext-sso@e65e8f252ec7b091add45ad3aeb0593740079aea#egg=ckanext_sso
 -e git+https://github.com/bcgov/ckanext-bcgov-schema@5727d655eb2aee6427c03a7c581f31885d9f872b#egg=ckanext_bcgov_schema
 -e git+https://github.com/ckan/ckanext-scheming@cee49eea5e69c800403432785ec4086a0611641c#egg=ckanext_scheming
 -e git+https://github.com/open-data/ckanext-repeating@291295557ff74b26784f6271c1a1b4ffdb990f43#egg=ckanext_repeating
