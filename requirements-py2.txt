@@ -104,3 +104,6 @@ WebOb==1.0.8
 WebTest==1.4.3
 Werkzeug==0.15.5
 zope.interface==4.3.2
+ofs==0.4.2
+Pairtree===0.7.1-T
+repoze.who-friendlyform==1.0.8
