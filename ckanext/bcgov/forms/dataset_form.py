@@ -19,10 +19,10 @@ from ckan.logic.validators import (url_validator,
                                    package_name_validator,
                                    tag_string_convert)
 
-from converters import (convert_to_extras,
+from .converters import (convert_to_extras,
                         convert_from_extras)
 
-from validators import (check_empty,
+from .validators import (check_empty,
                         valid_email,
                         check_resource_status,
                         valid_date,
@@ -35,7 +35,7 @@ from validators import (check_empty,
 
 log = logging.getLogger(__name__)
 
-EDC_DATASET_TYPE_VOCAB = u'dataset_type_vocab'
+EDC_DATASET_TYPE_VOCAB = 'dataset_type_vocab'
 
 
 def contacts_db_schema():
@@ -95,13 +95,13 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         #Add Security classification tags to the template variables
         try:
             c.security_class = get_action('tag_list')(context,
-                                                      {'vocabulary_id': u'security_class'})
+                                                      {'vocabulary_id': 'security_class'})
         except NotFound:
             c.security_class = []
 
         try:
             c.resource_status = get_action('tag_list')(context,
-                                                       {'vocabulary_id': u'resource_status'})
+                                                       {'vocabulary_id': 'resource_status'})
         except NotFound:
             c.resource_status = []
 
@@ -109,8 +109,8 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     #Customize schema for EDC Application Dataset
     def _modify_package_schema(self, schema):
         schema.update({
-                        'title' : [not_empty, check_dashes, duplicate_pkg, check_duplicates, unicode],
-                        'notes' : [not_empty, unicode],
+                        'title' : [not_empty, check_dashes, duplicate_pkg, check_duplicates, str],
+                        'notes' : [not_empty, str],
                         'tag_string': [keywords_not_empty],
                         'org' : [not_empty, convert_to_extras],
                         'sub_org' : [check_branch, convert_to_extras],
@@ -158,8 +158,8 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         schema = super(EDC_DatasetForm, self).update_package_schema()
         schema = self._modify_package_schema(schema)
         schema.update({
-                       'name': [not_empty, unicode, name_validator, package_name_validator, duplicate_pkg],
-                       'title': [if_empty_same_as("name"), check_dashes, check_duplicates, unicode, duplicate_pkg]
+                       'name': [not_empty, str, name_validator, package_name_validator, duplicate_pkg],
+                       'title': [if_empty_same_as("name"), check_dashes, check_duplicates, str, duplicate_pkg]
                        })
         return schema
 
@@ -168,8 +168,8 @@ class EDC_DatasetForm(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
         schema['tags']['__extras'].append(toolkit.get_converter('free_tags_only'))
         schema.update({
-                        'title' : [not_empty, unicode],
-                        'notes' : [not_empty, unicode],
+                        'title' : [not_empty, str],
+                        'notes' : [not_empty, str],
                         'org' : [convert_from_extras, not_empty],
                         'sub_org' : [convert_from_extras, ignore_missing],
                         'sector' : [convert_from_extras, ignore_missing],

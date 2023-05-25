@@ -2,19 +2,17 @@
 # License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
  
 
-import urllib2
-import urllib
+import urllib.request, urllib.error, urllib.parse
 import json
 import pprint
-import sys
 
-from base import (site_url, api_key)
+from .base import (site_url, api_key)
 
-print "Updating records ..."
+print("Updating records ...")
 try:
-    request = urllib2.Request(site_url + '/api/3/action/package_list?limit=1000000')
+    request = urllib.request.Request(site_url + '/api/3/action/package_list?limit=1000000')
     request.add_header('Authorization', api_key)
-    response = urllib2.urlopen(request)
+    response = urllib.request.urlopen(request)
     assert response.code == 200
 
     # Use the json module to load CKAN's response into a dictionary.
@@ -23,16 +21,16 @@ try:
 
     #package_create returns the created package as its result.
     data_list = response_dict['result']
-except Exception, e:
+except Exception as e:
     pass
 
 for pkg in data_list :
     pkg_dict = None
-    data_string = urllib.quote(json.dumps({'id': pkg}))
+    data_string = urllib.parse.quote(json.dumps({'id': pkg}))
     try:
-        request = urllib2.Request(site_url + '/api/3/action/package_show')
+        request = urllib.request.Request(site_url + '/api/3/action/package_show')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
         
         response_dict = json.loads(response.read())
@@ -41,11 +39,11 @@ for pkg in data_list :
     except Exception:
         pass
     
-    data_string = urllib.quote(json.dumps(pkg_dict))
+    data_string = urllib.parse.quote(json.dumps(pkg_dict))
     try:
-        request = urllib2.Request(site_url + '/api/3/action/package_update')
+        request = urllib.request.Request(site_url + '/api/3/action/package_update')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
         
         response_dict = json.loads(response.read())

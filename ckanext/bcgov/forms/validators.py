@@ -32,7 +32,7 @@ def float_validator(key, data, errors, content):
         if value.strip() == '':
             return None
         return float(value)
-    except (AttributeError, ValueError), e:
+    except (AttributeError, ValueError) as e:
         return None
 
 
@@ -124,7 +124,7 @@ def valid_url(key, data, errors, context):
     '''
      Checks if the url provided is valid.
     '''
-    from urlparse import urlparse
+    from urllib.parse import urlparse
 
     url = data[key]
 
@@ -285,7 +285,7 @@ def check_duplicates(key, data, errors, context):
         if count > 0 :
             errors[key].append('Record title must be unique. Please change the title.')
             raise StopOnError
-    except SearchError, se :
+    except SearchError as se :
         return
 
 def check_extension(key, data, errors, context):

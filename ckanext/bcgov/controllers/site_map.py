@@ -41,7 +41,7 @@ class GsaSitemapController(BaseController):
             query = get_action('package_search')(context, data_dict)
             count = query.get('count', 0)
             packages = query.get('results', [])
-        except SearchError, se:
+        except SearchError as se:
             log.error('Dataset search error in creating the package site map: %r', se.args)
             count = 0
             packages = []

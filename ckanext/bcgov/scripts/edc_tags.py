@@ -54,24 +54,24 @@ def _new_tags(api, vocab_id, vocab_name):
 
 def create_tags(api, vocab_name):
     if verbose:
-        print("Creating vocabulary %s @ %s ..." % (vocab_name, url))
+        print(("Creating vocabulary %s @ %s ..." % (vocab_name, url)))
 
     created = api.action.vocabulary_create(name=vocab_name)
     print(created)
     vocab_id = created['id']
 
     if verbose:
-        print('New vocabulary list %s created.' % created['name'])
+        print(('New vocabulary list %s created.' % created['name']))
 
     new_tags = [tag for tag in _new_tags(api, vocab_id, vocab_name)]
 
     if verbose:
-        print("Finished creating %s.\n" % vocab_name)
+        print(("Finished creating %s.\n" % vocab_name))
 
 
 def update_tags(api, vocab_name):
     if verbose:
-        print("Updating vocabulary %s @ %s ..." % (vocab_name, url))
+        print(("Updating vocabulary %s @ %s ..." % (vocab_name, url)))
 
     # Need to delete the tag item individually first because
     # deleting the vocabulary itself by id throws integraty error
@@ -80,12 +80,12 @@ def update_tags(api, vocab_name):
     new_tags = [tag for tag in _new_tags(api, vocab_id, vocab_name)]
 
     if verbose:
-        print("Finished updating %s.\n" % vocab_name)
+        print(("Finished updating %s.\n" % vocab_name))
 
 
 def delete_tags(api, vocab_name, display_msg=True):
     if verbose and display_msg:
-        print("Deleting vocabulary %s @ %s ..." % (vocab_name, url))
+        print(("Deleting vocabulary %s @ %s ..." % (vocab_name, url)))
 
     vocab_id = api.action.vocabulary_show(id=vocab_name).get('id')
 
@@ -97,7 +97,7 @@ def delete_tags(api, vocab_name, display_msg=True):
                               vocabulary_id=tag['vocabulary_id'])
 
     if verbose and display_msg:
-        print("Finished deleting %s." % vocab_name)
+        print(("Finished deleting %s." % vocab_name))
 
     return vocab_id  # for usage in update_tags
 
@@ -115,8 +115,8 @@ if __name__ == '__main__':
             elif action in ['delete', 'd']:
                 delete_tags(api, vocab_name)
             else:
-                print("%s is not an action. "
-                      "Avaiable actions: update | create | delete" % action)
+                print(("%s is not an action. "
+                      "Avaiable actions: update | create | delete" % action))
                 exit(1)
 
         if verbose:

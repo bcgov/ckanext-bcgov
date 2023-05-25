@@ -13,4 +13,4 @@ for filename in files_to_be_deleted :
     file_path = "./data/" + filename
     if  os.path.exists(file_path) :
         os.remove(file_path)
-        print 'File ', file_path , ' is removed.'
+        print('File ', file_path , ' is removed.')

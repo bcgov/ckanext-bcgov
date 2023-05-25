@@ -4,10 +4,9 @@
 import os
 import sys
 import json
-import urllib2
-import urllib
+import urllib.request, urllib.error, urllib.parse
 
-from base import (create_org, site_url, api_key)
+from .base import (create_org, site_url, api_key)
 
 def create_org_members(id, members):
     
@@ -19,21 +18,21 @@ def create_org_members(id, members):
         data_string = json.dumps(data_dict)
         
         try :
-            request = urllib2.Request(site_url + '/api/3/action/organization_member_create')
+            request = urllib.request.Request(site_url + '/api/3/action/organization_member_create')
             request.add_header('Authorization', api_key)
-            response = urllib2.urlopen(request, data_string)
+            response = urllib.request.urlopen(request, data_string)
             assert response.code == 200
 
             response_dict = json.loads(response.read())
             assert response_dict['success'] is True
 
-        except Exception, e:
+        except Exception as e:
             pass                
     
 
 #Get the json file for organization and sun-organizations (Ministry and branches)
-orgs_dict = json.load(urllib2.urlopen('http://apps.gov.bc.ca/pub/odc/v2/orgs.json'))
-suborgs_dict = json.load(urllib2.urlopen('http://apps.gov.bc.ca/pub/odc/v2/orgs/suborgs.json'))
+orgs_dict = json.load(urllib.request.urlopen('http://apps.gov.bc.ca/pub/odc/v2/orgs.json'))
+suborgs_dict = json.load(urllib.request.urlopen('http://apps.gov.bc.ca/pub/odc/v2/orgs/suborgs.json'))
 
 org_filename = './data/orgs_list.json'
 with open(org_filename, 'r') as org_file :
@@ -48,7 +47,7 @@ suborgs_data = suborgs_dict['organizations']
     
 for org_obj in orgs_list :
     #For each organization get the name and title and create the organization
-    (org_raw_name, org_title) = org_obj.items()[0]
+    (org_raw_name, org_title) = list(org_obj.items())[0]
     org_name = org_raw_name.replace('_', '-')
     
     org_data = loaded_orgs[org_name]
@@ -71,7 +70,7 @@ for org_obj in orgs_list :
         
     #Create the sub-organizations
     for suborg_obj in suborgs_list :
-        (suborg_raw_name, suborg_title) = suborg_obj.items()[0]
+        (suborg_raw_name, suborg_title) = list(suborg_obj.items())[0]
         suborg_name = suborg_raw_name.replace('_', '-')
         
         suborg_data = loaded_orgs[suborg_name]
@@ -86,11 +85,11 @@ for org_obj in orgs_list :
             
         #Add this sub-organization as a child of the organization
         member_dict = { 'id': suborg_data['id'], 'object' : org_data['id'], 'object_type' : 'group', 'capacity' : 'admin' }
-        data_string =  urllib.quote(json.dumps(member_dict))
+        data_string =  urllib.parse.quote(json.dumps(member_dict))
         try :
-            request = urllib2.Request(site_url + '/api/3/action/member_create')
+            request = urllib.request.Request(site_url + '/api/3/action/member_create')
             request.add_header('Authorization', api_key)
-            response = urllib2.urlopen(request, data_string)
+            response = urllib.request.urlopen(request, data_string)
             assert response.code == 200
             
             response_dict = json.loads(response.read())

@@ -156,18 +156,18 @@ def send_state_change_notifications(members, email_dict, sender_name, sender_url
                 recipient_name = member.fullname or member.name
                 body = add_msg_niceties(
                     recipient_name, body, sender_name, sender_url)
-                recipient = u"%s <%s>" % (recipient_name, recipient_email)
+                recipient = "%s <%s>" % (recipient_name, recipient_email)
                 msg['To'] = Header(recipient, 'utf-8')
                 try:
                     smtp_connection.sendmail(
                         mail_from, [recipient_email], msg.as_string())
                     log.info("Sent state change email to user {0} with email {1}".format(
                         recipient_name, recipient_email))
-                except Exception, e:
+                except Exception as e:
                     log.error('Failed to send notification to user {0} email address : {1}'.format(
                         recipient_email, recipient_email))
 
-    except smtplib.SMTPException, e:
+    except smtplib.SMTPException as e:
         msg = '%r' % e
         log.exception(msg)
         log.error('Failed to connect to smtp server')
@@ -283,7 +283,7 @@ def edc_package_update(context, input_data_dict):
         # Use package_search to filter the list
         query = get_action('package_search')(context, data_dict)
 
-    except SearchError, se:
+    except SearchError as se:
         log.error('Search error : %s', str(se))
         raise SearchError(str(se))
 
@@ -340,7 +340,7 @@ def edc_package_update(context, input_data_dict):
                 new_imap_link, package_dict.get('title')))
             package_dict['link_to_imap'] = new_imap_link
             update = get_action('package_update')(context, package_dict)
-    except Exception, ue:
+    except Exception as ue:
         log.error('Error raised when updating dataset imap_link for dataset {0}.'.format(
             package_dict.get('name')))
         raise Exception(str(ue))
@@ -386,7 +386,7 @@ def edc_package_update_bcgw(context, input_data_dict):
 
         # Use package_search to filter the list
         query = get_action('resource_search')(context, data_dict)
-    except SearchError, se:
+    except SearchError as se:
         log.error('Search error : %s', str(se))
         raise SearchError(str(se))
 

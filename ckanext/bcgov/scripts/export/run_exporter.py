@@ -1,9 +1,9 @@
 # run using env as parameter: python run_exporter.py cad id api_key
 
-import exporter
+from . import exporter
 #parse into data type files
-import dataset_export
-import update_datastore_content #enter key as an argument
+from . import dataset_export
+from . import update_datastore_content #enter key as an argument
 
 
 from sys import argv

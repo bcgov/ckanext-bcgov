@@ -18,7 +18,7 @@ def convert_from_extras(key, data, errors, context):
 
     def remove_from_extras(data, keyList):
         to_remove = []
-        for data_key, data_value in data.iteritems():
+        for data_key, data_value in data.items():
             if (data_key[0] == 'extras' and data_key[1] in keyList) :
                 to_remove.append(data_key)
         for item in to_remove:
@@ -26,7 +26,7 @@ def convert_from_extras(key, data, errors, context):
 
     indexList = [] # A list containing the index of items in extras to be removed.
     new_data = {}  #A new dictionary for data stored in extras with the given key
-    for data_key, data_value in data.iteritems():
+    for data_key, data_value in data.items():
         if (data_key[0] == 'extras'
             and data_key[-1] == 'key'):
             #Extract the key components eparated by ':'
@@ -49,12 +49,12 @@ def convert_from_extras(key, data, errors, context):
     del data[key]
     
     deleteIndex = []
-    for data_key, data_value in new_data.iteritems():
+    for data_key, data_value in new_data.items():
         #If this is a deleted record then add it to the deleted list to be removed from data later.  
         if ('delete' in data_key and data_value == '1'):
             deleteIndex.append(data_key[1])
     deleted = []        
-    for data_key, data_value in new_data.iteritems():
+    for data_key, data_value in new_data.items():
             if (len(data_key) > 1 
                 and data_key[1] in deleteIndex):
                 deleted.append(data_key)
@@ -64,7 +64,7 @@ def convert_from_extras(key, data, errors, context):
             del new_data[item]
 
     #Add data extracted from extras to the data dictionary
-    for data_key, data_value in new_data.iteritems():
+    for data_key, data_value in new_data.items():
         data[data_key] = data_value
         
 
@@ -72,7 +72,7 @@ def convert_dates_form(data):
     return data
 
 def remove_whitespace(value, context):
-    if isinstance(value, basestring):
+    if isinstance(value, str):
         return value.strip()
     return value
 
@@ -80,7 +80,7 @@ def remove_whitespace(value, context):
 def convert_iso_topic(key, data, errors, context):    
     iso_topic_cat = data[key]
     if iso_topic_cat :
-        if isinstance(iso_topic_cat, basestring):  
+        if isinstance(iso_topic_cat, str):  
             iso_topic_cat = [iso_topic_cat]  
         data[key] = ','.join(iso_topic_cat)          
         
