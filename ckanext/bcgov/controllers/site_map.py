@@ -8,8 +8,8 @@ from ckan.common import   request, c
 from ckan.lib.base import BaseController
 from ckan.model import Session, Package
 from ckan.lib.helpers import url_for
-from pylons import config, response
-from pylons.decorators.cache import beaker_cache
+from ckan.plugins.toolkit import config, response
+# from pylons.decorators.cache import beaker_cache
 import ckan.model as model
 import ckan.lib.helpers as h
 import time

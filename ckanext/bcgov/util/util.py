@@ -19,7 +19,7 @@ from sqlalchemy.orm import aliased
 toolkit = p.toolkit
 ValidationError = logic.ValidationError
 
-from pylons import config
+from ckan.plugins.toolkit import config
 
 site_url = config.get('ckan.site_url')
 api_key = config.get('ckan.api_key')

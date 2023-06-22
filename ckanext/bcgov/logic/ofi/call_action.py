@@ -16,15 +16,16 @@ import ckan.plugins.toolkit as toolkit
 import ckanext.bcgov.logic.ofi as ofi_logic
 import ckanext.bcgov.util.helpers as edc_h
 
-try:
-    # CKAN 2.7 and later
-    from ckan.common import config
-except ImportError:
-    # CKAN 2.6 and earlier
-    from pylons import config
+# try:
+#     # CKAN 2.7 and later
+#     from ckan.common import config
+# except ImportError:
+#     # CKAN 2.6 and earlier
+#     from pylons import config
 
 # shortcuts
 _ = toolkit._
+config = toolkit.config
 NotFound = toolkit.ObjectNotFound
 ValidationError = toolkit.ValidationError
 OFIServiceError = ofi_logic.OFIServiceError

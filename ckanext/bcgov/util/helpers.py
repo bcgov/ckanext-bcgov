@@ -13,7 +13,7 @@ from webhelpers.html import literal
 import json
 import urllib.request, urllib.error, urllib.parse
 import ckan.lib.base as base
-import pylons.config as config
+import ckan.plugins.toolkit.config as config
 
 import webhelpers.html.tools as wbtools
 import ckanext.bcgov
@@ -299,7 +299,7 @@ def get_sectors_list():
     The list of sectors are used when creating or editing a sub-organization
     in order to assign a new sector to the sub-organization.
     '''
-    from pylons import config
+    from ckan.plugins.toolkit import config
     global _sectors_list
 
     if _sectors_list is not None:

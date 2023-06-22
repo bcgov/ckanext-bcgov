@@ -16,7 +16,7 @@ import ckan.lib as lib
 from email import Utils
 from email.mime.text import MIMEText
 from email.header import Header
-from pylons import config
+from ckan.plugins.toolkit import config
 from ckan.common import _, c, g
 import ckan.lib.plugins as lib_plugins
 import ckan.lib.dictization.model_save as model_save
