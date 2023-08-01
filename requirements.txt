@@ -7,19 +7,6 @@ bleach==3.1.4
 cachetools==3.1.1
 certifi==2019.3.9
 chardet==3.0.4
-ckan @ git+https://github.com/ckan/ckan.git@ckan-2.9.5
-ckanext_envvars @ git+https://github.com/okfn/ckanext-envvars.git@c892ccb67d8e1d315f7a0babbed44446fec75d0b
-ckanext-edc-rss @ git+https://github.com/bcgov/ckanext-edc-rss.git@v2.0.1
-ckanext_ga_report @ git+https://github.com/bcgov/ckanext-ga-report@1ddfcdcee5e7a21fe0f756f0942a1cf1b9ad4692
-ckanext_googleanalytics @ git+https://github.com/bcgov/ckanext-googleanalytics@33356b9dec1ce33374b1004479d2b1c255028120
-ckanext_hierarchy @ git+https://github.com/bcgov/ckanext-hierarchy@2e80d6790e7bbd95fea3fd1966adbb0f56af1104
-ckantoolkit
-ckanapi
--e git+https://github.com/bcgov/ckanext-sso@e65e8f252ec7b091add45ad3aeb0593740079aea#egg=ckanext_sso
--e git+https://github.com/bcgov/ckanext-bcgov-schema@5727d655eb2aee6427c03a7c581f31885d9f872b#egg=ckanext_bcgov_schema
--e git+https://github.com/ckan/ckanext-scheming@cee49eea5e69c800403432785ec4086a0611641c#egg=ckanext_scheming
--e git+https://github.com/open-data/ckanext-repeating@291295557ff74b26784f6271c1a1b4ffdb990f43#egg=ckanext_repeating
--e git+https://github.com/EnviDat/ckanext-composite@1e6d7bb8fbe7d607376505860985c29816e64d36#egg=ckanext_composite
 click==7.1.2
 decorator==4.4.0
 dominate==2.4.0
