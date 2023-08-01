@@ -48,7 +48,6 @@ polib==1.0.7
 psycopg2==2.8.2
 pyasn1==0.4.5
 pyasn1-modules==0.2.5
-pycurl==7.45.2
 Pygments==2.3.1
 PyJWT==1.7.1
 pysolr==3.6.0
