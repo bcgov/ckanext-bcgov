@@ -227,7 +227,7 @@ def add_discovery_data():
             dates.append({'type': date_type, 'date': rec_date, 'delete': '0'})
                 
         #---------------------------------------------------------------------<< Record Contacts >>----------------------------------------------------------------------
-        from validate_email import validate_email
+        from email_validator import validate_email, EmailNotValidError
         
         contact_names = []
         contact_emails = []
@@ -236,7 +236,15 @@ def add_discovery_data():
         if record_data[8]:
             contact_emails = record_data[8].split(',')
         #Validate emails
-        contact_emails = [contact_email if (contact_email and validate_email(contact_email)) else 'data@gov.bc.ca' for contact_email in contact_emails]
+        temp = []
+        for contact_email in contact_emails:
+            try:
+                temp.append(validate_email(contact_email))
+            except EmailNotValidError as e:
+                temp.append('data@gov.bc.ca')
+        contact_emails = temp
+        # OLD VERSION OF ABOVE INCASE NEEDED FOR REF
+        # contact_emails = [contact_email if (contact_email and validate_email(contact_email)) else 'data@gov.bc.ca' for contact_email in contact_emails]
 
         contact_names = [contact_name if contact_name else 'DataBC'  for contact_name in contact_names]
         # Adding dataset contacts

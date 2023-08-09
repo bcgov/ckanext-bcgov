@@ -18,6 +18,7 @@ import re
 # import getpass
 
 import datetime
+from email_validator import validate_email, EmailNotValidError
 
 #A dictionary for import parameters
 from .base import (edc_package_create,
@@ -233,11 +234,7 @@ def execute_odsi_query(con):
 
     return data
 
-def import_odsi_records(con):
-
-    from validate_email import validate_email
-    
-    
+def import_odsi_records(con):    
     '''
     Check first if the file that contains the data of discovery records that are linked in ODSI
     is available.
@@ -448,16 +445,20 @@ def import_odsi_records(con):
             
             #-----------------------------------------------------------------< Dataset Contacts >----------------------------------------------------------------
             contacts = []
-            if result[20] and validate_email(result[20]) :
-                contact_email = result[20]
+            try:
+                if result[20]:
+                    contact_email = validate_email(result[20])
+            except EmailNotValidError:
+                contact_email = ''
             contact_name = result[19] 
             
             if contact_email :
                 contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Private'})
 
-            if result[24] and validate_email(result[24]) :
-                display_email = result[24]
-            else:
+            try:
+                if result[24]:
+                    display_email = validate_email(result[24])
+            except EmailNotValidError:
                 display_email = 'data@gov.bc.ca'
 
             display_name = result[23] or 'DataBC'
@@ -915,10 +916,6 @@ def execute_discovery_query(con):
 
 
 def save_discovery_records(con, discovery_data_filename):
-
-    #Required for email validation
-    from validate_email import validate_email
-    
     
     #Create the dictionary for keywords replacement    
     #Read the keyword updates from csv file
@@ -1037,7 +1034,14 @@ def save_discovery_records(con, discovery_data_filename):
 #                 contact_orgs = result[9].split(',')
 
             #Validate emails
-            contact_emails = [contact_email if (contact_email and validate_email(contact_email)) else 'data@gov.bc.ca' for contact_email in contact_emails]
+            temp = []
+            for contact_email in contact_emails:
+                try:
+                    temp.append(validate_email(contact_email))
+                except EmailNotValidError as e:
+                    temp.append('data@gov.bc.ca')
+            contact_emails = temp
+            # contact_emails = [contact_email if (contact_email and validate_email(contact_email)) else 'data@gov.bc.ca' for contact_email in contact_emails]
 
             contact_names = [contact_name if contact_name else 'DataBC'  for contact_name in contact_names]
             # Adding dataset contacts

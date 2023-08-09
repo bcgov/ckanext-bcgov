@@ -415,7 +415,7 @@ def ofi_create_order(context, ofi_vars, ofi_resp):
     the UUID from the first call.
     """
     from string import Template
-    from validate_email import validate_email
+    from email_validator import validate_email, EmailNotValidError
 
     results = {}
 
@@ -433,7 +433,9 @@ def ofi_create_order(context, ofi_vars, ofi_resp):
         results.update(_get_consent_error('Consent agreement missing.'))
         return results
 
-    if not validate_email(aoi_data.get('emailAddress', '')):
+    try:
+        validate_email(aoi_data.get('emailAddress', ''))
+    except EmailNotValidError as e:
         results.update(_err_dict(_('Email address is invalid.'), invalid_email=True))
         return results
 

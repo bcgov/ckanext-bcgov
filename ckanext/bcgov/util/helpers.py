@@ -9,13 +9,11 @@ import ckan.model as model
 import ckan.plugins.toolkit as toolkit
 import ckan.logic as logic
 from ckan.common import  (c, request)
-from webhelpers.html import literal
 import json
 import urllib.request, urllib.error, urllib.parse
 import ckan.lib.base as base
 import ckan.plugins.toolkit.config as config
 
-import webhelpers.html.tools as wbtools
 import ckanext.bcgov
 from ckanext.bcgov.version import version
 from ckanext.bcgov.util.git import get_short_commit_id
@@ -30,9 +28,6 @@ log = logging.getLogger('ckanext.bcgov')
 abort = base.abort
 
 from ckan.lib.helpers import unselected_facet_items
-
-def remove_user_link(actor):
-    return wbtools.strip_links(actor)
 
 def get_suborgs(org_id):
     '''
