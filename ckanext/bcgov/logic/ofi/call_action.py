@@ -25,7 +25,6 @@ import ckanext.bcgov.util.helpers as edc_h
 
 # shortcuts
 _ = toolkit._
-config = toolkit.config
 NotFound = toolkit.ObjectNotFound
 ValidationError = toolkit.ValidationError
 OFIServiceError = ofi_logic.OFIServiceError

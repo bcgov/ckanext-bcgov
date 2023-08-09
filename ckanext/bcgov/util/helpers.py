@@ -12,7 +12,7 @@ from ckan.common import  (c, request)
 import json
 import urllib.request, urllib.error, urllib.parse
 import ckan.lib.base as base
-import ckan.plugins.toolkit.config as config
+from ckantoolkit import config
 
 import ckanext.bcgov
 from ckanext.bcgov.version import version

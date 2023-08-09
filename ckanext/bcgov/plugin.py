@@ -7,7 +7,6 @@ import logging
 import re
 import ckan.lib.base as base
 import ckan.plugins as plugins
-import ckan.plugins.toolkit as toolkit
 
 # from paste.deploy.converters import asbool
 from routes.mapper import SubMapper

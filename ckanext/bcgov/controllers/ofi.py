@@ -17,6 +17,7 @@ from ckan.controllers.api import ApiController
 # import ckan.lib.helpers as h
 import ckan.model as model
 import ckan.plugins.toolkit as toolkit
+from ckantoolkit import config
 import ckanext.bcgov.util.helpers as edc_h
 
 from ckanext.bcgov.logic.ofi import OFIServiceError
@@ -31,7 +32,6 @@ from ckanext.bcgov.logic.ofi import OFIServiceError
 
 # shortcuts
 _ = toolkit._   
-config = toolkit.config
 log = logging.getLogger('ckanext.bcgov.controllers.ofi')
 
 
@@ -170,6 +170,6 @@ class EDCOfiController(ApiController):
             error = {
                 'success': False,
                 'error': 'OFIServiceError',
-                'error_msg': e.value if toolkit.config.get('debug', False) else 'The data warehouse service is not available.'
+                'error_msg': e.value if config.get('debug', False) else 'The data warehouse service is not available.'
             }
             return self._finish(500, error, content_type='json')
