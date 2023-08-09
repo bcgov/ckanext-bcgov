@@ -1,8 +1,4 @@
 Paste==3.5.3
 PasteDeploy==3.0.1
-pytz==2023.3
-requests==2.31.0
 Routes==2.5.1
-SQLAlchemy==2.0.19
-urllib3==2.0.4
 email-validator==2.0.0.post2
