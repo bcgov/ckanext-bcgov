@@ -243,7 +243,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
         }
 
     def get_auth_functions(self):
-        from ckanext.bcgov.logic.auth.get import group_show, package_show
+        from ckanext.bcgov.logic.auth.get import group_show
         from ckanext.bcgov.logic.auth import create as edc_auth_create
         from ckanext.bcgov.logic.auth.ofi import call_action as ofi
         return {
@@ -257,8 +257,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'edit_ofi_resources': ofi.edit_ofi_resources,
             'get_max_aoi': ofi.get_max_aoi,
             'ofi_create_order': ofi.ofi_create_order,
-            'group_show': group_show,
-            'package_show': package_show
+            'group_show': group_show
         }
 
     # IResourceController
