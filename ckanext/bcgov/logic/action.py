@@ -13,7 +13,7 @@ import ckan.plugins as plugins
 import smtplib
 from time import time
 import ckan.lib as lib
-from email import Utils
+from email import utils
 from email.mime.text import MIMEText
 from email.header import Header
 from ckan.plugins.toolkit import config
@@ -151,7 +151,7 @@ def send_state_change_notifications(members, email_dict, sender_name, sender_url
                 msg = MIMEText(body.encode('utf-8'), 'html', 'utf-8')
                 msg['Subject'] = subject
                 msg['From'] = "%s <%s>" % (sender_name, mail_from)
-                msg['Date'] = Utils.formatdate(time())
+                msg['Date'] = utils.formatdate(time())
                 recipient_email = member.email
                 recipient_name = member.fullname or member.name
                 body = add_msg_niceties(
