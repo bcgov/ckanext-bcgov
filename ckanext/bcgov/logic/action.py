@@ -647,6 +647,7 @@ def organization_list_related(context, data_dict):
     # Add the child orgs to the response:
     for org_id in org_list:
         org = model_dictize.group_dictize(model.Group.get(org_id), context)
+        ret_org = {'name': org['name'], 'title': org['title']}
         children = []
         branches = get_organization_branches(org['id'])
         group_list = model_dictize.group_list_dictize(branches, context)
@@ -656,7 +657,7 @@ def organization_list_related(context, data_dict):
             d['title'] = branch['title']
             children.append(d)
 
-        org['parent_of'] = children
+        ret_org['parent_of'] = children
 
         parents = []
         branches = get_parent_orgs(org['id'])
@@ -666,12 +667,12 @@ def organization_list_related(context, data_dict):
             d['name'] = branch['name']
             d['title'] = branch['title']
             parents.append(d)
-        org['child_of'] = parents
+        ret_org['child_of'] = parents
         if len(parents) > 0:
-            org['parent_org'] = parents[0]['name']
+            ret_org['parent_org'] = parents[0]['name']
         else:
-            org['parent_org'] = None
+            ret_org['parent_org'] = None
         
-        ret_orgs.append(org)
+        ret_orgs.append(ret_org)
 
     return ret_orgs
