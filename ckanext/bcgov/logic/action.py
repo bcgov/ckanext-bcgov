@@ -646,7 +646,7 @@ def organization_list_related(context, data_dict):
 
     # Add the child orgs to the response:
     for org_id in org_list:
-        org = model_dictize.group_dictize(model.Group.get(org_id))
+        org = model_dictize.group_dictize(model.Group.get(org_id, context))
         children = []
         branches = get_organization_branches(org['id'])
         group_list = model_dictize.group_list_dictize(branches, context)
