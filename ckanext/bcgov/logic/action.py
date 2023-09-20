@@ -672,6 +672,6 @@ def organization_list_related(context, data_dict):
         else:
             org['parent_org'] = None
         
-        ret_orgs.append[org]
+        ret_orgs.append(org)
 
     return ret_orgs
