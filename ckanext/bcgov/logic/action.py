@@ -641,12 +641,12 @@ def organization_list_related(context, data_dict):
     '''
     Returns the list of organizations including parent_of and child_of relationships.
     '''
-    data_dict['all_fields'] = True
-    data_dict['limit'] = 1000
     org_list = get_action('organization_list')(context, data_dict)
+    ret_orgs = []
 
     # Add the child orgs to the response:
-    for org in org_list:
+    for org_id in org_list:
+        org = model.Group.get(org_id)
         children = []
         branches = get_organization_branches(org['id'])
         group_list = model_dictize.group_list_dictize(branches, context)
@@ -671,5 +671,7 @@ def organization_list_related(context, data_dict):
             org['parent_org'] = parents[0]['name']
         else:
             org['parent_org'] = None
+        
+        ret_orgs.append[org]
 
-    return org_list
+    return ret_orgs
