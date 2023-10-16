@@ -743,6 +743,6 @@ def organization_list_related(context, data_dict):
                     parents.extend(all_orgs[o["name"]]["child_of"])
                     all_orgs[o["name"]]["package_count"] += org["package_count"]
     
-    log.debug('Data Dict %s' % json.dumps(all_orgs.values()))
+    log.info('Data Dict %s' % json.dumps(all_orgs.values()))
 
     return all_orgs.values()
