@@ -687,9 +687,9 @@ def organization_list_related(context, data_dict):
     # gather all organizations, add default values
     for org in org_query_result:
         all_orgs[org.name] = dict(org)
-        all_orgs[org.name][u"parent_of"] = []
-        all_orgs[org.name][u"child_of"] = []
-        all_orgs[org.name][u"package_count"] = 0
+        all_orgs[org.name]["parent_of"] = []
+        all_orgs[org.name]["child_of"] = []
+        all_orgs[org.name]["package_count"] = 0
 
     # query for facets to get counts
     orgs_in_search_results = toolkit.get_action("package_search")(
@@ -702,7 +702,7 @@ def organization_list_related(context, data_dict):
     # associate base counts to all orgs list. Does not include aggregate counts
     # for parent orgs.
     for org in orgs_in_search_results:
-        all_orgs[org["name"]][u"package_count"] = org["count"]
+        all_orgs[org["name"]]["package_count"] = org["count"]
 
     # Add all the other fields that organization_show provides.
     # To optimize this further, could probably use inner joins in the
@@ -732,15 +732,15 @@ def organization_list_related(context, data_dict):
 
     # set parent and children orgs & update counts
     for org_name, org in all_orgs.items():
-        if org[u"parent_org"]:
-            parent = all_orgs.get(org[u"parent_org"], None)
+        if org["parent_org"]:
+            parent = all_orgs.get(org["parent_org"], None)
             if parent:
-                parent[u"parent_of"].append({ "title": org[u"title"], "name": org[u"name"] })
-                org[u"child_of"].append({ "title": parent[u"title"], "name": parent[u"name"] })
-                parents = [{ u"name": parent[u"name"] }]
+                parent["parent_of"].append({ "title": org["title"], "name": org["name"] })
+                org["child_of"].append({ "title": parent["title"], "name": parent["name"] })
+                parents = [{ "name": parent["name"] }]
                 while parents:
                     o = parents.pop(0)
-                    parents.extend(all_orgs[o[u"name"]][u"child_of"])
-                    all_orgs[o[u"name"]][u"package_count"] += org[u"package_count"]
+                    parents.extend(all_orgs[o["name"]]["child_of"])
+                    all_orgs[o["name"]]["package_count"] += org["package_count"]
 
     return all_orgs.values()
