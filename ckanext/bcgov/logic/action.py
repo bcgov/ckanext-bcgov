@@ -6,6 +6,7 @@ import ckan.plugins.toolkit as toolkit
 import logging
 import datetime
 import sqlalchemy
+import json
 
 import ckan.logic as logic
 import ckan.plugins as plugins
@@ -364,7 +365,6 @@ def edc_package_update_bcgw(context, input_data_dict):
     '''
     Fixed unicode characters decoding problem.
     '''
-    import json
     input_dict_str = json.dumps(input_data_dict, ensure_ascii=False)
     input_data_dict = json.loads(input_dict_str, encoding="cp1252")
 
@@ -742,5 +742,7 @@ def organization_list_related(context, data_dict):
                     o = parents.pop(0)
                     parents.extend(all_orgs[o["name"]]["child_of"])
                     all_orgs[o["name"]]["package_count"] += org["package_count"]
+    
+    log.debug('Data Dict %s' % json.dumps(all_orgs.values()))
 
     return all_orgs.values()
