@@ -167,29 +167,29 @@ class SchemaPlugin(plugins.SingletonPlugin):
     #     return pkg_dict
 
     # IPackageController
-    # def before_search(self, search_params):
+    def before_search(self, search_params):
 
-    #     if not search_params.get('defType', ''):
-    #         search_params['defType'] = 'edismax' # use edismax if query type unspecified
+        if not search_params.get('defType', ''):
+            search_params['defType'] = 'edismax' # use edismax if query type unspecified
         
-    #     if c.userobj and c.userobj.sysadmin is True:
-    #         return search_params
+        if c.userobj and c.userobj.sysadmin is True:
+            return search_params
         
-    #     permission_fq_arr = ['publish_state:("PUBLISHED" OR "PENDING ARCHIVE")']
+        permission_fq_arr = ['publish_state:("PUBLISHED" OR "PENDING ARCHIVE")']
         
-    #     user_orgs = get_orgs_user_can_edit(c.userobj)
-    #     for org in user_orgs:
-    #         permission_fq_arr.append('owner_org:(' + org + ')')
+        user_orgs = get_orgs_user_can_edit(c.userobj)
+        for org in user_orgs:
+            permission_fq_arr.append('owner_org:(' + org + ')')
 
-    #     permission_fq = '(' + " OR ".join(permission_fq_arr) + ')'
+        permission_fq = '(' + " OR ".join(permission_fq_arr) + ')'
                 
-    #     search_params['fq_list'] = [permission_fq]
-    #     if c.userobj is not None:
-    #         search_params['fq_list'].append('metadata_visibility:(Public OR IDIR)')
-    #     else:
-    #         search_params['fq_list'].append('metadata_visibility:(Public)')
+        search_params['fq_list'] = [permission_fq]
+        # if c.userobj is not None:
+        #     search_params['fq_list'].append('metadata_visibility:(Public OR IDIR)')
+        # else:
+        #     search_params['fq_list'].append('metadata_visibility:(Public)')
 
-    #     return search_params
+        return search_params
 
     def dataset_facets(self, facet_dict, package_type):
         """
