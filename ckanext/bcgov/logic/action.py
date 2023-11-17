@@ -498,8 +498,7 @@ def package_update(original_action, context, data_dict):
     old_data = get_action('package_show')(context, {'id': data_dict['id']})
     old_state = old_data.get('publish_state')
 
-    dataset_url = config.get(
-        'ckan.site_url') + h.url_for(controller='package', action="read", id=data_dict['id'])
+    dataset_url = config.get('ckan.site_url') + h.url_for('dataset.read', id=data_dict['id'])
     import threading
 
     notify_thread = threading.Thread(target=check_record_state, args=(
