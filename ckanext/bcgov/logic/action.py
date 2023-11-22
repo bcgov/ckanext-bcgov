@@ -651,7 +651,7 @@ def organization_list_related(context, data_dict):
 
     org_query_result = model.Session.execute("""
 
-        select g2.name as parent_org, g1.id, g1.name,
+        select g2.name as parent_org, g1.id, g1.name, g1.title,
                g1.title display_name, -- duplicating functionality of organization_show_related, but don't know why this field is needed
                g1.image_url, g1.is_organization, g1.description, 'organization' as type,
                case when g1.image_url <> '' then concat('/uploads/group/', g1.image_url) else '' end as image_display_url,
@@ -689,6 +689,7 @@ def organization_list_related(context, data_dict):
         all_orgs[org.name]["parent_of"] = []
         all_orgs[org.name]["child_of"] = []
         all_orgs[org.name]["package_count"] = 0
+        all_orgs[org.name]["gurman"] = 5
 
     # query for facets to get counts
     orgs_in_search_results = toolkit.get_action("package_search")(
