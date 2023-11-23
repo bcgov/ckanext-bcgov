@@ -775,16 +775,7 @@ def organization_or_group_list_related(context, data_dict):
            member.state = 'active' and
            member.table_name = 'group'
 
-        # left join "group" g2
-        # on member.table_id = g2.id and
-        #    g2.is_organization = true and
-        #    g2.state = 'active' and
-        #    g2.approval_status = 'approved'
-
-        # left join "group_extra" url
-        # on g1.id = url.group_id and
-        #    url.key = 'url' and
-        #    url.state = 'active'
+       
 
         where g1.is_organization = false and
               g1.state = 'active' and
