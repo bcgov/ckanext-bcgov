@@ -239,7 +239,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'member_list': edc_action.member_list,
             'whoami': edc_action.whoami,
             'update_resource_refresh_timestamp': edc_action.update_resource_refresh_timestamp,
-            'organization_list_related': edc_action.organization_list_related
+            'organization_or_group_list_related': edc_action.organization_or_group_list_related
         }
 
     def get_auth_functions(self):
