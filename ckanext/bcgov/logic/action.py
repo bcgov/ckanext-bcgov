@@ -802,9 +802,9 @@ def organization_or_group_list_related(context, data_dict):
     # query for facets to get counts
     orgs_in_search_results = toolkit.get_action("package_search")(
         context,
-        { "q": "", "rows": "0", "facet.field": ["group"]}) \
+        { "q": "", "rows": "0", "facet.field": ["groups"]}) \
     .get("search_facets", {}) \
-    .get("group", {}) \
+    .get("groups", {}) \
     .get("items", [])
 
     # associate base counts to all orgs list. Does not include aggregate counts
@@ -819,24 +819,24 @@ def organization_or_group_list_related(context, data_dict):
     # 
     # Most of the speed gain comes from disabling include_dataset_count, as that's
     # what triggers additional solr searches.
-    # if data_dict.get('all_fields', 'False') == 'True':
-    #     organization_show = toolkit.get_action("organization_show")
-    #     for org in all_orgs.values():
-    #         try:
-    #             result = organization_show(context, {
-    #                     "id": org["id"],
-    #                     "include_datasets": False,
-    #                     "include_dataset_count": False,
-    #                     "include_tags": False,
-    #                     "include_users": False,
-    #                     "include_groups": False,
-    #                     "include_extras": True,
-    #                     "include_followers": False
-    #                 })
-    #             for k, v in result.items():
-    #                 org[k] = v
-    #         except Exception:
-    #             pass
+    if data_dict.get('all_fields', 'False') == 'True':
+        group_show = toolkit.get_action("group_show")
+        for org in all_orgs.values():
+            try:
+                result = group_show(context, {
+                        "id": org["id"],
+                        "include_datasets": False,
+                        "include_dataset_count": False,
+                        "include_tags": False,
+                        "include_users": False,
+                        "include_groups": False,
+                        "include_extras": True,
+                        "include_followers": False
+                    })
+                for k, v in result.items():
+                    org[k] = v
+            except Exception:
+                pass
 
     # # set parent and children orgs & update counts
     # for org_name, org in all_orgs.items():
