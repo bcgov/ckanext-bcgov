@@ -766,7 +766,7 @@ def organization_or_group_list_related(context, data_dict):
                g1.title display_name, -- duplicating functionality of organization_show_related, but don't know why this field is needed
                g1.image_url, g1.is_organization, g1.description,
                case when g1.image_url <> '' then concat('/uploads/group/', g1.image_url) else '' end as image_display_url,
-               g1.state, -- TODO:coalesce(url.value, '') as url
+               g1.state
 
         from "group" g1
 
