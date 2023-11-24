@@ -807,10 +807,11 @@ def organization_or_group_list_related(context, data_dict):
     .get("groups", {}) \
     .get("items", [])
 
+    print(orgs_in_search_results)
     # associate base counts to all orgs list. Does not include aggregate counts
     # for parent orgs.
-    for org in orgs_in_search_results:
-        all_orgs[org["name"]]["package_count"] = org["count"]
+    # for org in orgs_in_search_results:
+    #     all_orgs[org["name"]]["package_count"] = org["count"]
 
     # Add all the other fields that organization_show provides.
     # To optimize this further, could probably use inner joins in the
