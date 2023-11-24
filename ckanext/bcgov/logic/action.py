@@ -766,7 +766,7 @@ def organization_or_group_list_related(context, data_dict):
                g1.title display_name, -- duplicating functionality of organization_show_related, but don't know why this field is needed
                g1.image_url, g1.is_organization, g1.description,
                case when g1.image_url <> '' then concat('/uploads/group/', g1.image_url) else '' end as image_display_url,
-               g1.state, coalesce(url.value, '') as url
+               g1.state, -- TODO:coalesce(url.value, '') as url
 
         from "group" g1
 
@@ -799,10 +799,18 @@ def organization_or_group_list_related(context, data_dict):
     # .get("organization", {}) \
     # .get("items", [])
 
+    # query for facets to get counts
+    orgs_in_search_results = toolkit.get_action("package_search")(
+        context,
+        { "q": "", "rows": "0", "facet.field": ["group"]}) \
+    .get("search_facets", {}) \
+    .get("group", {}) \
+    .get("items", [])
+
     # associate base counts to all orgs list. Does not include aggregate counts
     # for parent orgs.
-    # for org in orgs_in_search_results:
-    #     all_orgs[org["name"]]["package_count"] = org["count"]
+    for org in orgs_in_search_results:
+        all_orgs[org["name"]]["package_count"] = org["count"]
 
     # Add all the other fields that organization_show provides.
     # To optimize this further, could probably use inner joins in the
