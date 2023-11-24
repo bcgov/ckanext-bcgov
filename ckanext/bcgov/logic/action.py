@@ -770,13 +770,6 @@ def organization_or_group_list_related(context, data_dict):
 
         from "group" g1
 
-        left join member
-        on member.group_id = g1.id and
-           member.state = 'active' and
-           member.table_name = 'group'
-
-        
-
         left join "group_extra" url
         on g1.id = url.group_id and
            url.key = 'url' and
