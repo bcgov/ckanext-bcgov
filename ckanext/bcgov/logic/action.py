@@ -935,11 +935,14 @@ def organization_or_group_list_related(context, data_dict):
     # gather all groups or organizations, add default values
     for grp in query_result:
         all_groups[grp.name] = dict(grp)
-        all_groups[grp.name]["package_count"] = 0
-        all_groups[grp.name]["type"] = "organization" if is_organization else "group"
+        
         if is_organization:
             all_groups[grp.name]["parent_of"] = []
             all_groups[grp.name]["child_of"] = []
+        else:
+            all_groups[grp.name]["type"] = "group"
+        
+        all_groups[grp.name]["package_count"] = 0
 
 
     # query for facets to get counts
