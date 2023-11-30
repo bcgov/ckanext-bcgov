@@ -747,126 +747,11 @@ def update_resource_refresh_timestamp(context, input_data_dict):
 #     return list(all_orgs.values())
 
 
-# @toolkit.side_effect_free
-# def group_list_related(context, data_dict):
-#     '''Return a list of the names of the site's organizations.
-
-#     :param all_fields: return full group dictionaries instead of just names 
-
-#     (optional, default: ``False``) 
-
-#     :type all_fields: boolean 
-
-#     :rtype: list of strings'''
-
-#     model = context["model"]
-
-#     org_query_result = model.Session.execute("""
-
-#         select g1.id, g1.name, g1.title,
-#                g1.title display_name, -- duplicating functionality of organization_show_related, but don't know why this field is needed
-#                g1.image_url, g1.is_organization, g1.description,
-#                case when g1.image_url <> '' then concat('/uploads/group/', g1.image_url) else '' end as image_display_url,
-#                g1.state
-
-#         from "group" g1
-
-#         left join "group_extra" url
-#         on g1.id = url.group_id and
-#            url.key = 'url' and
-#            url.state = 'active'
-
-#         where g1.is_organization = false and
-#               g1.state = 'active' and
-#               g1.approval_status = 'approved';
-
-#     """)
-
-#     all_orgs = {}
-
-#     # gather all organizations, add default values
-#     for org in org_query_result:
-#         all_orgs[org.name] = dict(org)
-#         # all_orgs[org.name]["parent_of"] = []
-#         # all_orgs[org.name]["child_of"] = []
-#         all_orgs[org.name]["package_count"] = 0
-#         all_orgs[org.name]["type"] = "group"
-
-#     # query for facets to get counts
-#     # orgs_in_search_results = toolkit.get_action("package_search")(
-#     #     context,
-#     #     { "q": "", "rows": "0", "facet.field": ["organization"]}) \
-#     # .get("search_facets", {}) \
-#     # .get("organization", {}) \
-#     # .get("items", [])
-
-#     # query for facets to get counts
-#     orgs_in_search_results = toolkit.get_action("package_search")(
-#         context,
-#         { "q": "", "rows": "0", "facet.field": ["groups"]}) \
-#     .get("search_facets", {}) \
-#     .get("groups", {}) \
-#     .get("items", [])
-
-#     # associate base counts to all orgs list. Does not include aggregate counts
-#     # for parent orgs.
-#     for org in orgs_in_search_results:
-#         if org["name"] in all_orgs:
-#             all_orgs[org["name"]]["package_count"] = org["count"]
-
-#     # Add all the other fields that organization_show provides.
-#     # To optimize this further, could probably use inner joins in the
-#     # original SQL query, but that would mean lose the ability to use plugins to
-#     # mutate the result.
-#     # 
-#     # Most of the speed gain comes from disabling include_dataset_count, as that's
-#     # what triggers additional solr searches.
-#     if data_dict.get('all_fields', 'False') == 'True':
-#         group_show = toolkit.get_action("group_show")
-#         for org in all_orgs.values():
-#             try:
-#                 result = group_show(context, {
-#                         "id": org["id"],
-#                         "include_datasets": False,
-#                         "include_dataset_count": False,
-#                         "include_tags": False,
-#                         "include_users": False,
-#                         "include_groups": False,
-#                         "include_extras": True,
-#                         "include_followers": False
-#                     })
-#                 for k, v in result.items():
-#                     org[k] = v
-#             except Exception:
-#                 pass
-
-#     # set parent and children orgs & update counts
-#     for org_name, org in all_orgs.items():
-#         if org["parent_org"]:
-#             parent = all_orgs.get(org["parent_org"], None)
-#             if parent:
-#                 parent["parent_of"].append({ "title": org["title"], "name": org["name"] })
-#                 org["child_of"].append({ "title": parent["title"], "name": parent["name"] })
-#                 parents = [{ "name": parent["name"] }]
-#                 while parents:
-#                     o = parents.pop(0)
-#                     parents.extend(all_orgs[o["name"]]["child_of"])
-#                     all_orgs[o["name"]]["package_count"] += org["package_count"]
-    
-#     return list(all_orgs.values())
-
 @toolkit.side_effect_free
 def organization_or_group_list_related(context, data_dict):
-    #TODO: Ask John if we want to keep default value for is_organization
-    '''Return a list of the names of the site's organizations or groups.
+    '''Return a list of the names of the site's organizations.
 
-    :param is_organization: return organizations list if true otherwise return groups list
-
-    (default: ``False``)
-
-    :type all_fields: boolean 
-
-    :param all_fields: return full dictionaries instead of just names of organizations or groups
+    :param all_fields: return full group dictionaries instead of just names 
 
     (optional, default: ``False``) 
 
@@ -876,75 +761,60 @@ def organization_or_group_list_related(context, data_dict):
 
     model = context["model"]
 
-    is_organization = bool(data_dict.get('is_organization', False))
-    query_result = {}
+    org_query_result = model.Session.execute("""
 
-    if is_organization:
-        query_result = model.Session.execute("""
-            SELECT g2.name AS parent_org, g1.id, g1.name, g1.title,
-                   g1.title display_name, g1.image_url, g1.is_organization, g1.description, 'organization' AS type,
-                   CASE WHEN g1.image_url <> '' THEN CONCAT('/uploads/group/', g1.image_url) ELSE '' END AS image_display_url,
-                   g1.state, COALESCE(url.value, '') AS url
-            FROM "group" g1
-            LEFT JOIN member ON member.group_id = g1.id AND
-                               member.state = 'active' AND
-                               member.table_name = 'group'
-            LEFT JOIN "group" g2 ON member.table_id = g2.id AND
-                                   g2.is_organization = TRUE AND
-                                   g2.state = 'active' AND
-                                   g2.approval_status = 'approved'
-            LEFT JOIN "group_extra" url ON g1.id = url.group_id AND
-                                         url.key = 'url' AND
-                                         url.state = 'active'
-            WHERE g1.is_organization = TRUE AND
-                  g1.state = 'active' AND
-                  g1.approval_status = 'approved';
-        """)
-    else:
-        query_result = model.Session.execute("""
-            SELECT g1.id, g1.name, g1.title,
-                   g1.title display_name, g1.image_url, g1.is_organization, g1.description,
-                   CASE WHEN g1.image_url <> '' THEN CONCAT('/uploads/group/', g1.image_url) ELSE '' END AS image_display_url,
-                   g1.state
-            FROM "group" g1
-            LEFT JOIN "group_extra" url ON g1.id = url.group_id AND
-                                         url.key = 'url' AND
-                                         url.state = 'active'
-            WHERE g1.is_organization = FALSE AND
-                  g1.state = 'active' AND
-                  g1.approval_status = 'approved';
-        """)
+        select g1.id, g1.name, g1.title,
+               g1.title display_name, -- duplicating functionality of organization_show_related, but don't know why this field is needed
+               g1.image_url, g1.is_organization, g1.description,
+               case when g1.image_url <> '' then concat('/uploads/group/', g1.image_url) else '' end as image_display_url,
+               g1.state
 
-    #groups and oganizations are listed as groups in Database
-    #TODO: Ask John if its ok to keep this comment
-    all_groups = {}
+        from "group" g1
 
-    # gather all groups or organizations, add default values
-    for grp in query_result:
-        all_groups[grp.name] = dict(grp)
-        all_groups[grp.name]["package_count"] = 0
-        all_groups[grp.name]["type"] = "organization" if is_organization else "group"
-        if is_organization:
-            all_groups[grp.name]["parent_of"] = []
-            all_groups[grp.name]["child_of"] = []
+        left join "group_extra" url
+        on g1.id = url.group_id and
+           url.key = 'url' and
+           url.state = 'active'
 
+        where g1.is_organization = false and
+              g1.state = 'active' and
+              g1.approval_status = 'approved';
+
+    """)
+
+    all_orgs = {}
+
+    # gather all organizations, add default values
+    for org in org_query_result:
+        all_orgs[org.name] = dict(org)
+        # all_orgs[org.name]["parent_of"] = []
+        # all_orgs[org.name]["child_of"] = []
+        all_orgs[org.name]["package_count"] = 0
+        all_orgs[org.name]["type"] = "group"
 
     # query for facets to get counts
-    facet_field = "organization" if is_organization else "groups"
-    package_search_results = toolkit.get_action("package_search")(
+    # orgs_in_search_results = toolkit.get_action("package_search")(
+    #     context,
+    #     { "q": "", "rows": "0", "facet.field": ["organization"]}) \
+    # .get("search_facets", {}) \
+    # .get("organization", {}) \
+    # .get("items", [])
+
+    # query for facets to get counts
+    orgs_in_search_results = toolkit.get_action("package_search")(
         context,
-        { "q": "", "rows": "0", "facet.field": [facet_field]}) \
+        { "q": "", "rows": "0", "facet.field": ["groups"]}) \
     .get("search_facets", {}) \
-    .get(facet_field, {}) \
+    .get("groups", {}) \
     .get("items", [])
 
-   # associate base counts to all_groups list. Does not include aggregate counts
+    # associate base counts to all orgs list. Does not include aggregate counts
     # for parent orgs.
-    for grp in package_search_results:
-        if grp["name"] in all_groups:
-            all_groups[grp["name"]]["package_count"] = grp["count"]
+    for org in orgs_in_search_results:
+        if org["name"] in all_orgs:
+            all_orgs[org["name"]]["package_count"] = org["count"]
 
-    # Add all the other fields that organization_show or group_show provides.
+    # Add all the other fields that organization_show provides.
     # To optimize this further, could probably use inner joins in the
     # original SQL query, but that would mean lose the ability to use plugins to
     # mutate the result.
@@ -952,40 +822,170 @@ def organization_or_group_list_related(context, data_dict):
     # Most of the speed gain comes from disabling include_dataset_count, as that's
     # what triggers additional solr searches.
     if data_dict.get('all_fields', 'False') == 'True':
-        show_function = (
-            toolkit.get_action("organization_show")
-            if is_organization
-            else toolkit.get_action("group_show")
-        )
-        for grp in all_groups.values():
+        group_show = toolkit.get_action("group_show")
+        for org in all_orgs.values():
             try:
-                result = show_function(context, {
-                    "id": grp["id"],
-                    "include_datasets": False,
-                    "include_dataset_count": False,
-                    "include_tags": False,
-                    "include_users": False,
-                    "include_groups": False,
-                    "include_extras": True,
-                    "include_followers": False
-                })
+                result = group_show(context, {
+                        "id": org["id"],
+                        "include_datasets": False,
+                        "include_dataset_count": False,
+                        "include_tags": False,
+                        "include_users": False,
+                        "include_groups": False,
+                        "include_extras": True,
+                        "include_followers": False
+                    })
                 for k, v in result.items():
-                    grp[k] = v
+                    org[k] = v
             except Exception:
                 pass
 
-    # Set parent and children orgs & update counts
-    if is_organization:
-        for org in all_groups.items():
-            if org["parent_org"]:
-                parent = all_groups.get(org["parent_org"], None)
-                if parent:
-                    parent["parent_of"].append({ "title": org["title"], "name": org["name"] })
-                    org["child_of"].append({ "title": parent["title"], "name": parent["name"] })
-                    parents = [{ "name": parent["name"] }]
-                    while parents:
-                        o = parents.pop(0)
-                        parents.extend(all_groups[o["name"]]["child_of"])
-                        all_groups[o["name"]]["package_count"] += org["package_count"]
+    # set parent and children orgs & update counts
+    for org_name, org in all_orgs.items():
+        if org["parent_org"]:
+            parent = all_orgs.get(org["parent_org"], None)
+            if parent:
+                parent["parent_of"].append({ "title": org["title"], "name": org["name"] })
+                org["child_of"].append({ "title": parent["title"], "name": parent["name"] })
+                parents = [{ "name": parent["name"] }]
+                while parents:
+                    o = parents.pop(0)
+                    parents.extend(all_orgs[o["name"]]["child_of"])
+                    all_orgs[o["name"]]["package_count"] += org["package_count"]
+    
+    return list(all_orgs.values())
 
-    return list(all_groups.values())
+# @toolkit.side_effect_free
+# def organization_or_group_list_related(context, data_dict):
+#     #TODO: Ask John if we want to keep default value for is_organization
+#     '''Return a list of the names of the site's organizations or groups.
+
+#     :param is_organization: return organizations list if true otherwise return groups list
+
+#     (default: ``False``)
+
+#     :type all_fields: boolean 
+
+#     :param all_fields: return full dictionaries instead of just names of organizations or groups
+
+#     (optional, default: ``False``) 
+
+#     :type all_fields: boolean 
+
+#     :rtype: list of strings'''
+
+#     model = context["model"]
+
+#     is_organization = bool(data_dict.get('is_organization', False))
+#     query_result = {}
+
+#     if is_organization:
+#         query_result = model.Session.execute("""
+#             SELECT g2.name AS parent_org, g1.id, g1.name, g1.title,
+#                    g1.title display_name, g1.image_url, g1.is_organization, g1.description, 'organization' AS type,
+#                    CASE WHEN g1.image_url <> '' THEN CONCAT('/uploads/group/', g1.image_url) ELSE '' END AS image_display_url,
+#                    g1.state, COALESCE(url.value, '') AS url
+#             FROM "group" g1
+#             LEFT JOIN member ON member.group_id = g1.id AND
+#                                member.state = 'active' AND
+#                                member.table_name = 'group'
+#             LEFT JOIN "group" g2 ON member.table_id = g2.id AND
+#                                    g2.is_organization = TRUE AND
+#                                    g2.state = 'active' AND
+#                                    g2.approval_status = 'approved'
+#             LEFT JOIN "group_extra" url ON g1.id = url.group_id AND
+#                                          url.key = 'url' AND
+#                                          url.state = 'active'
+#             WHERE g1.is_organization = TRUE AND
+#                   g1.state = 'active' AND
+#                   g1.approval_status = 'approved';
+#         """)
+#     else:
+#         query_result = model.Session.execute("""
+#             SELECT g1.id, g1.name, g1.title,
+#                    g1.title display_name, g1.image_url, g1.is_organization, g1.description,
+#                    CASE WHEN g1.image_url <> '' THEN CONCAT('/uploads/group/', g1.image_url) ELSE '' END AS image_display_url,
+#                    g1.state
+#             FROM "group" g1
+#             LEFT JOIN "group_extra" url ON g1.id = url.group_id AND
+#                                          url.key = 'url' AND
+#                                          url.state = 'active'
+#             WHERE g1.is_organization = FALSE AND
+#                   g1.state = 'active' AND
+#                   g1.approval_status = 'approved';
+#         """)
+
+#     #groups and oganizations are listed as groups in Database
+#     #TODO: Ask John if its ok to keep this comment
+#     all_groups = {}
+
+#     # gather all groups or organizations, add default values
+#     for grp in query_result:
+#         all_groups[grp.name] = dict(grp)
+#         all_groups[grp.name]["package_count"] = 0
+#         all_groups[grp.name]["type"] = "organization" if is_organization else "group"
+#         if is_organization:
+#             all_groups[grp.name]["parent_of"] = []
+#             all_groups[grp.name]["child_of"] = []
+
+
+#     # query for facets to get counts
+#     facet_field = "organization" if is_organization else "groups"
+#     package_search_results = toolkit.get_action("package_search")(
+#         context,
+#         { "q": "", "rows": "0", "facet.field": [facet_field]}) \
+#     .get("search_facets", {}) \
+#     .get(facet_field, {}) \
+#     .get("items", [])
+
+#    # associate base counts to all_groups list. Does not include aggregate counts
+#     # for parent orgs.
+#     for grp in package_search_results:
+#         if grp["name"] in all_groups:
+#             all_groups[grp["name"]]["package_count"] = grp["count"]
+
+#     # Add all the other fields that organization_show or group_show provides.
+#     # To optimize this further, could probably use inner joins in the
+#     # original SQL query, but that would mean lose the ability to use plugins to
+#     # mutate the result.
+#     # 
+#     # Most of the speed gain comes from disabling include_dataset_count, as that's
+#     # what triggers additional solr searches.
+#     if data_dict.get('all_fields', 'False') == 'True':
+#         show_function = (
+#             toolkit.get_action("organization_show")
+#             if is_organization
+#             else toolkit.get_action("group_show")
+#         )
+#         for grp in all_groups.values():
+#             try:
+#                 result = show_function(context, {
+#                     "id": grp["id"],
+#                     "include_datasets": False,
+#                     "include_dataset_count": False,
+#                     "include_tags": False,
+#                     "include_users": False,
+#                     "include_groups": False,
+#                     "include_extras": True,
+#                     "include_followers": False
+#                 })
+#                 for k, v in result.items():
+#                     grp[k] = v
+#             except Exception:
+#                 pass
+
+#     # Set parent and children orgs & update counts
+#     if is_organization:
+#         for org in all_groups.items():
+#             if org["parent_org"]:
+#                 parent = all_groups.get(org["parent_org"], None)
+#                 if parent:
+#                     parent["parent_of"].append({ "title": org["title"], "name": org["name"] })
+#                     org["child_of"].append({ "title": parent["title"], "name": parent["name"] })
+#                     parents = [{ "name": parent["name"] }]
+#                     while parents:
+#                         o = parents.pop(0)
+#                         parents.extend(all_groups[o["name"]]["child_of"])
+#                         all_groups[o["name"]]["package_count"] += org["package_count"]
+
+#     return list(all_groups.values())
