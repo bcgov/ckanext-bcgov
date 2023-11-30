@@ -791,6 +791,7 @@ def organization_or_group_list_related(context, data_dict):
         # all_orgs[org.name]["child_of"] = []
         all_orgs[org.name]["package_count"] = 0
         all_orgs[org.name]["type"] = "group"
+        all_orgs[org.name]["gurman"] = "singh"
 
     # query for facets to get counts
     # orgs_in_search_results = toolkit.get_action("package_search")(
