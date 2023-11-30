@@ -989,7 +989,7 @@ def organization_or_group_list_related(context, data_dict):
 
     # Set parent and children orgs & update counts
     if is_organization:
-        for org in all_groups.items():
+        for org_name, org in all_groups.items():
             if org["parent_org"]:
                 parent = all_groups.get(org["parent_org"], None)
                 if parent:
