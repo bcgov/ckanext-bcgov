@@ -876,7 +876,7 @@ def organization_or_group_list_related(context, data_dict):
 
     model = context["model"]
 
-    is_organization = data_dict.get('is_organization', 'False') == 'True'
+    is_organization = bool(data_dict.get('is_organization', False))
     query_result = {}
 
     if is_organization:
