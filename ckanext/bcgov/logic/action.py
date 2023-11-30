@@ -743,7 +743,7 @@ def update_resource_refresh_timestamp(context, input_data_dict):
 #                     parents.extend(all_orgs[o["name"]]["child_of"])
 #                     all_orgs[o["name"]]["package_count"] += org["package_count"]
     
-    return list(all_orgs.values())
+#     return list(all_orgs.values())
 
 
 # @toolkit.side_effect_free
@@ -988,17 +988,17 @@ def organization_or_group_list_related(context, data_dict):
                 pass
 
     # Set parent and children orgs & update counts
-    # if is_organization:
-    #     for org in all_groups.items():
-    #         if org["parent_org"]:
-    #             parent = all_groups.get(org["parent_org"], None)
-    #             if parent:
-    #                 parent["parent_of"].append({ "title": org["title"], "name": org["name"] })
-    #                 org["child_of"].append({ "title": parent["title"], "name": parent["name"] })
-    #                 parents = [{ "name": parent["name"] }]
-    #                 while parents:
-    #                     o = parents.pop(0)
-    #                     parents.extend(all_groups[o["name"]]["child_of"])
-    #                     all_groups[o["name"]]["package_count"] += org["package_count"]
+    if is_organization:
+        for org in all_groups.items():
+            if org["parent_org"]:
+                parent = all_groups.get(org["parent_org"], None)
+                if parent:
+                    parent["parent_of"].append({ "title": org["title"], "name": org["name"] })
+                    org["child_of"].append({ "title": parent["title"], "name": parent["name"] })
+                    parents = [{ "name": parent["name"] }]
+                    while parents:
+                        o = parents.pop(0)
+                        parents.extend(all_groups[o["name"]]["child_of"])
+                        all_groups[o["name"]]["package_count"] += org["package_count"]
 
     return list(all_groups.values())
