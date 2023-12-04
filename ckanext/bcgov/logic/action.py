@@ -863,7 +863,7 @@ def organization_or_group_list_related(context, data_dict):
 
     (default: ``False``)
 
-    :type all_fields: boolean 
+    :type is_organization: boolean 
 
     :param all_fields: return full dictionaries instead of just names of organizations or groups
 
@@ -964,7 +964,7 @@ def organization_or_group_list_related(context, data_dict):
     # 
     # Most of the speed gain comes from disabling include_dataset_count, as that's
     # what triggers additional solr searches.
-    if data_dict.get('all_fields', 'False') == 'True':
+    if (data_dict.get('all_fields', 'false')).lower() == 'true':
         show_function = (
             toolkit.get_action("organization_show")
             if is_organization
