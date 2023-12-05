@@ -856,7 +856,6 @@ def update_resource_refresh_timestamp(context, input_data_dict):
 
 @toolkit.side_effect_free
 def organization_or_group_list_related(context, data_dict):
-    #TODO: Ask John if we want to keep default value for is_organization
     '''Return a list of the names of the site's organizations or groups.
 
     :param is_organization: return organizations list if true otherwise return groups list
@@ -925,8 +924,7 @@ def organization_or_group_list_related(context, data_dict):
                   g1.approval_status = 'approved';
         """)
 
-    #groups and oganizations are listed as groups in Database
-    #TODO: Ask John if its ok to keep this comment
+    # groups and oganizations are listed as groups in database
     all_groups = {}
 
     # gather all groups or organizations, add default values
