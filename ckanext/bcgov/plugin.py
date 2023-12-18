@@ -265,7 +265,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
     def before_create(self, context, resource):
         # preventative fix for #386 - make sure facet format types are always lowercase;
         resource['format'] = resource.get('format', '').lower()
-        _convert_composite_fields_to_array(resource)
+        convert_composite_fields_to_array(resource)
 
     def before_update(self, context, current, resource):
-        _convert_composite_fields_to_array(resource)
+        convert_composite_fields_to_array(resource)
