@@ -524,3 +524,12 @@ def can_access_group(group_id):
 
     except logic.NotFound:
         return False
+
+def convert_composite_fields_to_array(resource):
+    compositeResourceFields = ['temporal_extent', 'details', 'preview_info', 'geographic_info']
+    for field in compositeResourceFields:
+        if resource[field] and isinstance(resource[field], str):
+            try:
+                resource[field] = json.loads(resource[field])
+            except e:
+                resource[field] = []

@@ -5,7 +5,6 @@ from ckan.common import c, _
 
 import logging
 import re
-import json
 import ckan.lib.base as base
 import ckan.plugins as plugins
 
@@ -28,7 +27,8 @@ from ckanext.bcgov.util.util import (
     get_organization_branches,
     can_view_resource,
     get_package_tracking,
-    get_resource_tracking)
+    get_resource_tracking,
+    convert_composite_fields_to_array)
 
 from ckanext.bcgov.util.helpers import (
     get_user_dataset_num,
@@ -260,15 +260,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'ofi_create_order': ofi.ofi_create_order,
             'group_show': group_show
         }
-
-    def _convert_composite_fields_to_array(resource):
-        compositeResourceFields = ['temporal_extent', 'details', 'preview_info', 'geographic_info']
-        for field in compositeResourceFields:
-            if resource[field] and isinstance(resource[field], str):
-                try:
-                    resource[field] = json.loads(resource[field])
-                except e:
-                    resource[field] = []
 
     # IResourceController
     def before_create(self, context, resource):
