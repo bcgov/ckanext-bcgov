@@ -261,15 +261,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
             'group_show': group_show
         }
 
-    # IResourceController
-    def before_create(self, context, resource):
-        # preventative fix for #386 - make sure facet format types are always lowercase;
-        resource['format'] = resource.get('format', '').lower()
-        _convert_composite_fields_to_array(resource)
-
-    def before_update(self, context, current, resource):
-        _convert_composite_fields_to_array(resource)
-
     def _convert_composite_fields_to_array(resource):
         compositeResourceFields = ['temporal_extent', 'details', 'preview_info', 'geographic_info']
         for field in compositeResourceFields:
@@ -278,3 +269,12 @@ class SchemaPlugin(plugins.SingletonPlugin):
                     resource[field] = json.loads(resource[field])
                 except e:
                     resource[field] = []
+
+    # IResourceController
+    def before_create(self, context, resource):
+        # preventative fix for #386 - make sure facet format types are always lowercase;
+        resource['format'] = resource.get('format', '').lower()
+        _convert_composite_fields_to_array(resource)
+
+    def before_update(self, context, current, resource):
+        _convert_composite_fields_to_array(resource)
