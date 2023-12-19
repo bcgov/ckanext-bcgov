@@ -526,7 +526,7 @@ def can_access_group(group_id):
         return False
 
 def convert_composite_fields_to_array(resource):
-    compositeResourceFields = ['temporal_extent', 'details', 'preview_info', 'geographic_info']
+    compositeResourceFields = ['temporal_extent', 'details', 'preview_info', 'geographic_extent']
     for field in compositeResourceFields:
         if (field in resource) and isinstance(resource[field], str):
             try:
