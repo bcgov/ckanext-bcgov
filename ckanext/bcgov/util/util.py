@@ -531,5 +531,5 @@ def convert_composite_fields_to_array(resource):
         if (field in resource) and isinstance(resource[field], str):
             try:
                 resource[field] = json.loads(resource[field])
-            except e:
+            except:
                 resource[field] = []
