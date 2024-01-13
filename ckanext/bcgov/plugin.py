@@ -7,6 +7,7 @@ import logging
 import re
 import ckan.lib.base as base
 import ckan.plugins as plugins
+from ckanext.bcgov.controllers.site_map import site_map_blueprint
 
 # from paste.deploy.converters import asbool
 from routes.mapper import SubMapper
@@ -72,6 +73,8 @@ filter_query_regex = re.compile(r'([^:]+:"[^"]+"\s?)')
 
 class SchemaPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IRoutes, inherit=True)
+    plugins.implements(plugins.IBlueprint)
+    #TODO: Do I need to include inherit?
     plugins.implements(plugins.ITemplateHelpers, inherit=False)
     plugins.implements(plugins.IPackageController, inherit=True)
     plugins.implements(plugins.IFacets, inherit=True)
@@ -131,20 +134,23 @@ class SchemaPlugin(plugins.SingletonPlugin):
     def before_map(self, map):
         from routes.mapper import SubMapper
 
-        site_map_controller = 'ckanext.bcgov.controllers.site_map:GsaSitemapController'
+        # site_map_controller = 'ckanext.bcgov.controllers.site_map:GsaSitemapController'
         ofi_controller = 'ckanext.bcgov.controllers.ofi:EDCOfiController'
 
         GET_POST = dict(method=['GET', 'POST'])
 
         # map.connect('package_index', '/', controller=package_controller, action='index')
 
-        map.connect('sitemap', '/sitemap.html', controller=site_map_controller, action='view')
-        map.connect('sitemap', '/sitemap.xml', controller=site_map_controller, action='read')
+        # map.connect('sitemap', '/sitemap.html', controller=site_map_controller, action='view')
+        # map.connect('sitemap', '/sitemap.xml', controller=site_map_controller, action='read')
 
         map.connect('ofi api', '/api/ofi/{call_action}', controller=ofi_controller, action='action', conditions=GET_POST)
         map.connect('ofi resource', '/api/ofi/{format}/{object_name}', action='action')
 
         return map
+    
+    def get_blueprint(self):
+        return site_map_blueprint
 
     def after_map(self, map):
         return map
