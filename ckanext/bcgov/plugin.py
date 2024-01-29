@@ -7,8 +7,8 @@ import logging
 import re
 import ckan.lib.base as base
 import ckan.plugins as plugins
-# from ckanext.bcgov.controllers.site_map import site_map_blueprint
-from ckanext.bcgov.controllers.site_map import view, read
+from ckanext.bcgov.controllers.site_map import site_map_blueprint
+# from ckanext.bcgov.controllers.site_map import view, read
 from flask import Blueprint
 
 # from paste.deploy.converters import asbool
@@ -151,17 +151,20 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     #     return map
     
-    def get_blueprint(self):
-        blueprint = Blueprint('foo', self.__module__)
-        rules = [
-            ('/sitemap.html', 'sitemap_view', view),
-            ('/sitemap.xml', 'sitemap_read', read),
-            # ('/api/ofi/<call_action>', methods=['GET', 'POST'], 'ofi_action', action),
-        ]
-        for rule in rules:
-            blueprint.add_url_rule(*rule)
+    # def get_blueprint(self):
+    #     blueprint = Blueprint('foo', self.__module__)
+    #     rules = [
+    #         ('/sitemap.html', 'sitemap_view', view),
+    #         ('/sitemap.xml', 'sitemap_read', read),
+    #         # ('/api/ofi/<call_action>', methods=['GET', 'POST'], 'ofi_action', action),
+    #     ]
+    #     for rule in rules:
+    #         blueprint.add_url_rule(*rule)
 
-        return blueprint
+    #     return blueprint
+
+    def get_blueprint(self):
+        return site_map_blueprint
 
     # def after_map(self, map):
     #     return map
