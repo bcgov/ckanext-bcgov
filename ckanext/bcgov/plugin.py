@@ -149,8 +149,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
         return map
     
-    def get_blueprint(self):
-        return site_map_blueprint
 
     def after_map(self, map):
         return map
@@ -275,3 +273,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
 
     def before_update(self, context, current, resource):
         convert_composite_fields_to_array(resource)
+
+    def get_blueprint(self):
+        return site_map_blueprint
