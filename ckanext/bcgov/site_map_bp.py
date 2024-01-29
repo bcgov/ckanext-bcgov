@@ -133,6 +133,6 @@ site_map_blueprint = Blueprint('site_map_blueprint', __name__)
 def view(self):
     return self._render_gsa_sitemap()
 
-@site_map_blueprint.route('/sitemap.xml', endpoint='read')
-def read(self):
-    return self._render_xml_sitemap()        
+# @site_map_blueprint.route('/sitemap.xml', endpoint='read')
+# def read(self):
+#     return self._render_xml_sitemap()        
