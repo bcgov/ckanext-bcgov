@@ -152,7 +152,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
     #     return map
     
     def get_blueprint(self):
-        blueprint = Blueprint('foo', __name__)
+        blueprint = Blueprint('foo', self.__module__)
         rules = [
             ('/sitemap.html', 'sitemap_view', view),
             ('/sitemap.xml', 'sitemap_read', read),
