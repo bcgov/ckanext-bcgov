@@ -8,8 +8,7 @@ import re
 import ckan.lib.base as base
 import ckan.plugins as plugins
 # from ckanext.bcgov.controllers.site_map import site_map_blueprint
-# from ckanext.bcgov.controllers.site_map import view, read
-import ckanext.bcgov.controllers.site_map
+from ckanext.bcgov.controllers.site_map import view, read
 from flask import Blueprint
 
 # from paste.deploy.converters import asbool
