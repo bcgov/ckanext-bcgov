@@ -7,7 +7,7 @@ import logging
 import re
 import ckan.lib.base as base
 import ckan.plugins as plugins
-from site_map import site_map_blueprint
+from ckanext.bcgov.site_map_bp import site_map_blueprint
 
 # from paste.deploy.converters import asbool
 from routes.mapper import SubMapper
