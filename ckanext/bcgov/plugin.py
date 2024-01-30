@@ -275,4 +275,5 @@ class SchemaPlugin(plugins.SingletonPlugin):
         convert_composite_fields_to_array(resource)
 
     def get_blueprint(self):
+        log.info("Inside get_blueprint")
         return site_map_blueprint
