@@ -25,7 +25,7 @@ log = logging.getLogger('ckanext.edc_schema')
 
 # class GsaSitemapController(BaseController):
 
-def get_package_chunk(self, data_dict):
+def get_package_chunk(data_dict):
     '''
     Gets a chunk of at most 1000 records from the search results, the offset is
     specified by the start parameter in data_dict.
@@ -45,7 +45,7 @@ def get_package_chunk(self, data_dict):
         packages = []
     return count, packages
 
-def get_packages_sitemap(self, packages, output_type='html'):
+def get_packages_sitemap(packages, output_type='html'):
     
     site_map = ''
     
@@ -66,7 +66,7 @@ def get_packages_sitemap(self, packages, output_type='html'):
     return site_map
 
 
-def create_sitemap(self, output_type='html'):
+def create_sitemap(output_type='html'):
     output = ''
     
     if (output_type != 'html') and (output_type != 'xml') :
@@ -93,9 +93,9 @@ def create_sitemap(self, output_type='html'):
     '''
     Get the first chunk of records and add them to the sitemap.
     '''
-    count, packages = self.get_package_chunk(data_dict)
+    count, packages = get_package_chunk(data_dict)
     log.info('Site map records count : {0}'.format(count))
-    output += self.get_packages_sitemap(packages, output_type)
+    output += get_packages_sitemap(packages, output_type)
     
     '''
     Count the number of remaining records.
@@ -107,8 +107,8 @@ def create_sitemap(self, output_type='html'):
     while remained > 0 :
         data_dict['start'] = start
         data_dict['rows'] = min(remained, 1000)
-        count, packages = self.get_package_chunk(data_dict)
-        output += self.get_packages_sitemap(packages, output_type)    
+        count, packages = get_package_chunk(data_dict)
+        output += get_packages_sitemap(packages, output_type)    
         remained -= 1000
         start += 1000
 
@@ -120,21 +120,21 @@ def create_sitemap(self, output_type='html'):
     return output   
         
 #    @beaker_cache(expire=3600*24, type="dbm", invalidate_on_startup=True)
-def _render_gsa_sitemap(self):
-    return self.create_sitemap('html')
+def _render_gsa_sitemap():
+    return create_sitemap('html')
     
-def _render_xml_sitemap(self):
+def _render_xml_sitemap():
     
     Response.content_type = "text/xml"
-    return self.create_sitemap('xml')
+    return create_sitemap('xml')
 
 site_map_blueprint = Blueprint('site_map_blueprint', __name__)
 # @site_map_blueprint.route('/sitemap.html', endpoint='view')
-# def view(self):
+# def view():
 #     log.info("Inside view method")
-#     return self._render_gsa_sitemap()
+#     return _render_gsa_sitemap()
 
 @site_map_blueprint.route('/sitemap.xml', endpoint='read')
-def read(self):
+def read():
     log.info("Inside sitemap.xml action")
-    return self._render_xml_sitemap()        
+    return _render_xml_sitemap()        
