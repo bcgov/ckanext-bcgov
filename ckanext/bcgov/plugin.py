@@ -286,9 +286,12 @@ class SchemaPlugin(plugins.SingletonPlugin):
         rules = [
             ('/sitemap.html', 'sitemap_view', view),
             ('/sitemap.xml', 'sitemap_read', read),
-            ('/api/ofi/<call_action>', {'methods': ['GET', 'POST'], 'endpoint': 'ofi_api', 'view_func': action}),
+            # ('/api/ofi/<call_action>', methods=['GET', 'POST'], 'ofi_api', action),
         ]
         for rule in rules:
             blueprint.add_url_rule(*rule)
+        
+        blueprint.add_url_rule('/api/ofi/<call_action>', 'ofi_api', action, methods=['GET', 'POST'])
+
 
         return blueprint
