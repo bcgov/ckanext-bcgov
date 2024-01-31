@@ -31,7 +31,7 @@ def get_package_chunk(data_dict):
     specified by the start parameter in data_dict.
     '''
 
-    
+    log.info("Inside: get_package_chunk")
     context = {'model': model, 'user': c.user or c.author,
                     'auth_user_obj': c.userobj}
     
@@ -43,17 +43,18 @@ def get_package_chunk(data_dict):
         log.error('Dataset search error in creating the package site map: %r', se.args)
         count = 0
         packages = []
+    log.info("Success: get_package_chunk")
     return count, packages
 
 def get_packages_sitemap(packages, output_type='html'):
     
     site_map = ''
-    
+    log.info("Inside: get_pacakges_sitemap")
     for pkg in packages:
         if output_type == 'html' :            
             site_map += "<a href=\""+ config.get('ckan.site_url') + "/dataset/" + pkg['name'] + "\">" + pkg['name'] + "</a><br>"
         else:
-            pkg_lastmod = url_for(controller='package', action="read", id = pkg['metadata_modified'])
+            pkg_lastmod = url_for(controller='dataset', action="read", id = pkg['metadata_modified'])
             short_date = pkg_lastmod[9:-7] 
             escaped_date = short_date.replace("%3A",":")
             utc_date = escaped_date + '-07:00'
@@ -62,7 +63,7 @@ def get_packages_sitemap(packages, output_type='html'):
             #output += "<lastmod>" + pkg_lastmod[9:-20] + "</lastmod>"
             site_map += "<lastmod>" + utc_date + "</lastmod>"
             site_map += "</url>"  
-                    
+    log.info("Success: get_pacakges_sitemap")                
     return site_map
 
 
@@ -93,6 +94,8 @@ def create_sitemap(output_type='html'):
     '''
     Get the first chunk of records and add them to the sitemap.
     '''
+    log.info("Inside create_sitemap-xml")
+    log.info("Calling: get_package_chunk")
     count, packages = get_package_chunk(data_dict)
     log.info('Site map records count : {0}'.format(count))
     output += get_packages_sitemap(packages, output_type)
@@ -115,7 +118,8 @@ def create_sitemap(output_type='html'):
     if output_type == 'html' :
         output += "</body></html>" 
     else :
-        output += "</urlset>"    
+        output += "</urlset>"   
+    log.info("Successfully executed create_sitemap-xml")
 
     return output   
         
