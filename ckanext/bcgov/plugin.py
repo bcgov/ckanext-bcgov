@@ -9,6 +9,8 @@ import ckan.lib.base as base
 import ckan.plugins as plugins
 from ckanext.bcgov.site_map import view, read
 from flask import Blueprint
+# TODO: Remove the import fi_api_blueprint below after testing
+from ckanext.bcgov.controllers.ofi import ofi_api_blueprint
 
 # from paste.deploy.converters import asbool
 from routes.mapper import SubMapper
@@ -275,18 +277,19 @@ class SchemaPlugin(plugins.SingletonPlugin):
     def before_update(self, context, current, resource):
         convert_composite_fields_to_array(resource)
 
-    # def get_blueprint(self):
-    #     log.info("Inside get_blueprint")
-    #     return site_map_blueprint
-
+    # TODO: Remove this block of code after testing
     def get_blueprint(self):
-        blueprint = Blueprint('foo', self.__module__)
-        rules = [
-            ('/sitemap.html', 'sitemap_view', view),
-            ('/sitemap.xml', 'sitemap_read', read),
-            # ('/api/ofi/<call_action>', methods=['GET', 'POST'], 'ofi_action', action),
-        ]
-        for rule in rules:
-            blueprint.add_url_rule(*rule)
+        log.info("Inside get_blueprint")
+        return ofi_api_blueprint
 
-        return blueprint
+    # def get_blueprint(self):
+    #     blueprint = Blueprint('foo', self.__module__)
+    #     rules = [
+    #         ('/sitemap.html', 'sitemap_view', view),
+    #         ('/sitemap.xml', 'sitemap_read', read),
+    #         # ('/api/ofi/<call_action>', methods=['GET', 'POST'], 'ofi_action', action),
+    #     ]
+    #     for rule in rules:
+    #         blueprint.add_url_rule(*rule)
+
+    #     return blueprint
