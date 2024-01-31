@@ -7,7 +7,7 @@ import logging
 import re
 import ckan.lib.base as base
 import ckan.plugins as plugins
-from ckanext.bcgov.site_map import view, read
+from ckanext.bcgov.controllers.site_map import view, read
 from flask import Blueprint
 # TODO: Remove the import fi_api_blueprint below after testing
 from ckanext.bcgov.controllers.ofi import ofi_api_blueprint
