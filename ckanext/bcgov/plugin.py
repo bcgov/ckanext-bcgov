@@ -287,7 +287,7 @@ class SchemaPlugin(plugins.SingletonPlugin):
             ('/sitemap.html', 'sitemap_view', view),
             ('/sitemap.xml', 'sitemap_read', read),
             # ('/api/ofi/<call_action>', methods=['GET', 'POST'], 'ofi_api', action),
-            ('/api/ofi/<call_action>', 'ofi_api', action, methods=['GET', 'POST']),
+            ('/api/ofi/<call_action>', 'ofi_api', action, ['GET', 'POST']),
         ]
         for rule in rules:
             blueprint.add_url_rule(*rule)
