@@ -7,7 +7,7 @@ import logging
 import re
 import ckan.lib.base as base
 import ckan.plugins as plugins
-from ckanext.bcgov.site_map_bp import view, read
+from ckanext.bcgov.site_map import view, read
 from flask import Blueprint
 
 # from paste.deploy.converters import asbool
