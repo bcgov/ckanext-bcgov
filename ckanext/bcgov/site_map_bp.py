@@ -132,13 +132,13 @@ def _render_xml_sitemap():
     Response.content_type = "text/xml"
     return create_sitemap('xml')
 
-site_map_blueprint = Blueprint('site_map_blueprint', __name__)
-@site_map_blueprint.route('/sitemap.html', endpoint='view')
+# site_map_blueprint = Blueprint('site_map_blueprint', __name__)
+# @site_map_blueprint.route('/sitemap.html', endpoint='view')
 def view():
     log.info("Inside view method")
     return _render_gsa_sitemap()
 
-@site_map_blueprint.route('/sitemap.xml', endpoint='read')
+# @site_map_blueprint.route('/sitemap.xml', endpoint='read')
 def read():
     log.info("Inside sitemap.xml action")
     return _render_xml_sitemap()        
