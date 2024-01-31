@@ -43,8 +43,8 @@ log = logging.getLogger('ckanext.bcgov.controllers.ofi')
 # def __init__(self):
 #     self.config = edc_h.get_ofi_config()
 
-ofi_api_blueprint = Blueprint('ofi_api_blueprint', __name__)
-@ofi_api_blueprint.route('/api/ofi/<call_action>', methods=['GET', 'POST'])
+# ofi_api_blueprint = Blueprint('ofi_api_blueprint', __name__)
+# @ofi_api_blueprint.route('/api/ofi/<call_action>', methods=['GET', 'POST'])
 def action(call_action, ver=None):
     """
     OFI API endpoint
