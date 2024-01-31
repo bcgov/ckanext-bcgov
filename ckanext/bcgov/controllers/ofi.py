@@ -173,12 +173,12 @@ def action(call_action, ver=None):
 
         else:
             # return self._finish_not_found(_('OFI API Controller action not found: %s') % call_action)
-            return api._finish_bad_request(_('OFI API Controller action not found: %s') % call_action) #TODO: Ask John is this correct way as orig deleted
+            return api._finish(404, _('OFI API Controller action not found: %s') % call_action, content_type='json') #TODO: Ask John is this correct way as orig deleted
 
 
     except toolkit.NotAuthorized as e:
         # return self._finish_not_authz(_('Not authorized to call %s') % call_action)
-        return api._finish_bad_request(_('Not authorized to call %s') % call_action) #TODO: Ask John is this correct way as orig deleted
+        return api._finish(403, _('Not authorized to call %s') % call_action, content_type='json') #TODO: Ask John is this correct way as orig deleted
 
 
     except OFIServiceError as e:

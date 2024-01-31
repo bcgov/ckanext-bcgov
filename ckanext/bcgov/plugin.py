@@ -132,28 +132,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
             "log": log_this
         }
 
-    # Customizing action mapping
-    def before_map(self, map):
-        from routes.mapper import SubMapper
-
-        # site_map_controller = 'ckanext.bcgov.controllers.site_map:GsaSitemapController'
-        ofi_controller = 'ckanext.bcgov.controllers.ofi:EDCOfiController'
-
-        GET_POST = dict(method=['GET', 'POST'])
-
-        # map.connect('package_index', '/', controller=package_controller, action='index')
-
-        # map.connect('sitemap', '/sitemap.html', controller=site_map_controller, action='view')
-        # map.connect('sitemap', '/sitemap.xml', controller=site_map_controller, action='read')
-
-        map.connect('ofi api', '/api/ofi/{call_action}', controller=ofi_controller, action='action', conditions=GET_POST)
-        map.connect('ofi resource', '/api/ofi/{format}/{object_name}', action='action')
-
-        return map
-    
-
-    def after_map(self, map):
-        return map
 
     # def before_index(self, pkg_dict):
     #     """
