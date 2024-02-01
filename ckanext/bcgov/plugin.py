@@ -12,7 +12,7 @@ from ckanext.bcgov.controllers.ofi import action
 from flask import Blueprint
 
 # from paste.deploy.converters import asbool
-from routes.mapper import SubMapper
+# from routes.mapper import SubMapper
 
 
 import ckan.logic as logic
@@ -74,9 +74,7 @@ filter_query_regex = re.compile(r'([^:]+:"[^"]+"\s?)')
 
 
 class SchemaPlugin(plugins.SingletonPlugin):
-    plugins.implements(plugins.IRoutes, inherit=True)
     plugins.implements(plugins.IBlueprint)
-    #TODO: Do I need to include inherit?
     plugins.implements(plugins.ITemplateHelpers, inherit=False)
     plugins.implements(plugins.IPackageController, inherit=True)
     plugins.implements(plugins.IFacets, inherit=True)
@@ -254,10 +252,6 @@ class SchemaPlugin(plugins.SingletonPlugin):
     def before_update(self, context, current, resource):
         convert_composite_fields_to_array(resource)
 
-    # TODO: Remove this block of code after testing
-    # def get_blueprint(self):
-    #     log.info("Inside get_blueprint")
-    #     return ofi_api_blueprint
 
     def get_blueprint(self):
         blueprint = Blueprint('foo', self.__module__)
