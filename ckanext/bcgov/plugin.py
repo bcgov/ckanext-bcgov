@@ -7,12 +7,12 @@ import logging
 import re
 import ckan.lib.base as base
 import ckan.plugins as plugins
-from ckanext.bcgov.controllers.site_map import site_map_blueprint
-# from ckanext.bcgov.controllers.site_map import view, read
+from ckanext.bcgov.controllers.site_map import view, read
+from ckanext.bcgov.controllers.ofi import action
 from flask import Blueprint
 
 # from paste.deploy.converters import asbool
-from routes.mapper import SubMapper
+# from routes.mapper import SubMapper
 
 
 import ckan.logic as logic
@@ -74,9 +74,7 @@ filter_query_regex = re.compile(r'([^:]+:"[^"]+"\s?)')
 
 
 class SchemaPlugin(plugins.SingletonPlugin):
-    plugins.implements(plugins.IRoutes, inherit=True)
     plugins.implements(plugins.IBlueprint)
-    #TODO: Do I need to include inherit=......?
     plugins.implements(plugins.ITemplateHelpers, inherit=False)
     plugins.implements(plugins.IPackageController, inherit=True)
     plugins.implements(plugins.IFacets, inherit=True)
@@ -132,42 +130,21 @@ class SchemaPlugin(plugins.SingletonPlugin):
             "log": log_this
         }
 
-    # Customizing action mapping
-    # def before_map(self, map):
-    #     from routes.mapper import SubMapper
-
-    #     site_map_controller = 'ckanext.bcgov.controllers.site_map:GsaSitemapController'
-    #     ofi_controller = 'ckanext.bcgov.controllers.ofi:EDCOfiController'
-
-    #     GET_POST = dict(method=['GET', 'POST'])
-
-    #     map.connect('package_index', '/', controller=package_controller, action='index')
-
-    #     map.connect('sitemap', '/sitemap.html', controller=site_map_controller, action='view')
-    #     map.connect('sitemap', '/sitemap.xml', controller=site_map_controller, action='read')
-
-    #     map.connect('ofi api', '/api/ofi/{call_action}', controller=ofi_controller, action='action', conditions=GET_POST)
-    #     map.connect('ofi resource', '/api/ofi/{format}/{object_name}', action='action')
-
-    #     return map
-    
-    # def get_blueprint(self):
-    #     blueprint = Blueprint('foo', self.__module__)
-    #     rules = [
-    #         ('/sitemap.html', 'sitemap_view', view),
-    #         ('/sitemap.xml', 'sitemap_read', read),
-    #         # ('/api/ofi/<call_action>', methods=['GET', 'POST'], 'ofi_action', action),
-    #     ]
-    #     for rule in rules:
-    #         blueprint.add_url_rule(*rule)
-
-    #     return blueprint
 
     def get_blueprint(self):
-        return site_map_blueprint
+        blueprint = Blueprint('custom_actions', self.__module__)
+        rules = [
+            ('/sitemap.html', 'sitemap_view', view),
+            ('/sitemap.xml', 'sitemap_read', read),
+        ]
 
-    # def after_map(self, map):
-    #     return map
+        for rule in rules:
+            blueprint.add_url_rule(*rule)
+
+        blueprint.add_url_rule('/api/ofi/<call_action>', 'ofi_api', action, methods=['GET', 'POST'])
+
+        return blueprint
+
 
     # def before_index(self, pkg_dict):
     #     """

@@ -4,24 +4,12 @@
 # Highway Three Solutions Inc.
 # Author: Jared Smith <github@jrods>
 
-import logging
-from pprint import pformat
-
-
-# from ckan.controllers.api import ApiController
-import ckan.views.api as api
-# TODO: Change api to appropriate variable
-
 # from requests.exceptions import ConnectionError
-
-# import ckan
-# import ckan.lib.base as base
-# import ckan.lib.helpers as h
+import ckan.views.api as api
 import ckan.model as model
 import ckan.plugins.toolkit as toolkit
 from ckantoolkit import config
 import ckanext.bcgov.util.helpers as edc_h
-
 from ckanext.bcgov.logic.ofi import OFIServiceError
 
 # try:
@@ -34,16 +22,9 @@ from ckanext.bcgov.logic.ofi import OFIServiceError
 
 # shortcuts
 _ = toolkit._   
-log = logging.getLogger('ckanext.bcgov.controllers.ofi')
 
 
-# # class EDCOfiController(ApiController):
-# def __init__(self):
-#     self.config = edc_h.get_ofi_config()
-
-ofi_api_blueprint = Blueprint('ofi_api_blueprint', __name__)
-@ofi_api_blueprint.route('/api/ofi/<call_action>', methods=['GET', 'POST'])
-def action(self, call_action, ver=None):
+def action(call_action, ver=None):
     """
     OFI API endpoint
 
@@ -58,15 +39,13 @@ def action(self, call_action, ver=None):
     }
 
     data = {}
-    self.config = edc_h.get_ofi_config()
+    config = edc_h.get_ofi_config()
 
     try:
         action_func = toolkit.get_action(call_action)
         side_effect_free = getattr(action_func, 'side_effect_free', False)
 
-        # query_params = self._get_request_data(side_effect_free)
         query_params = api._get_request_data(side_effect_free)
-
 
         pkg_id = query_params.get('package_id', '')
 
@@ -76,13 +55,8 @@ def action(self, call_action, ver=None):
             'secure': query_params.get('secure', False)
         })
     except ValueError as e:
-        # return api._finish_bad_request(str(e))
         return api._finish_bad_request(str(e))
 
-
-    log.debug('OFI api config:\n %s \n', pformat(self.config))
-    log.debug('OFI api context:\n %s\n', pformat(context))
-    log.info('OFI action call: %s' % call_action)
 
     # Not ideal, but all cases involve calling the action_func,
     #  which could throw a NotAuthorized exception
@@ -110,7 +84,6 @@ def action(self, call_action, ver=None):
 
         elif call_action == 'geo_resource_form':
             data.update(force_populate=toolkit.asbool(query_params.get('force_populate')))
-
             return action_func(context, data)
 
         elif call_action == 'file_formats':
@@ -170,13 +143,11 @@ def action(self, call_action, ver=None):
                 return api._finish_bad_request(_('Something went wrong with editing ofi resources.'))
 
         else:
-            # return self._finish_not_found(_('OFI API Controller action not found: %s') % call_action)
-            return api._finish_bad_request(_('OFI API Controller action not found: %s') % call_action) #TODO: Ask John is this correct way as orig deleted
+            return api._finish(404, _('OFI API Controller action not found: %s') % call_action, content_type='json')
 
 
     except toolkit.NotAuthorized as e:
-        # return self._finish_not_authz(_('Not authorized to call %s') % call_action)
-        return api._finish_bad_request(_('Not authorized to call %s') % call_action) #TODO: Ask John is this correct way as orig deleted
+        return api._finish(403, _('Not authorized to call %s') % call_action, content_type='json')
 
 
     except OFIServiceError as e:
