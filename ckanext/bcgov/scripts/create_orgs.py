@@ -6,11 +6,10 @@ import os
 import csv
 import sys
 import json
-import urllib2
-import urllib
+import urllib.request, urllib.error, urllib.parse
 import pprint
 
-from base import (create_org, site_url, api_key)
+from .base import (create_org, site_url, api_key)
 
 
 def get_orgs_data():
@@ -23,7 +22,7 @@ def get_orgs_data():
 
     #Check if the organization data file exists.
     if not os.path.exists(orgs_filename):
-        print 'File {0} does not exist'.format(orgs_filename)
+        print('File {0} does not exist'.format(orgs_filename))
         sys.exit(1)
 
     reader = csv.reader(open(orgs_filename, 'r'), skipinitialspace=True)
@@ -35,8 +34,8 @@ def get_orgs_data():
         row_num += 1
         if row_num == 0:
             continue
-        print str(row_num).rjust(4), ' ------> ', row[1].ljust(85), ' ', row[
-            2].ljust(70), ' ', row[3].ljust(20)
+        print(str(row_num).rjust(4), ' ------> ', row[1].ljust(85), ' ', row[
+            2].ljust(70), ' ', row[3].ljust(20))
 
         #Get the org title, sub-org title and the sector
         org = row[1]
@@ -69,10 +68,10 @@ def create_odsi_orgs():
     suborgs_filename = './data/suborgs.json'
 
     if not os.path.exists(orgs_filename):
-        print 'File {0} does not exist'.format(orgs_filename)
+        print('File {0} does not exist'.format(orgs_filename))
         sys.exit(1)
     if not os.path.exists(suborgs_filename):
-        print 'File {0} does not exist'.format(suborgs_filename)
+        print('File {0} does not exist'.format(suborgs_filename))
         sys.exit(1)
 
     #Get the json file for organization and sun-organizations (Ministry and branches)
@@ -96,7 +95,7 @@ def create_odsi_orgs():
     for org_obj in orgs_list:
         pprint.pprint(org_obj)
         #For each organization get the name and title and create the organization
-        (org_name, org_title) = org_obj.items()[0]
+        (org_name, org_title) = list(org_obj.items())[0]
         org_dict = {'name': org_name.replace('_', '-'), 'title': org_title}
         org = create_org(org_dict)
 
@@ -109,7 +108,7 @@ def create_odsi_orgs():
 
         #Create the sub-organizations
         for suborg_obj in suborgs_list:
-            (suborg_name, suborg_title) = suborg_obj.items()[0]
+            (suborg_name, suborg_title) = list(suborg_obj.items())[0]
             suborg_dict = {
                 'name': suborg_name.replace('_', '-'),
                 'title': suborg_title,
@@ -124,12 +123,12 @@ def create_odsi_orgs():
                 'object_type': 'group',
                 'capacity': 'admin'
             }
-            data_string = urllib.quote(json.dumps(member_dict))
+            data_string = urllib.parse.quote(json.dumps(member_dict))
             try:
-                request = urllib2.Request(
+                request = urllib.request.Request(
                     site_url + '/api/3/action/member_create')
                 request.add_header('Authorization', api_key)
-                response = urllib2.urlopen(request, data_string)
+                response = urllib.request.urlopen(request, data_string)
                 assert response.code == 200
 
                 response_dict = json.loads(response.read())
@@ -188,12 +187,12 @@ def create_orgs():
                 'object_type': 'group',
                 'capacity': 'admin'
             }
-            data_string = urllib.quote(json.dumps(member_dict))
+            data_string = urllib.parse.quote(json.dumps(member_dict))
             try:
-                request = urllib2.Request(
+                request = urllib.request.Request(
                     site_url + '/api/3/action/member_create')
                 request.add_header('Authorization', api_key)
-                response = urllib2.urlopen(request, data_string)
+                response = urllib.request.urlopen(request, data_string)
                 assert response.code == 200
 
                 response_dict = json.loads(response.read())

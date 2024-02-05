@@ -9,13 +9,11 @@ import ckan.model as model
 import ckan.plugins.toolkit as toolkit
 import ckan.logic as logic
 from ckan.common import  (c, request)
-from webhelpers.html import literal
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import ckan.lib.base as base
-import pylons.config as config
+from ckantoolkit import config
 
-import webhelpers.html.tools as wbtools
 import ckanext.bcgov
 from ckanext.bcgov.version import version
 from ckanext.bcgov.util.git import get_short_commit_id
@@ -30,9 +28,6 @@ log = logging.getLogger('ckanext.bcgov')
 abort = base.abort
 
 from ckan.lib.helpers import unselected_facet_items
-
-def remove_user_link(actor):
-    return wbtools.strip_links(actor)
 
 def get_suborgs(org_id):
     '''
@@ -115,7 +110,7 @@ def get_user_dataset_num(userobj):
         }
         query = toolkit.get_action('package_search')(context,data_dict)
         count = query['count']
-    except SearchError, se:
+    except SearchError as se:
         log.error('Search error: %s', se)
         count = 0
 
@@ -267,7 +262,7 @@ def get_facets_unselected(facet, limit=None):
     for facet_item in c.search_facets.get(facet)['items']:
         if not len(facet_item['name'].strip()):
             continue
-        if not (facet, facet_item['name']) in request.params.items():
+        if not (facet, facet_item['name']) in list(request.params.items()):
             facets.append(dict(active=False, **facet_item))
     facets = sorted(facets, key=lambda item: item['count'], reverse=True)
     return facets
@@ -285,7 +280,7 @@ def get_facets_selected(facet):
     for facet_item in c.search_facets.get(facet)['items']:
         if not len(facet_item['name'].strip()):
             continue
-        if (facet, facet_item['name']) in request.params.items():
+        if (facet, facet_item['name']) in list(request.params.items()):
             facets.append(dict(active=False, **facet_item))
     facets = sorted(facets, key=lambda item: item['count'], reverse=True)
     return facets
@@ -299,7 +294,7 @@ def get_sectors_list():
     The list of sectors are used when creating or editing a sub-organization
     in order to assign a new sector to the sub-organization.
     '''
-    from pylons import config
+    from ckan.plugins.toolkit import config
     global _sectors_list
 
     if _sectors_list is not None:
@@ -309,17 +304,17 @@ def get_sectors_list():
     sectors_url = config.get('sectors_file_url', None)
     if sectors_url :
         try:
-            response = urllib2.urlopen(sectors_url)
+            response = urllib.request.urlopen(sectors_url)
             response_body = response.read()
-        except Exception, inst:
+        except Exception as inst:
             msg = "Couldn't access to sectors url %r: %s" % (sectors_url, inst)
-            raise Exception, msg
+            raise Exception(msg)
         try:
             sectors_data = json.loads(response_body)
-        except Exception, inst:
+        except Exception as inst:
             msg = "Couldn't read response from sectors %r: %s" % (response_body, inst)
             log.error("Couldn't read response from sectors %r: %s" % (response_body, inst))
-            raise Exception, inst
+            raise Exception(inst)
         sectors_list = sectors_data.get('sectors', [])
     else :
         '''
@@ -507,7 +502,7 @@ def debug_full_info_as_list(debug_info):
                             '__weakref__', 'action', 'environ', 'pylons',
                             'start_response']
     debug_vars = debug_info['vars']
-    for key in debug_vars.keys():
+    for key in list(debug_vars.keys()):
         if key not in ignored_keys:
             data = pprint.pformat(debug_vars.get(key))
             data = data.decode('utf-8')
@@ -525,7 +520,7 @@ def debug_full_info_as_list(debug_info):
 
 
 def get_namespace_config(namespace):
-    return dict([(k.replace(namespace, ''), v) for k, v in config.iteritems()
+    return dict([(k.replace(namespace, ''), v) for k, v in config.items()
                  if k.startswith(namespace)])
 
 
@@ -563,20 +558,20 @@ def _build_ofi_url(secure=False):
     ofi_config = get_ofi_config()
 
     if secure:
-        url = ofi_config.get(u'secure_url', 'https://apps.gov.bc.ca/pub/dwds-ofi/secure')
+        url = ofi_config.get('secure_url', 'https://apps.gov.bc.ca/pub/dwds-ofi/secure')
     else:
-        url = ofi_config.get(u'public_url', 'https://apps.gov.bc.ca/pub/dwds-ofi')
+        url = ofi_config.get('public_url', 'https://apps.gov.bc.ca/pub/dwds-ofi')
 
-    log.debug(u'OFI base API URL: %s', url)
+    log.debug('OFI base API URL: %s', url)
     return url
 
 
 def get_non_ofi_resources(pkg):
-    return [i for i in pkg[u'resources'] if u'ofi' not in i or i[u'ofi'] is False]
+    return [i for i in pkg['resources'] if 'ofi' not in i or i['ofi'] is False]
 
 
 def get_ofi_resources(pkg):
-    return [i for i in pkg[u'resources'] if u'ofi' in i and i[u'ofi']]
+    return [i for i in pkg['resources'] if 'ofi' in i and i['ofi']]
 
 
 def log_this(this):

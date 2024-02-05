@@ -1,16 +1,9 @@
 # Copyright  2015, Province of British Columbia
 # License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
 
-import os
-import sys
 import json
 
-import urllib2
-import urllib
-
-import pprint
-import logging
-import re
+import urllib.request, urllib.error, urllib.parse
 
 default_vocab_file = './data/edc-vocabs.json'
 
@@ -36,38 +29,38 @@ api_key = import_properties['api_key']
 
 def create_tag(vocab, tag):
     tag_dict = {'name': tag, 'vocabulary_id': vocab['id']}
-    data_string = urllib.quote(json.dumps(tag_dict))
+    data_string = urllib.parse.quote(json.dumps(tag_dict))
 
     try:
-        request = urllib2.Request(site_url + '/api/3/action/tag_create')
+        request = urllib.request.Request(site_url + '/api/3/action/tag_create')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         response_dict = json.loads(response.read())
         assert response_dict['success'] is True
         new_tag = response_dict['result']
-        print '\tTag {0} added to the vocabulary.'.format(
-            new_tag['display_name'])
+        print('\tTag {0} added to the vocabulary.'.format(
+            new_tag['display_name']))
     except Exception:
         pass
 
 
 def create_vocab(vocab_name, tags):
-    data_string = urllib.quote(json.dumps({'name': vocab_name}))
+    data_string = urllib.parse.quote(json.dumps({'name': vocab_name}))
     try:
-        request = urllib2.Request(site_url + '/api/3/action/vocabulary_create')
+        request = urllib.request.Request(site_url + '/api/3/action/vocabulary_create')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         response_dict = json.loads(response.read())
         assert response_dict['success'] is True
 
         vocab = response_dict['result']
-        print '{0} is added to the vocabularies'.format(vocab['name'])
-    except Exception, e:
-        print "Exception in creating vocabulary ", str(e)
+        print('{0} is added to the vocabularies'.format(vocab['name']))
+    except Exception as e:
+        print("Exception in creating vocabulary ", str(e))
         return None
 
     if not vocab:
@@ -82,15 +75,15 @@ def create_vocab(vocab_name, tags):
 def create_org(org_dict):
 
     org = None
-    data_string = urllib.quote(
+    data_string = urllib.parse.quote(
         json.dumps({
             'id': org_dict['name'],
             'include_datasets': False
         }))
     try:
-        request = urllib2.Request(site_url + '/api/3/action/organization_show')
+        request = urllib.request.Request(site_url + '/api/3/action/organization_show')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         response_dict = json.loads(response.read())
@@ -101,34 +94,34 @@ def create_org(org_dict):
         pass
 
     if not org:
-        data_string = urllib.quote(json.dumps(org_dict))
+        data_string = urllib.parse.quote(json.dumps(org_dict))
         try:
-            request = urllib2.Request(
+            request = urllib.request.Request(
                 site_url + '/api/3/action/organization_create')
             request.add_header('Authorization', api_key)
-            response = urllib2.urlopen(request, data_string)
+            response = urllib.request.urlopen(request, data_string)
             assert response.code == 200
 
             response_dict = json.loads(response.read())
             assert response_dict['success'] is True
 
             org = response_dict['result']
-        except Exception, e:
-            print "Exception in creating organiztion ", str(e)
+        except Exception as e:
+            print("Exception in creating organiztion ", str(e))
             pass
     return org
 
 
 def edc_package_create(edc_record):
 
-    data_string = urllib.quote(json.dumps(edc_record))
+    data_string = urllib.parse.quote(json.dumps(edc_record))
 
     pkg_dict = None
     errors = None
     try:
-        request = urllib2.Request(site_url + '/api/3/action/package_create')
+        request = urllib.request.Request(site_url + '/api/3/action/package_create')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         # Use the json module to load CKAN's response into a dictionary.
@@ -136,7 +129,7 @@ def edc_package_create(edc_record):
 
 
 #        pprint.pprint(response_dict)
-    except Exception, e:
+    except Exception as e:
         response_dict = {'success': False}
         response_dict['error'] = {'__type': 'Exception', 'message': str(e)}
     return response_dict
@@ -150,9 +143,9 @@ def get_organizations_dict():
 
     #Getting the list of available organizations
     try:
-        request = urllib2.Request(site_url + '/api/3/action/organization_list')
+        request = urllib.request.Request(site_url + '/api/3/action/organization_list')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request)
+        response = urllib.request.urlopen(request)
         assert response.code == 200
 
         # Use the json module to load CKAN's response into a dictionary.
@@ -166,16 +159,16 @@ def get_organizations_dict():
 
     #Creating the title-id mapping
     for org in orgs:
-        data_string = urllib.quote(
+        data_string = urllib.parse.quote(
             json.dumps({
                 'id': org,
                 'include_datasets': False
             }))
         try:
-            request = urllib2.Request(
+            request = urllib.request.Request(
                 site_url + '/api/3/action/organization_show')
             request.add_header('Authorization', api_key)
-            response = urllib2.urlopen(request, data_string)
+            response = urllib.request.urlopen(request, data_string)
             assert response.code == 200
 
             # Use the json module to load CKAN's response into a dictionary.
@@ -196,11 +189,11 @@ def get_organizations_dict():
 #Return the name of an organization with the given id
 def get_organization_id(org_title):
 
-    data_string = urllib.quote(json.dumps({'all_fields': True}))
+    data_string = urllib.parse.quote(json.dumps({'all_fields': True}))
     try:
-        request = urllib2.Request(site_url + '/api/3/action/organization_list')
+        request = urllib.request.Request(site_url + '/api/3/action/organization_list')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         # Use the json module to load CKAN's response into a dictionary.
@@ -220,12 +213,12 @@ def get_organization_id(org_title):
 
 def get_user_id(user_name):
     user_info = None
-    data_string = urllib.quote(json.dumps({'id': user_name}))
+    data_string = urllib.parse.quote(json.dumps({'id': user_name}))
 
-    request = urllib2.Request(site_url + '/api/3/action/user_show')
+    request = urllib.request.Request(site_url + '/api/3/action/user_show')
     request.add_header('Authorization', api_key)
     try:
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         # Use the json module to load CKAN's response into a dictionary.
@@ -249,9 +242,9 @@ def get_users_dict():
 
     #Getting the list of available users
     try:
-        request = urllib2.Request(site_url + '/api/3/action/user_list')
+        request = urllib.request.Request(site_url + '/api/3/action/user_list')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request)
+        response = urllib.request.urlopen(request)
         assert response.code == 200
 
         # Use the json module to load CKAN's response into a dictionary.

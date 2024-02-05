@@ -3,8 +3,7 @@
  
 import os
 import json
-import urllib2
-import urllib
+import urllib.request, urllib.error, urllib.parse
 import pprint
 
 from ckanext.edc_schema.commands.base import site_url
@@ -16,8 +15,8 @@ edc_site_url = site_url + "/"
 
 pkg_list = []
 try :
-    request = urllib2.Request(site_url + '/api/3/action/package_list')
-    response = urllib2.urlopen(request)
+    request = urllib.request.Request(site_url + '/api/3/action/package_list')
+    response = urllib.request.urlopen(request)
     assert response.code == 200
             
     response_dict = json.loads(response.read())
@@ -35,9 +34,9 @@ if len(pkg_list) > 0 :
     for pkg in pkg_list :
         pkg_dict = None
         try :
-            pkg_string = urllib.quote(json.dumps({'id': pkg}))
-            request = urllib2.Request(site_url + '/api/3/action/package_show')
-            response = urllib2.urlopen(request, pkg_string)
+            pkg_string = urllib.parse.quote(json.dumps({'id': pkg}))
+            request = urllib.request.Request(site_url + '/api/3/action/package_show')
+            response = urllib.request.urlopen(request, pkg_string)
             assert response.code == 200
         
             response_dict = json.loads(response.read())
@@ -63,4 +62,4 @@ if len(pkg_list) > 0 :
     
     #Close the redirection mapping file
 else :
-    print 'No Discovery records found in database'
+    print('No Discovery records found in database')

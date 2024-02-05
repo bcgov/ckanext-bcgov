@@ -4,34 +4,35 @@
 # Highway Three Solutions Inc.
 # Author: Jared Smith <github@jrods>
 
+import logging
+from pprint import pformat
+
+
 from ckan.controllers.api import ApiController
 
-import logging
-from pprint import pformat, pprint
-
-from requests.exceptions import ConnectionError
+# from requests.exceptions import ConnectionError
 
 # import ckan
-import ckan.lib.base as base
-import ckan.lib.helpers as h
+# import ckan.lib.base as base
+# import ckan.lib.helpers as h
 import ckan.model as model
 import ckan.plugins.toolkit as toolkit
+from ckantoolkit import config
 import ckanext.bcgov.util.helpers as edc_h
 
 from ckanext.bcgov.logic.ofi import OFIServiceError
 
-try:
-    # CKAN 2.7 and later
-    from ckan.common import config
-except ImportError:
-    # CKAN 2.6 and earlier
-    from pylons import config
+# try:
+#     # CKAN 2.7 and later
+#     from ckan.common import config
+# except ImportError:
+#     # CKAN 2.6 and earlier
+#     from pylons import config
 
 
 # shortcuts
-_ = toolkit._
-
-log = logging.getLogger(u'ckanext.bcgov.controllers.ofi')
+_ = toolkit._   
+log = logging.getLogger('ckanext.bcgov.controllers.ofi')
 
 
 class EDCOfiController(ApiController):
@@ -45,11 +46,11 @@ class EDCOfiController(ApiController):
         REST interface for call_action funtions.
         """
         context = {
-            u'model': model,
-            u'session': model.Session,
-            u'user': toolkit.c.user,
-            u'api_version': ver,
-            u'auth_user_obj': toolkit.c.userobj
+            'model': model,
+            'session': model.Session,
+            'user': toolkit.c.user,
+            'api_version': ver,
+            'auth_user_obj': toolkit.c.userobj
         }
 
         data = {}
@@ -60,27 +61,27 @@ class EDCOfiController(ApiController):
 
             query_params = self._get_request_data(side_effect_free)
 
-            pkg_id = query_params.get(u'package_id', '')
+            pkg_id = query_params.get('package_id', '')
 
             data.update({
-                u'package_id': pkg_id,
-                u'object_name': query_params.get(u'object_name', ''),
-                u'secure': query_params.get(u'secure', False)
+                'package_id': pkg_id,
+                'object_name': query_params.get('object_name', ''),
+                'secure': query_params.get('secure', False)
             })
         except ValueError as e:
-            return self._finish_bad_request(unicode(e))
+            return self._finish_bad_request(str(e))
 
-        log.debug(u'OFI api config:\n %s \n', pformat(self.config))
-        log.debug(u'OFI api context:\n %s\n', pformat(context))
-        log.info(u'OFI action call: %s' % call_action)
+        log.debug('OFI api config:\n %s \n', pformat(self.config))
+        log.debug('OFI api context:\n %s\n', pformat(context))
+        log.info('OFI action call: %s' % call_action)
 
         # Not ideal, but all cases involve calling the action_func,
         #  which could throw a NotAuthorized exception
         try:
             if call_action == 'populate_dataset_with_ofi':
                 data.update({
-                    u'force_populate': toolkit.asbool(query_params.get(u'force_populate', False)),
-                    u'ofi_resource_info': query_params.get(u'ofi_resource_info', {})
+                    'force_populate': toolkit.asbool(query_params.get('force_populate', False)),
+                    'ofi_resource_info': query_params.get('ofi_resource_info', {})
                 })
 
                 context.update({
@@ -89,17 +90,17 @@ class EDCOfiController(ApiController):
 
                 populate_results = action_func(context, data)
 
-                if str(toolkit.request.accept) == u'application/json':
+                if str(toolkit.request.accept) == 'application/json':
                     return self._finish(200, populate_results, 'json')
                 else:
-                    if u'error' in populate_results and populate_results['error']:
+                    if 'error' in populate_results and populate_results['error']:
                         failed_render = toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=populate_results)
                         return self._finish(400, failed_render, 'html')
 
                     return toolkit.render('ofi/snippets/populate_success.html', extra_vars=populate_results)
 
             elif call_action == 'geo_resource_form':
-                data.update(force_populate=toolkit.asbool(query_params.get(u'force_populate')))
+                data.update(force_populate=toolkit.asbool(query_params.get('force_populate')))
 
                 return action_func(context, data)
 
@@ -112,7 +113,7 @@ class EDCOfiController(ApiController):
             elif call_action == 'get_max_aoi':
                 max_aoi = action_func(context, data)
 
-                if u'error' in max_aoi and max_aoi[u'error']:
+                if 'error' in max_aoi and max_aoi['error']:
                     render = toolkit.render('ofi/mow/errors.html', extra_vars=max_aoi)
                     return self._finish(200, render, 'html')
 
@@ -124,7 +125,7 @@ class EDCOfiController(ApiController):
 
                 create_order = action_func(context, data)
 
-                if u'error' in create_order and create_order[u'error']:
+                if 'error' in create_order and create_order['error']:
                     return self._finish(400, create_order, 'json')
 
                 return self._finish_ok(create_order)
@@ -132,26 +133,26 @@ class EDCOfiController(ApiController):
             elif call_action == 'remove_ofi_resources':
                 remove_results = action_func(context, data)
 
-                if 'error' in remove_results and remove_results[u'error']:
-                    return self._finish_bad_request(_(remove_results[u'error_msg']))
+                if 'error' in remove_results and remove_results['error']:
+                    return self._finish_bad_request(_(remove_results['error_msg']))
 
                 return self._finish_ok(remove_results)
 
             elif call_action == 'edit_ofi_resources':
                 data.update({
-                    u'ofi_resource_info': query_params.get(u'ofi_resource_info', {})
+                    'ofi_resource_info': query_params.get('ofi_resource_info', {})
                 })
 
                 edit_resources = action_func(context, data)
 
-                if 'error' in edit_resources and edit_resources[u'error']:
-                    return self._finish_bad_request(_(edit_resources[u'error_msg']))
+                if 'error' in edit_resources and edit_resources['error']:
+                    return self._finish_bad_request(_(edit_resources['error_msg']))
 
-                elif 'render_form' in edit_resources and edit_resources[u'render_form']:
+                elif 'render_form' in edit_resources and edit_resources['render_form']:
                     return toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=edit_resources)
 
                 elif 'updated' in edit_resources:
-                    if edit_resources[u'updated']:
+                    if edit_resources['updated']:
                         return toolkit.render('ofi/snippets/populate_success.html', extra_vars=edit_resources)
                     else:
                         return toolkit.render('ofi/snippets/populate_failed.html', extra_vars=edit_resources)
@@ -162,13 +163,13 @@ class EDCOfiController(ApiController):
             else:
                 return self._finish_not_found(_('OFI API Controller action not found: %s') % call_action)
 
-        except toolkit.NotAuthorized, e:
+        except toolkit.NotAuthorized as e:
             return self._finish_not_authz(_('Not authorized to call %s') % call_action)
 
         except OFIServiceError as e:
             error = {
                 'success': False,
                 'error': 'OFIServiceError',
-                'error_msg': e.value if toolkit.config.get('debug', False) else 'The data warehouse service is not available.'
+                'error_msg': e.value if config.get('debug', False) else 'The data warehouse service is not available.'
             }
             return self._finish(500, error, content_type='json')

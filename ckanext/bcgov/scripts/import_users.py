@@ -10,11 +10,10 @@ import cx_Oracle
 import pprint
 import json
 import os
-import urllib2
-import urllib
+import urllib.request, urllib.error, urllib.parse
 import getpass
 
-from base import (get_organization_id, import_properties)
+from .base import (get_organization_id, import_properties)
 user_filename = './data/odsi_users.json' 
 
 site_url = import_properties['site_url']
@@ -126,9 +125,9 @@ def user_exists(username):
     
     user = None
     try:
-        request = urllib2.Request(site_url + '/api/3/action/user_show')
+        request = urllib.request.Request(site_url + '/api/3/action/user_show')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         response_dict = json.loads(response.read())
@@ -145,9 +144,9 @@ def create_user(user_dict):
     
     user = None
     try :
-        request = urllib2.Request(site_url + '/api/3/action/user_create')
+        request = urllib.request.Request(site_url + '/api/3/action/user_create')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         response_dict = json.loads(response.read())
@@ -169,9 +168,9 @@ def add_user_to_org(user, org_id):
     
     user = None
     try :
-        request = urllib2.Request(site_url + '/api/3/action/organization_member_create')
+        request = urllib.request.Request(site_url + '/api/3/action/organization_member_create')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         response_dict = json.loads(response.read())
@@ -188,7 +187,7 @@ def import_users():
     '''
     user_data = load_users()
         
-    for name, user_orgs in user_data.iteritems():        
+    for name, user_orgs in user_data.items():        
         user_name = name.lower()
         #Check if the user exists
         user = user_exists(user_name)

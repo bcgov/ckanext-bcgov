@@ -30,7 +30,7 @@ for o in all_orgs:
 		# print org['groups'][0]['name']
 		
 
-print o_list
+print(o_list)
 	# json.dump(o_list, outfile)
 #upload to package
 demo = ckanapi.RemoteCKAN(domain, api_key)
@@ -40,7 +40,7 @@ rec = demo.action.package_show(id = rec_id)
 with open('packagesperorg' + '.csv', 'wb') as f:
 	writer = csv.writer(f)
 	writer.writerow(['organization','record_number'])
-	for key, value in o_list.iteritems():
+	for key, value in o_list.items():
 		if value >=1:
 			writer.writerow([key,value])
 

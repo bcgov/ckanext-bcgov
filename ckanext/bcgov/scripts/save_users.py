@@ -9,12 +9,10 @@ or another environment.
 '''
 
 import json
-import urllib2
-import urllib
+import urllib.request, urllib.error, urllib.parse
 
-from base import (site_url, api_key) 
+from .base import (site_url, api_key) 
 
-import pprint
 
 #ckan.logic.action.create.organization_member_create(context, data_dict)
 
@@ -22,9 +20,9 @@ import pprint
 
 user_list = []
 try :
-    request = urllib2.Request(site_url + '/api/3/action/user_list')
+    request = urllib.request.Request(site_url + '/api/3/action/user_list')
     request.add_header('Authorization', api_key)
-    response = urllib2.urlopen(request)
+    response = urllib.request.urlopen(request)
     assert response.code == 200
 
     response_dict = json.loads(response.read())
@@ -32,7 +30,7 @@ try :
 
     user_list = response_dict['result']
 #    pprint.pprint(user_list)
-except Exception, e:
+except Exception as e:
     pass
 
 

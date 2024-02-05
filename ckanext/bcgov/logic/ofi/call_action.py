@@ -16,12 +16,12 @@ import ckan.plugins.toolkit as toolkit
 import ckanext.bcgov.logic.ofi as ofi_logic
 import ckanext.bcgov.util.helpers as edc_h
 
-try:
-    # CKAN 2.7 and later
-    from ckan.common import config
-except ImportError:
-    # CKAN 2.6 and earlier
-    from pylons import config
+# try:
+#     # CKAN 2.7 and later
+#     from ckan.common import config
+# except ImportError:
+#     # CKAN 2.6 and earlier
+#     from pylons import config
 
 # shortcuts
 _ = toolkit._
@@ -29,7 +29,7 @@ NotFound = toolkit.ObjectNotFound
 ValidationError = toolkit.ValidationError
 OFIServiceError = ofi_logic.OFIServiceError
 
-log = logging.getLogger(u'ckanext.bcgov.logic.ofi')
+log = logging.getLogger('ckanext.bcgov.logic.ofi')
 
 
 ofi_config = edc_h.get_ofi_config()
@@ -37,7 +37,7 @@ ofi_config = edc_h.get_ofi_config()
 
 @toolkit.side_effect_free
 @ofi_logic.check_access
-@ofi_logic.setup_ofi_action(u'/info/fileFormats')
+@ofi_logic.setup_ofi_action('/info/fileFormats')
 def file_formats(context, ofi_vars, ofi_resp):
     """
     Gets available file formats from DWDS.
@@ -52,7 +52,7 @@ def file_formats(context, ofi_vars, ofi_resp):
 
 @toolkit.side_effect_free
 @ofi_logic.check_access
-@ofi_logic.setup_ofi_action(u'/info/crsTypes')
+@ofi_logic.setup_ofi_action('/info/crsTypes')
 def crs_types(context, ofi_vars, ofi_resp):
     """
     Gets projection formats from DWDS.
@@ -71,7 +71,7 @@ def geo_resource_form(context, data):
     Returns the form for the OFI Manager create/edit of OFI resource.
     """
     if toolkit.asbool(ofi_config.get('convert_to_single_res', False)):
-        file_formats = toolkit.get_action(u'file_formats')({}, {})
+        file_formats = toolkit.get_action('file_formats')({}, {})
         data.update(file_formats=file_formats)
 
     return toolkit.render('ofi/snippets/geo_resource_form.html',
@@ -92,7 +92,7 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
         return results
 
     try:
-        pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
+        pkg_dict = toolkit.get_action('package_show')(context, {'id': ofi_vars['package_id']})
     except ValidationError as e:
         results.update(_err_dict(_('ValidationError - package_show'),
                                  errors=e.error_dict,
@@ -100,7 +100,7 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
         return results
     except NotFound as e:
         results.update(_err_dict(_('NotFound - package_show'),
-                                 package_id=ofi_vars[u'package_id'],
+                                 package_id=ofi_vars['package_id'],
                                  not_found_error=True))
         return results
 
@@ -120,17 +120,17 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
             return results
 
     resource_meta = {
-        u'package_id': pkg_dict['id'],
-        u'resource_storage_access_method': u'Indirect Access',
-        u'resource_storage_location': u'BC Geographic Warehouse',
-        u'projection_name': u'EPSG_3005 - NAD83 BC Albers',
-        u'edc_resource_type': u'Data',
-        u'ofi': True,
+        'package_id': pkg_dict['id'],
+        'resource_storage_access_method': 'Indirect Access',
+        'resource_storage_location': 'BC Geographic Warehouse',
+        'projection_name': 'EPSG_3005 - NAD83 BC Albers',
+        'edc_resource_type': 'Data',
+        'ofi': True,
     }
-    resource_meta.update(ofi_vars[u'ofi_resource_info'])
+    resource_meta.update(ofi_vars['ofi_resource_info'])
 
     ofi_exists = False
-    for resource in pkg_dict[u'resources']:
+    for resource in pkg_dict['resources']:
         if resource.get('ofi', False):
             ofi_exists = True
             results.update(ofi_exists=ofi_exists)
@@ -142,18 +142,18 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
         resource_url = h.url_for('ofi resource',
                                  format=file_format,
                                  qualified=True,
-                                 object_name=pkg_dict.get(u'object_name',
+                                 object_name=pkg_dict.get('object_name',
                                                           "__MISSING_OBJECT_NAME__"))
         resource_meta.update(name=resource_name,
                              url=resource_url,
                              format=file_format)
         try:
-            resource = toolkit.get_action(u'resource_create')(context, resource_meta)
+            resource = toolkit.get_action('resource_create')(context, resource_meta)
         except ValidationError as e:
             resource = {
-                u'resource': resource_meta,
-                u'error_msg': _('ValidationError - resource_create'),
-                u'errors': e.error_dict
+                'resource': resource_meta,
+                'error_msg': _('ValidationError - resource_create'),
+                'errors': e.error_dict
             }
             results.update(_err_dict(_('Adding OFI resource failed.'),
                                      errors=e.error_dict,
@@ -162,9 +162,9 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
 
     # Updates the dataset to be active and not a draft
     if pkg_dict.get('object_name', False):
-        pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
-        pkg_dict.update({u'state': u'active'})
-        pkg_dict = toolkit.get_action(u'package_update')(context, pkg_dict)
+        pkg_dict = toolkit.get_action('package_show')(context, {'id': ofi_vars['package_id']})
+        pkg_dict.update({'state': 'active'})
+        pkg_dict = toolkit.get_action('package_update')(context, pkg_dict)
 
     results.update(success=True, added_resource=resource)
 
@@ -173,13 +173,13 @@ def populate_dataset_with_ofi(context, ofi_vars, ofi_resp):
 
 @toolkit.side_effect_free
 @ofi_logic.check_access
-@ofi_logic.setup_ofi_action(u'/security/productAllowedByFeatureType/')
+@ofi_logic.setup_ofi_action('/security/productAllowedByFeatureType/')
 def check_object_name(context, ofi_vars, ofi_resp):
     """
     Checks to see if the object_name is accessible for the user.
     """
     success = True if ofi_resp.status_code == 200 else False
-    content_type = ofi_resp.headers.get(u'content-type').split(';')[0]
+    content_type = ofi_resp.headers.get('content-type').split(';')[0]
 
     if content_type == 'text/html':
         success = False
@@ -192,8 +192,8 @@ def check_object_name(context, ofi_vars, ofi_resp):
         content = ofi_resp.json()
 
     results = {
-        u'success': success,
-        u'content': content
+        'success': success,
+        'content': content
     }
 
     return results
@@ -205,19 +205,19 @@ def remove_ofi_resources(context, ofi_vars, ofi_resp):
     """
     Removes OFI resources from the dataset.
     """
-    pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
+    pkg_dict = toolkit.get_action('package_show')(context, {'id': ofi_vars['package_id']})
 
     resources_to_keep = []
-    for resource in pkg_dict[u'resources']:
-        if u'ofi' not in resource or resource[u'ofi'] is False:
+    for resource in pkg_dict['resources']:
+        if 'ofi' not in resource or resource['ofi'] is False:
             resources_to_keep.append(resource)
 
-    pkg_dict[u'resources'] = resources_to_keep
+    pkg_dict['resources'] = resources_to_keep
 
     results = {}
 
     try:
-        package_id = toolkit.get_action(u'package_update')(context, pkg_dict)
+        package_id = toolkit.get_action('package_update')(context, pkg_dict)
         results.update(success=True,
                        package_id=package_id)
 
@@ -242,7 +242,7 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
     This action has changed, it now handles conversions when editing the
     resource using the web ui or the api endpoint.
     """
-    pkg_dict = toolkit.get_action(u'package_show')(context, {'id': ofi_vars[u'package_id']})
+    pkg_dict = toolkit.get_action('package_show')(context, {'id': ofi_vars['package_id']})
 
     results = {}
 
@@ -256,14 +256,14 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
 
         # just the format names from the ofi api call
         # TODO: maybe store both the format name and id in the resource meta data?
-        file_formats = [i[u'format'] for i in ofi_resources if u'format' in i]
+        file_formats = [i['format'] for i in ofi_resources if 'format' in i]
 
         if is_ofi_res:
             results.update({
-                u'success': True,
-                u'render_form': True,
-                u'ofi_resource': ofi_resources[0],
-                u'file_formats': file_formats
+                'success': True,
+                'render_form': True,
+                'ofi_resource': ofi_resources[0],
+                'file_formats': file_formats
             })
         else:
             results.update(_err_dict(_('OFI resource not found.')))
@@ -275,7 +275,7 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
 
         for resource in ofi_resources:
             # update only ofi resources
-            resource.update(ofi_vars[u'ofi_resource_info'])
+            resource.update(ofi_vars['ofi_resource_info'])
 
             if not single_res:
                 update_resources.append(resource)
@@ -285,7 +285,7 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
                 resource_url = h.url_for('ofi resource',
                                          format=file_format,
                                          qualified=True,
-                                         object_name=pkg_dict.get(u'object_name',
+                                         object_name=pkg_dict.get('object_name',
                                                                   "__MISSING_OBJECT_NAME__"))
                 resource.update(name=resource_name,
                                 url=resource_url,
@@ -293,18 +293,18 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
                 update_resources.append(resource)
                 break
 
-        pkg_dict[u'resources'] = non_ofi_resources + update_resources
+        pkg_dict['resources'] = non_ofi_resources + update_resources
 
         try:
             updated_dataset = toolkit.get_action('package_update')(context, pkg_dict)
             # shorthand way to get just ofi resources
-            updated_resources = [i for i in updated_dataset[u'resources']
-                                 if u'ofi' in i and i[u'ofi']]
+            updated_resources = [i for i in updated_dataset['resources']
+                                 if 'ofi' in i and i['ofi']]
 
             results.update({
-                u'success': True,
-                u'updated': True,
-                u'updated_resources': updated_resources
+                'success': True,
+                'updated': True,
+                'updated_resources': updated_resources
             })
         except (NotFound, ValidationError) as e:
             results.update(_err_dict(_(e.error_summary),
@@ -316,7 +316,7 @@ def edit_ofi_resources(context, ofi_vars, ofi_resp):
 
 @toolkit.side_effect_free
 @ofi_logic.check_access
-@ofi_logic.setup_ofi_action(u'/security/productAllowedByFeatureType/')
+@ofi_logic.setup_ofi_action('/security/productAllowedByFeatureType/')
 def get_max_aoi(context, ofi_vars, ofi_resp):
     """
     Gets the max area of interest for an object name.
@@ -329,12 +329,12 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
     """
     results = {}
 
-    content_type = ofi_resp.headers.get(u'content-type').split(';')[0]
+    content_type = ofi_resp.headers.get('content-type').split(';')[0]
 
     if ofi_resp.status_code == 200 and content_type == 'application/json':
         resp_dict = ofi_resp.json()
-        if u'allowed' in resp_dict:
-            if resp_dict[u'allowed'] is False:
+        if 'allowed' in resp_dict:
+            if resp_dict['allowed'] is False:
                 eas_login = edc_h.get_eas_login_url() or '/user/login'
 
                 not_allowed_msg = ('This is a dataset with restricted access. '
@@ -343,16 +343,16 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
                                    'If you are logged in and still cannot place an order, '
                                    'please email the listed dataset \'Contact\' to request access.') % eas_login
                 results.update(_err_dict(not_allowed_msg,
-                                         user_allowed=resp_dict[u'allowed'],
+                                         user_allowed=resp_dict['allowed'],
                                          content=resp_dict))
                 return results
             else:
                 results.update({
-                    u'content': resp_dict,
-                    u'user_allowed': resp_dict[u'allowed']
+                    'content': resp_dict,
+                    'user_allowed': resp_dict['allowed']
                 })
     elif content_type == 'text/html':
-        api_url = ofi_vars[u'api_url'] if u'api_url' in ofi_vars else ''
+        api_url = ofi_vars['api_url'] if 'api_url' in ofi_vars else ''
         results.update(_err_dict(_('Please log in with your IDIR credentials'),
                                  idir_req=True, idir_login=_(ofi_resp.text)))
         return results
@@ -360,34 +360,34 @@ def get_max_aoi(context, ofi_vars, ofi_resp):
         results.update(_err_dict(_(ofi_resp.text)))
         return results
 
-    if u'object_name' in ofi_vars:
+    if 'object_name' in ofi_vars:
         # TODO: move url and resource_id as config params
         url = 'https://catalogue.data.gov.bc.ca/api/action/datastore_search'
         data = {
             'resource_id': 'd52c3bff-459d-422a-8922-7fd3493a60c2',
             'q': {
-                'FEATURE_TYPE': ofi_vars[u'object_name']
+                'FEATURE_TYPE': ofi_vars['object_name']
             }
         }
 
         resp = reqs.request('post', url, json=data)
 
         resp_dict = resp.json()
-        search_results = resp_dict[u'result']
-        records_found = len(search_results[u'records'])
+        search_results = resp_dict['result']
+        records_found = len(search_results['records'])
 
-        if u'success' in resp_dict and resp_dict[u'success']:
+        if 'success' in resp_dict and resp_dict['success']:
             if records_found > 0:
                 results.update({
-                    u'success': True,
-                    u'datastore_response': search_results
+                    'success': True,
+                    'datastore_response': search_results
                 })
             else:
                 results.update({
-                    u'msg': _('datastore_search didn\'t find any records with given object_name'),
-                    u'records_found': records_found,
-                    u'datastore_response': search_results,
-                    u'no_records': True
+                    'msg': _('datastore_search didn\'t find any records with given object_name'),
+                    'records_found': records_found,
+                    'datastore_response': search_results,
+                    'no_records': True
                 })
         else:
             results.update(_err_dict(_('Datastore_search failed.'),
@@ -414,7 +414,7 @@ def ofi_create_order(context, ofi_vars, ofi_resp):
     the UUID from the first call.
     """
     from string import Template
-    from validate_email import validate_email
+    from email_validator import validate_email, EmailNotValidError
 
     results = {}
 
@@ -424,38 +424,40 @@ def ofi_create_order(context, ofi_vars, ofi_resp):
         results.update(_err_dict(_('Missing aoi parameters.'), missing_aoi=True))
         return results
 
-    if u'consent' in aoi_data:
-        if toolkit.asbool(aoi_data[u'consent']) is False:
-            results.update(_get_consent_error(u'You must agree to the terms before placing an order.'))
+    if 'consent' in aoi_data:
+        if toolkit.asbool(aoi_data['consent']) is False:
+            results.update(_get_consent_error('You must agree to the terms before placing an order.'))
             return results
     else:
-        results.update(_get_consent_error(u'Consent agreement missing.'))
+        results.update(_get_consent_error('Consent agreement missing.'))
         return results
 
-    if not validate_email(aoi_data.get(u'emailAddress', '')):
-        results.update(_err_dict(_(u'Email address is invalid.'), invalid_email=True))
+    try:
+        validate_email(aoi_data.get('emailAddress', ''))
+    except EmailNotValidError as e:
+        results.update(_err_dict(_('Email address is invalid.'), invalid_email=True))
         return results
 
     projection_id = aoi_data.get('projection')
     if not projection_id:
-        results.update(_err_dict(_(u'Missing CRS Type (map projection).'), missing_crsType=True))
+        results.update(_err_dict(_('Missing CRS Type (map projection).'), missing_crsType=True))
         return results
 
     # Beginning of create order for ofi resource
-    aoi = aoi_data.get(u'aoi', [])
+    aoi = aoi_data.get('aoi', [])
 
     # if no aoi coords, then assume that the user wants the whole province
     # aoi param to dwds call will be undefined and aoiType = '0' for No Area of Interest Applied
     aoi_doc = None
-    aoi_type = u'0'
+    aoi_type = '0'
 
     if aoi:
         # flipping coordinate values to y,x because that's what's required for submittion
         # otherwise the coordinates appeared mirrored on the global map
-        aoi_coordinates = [str(item.get(u'lng', 0.0)) + ',' + str(item.get(u'lat', 0.0)) for item in aoi]
+        aoi_coordinates = [str(item.get('lng', 0.0)) + ',' + str(item.get('lat', 0.0)) for item in aoi]
         coordinates = ' '.join(aoi_coordinates)
 
-        aoi_str = u'''
+        aoi_str = '''
         <?xml version=\"1.0\" encoding=\"UTF-8\" ?>
         <areaOfInterest xmlns:gml=\"http://www.opengis.net/gml\">
             <gml:Polygon xmlns:gml=\"urn:gml\" srsName=\"EPSG:4326\">
@@ -469,40 +471,40 @@ def ofi_create_order(context, ofi_vars, ofi_resp):
 
         aoi_template = Template(aoi_str)
         aoi_doc = aoi_template.safe_substitute(coordinates=coordinates)
-        aoi_type = u'1'
+        aoi_type = '1'
 
     data_dict = {
-        u'aoi': aoi_doc,
-        u'emailAddress': aoi_data.get(u'emailAddress'),
-        u'featureItems': aoi_data.get(u'featureItems'),
-        u'formatType': _get_format_id(aoi_data.get(u'format')),
-        u'useAOIBounds': u'0',
-        u'aoiType': aoi_type,
-        u'clippingMethodType': u'0',
-        u'crsType': projection_id,
-        u'prepackagedItems': u'',
-        u'aoiName': None
+        'aoi': aoi_doc,
+        'emailAddress': aoi_data.get('emailAddress'),
+        'featureItems': aoi_data.get('featureItems'),
+        'formatType': _get_format_id(aoi_data.get('format')),
+        'useAOIBounds': '0',
+        'aoiType': aoi_type,
+        'clippingMethodType': '0',
+        'crsType': projection_id,
+        'prepackagedItems': '',
+        'aoiName': None
     }
 
-    log.debug(u'OFI create order data - %s', pformat(data_dict))
+    log.debug('OFI create order data - %s', pformat(data_dict))
 
-    if u'auth_user_obj' in context and context[u'auth_user_obj']:
+    if 'auth_user_obj' in context and context['auth_user_obj']:
         # if this url has secure in the path, need to fix it because it's not correct for secure create order calls
-        url = edc_h._build_ofi_url(False) + u'/order/createOrderFilteredSM'
+        url = edc_h._build_ofi_url(False) + '/order/createOrderFilteredSM'
         call_type = 'secure'
     else:
-        url = ofi_vars[u'ofi_url'] + u'/order/createOrderFiltered'
+        url = ofi_vars['ofi_url'] + '/order/createOrderFiltered'
         call_type = 'public'
 
-    resp = reqs.request(u'post', url, json=data_dict, cookies=ofi_vars[u'cookies'])
+    resp = reqs.request('post', url, json=data_dict, cookies=ofi_vars['cookies'])
 
-    log.debug(u'OFI create order call type - %s', call_type)
-    log.debug(u'OFI create order call url - %s', url)
-    log.debug(u'OFI create order response headers - %s', pformat(resp.headers))
+    log.debug('OFI create order call type - %s', call_type)
+    log.debug('OFI create order call url - %s', url)
+    log.debug('OFI create order response headers - %s', pformat(resp.headers))
 
     results.update({
-        u'order_sent': data_dict,
-        u'api_url': url
+        'order_sent': data_dict,
+        'api_url': url
     })
 
     def _ofi_order_response(resp_dict):
@@ -510,25 +512,25 @@ def ofi_create_order(context, ofi_vars, ofi_resp):
         Helper function for dealing with ofi create order response
         """
         order_resp = {}
-        if u'Status' in resp_dict:
-            if resp_dict[u'Status'] == u'SUCCESS':
+        if 'Status' in resp_dict:
+            if resp_dict['Status'] == 'SUCCESS':
                 order_resp.update({
-                    u'order_id': resp_dict[u'Value'],
-                    u'order_response': resp_dict
+                    'order_id': resp_dict['Value'],
+                    'order_response': resp_dict
                 })
             else:
-                order_resp.update(_err_dict(_(resp_dict[u'Description']),
+                order_resp.update(_err_dict(_(resp_dict['Description']),
                                   order_response=resp_dict, order_failed=True))
 
         return order_resp
 
     if resp.status_code != 200:
-        msg = _('OFI public create order failed - %s') % ofi_vars[u'ofi_url']
+        msg = _('OFI public create order failed - %s') % ofi_vars['ofi_url']
         results.update(_err_dict(msg,
                                  order_response=resp.text, order_status=resp.status_code))
         return results
 
-    content_type = resp.headers.get(u'content-type').split(';')[0]
+    content_type = resp.headers.get('content-type').split(';')[0]
 
     # public order
     if content_type == 'application/json':
@@ -540,19 +542,19 @@ def ofi_create_order(context, ofi_vars, ofi_resp):
         ofi_uuid = resp.text
 
         # need to have a secure url for this call, because that's what's required
-        sm_url = edc_h._build_ofi_url(True) + u'/order/createOrderFiltered/' + ofi_uuid
+        sm_url = edc_h._build_ofi_url(True) + '/order/createOrderFiltered/' + ofi_uuid
         sm_cookie = {
-            u'SMSESSION': resp.cookies.get(u'SMSESSION', '')
+            'SMSESSION': resp.cookies.get('SMSESSION', '')
         }
 
         # call
         sm_resp = reqs.get(sm_url, cookies=sm_cookie)
 
-        log.debug(u'OFI SiteMinner api uuid - %s', ofi_uuid)
-        log.debug(u'OFI SiteMinner api url - %s', sm_url)
-        log.debug(u'OFI SiteMinner api headers - %s', pformat(sm_resp.headers))
+        log.debug('OFI SiteMinner api uuid - %s', ofi_uuid)
+        log.debug('OFI SiteMinner api url - %s', sm_url)
+        log.debug('OFI SiteMinner api headers - %s', pformat(sm_resp.headers))
 
-        sm_content_type = sm_resp.headers.get(u'content-type').split(';')[0]
+        sm_content_type = sm_resp.headers.get('content-type').split(';')[0]
 
         if sm_resp.status_code != 200:
             msg = _('OFI secure create order failed - %s ') % sm_url
@@ -592,9 +594,9 @@ def _err_dict(error_msg, **kw):
     **kw args are key/value pairs in the error dictionary
     """
     error_dict = {
-        u'success': False,
-        u'error': True,
-        u'error_msg': error_msg,
+        'success': False,
+        'error': True,
+        'error_msg': error_msg,
     }
 
     error_dict.update(kw)
@@ -611,8 +613,8 @@ def _get_format_id(format_name):
     format_id = None
 
     for file_format in file_formats:
-        if file_format[u'formatname'] == format_name:
-            format_id = str(file_format[u'formatID'])
+        if file_format['formatname'] == format_name:
+            format_id = str(file_format['formatID'])
             break
 
     return format_id

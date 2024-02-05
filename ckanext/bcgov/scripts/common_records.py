@@ -1,19 +1,12 @@
-# Copyright  2015, Province of British Columbia 
-# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
- 
+# Copyright  2015, Province of British Columbia
+# License: https://github.com/bcgov/ckanext-bcgov/blob/master/license
 
-import cx_Oracle
-import urllib2
-import urllib
-import os
-import sys
 import json
-import getpass
+import cx_Oracle
 
-from base import import_properties
+from .base import import_properties
 
 def get_connection(repo_name):
-    
     SID = service_name = None
 
     if repo_name.lower() == 'odsi' :
@@ -122,7 +115,6 @@ def get_discovery_record(con, record_uid):
     return cur.fetchone()
 
 def add_discovery_data():
-    import pprint
 
     con = get_connection('discovery')
 
@@ -235,7 +227,7 @@ def add_discovery_data():
             dates.append({'type': date_type, 'date': rec_date, 'delete': '0'})
                 
         #---------------------------------------------------------------------<< Record Contacts >>----------------------------------------------------------------------
-        from validate_email import validate_email
+        from email_validator import validate_email, EmailNotValidError
         
         contact_names = []
         contact_emails = []
@@ -244,7 +236,15 @@ def add_discovery_data():
         if record_data[8]:
             contact_emails = record_data[8].split(',')
         #Validate emails
-        contact_emails = [contact_email if (contact_email and validate_email(contact_email)) else 'data@gov.bc.ca' for contact_email in contact_emails]
+        temp = []
+        for contact_email in contact_emails:
+            try:
+                temp.append(validate_email(contact_email))
+            except EmailNotValidError as e:
+                temp.append('data@gov.bc.ca')
+        contact_emails = temp
+        # OLD VERSION OF ABOVE INCASE NEEDED FOR REF
+        # contact_emails = [contact_email if (contact_email and validate_email(contact_email)) else 'data@gov.bc.ca' for contact_email in contact_emails]
 
         contact_names = [contact_name if contact_name else 'DataBC'  for contact_name in contact_names]
         # Adding dataset contacts
@@ -300,7 +300,7 @@ def get_common_records():
 
     con = get_connection('ODSI')
 
-    print 'Updating records from discovery ... '
+    print('Updating records from discovery ... ')
 
     auery = "SELECT DBC_RS.RESOURCE_SET_ID RESOURCE_SET_ID " + \
                 ",DBC_CO.CREATOR_ORGANIZATION CREATOR_ORGANIZATION " + \

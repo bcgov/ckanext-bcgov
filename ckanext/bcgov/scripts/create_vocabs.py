@@ -4,10 +4,9 @@
 import os
 import sys
 import json
-import urllib2
-import urllib
+import urllib.request, urllib.error, urllib.parse
 
-from base import (default_vocab_file,
+from .base import (default_vocab_file,
                   create_vocab,
                   create_tag,
                   site_url,
@@ -19,7 +18,7 @@ def create_vocabs(vocab_file=None):
     available_vocabs = []
          
     if not os.path.exists(vocab_file):
-        print 'File {0} does not exists'.format(vocab_file)
+        print('File {0} does not exists'.format(vocab_file))
         sys.exit(1)
              
     #Read vocabularies json file
@@ -27,9 +26,9 @@ def create_vocabs(vocab_file=None):
         vocabs = json.loads(json_file.read())
         
     try:
-        request = urllib2.Request(site_url + '/api/3/action/vocabulary_list')
+        request = urllib.request.Request(site_url + '/api/3/action/vocabulary_list')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request)
+        response = urllib.request.urlopen(request)
         assert response.code == 200
             
         response_dict = json.loads(response.read())
@@ -50,12 +49,12 @@ def create_vocabs(vocab_file=None):
                 #Create the vocabulary 
                 create_vocab(vocab_name, vocab_tags)
         else:
-            print 'Vocabulary {0} already exists, checking for new tags ...'.format(vocab_name)
-            data_string = urllib.quote(json.dumps({'id': vocab_name}))
+            print('Vocabulary {0} already exists, checking for new tags ...'.format(vocab_name))
+            data_string = urllib.parse.quote(json.dumps({'id': vocab_name}))
             try:
-                request = urllib2.Request(site_url + '/api/3/action/vocabulary_show')
+                request = urllib.request.Request(site_url + '/api/3/action/vocabulary_show')
                 request.add_header('Authorization', api_key)
-                response = urllib2.urlopen(request, data_string)
+                response = urllib.request.urlopen(request, data_string)
                 assert response.code == 200
             
                 response_dict = json.loads(response.read())

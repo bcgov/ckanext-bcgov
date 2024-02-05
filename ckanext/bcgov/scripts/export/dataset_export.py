@@ -1,12 +1,12 @@
 # output ckan contents that are datasets
 import csv
 import re
-import StringIO
+import io
 import requests
 # import ckanapi_exporter.exporter as exporter
 
 def parseString(input,i):
-    for x in csv.reader(StringIO.StringIO(input), delimiter=','):
+    for x in csv.reader(io.StringIO(input), delimiter=','):
         return x[i]
 
 def export_type(env):
