@@ -4,22 +4,12 @@
 # Highway Three Solutions Inc.
 # Author: Jared Smith <github@jrods>
 
-import logging
-from pprint import pformat
-
-
-from ckan.controllers.api import ApiController
-
 # from requests.exceptions import ConnectionError
-
-# import ckan
-# import ckan.lib.base as base
-# import ckan.lib.helpers as h
+import ckan.views.api as api
 import ckan.model as model
 import ckan.plugins.toolkit as toolkit
 from ckantoolkit import config
 import ckanext.bcgov.util.helpers as edc_h
-
 from ckanext.bcgov.logic.ofi import OFIServiceError
 
 # try:
@@ -32,144 +22,138 @@ from ckanext.bcgov.logic.ofi import OFIServiceError
 
 # shortcuts
 _ = toolkit._   
-log = logging.getLogger('ckanext.bcgov.controllers.ofi')
 
 
-class EDCOfiController(ApiController):
-    def __init__(self):
-        self.config = edc_h.get_ofi_config()
+def action(call_action, ver=None):
+    """
+    OFI API endpoint
 
-    def action(self, call_action, ver=None):
-        """
-        OFI API endpoint
+    REST interface for call_action funtions.
+    """
+    context = {
+        'model': model,
+        'session': model.Session,
+        'user': toolkit.c.user,
+        'api_version': ver,
+        'auth_user_obj': toolkit.c.userobj
+    }
 
-        REST interface for call_action funtions.
-        """
-        context = {
-            'model': model,
-            'session': model.Session,
-            'user': toolkit.c.user,
-            'api_version': ver,
-            'auth_user_obj': toolkit.c.userobj
-        }
+    data = {}
+    config = edc_h.get_ofi_config()
 
-        data = {}
+    try:
+        action_func = toolkit.get_action(call_action)
+        side_effect_free = getattr(action_func, 'side_effect_free', False)
 
-        try:
-            action_func = toolkit.get_action(call_action)
-            side_effect_free = getattr(action_func, 'side_effect_free', False)
+        query_params = api._get_request_data(side_effect_free)
 
-            query_params = self._get_request_data(side_effect_free)
+        pkg_id = query_params.get('package_id', '')
 
-            pkg_id = query_params.get('package_id', '')
+        data.update({
+            'package_id': pkg_id,
+            'object_name': query_params.get('object_name', ''),
+            'secure': query_params.get('secure', False)
+        })
+    except ValueError as e:
+        return api._finish_bad_request(str(e))
 
+
+    # Not ideal, but all cases involve calling the action_func,
+    #  which could throw a NotAuthorized exception
+    try:
+        if call_action == 'populate_dataset_with_ofi':
             data.update({
-                'package_id': pkg_id,
-                'object_name': query_params.get('object_name', ''),
-                'secure': query_params.get('secure', False)
+                'force_populate': toolkit.asbool(query_params.get('force_populate', False)),
+                'ofi_resource_info': query_params.get('ofi_resource_info', {})
             })
-        except ValueError as e:
-            return self._finish_bad_request(str(e))
 
-        log.debug('OFI api config:\n %s \n', pformat(self.config))
-        log.debug('OFI api context:\n %s\n', pformat(context))
-        log.info('OFI action call: %s' % call_action)
+            context.update({
+                'allow_state_change': True
+            })
 
-        # Not ideal, but all cases involve calling the action_func,
-        #  which could throw a NotAuthorized exception
-        try:
-            if call_action == 'populate_dataset_with_ofi':
-                data.update({
-                    'force_populate': toolkit.asbool(query_params.get('force_populate', False)),
-                    'ofi_resource_info': query_params.get('ofi_resource_info', {})
-                })
+            populate_results = action_func(context, data)
 
-                context.update({
-                    'allow_state_change': True
-                })
+            if str(toolkit.request.accept) == 'application/json':
+                return api._finish(200, populate_results, 'json')
+            else:
+                if 'error' in populate_results and populate_results['error']:
+                    failed_render = toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=populate_results)
+                    return api._finish(400, failed_render, 'html')
 
-                populate_results = action_func(context, data)
+                return toolkit.render('ofi/snippets/populate_success.html', extra_vars=populate_results)
 
-                if str(toolkit.request.accept) == 'application/json':
-                    return self._finish(200, populate_results, 'json')
+        elif call_action == 'geo_resource_form':
+            data.update(force_populate=toolkit.asbool(query_params.get('force_populate')))
+            return action_func(context, data)
+
+        elif call_action == 'file_formats':
+            return api._finish_ok(action_func(context, data))
+
+        elif call_action == 'crs_types':
+            return api._finish_ok(action_func(context, data))
+
+        elif call_action == 'get_max_aoi':
+            max_aoi = action_func(context, data)
+
+            if 'error' in max_aoi and max_aoi['error']:
+                render = toolkit.render('ofi/mow/errors.html', extra_vars=max_aoi)
+                return api._finish(200, render, 'html')
+
+            return api._finish_ok(max_aoi)
+
+        elif call_action == 'ofi_create_order':
+            # expecting params to be in the 'aoi_params' obj
+            data.update(query_params)
+
+            create_order = action_func(context, data)
+
+            if 'error' in create_order and create_order['error']:
+                return api._finish(400, create_order, 'json')
+
+            return api._finish_ok(create_order)
+
+        elif call_action == 'remove_ofi_resources':
+            remove_results = action_func(context, data)
+
+            if 'error' in remove_results and remove_results['error']:
+                return api._finish_bad_request(_(remove_results['error_msg']))
+
+            return api._finish_ok(remove_results)
+
+        elif call_action == 'edit_ofi_resources':
+            data.update({
+                'ofi_resource_info': query_params.get('ofi_resource_info', {})
+            })
+
+            edit_resources = action_func(context, data)
+
+            if 'error' in edit_resources and edit_resources['error']:
+                return api._finish_bad_request(_(edit_resources['error_msg']))
+
+            elif 'render_form' in edit_resources and edit_resources['render_form']:
+                return toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=edit_resources)
+
+            elif 'updated' in edit_resources:
+                if edit_resources['updated']:
+                    return toolkit.render('ofi/snippets/populate_success.html', extra_vars=edit_resources)
                 else:
-                    if 'error' in populate_results and populate_results['error']:
-                        failed_render = toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=populate_results)
-                        return self._finish(400, failed_render, 'html')
-
-                    return toolkit.render('ofi/snippets/populate_success.html', extra_vars=populate_results)
-
-            elif call_action == 'geo_resource_form':
-                data.update(force_populate=toolkit.asbool(query_params.get('force_populate')))
-
-                return action_func(context, data)
-
-            elif call_action == 'file_formats':
-                return self._finish_ok(action_func(context, data))
-
-            elif call_action == 'crs_types':
-                return self._finish_ok(action_func(context, data))
-
-            elif call_action == 'get_max_aoi':
-                max_aoi = action_func(context, data)
-
-                if 'error' in max_aoi and max_aoi['error']:
-                    render = toolkit.render('ofi/mow/errors.html', extra_vars=max_aoi)
-                    return self._finish(200, render, 'html')
-
-                return self._finish_ok(max_aoi)
-
-            elif call_action == 'ofi_create_order':
-                # expecting params to be in the 'aoi_params' obj
-                data.update(query_params)
-
-                create_order = action_func(context, data)
-
-                if 'error' in create_order and create_order['error']:
-                    return self._finish(400, create_order, 'json')
-
-                return self._finish_ok(create_order)
-
-            elif call_action == 'remove_ofi_resources':
-                remove_results = action_func(context, data)
-
-                if 'error' in remove_results and remove_results['error']:
-                    return self._finish_bad_request(_(remove_results['error_msg']))
-
-                return self._finish_ok(remove_results)
-
-            elif call_action == 'edit_ofi_resources':
-                data.update({
-                    'ofi_resource_info': query_params.get('ofi_resource_info', {})
-                })
-
-                edit_resources = action_func(context, data)
-
-                if 'error' in edit_resources and edit_resources['error']:
-                    return self._finish_bad_request(_(edit_resources['error_msg']))
-
-                elif 'render_form' in edit_resources and edit_resources['render_form']:
-                    return toolkit.render('ofi/snippets/geo_resource_form.html', extra_vars=edit_resources)
-
-                elif 'updated' in edit_resources:
-                    if edit_resources['updated']:
-                        return toolkit.render('ofi/snippets/populate_success.html', extra_vars=edit_resources)
-                    else:
-                        return toolkit.render('ofi/snippets/populate_failed.html', extra_vars=edit_resources)
-
-                else:
-                    return self._finish_bad_request(_('Something went wrong with editing ofi resources.'))
+                    return toolkit.render('ofi/snippets/populate_failed.html', extra_vars=edit_resources)
 
             else:
-                return self._finish_not_found(_('OFI API Controller action not found: %s') % call_action)
+                return api._finish_bad_request(_('Something went wrong with editing ofi resources.'))
 
-        except toolkit.NotAuthorized as e:
-            return self._finish_not_authz(_('Not authorized to call %s') % call_action)
+        else:
+            return api._finish(404, _('OFI API Controller action not found: %s') % call_action, content_type='json')
 
-        except OFIServiceError as e:
-            error = {
-                'success': False,
-                'error': 'OFIServiceError',
-                'error_msg': e.value if config.get('debug', False) else 'The data warehouse service is not available.'
-            }
-            return self._finish(500, error, content_type='json')
+
+    except toolkit.NotAuthorized as e:
+        return api._finish(403, _('Not authorized to call %s') % call_action, content_type='json')
+
+
+    except OFIServiceError as e:
+        error = {
+            'success': False,
+            'error': 'OFIServiceError',
+            'error_msg': e.value if config.get('debug', False) else 'The data warehouse service is not available.'
+        }
+        return api._finish(500, error, content_type='json')
