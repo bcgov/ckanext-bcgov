@@ -705,6 +705,8 @@ def organization_or_group_list_related(context, data_dict):
                   g1.approval_status = 'approved';
         """)
 
+    model.Session.remove()
+
     # groups and oganizations are listed as groups in database
     all_groups = {}
 
