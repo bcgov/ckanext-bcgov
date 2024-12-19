@@ -529,8 +529,8 @@ def convert_composite_fields_to_array(resource):
     compositeResourceFields = ['temporal_extent', 'details', 'preview_info', 'geographic_extent']
     for field in compositeResourceFields:
         if (field in resource) and isinstance(resource[field], str):
-            log.debug('Resource: %s' % resource[field])
-            log.debug('Type %s' % type(resource[field]))
+            log.debug('Resource: ')
+            log.debug(resource[field])
             try:
                 resource[field] = json.loads(resource[field])
             except:
