@@ -2,8 +2,7 @@
 # License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
  
 import json
-import urllib2
-import urllib
+import urllib.request, urllib.error, urllib.parse
 
 import pprint
 
@@ -11,7 +10,7 @@ import pprint
 
 user_filename = './data/users_list.json'
 
-from base import (site_url, api_key)
+from .base import (site_url, api_key)
 
 with open(user_filename, 'r') as user_file :
     user_list = json.loads(user_file.read())
@@ -22,16 +21,16 @@ for user in user_list :
     user_result = None
     data_string = json.dumps({'id': user['id']})
     try :
-        request = urllib2.Request(site_url + '/api/3/action/user_show')
+        request = urllib.request.Request(site_url + '/api/3/action/user_show')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         response_dict = json.loads(response.read())
         assert response_dict['success'] is True
 
         user_result = response_dict['result']
-    except Exception, e:
+    except Exception as e:
         pass
     
     #Create the user if it's not found
@@ -45,14 +44,14 @@ for user in user_list :
                      'about' : user['about']}
         data_string = json.dumps(data_dict)
         try :
-            request = urllib2.Request(site_url + '/api/3/action/user_create')
+            request = urllib.request.Request(site_url + '/api/3/action/user_create')
             request.add_header('Authorization', api_key)
-            response = urllib2.urlopen(request, data_string)
+            response = urllib.request.urlopen(request, data_string)
             assert response.code == 200
 
             response_dict = json.loads(response.read())
             assert response_dict['success'] is True
 
             new_result = response_dict['result']
-        except Exception, e:
+        except Exception as e:
             pass    

@@ -10,18 +10,18 @@
 '''
 
 import cx_Oracle
-import urllib2
-import urllib
+import urllib.request, urllib.error, urllib.parse
 import os
 import json
 import pprint
 import re
-import getpass
+# import getpass
 
 import datetime
+from email_validator import validate_email, EmailNotValidError
 
 #A dictionary for import parameters
-from base import (edc_package_create,
+from .base import (edc_package_create,
                   get_organizations_dict,
                   get_users_dict,
                   import_properties)
@@ -37,15 +37,15 @@ orgs_title_id_dic = get_organizations_dict()
 users_name_id_map = get_users_dict()
 
 def is_valid_url(url):
-    import urlparse
+    # import urllib.parse
     import string
 
     if not url:
         return True
 
-    pieces = urlparse.urlparse(url)
+    pieces = urllib.parse.urlparse(url)
     if all([pieces.scheme, pieces.netloc]) and \
-        set(pieces.netloc) <= set(string.letters + string.digits + '-.') and \
+        set(pieces.netloc) <= set(string.ascii_letters + string.digits + '-.') and \
         pieces.scheme in ['http', 'https']:
         return True
 
@@ -59,9 +59,9 @@ def get_record_list():
     Records that have been already imported.
     '''
     try:
-        request = urllib2.Request(site_url + '/api/3/action/package_list?limit=1000000')
+        request = urllib.request.Request(site_url + '/api/3/action/package_list?limit=1000000')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request)
+        response = urllib.request.urlopen(request)
         assert response.code == 200
 
         # Use the json module to load CKAN's response into a dictionary.
@@ -70,7 +70,7 @@ def get_record_list():
 
         #package_create returns the created package as its result.
         pkg_list = response_dict['result']
-    except Exception, e:
+    except Exception as e:
         pkg_list = []
 
     return pkg_list
@@ -234,17 +234,13 @@ def execute_odsi_query(con):
 
     return data
 
-def import_odsi_records(con):
-
-    from validate_email import validate_email
-    
-    
+def import_odsi_records(con):    
     '''
     Check first if the file that contains the data of discovery records that are linked in ODSI
     is available.
     '''
     if not os.path.exists(odsi_discovery_file):
-        from common_records import get_discovery_data
+        from .common_records import get_discovery_data
         get_discovery_data()
     #Load data for discovery records available in ODSI
     with open(odsi_discovery_file, 'r') as discovery_file :
@@ -261,10 +257,10 @@ def import_odsi_records(con):
             key_dict[row[0]] = {'action' : row[1], 'new_keyword': row[2]}
 
     
-    print 'Importing ODSI records ....'
+    print('Importing ODSI records ....')
     
     user_id = users_name_id_map.get(admin_user)
-    print 'user id :', user_id
+    print('user id :', user_id)
 
 
     #Get the list of available records
@@ -278,7 +274,7 @@ def import_odsi_records(con):
     else :
         with open(record_count_filename, 'r') as record_count_file :
             previous_count = int(record_count_file.read())
-    print 'Records from the previous loads: ', previous_count
+    print('Records from the previous loads: ', previous_count)
 
     resources_dict = get_odsi_resources(con)
     #Fetch raw records.
@@ -302,7 +298,7 @@ def import_odsi_records(con):
             edc_record = {}
 
             import_log_file.write('Importing record with uid %s...\n' % str(result[0]))
-            print 'Importing record with uid %s...\n' % str(result[0])
+            print('Importing record with uid %s...\n' % str(result[0]))
             
             #------------------------------------------------------------------< Discovery Records >------------------------------------------------------------------
             # Get Discovery info if the records has metastar_uid
@@ -314,27 +310,27 @@ def import_odsi_records(con):
 
             if (not result[2]):
                 import_log_file.write('Record is not imported. No title is given.\n')
-                print 'Record is not imported. No title is given.\n'
+                print('Record is not imported. No title is given.\n')
                 import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
-                print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+                print('------------------------------------------------------------------------------------------------------------------------------------\n\n')
                 index += 1
                 continue
                 
             #Ignore DRAFT records or records with no title
             if (edc_record.get('publish_state') == 'DRAFT' or edc_record.get('publish_state') == 'PENDING PUBLISH'):
                 import_log_file.write('Record is not imported. The record state is ' + edc_record.get('publish_state') + '.\n')
-                print 'Record is not imported. The record state is ' + edc_record.get('publish_state') + '.\n'
+                print('Record is not imported. The record state is ' + edc_record.get('publish_state') + '.\n')
                 import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
-                print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+                print('------------------------------------------------------------------------------------------------------------------------------------\n\n')
                 index += 1
                 continue
 
             #Do not import Theme records
             if '(Theme)' in result[2] :
                 import_log_file.write('Record is not imported. This is a Theme record.\n')
-                print 'Record is not imported. This is a Theme record.\n'
+                print('Record is not imported. This is a Theme record.\n')
                 import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
-                print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+                print('------------------------------------------------------------------------------------------------------------------------------------\n\n')
                 index += 1
                 continue
 
@@ -342,9 +338,9 @@ def import_odsi_records(con):
             #Drop records from Ministry of Health, British Columbia Vital Statistics Agency
             if (result[1] == 'Ministry of Health') and  (result[6] == 'British Columbia Vital Statistics Agency') :
                 import_log_file.write('Record is not imported. Organization : Ministry of Health, Sub-organization: British Columbia Vital Statistics Agency.\n')
-                print 'Record is not imported. Organization : Ministry of Health, Sub-organization: British Columbia Vital Statistics Agency.\n'
+                print('Record is not imported. Organization : Ministry of Health, Sub-organization: British Columbia Vital Statistics Agency.\n')
                 import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
-                print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+                print('------------------------------------------------------------------------------------------------------------------------------------\n\n')
                 index += 1
                 continue
 
@@ -397,9 +393,9 @@ def import_odsi_records(con):
             
             if (not edc_record.get('org')) or (not edc_record.get('sub_org')) :
                 import_log_file.write('Record is not imported. Unknown organization/sub-organization name.\n')
-                print 'Record is not imported. Unknown organization/sub-organization name.\n'
+                print('Record is not imported. Unknown organization/sub-organization name.\n')
                 import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
-                print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+                print('------------------------------------------------------------------------------------------------------------------------------------\n\n')
                 index += 1
                 continue                
 
@@ -449,16 +445,20 @@ def import_odsi_records(con):
             
             #-----------------------------------------------------------------< Dataset Contacts >----------------------------------------------------------------
             contacts = []
-            if result[20] and validate_email(result[20]) :
-                contact_email = result[20]
+            try:
+                if result[20]:
+                    contact_email = validate_email(result[20])
+            except EmailNotValidError:
+                contact_email = ''
             contact_name = result[19] 
             
             if contact_email :
                 contacts.append({'name': contact_name, 'email': contact_email, 'delete': '0', 'organization': org, 'branch': edc_record.get('sub_org'), 'role' : 'pointOfContact', 'private' : 'Private'})
 
-            if result[24] and validate_email(result[24]) :
-                display_email = result[24]
-            else:
+            try:
+                if result[24]:
+                    display_email = validate_email(result[24])
+            except EmailNotValidError:
                 display_email = 'data@gov.bc.ca'
 
             display_name = result[23] or 'DataBC'
@@ -754,10 +754,10 @@ def import_odsi_records(con):
                 record_info = response_dict.get('result')
                 pkg_list.append(edc_record.get('name'))
                 records_created += 1
-                print 'Record with uid %s is imported.' % odsi_uid_str
+                print('Record with uid %s is imported.' % odsi_uid_str)
                 import_log_file.write('Record with uid %s is imported.\n' % odsi_uid_str)
             else :
-                print "Error in importing record with UID " +  odsi_uid_str +  " via api call. Please see ckan logs.\n"
+                print("Error in importing record with UID " +  odsi_uid_str +  " via api call. Please see ckan logs.\n")
                 import_log_file.write("Error in importing record with UID : " +  odsi_uid_str +  " via api call. Please see ckan logs.\n")
                 if response_dict :
                     error = response_dict.get('error')
@@ -770,14 +770,14 @@ def import_odsi_records(con):
 
             index = index + 1
 
-        except Exception, e:
+        except Exception as e:
             index = index + 1
-            print str(e)
+            print(str(e))
             import_log_file.write('Exception in importing record with UID %s.\n' % odsi_uid_str)
             import_log_file.write(str(e) + '\n')
             pass
         import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
-        print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+        print('------------------------------------------------------------------------------------------------------------------------------------\n\n')
 
     con.close()
 
@@ -785,8 +785,8 @@ def import_odsi_records(con):
     with open('./data/odsi_record_count.txt', 'w') as record_count_file :
         record_count_file.write(str(index))
 
-    print "Total number of records : ", total_number_of_records
-    print "Records created : ", records_created
+    print("Total number of records : ", total_number_of_records)
+    print("Records created : ", records_created)
 
 
 #    save_record_dict(record_dict, "odsi_dict.json")
@@ -799,15 +799,15 @@ def create_discovery_org_map(org_map_filename):
     org_map = {}
 
     i = 0
-    print 'Discovery organization/sub-organization mapping ...'
+    print('Discovery organization/sub-organization mapping ...')
     try:
         reader = csv.reader(open(org_map_filename, 'r'), skipinitialspace=True)
         for row in reader:
             i += 1
             if row[0] :
                 org_map[row[0]] = {'org' : row[1], 'sub_org': row[2]}
-                print str(i).rjust(4), ' ------> ', row[0].ljust(85), ' ', row[1].ljust(70), ' ', row[2].ljust(50)
-    except csv.Error, e:
+                print(str(i).rjust(4), ' ------> ', row[0].ljust(85), ' ', row[1].ljust(70), ' ', row[2].ljust(50))
+    except csv.Error as e:
         sys.exit('file %s, line %d: %s' % (org_map_filename, reader.line_num, e))
     
     return org_map
@@ -830,7 +830,7 @@ def load_common_records() :
     Check first if the files of record titles or record id's that are already in DOSI, are available.
     '''
     if not os.path.exists('./data/common_records_titles.txt') or not os.path.exists('./data/common_records_uids.txt') :
-        from common_records import get_common_records
+        from .common_records import get_common_records
         get_common_records()
  
     with open('./data/common_records_titles.txt', 'r') as common_records_file :
@@ -909,17 +909,13 @@ def execute_discovery_query(con):
 #                /* state is Draft, Approve, Published or ZPublished */
     cur = con.cursor()
 
-    print 'Fetching records .....'
+    print('Fetching records .....')
     data = cur.execute(edc_query)
 
     return data
 
 
 def save_discovery_records(con, discovery_data_filename):
-
-    #Required for email validation
-    from validate_email import validate_email
-    
     
     #Create the dictionary for keywords replacement    
     #Read the keyword updates from csv file
@@ -1038,7 +1034,14 @@ def save_discovery_records(con, discovery_data_filename):
 #                 contact_orgs = result[9].split(',')
 
             #Validate emails
-            contact_emails = [contact_email if (contact_email and validate_email(contact_email)) else 'data@gov.bc.ca' for contact_email in contact_emails]
+            temp = []
+            for contact_email in contact_emails:
+                try:
+                    temp.append(validate_email(contact_email))
+                except EmailNotValidError as e:
+                    temp.append('data@gov.bc.ca')
+            contact_emails = temp
+            # contact_emails = [contact_email if (contact_email and validate_email(contact_email)) else 'data@gov.bc.ca' for contact_email in contact_emails]
 
             contact_names = [contact_name if contact_name else 'DataBC'  for contact_name in contact_names]
             # Adding dataset contacts
@@ -1279,9 +1282,9 @@ def save_discovery_records(con, discovery_data_filename):
             record_str = json.dumps(edc_record)
             discovery_file.write(record_str + '\n')
 
-        except Exception, e:
-            print str(e)
-            print 'Exception in fetching record with UID ', str(result[14])
+        except Exception as e:
+            print(str(e))
+            print('Exception in fetching record with UID ', str(result[14]))
 
     con.close()
     
@@ -1296,7 +1299,7 @@ def import_discovery_records():
     '''
     org_map_filename = './data/org_suborg_sector_mapping_forEDC.csv'
     if not os.path.exists(org_map_filename) :
-        print 'Organization mapping file is not given.'
+        print('Organization mapping file is not given.')
         return
 
     org_map = create_discovery_org_map(org_map_filename)
@@ -1307,7 +1310,7 @@ def import_discovery_records():
     '''    
     discovery_data_filename = './data/discovery_data.json'
     if not os.path.exists(discovery_data_filename):
-        print 'Connecting to database.'
+        print('Connecting to database.')
         con = get_connection('discovery')
         save_discovery_records(con, discovery_data_filename)
  
@@ -1341,7 +1344,7 @@ def import_discovery_records():
     else :
         with open(record_count_filename, 'r') as record_count_file :
             previous_count = int(record_count_file.read())
-    print 'Records from previous loads: ', previous_count
+    print('Records from previous loads: ', previous_count)
     
     discovery_file = open(discovery_data_filename, 'r')
 
@@ -1360,7 +1363,7 @@ def import_discovery_records():
         edc_record = json.loads(record_line)
          
         import_log_file.write('Importing record with uid %s...\n' % edc_record.get('metastar_uid'))
-        print 'Importing record with uid %s...\n' % edc_record.get('metastar_uid')
+        print('Importing record with uid %s...\n' % edc_record.get('metastar_uid'))
         
         title = edc_record.get('title')
         metastar_uid = edc_record.get('metastar_uid')
@@ -1368,9 +1371,9 @@ def import_discovery_records():
         #Ignore records with null title
         if not title :
             import_log_file.write('Record is not imported. No title is given for the record.\n')
-            print 'Record is not imported. No title is given for the record.\n'
+            print('Record is not imported. No title is given for the record.\n')
             import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
-            print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+            print('------------------------------------------------------------------------------------------------------------------------------------\n\n')
             index += 1
             continue
          
@@ -1378,18 +1381,18 @@ def import_discovery_records():
 
         if metastar_uid and metastar_uid in common_uids:
             import_log_file.write('Record is not imported. It has been/will be imported from ODSI.\n')
-            print 'Record is not imported. It has been/will be imported from ODSI.\n'
+            print('Record is not imported. It has been/will be imported from ODSI.\n')
             import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
-            print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+            print('------------------------------------------------------------------------------------------------------------------------------------\n\n')
             index += 1
             continue
  
             #Ignore all the records available in ODSI
         if title in common_titles:
             import_log_file.write('Record is not imported. It has been/will be imported from ODSI.\n')
-            print 'Record is not imported. It has been/will be imported from ODSI.\n'
+            print('Record is not imported. It has been/will be imported from ODSI.\n')
             import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
-            print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+            print('------------------------------------------------------------------------------------------------------------------------------------\n\n')
             index += 1
             continue
  
@@ -1397,17 +1400,17 @@ def import_discovery_records():
         # Ignore DRAFT, Pending Publiash and Theme records (Records with Theme in title).
         if edc_record.get('publish_state') == 'DRAFT' or edc_record.get('publish_state') == 'PENDING PUBLISH':
             import_log_file.write('Record is not imported. The record state is ' + edc_record.get('publish_state') + '.\n')
-            print 'Record is not imported. The record state is ' + edc_record.get('publish_state') + '.\n'
+            print('Record is not imported. The record state is ' + edc_record.get('publish_state') + '.\n')
             import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
-            print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+            print('------------------------------------------------------------------------------------------------------------------------------------\n\n')
             index += 1
             continue
         
         if '(Theme)' in title :
             import_log_file.write('Record is not imported. This is a Theme record.\n')
-            print 'Record is not imported. This is a Theme record.\n'
+            print('Record is not imported. This is a Theme record.\n')
             import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
-            print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+            print('------------------------------------------------------------------------------------------------------------------------------------\n\n')
             index += 1
             continue            
          
@@ -1429,9 +1432,9 @@ def import_discovery_records():
  
         if (org_title not in orgs_title_id_dic) or (sub_org_title not in orgs_title_id_dic) :
             import_log_file.write('Record is not imported. Unknown organization/sub-organization name.\n')
-            print 'Record is not imported. Unknown organization/sub-organization name.\n'
+            print('Record is not imported. Unknown organization/sub-organization name.\n')
             import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
-            print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+            print('------------------------------------------------------------------------------------------------------------------------------------\n\n')
             index += 1
             continue
              
@@ -1471,11 +1474,11 @@ def import_discovery_records():
                 record_info = response_dict.get('result')
                 pkg_list.append(edc_record.get('name'))
                 records_created += 1
-                print 'Record with uid %s is imported.' % record_uid
+                print('Record with uid %s is imported.' % record_uid)
                 import_log_file.write('Record with uid %s is imported.\n' % record_uid)
             else :
                 import_log_file.write("Error in importing record with UID " + record_uid +  " via api call. Please see ckan's log file.\n")
-                print "Error in importing record with UID " + record_uid +  " via api call. Please see ckan's log file.\n"
+                print("Error in importing record with UID " + record_uid +  " via api call. Please see ckan's log file.\n")
                 if response_dict :
                     error = response_dict.get('error')
                     if error :
@@ -1485,18 +1488,18 @@ def import_discovery_records():
                 import_log_file.write('Record info :\n')
                 json.dump(edc_record, import_log_file)
             index = index + 1
-        except Exception, e:
+        except Exception as e:
             index = index + 1
-            print str(e)
+            print(str(e))
             import_log_file.write('Exception in importing record with UID ' + record_uid + '\n')
             import_log_file.write(str(e) + '\n')
             pass
         import_log_file.write('------------------------------------------------------------------------------------------------------------------------------------\n\n')
-        print '------------------------------------------------------------------------------------------------------------------------------------\n\n'
+        print('------------------------------------------------------------------------------------------------------------------------------------\n\n')
          
  
-    print "Total number of records : ", index
-    print "Records created : ", records_created
+    print("Total number of records : ", index)
+    print("Records created : ", records_created)
     import_log_file.close()
      
     '''
@@ -1521,7 +1524,7 @@ def find_missing_orgs(con):
                 "FROM metastar.bat_records_104 dat " \
                 "WHERE dat.state_uid IN (164,166,168,172) "
 #                /* state is Draft, Approve, Published or ZPublished */
-    print 'Before query ...'
+    print('Before query ...')
     cur = con.cursor()
 
     data = cur.execute(edc_query)
@@ -1531,7 +1534,7 @@ def find_missing_orgs(con):
     '''
     org_map_filename = './data/discovery_org_replacement.csv'
     if not os.path.exists(org_map_filename) :
-        print 'Organization mapping file is not given.'
+        print('Organization mapping file is not given.')
         return
 
     org_map = create_discovery_org_map(org_map_filename)
@@ -1556,8 +1559,8 @@ def find_missing_orgs(con):
             if (not org_id) or (not suborg_id) :
                 if result[0] not in missing_orgs :
                     missing_orgs.append(result[0])
-    except Exception, e :
-        print str(e)
+    except Exception as e :
+        print(str(e))
         pass
 
     for org in missing_orgs :
@@ -1568,7 +1571,7 @@ def import_data():
     import sys
     args = sys.argv
     if len(args) < 2 :
-        print 'Please provide the datasource (odsi or discovery)'
+        print('Please provide the datasource (odsi or discovery)')
         return
     data_source = sys.argv[1]
 #    data_source = raw_input("Data source (ODSI/Discovery): ")
@@ -1582,7 +1585,7 @@ def import_data():
             import_discovery_records()
 #            find_missing_orgs(con)
         else :
-            print "A proper datasource must be given."
+            print("A proper datasource must be given.")
     except:
         pass
 

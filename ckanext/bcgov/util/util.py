@@ -1,10 +1,8 @@
 # Copyright  2015, Province of British Columbia 
 # License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
  
-import urllib2
-import urllib
+import urllib.request, urllib.error, urllib.parse
 import json
-import pprint
 import logging
 
 import ckan.model as model
@@ -21,7 +19,7 @@ from sqlalchemy.orm import aliased
 toolkit = p.toolkit
 ValidationError = logic.ValidationError
 
-from pylons import config
+from ckantoolkit import config
 
 site_url = config.get('ckan.site_url')
 api_key = config.get('ckan.api_key')
@@ -36,14 +34,14 @@ def edc_type_label(item):
 def add_admin(member, site_url, api_key):
     ''' adds a user as admin of an organization'''
 
-    data_string = urllib.quote(json.dumps(member))
+    data_string = urllib.parse.quote(json.dumps(member))
 
     member_dict = None
     errors = None
     try:
-        request = urllib2.Request(site_url + '/api/3/action/organization_member_create')
+        request = urllib.request.Request(site_url + '/api/3/action/organization_member_create')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         # Use the json module to load CKAN's response into a dictionary.
@@ -52,8 +50,8 @@ def add_admin(member, site_url, api_key):
             member_dict = response_dict
         else:
             errors = response_dict['error']
-    except Exception, e:
-        print str(e)
+    except Exception as e:
+        print(str(e))
         pass
     return (member_dict, errors)
 
@@ -377,7 +375,7 @@ def get_state_values(userobj, pkg):
     states = []
 
 
-    if not pkg or not pkg.has_key('id'):
+    if not pkg or 'id' not in pkg:
         return ['DRAFT']
 
     id = pkg['id']
@@ -458,7 +456,7 @@ def can_view_resource(resource):
     '''
     if format_lower in ['pdf', 'x-pdf', 'acrobat', 'vnd.pdf']:
         try:
-            usock = urllib2.urlopen(resource['url'], '')
+            usock = urllib.request.urlopen(resource['url'], '')
             if same_domain:
                 return same_domain
             elif proxy_enabled:    
@@ -471,7 +469,7 @@ def can_view_resource(resource):
                     return False
                 else:
                     return True
-        except Exception, e:
+        except Exception as e:
             log.error('can_view_resource:')
             log.error(e)
             return True
@@ -486,11 +484,11 @@ def get_resource_tracking(resource_url, resource_id):
     downloads = 0
     
     try:
-        request = urllib2.Request(site_url + '/api/3/action/datastore_search')
-        data_string = urllib2.quote(json.dumps({'resource_id':download_resource_id,'q':resource_id}))
+        request = urllib.request.Request(site_url + '/api/3/action/datastore_search')
+        data_string = urllib.parse.quote(json.dumps({'resource_id':download_resource_id,'q':resource_id}))
         request.add_header('Authorization', api_key)
 
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         # Use the json module to load CKAN's response into a dictionary.
@@ -498,7 +496,7 @@ def get_resource_tracking(resource_url, resource_id):
         assert response_dict['success'] is True
         downloads = response_dict['result']['total']
 
-    except Exception, e:
+    except Exception as e:
         log.error('get_resource_tracking:')
         log.error(e)
         pass
@@ -526,3 +524,12 @@ def can_access_group(group_id):
 
     except logic.NotFound:
         return False
+
+def convert_composite_fields_to_array(resource):
+    compositeResourceFields = ['temporal_extent', 'details', 'preview_info', 'geographic_extent']
+    for field in compositeResourceFields:
+        if (field in resource) and isinstance(resource[field], str):
+            try:
+                resource[field] = json.loads(resource[field])
+            except:
+                resource[field] = []

@@ -19,29 +19,27 @@ json file structure :
 '''
 import sys
 import json
-import urllib
-import urllib2
-import pprint
+import urllib.request, urllib.parse, urllib.error
 
 
 def remove_user_from_org(userid, orgid):
     '''
     Removes the user with id: userid from the organization: orgid.
     '''
-    data_string = urllib.quote(json.dumps({'id': orgid, 'username': userid.lower() }))
+    data_string = urllib.parse.quote(json.dumps({'id': orgid, 'username': userid.lower() }))
     try:
-        request = urllib2.Request(site_url + '/api/3/action/organization_member_delete')
+        request = urllib.request.Request(site_url + '/api/3/action/organization_member_delete')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         # Use the json module to load CKAN's response into a dictionary.
         response_dict = json.loads(response.read())
         assert response_dict['success'] is True
-        print 'User name %s was removed from organization %s.\n' %(userid, orgid)
+        print('User name %s was removed from organization %s.\n' %(userid, orgid))
 
     except:
-        print 'Error: user name %s was not removed from organization %s.' %(userid, orgid)
+        print('Error: user name %s was not removed from organization %s.' %(userid, orgid))
         pass
     return
 
@@ -51,8 +49,8 @@ def remove_user_from_org(userid, orgid):
 #1) Get the input file name.
 args = sys.argv
 if len(args) < 2 :
-    print 'Please provide a valid json file name that includes the list of user names with the following structure :'
-    print '{\n\t"site_url" : "http://localhost:5000",\n\t"api_key" : "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",\n\t"user_list" : [list of user names separated by commas]\n}'
+    print('Please provide a valid json file name that includes the list of user names with the following structure :')
+    print('{\n\t"site_url" : "http://localhost:5000",\n\t"api_key" : "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",\n\t"user_list" : [list of user names separated by commas]\n}')
     sys.exit()
 user_filename = sys.argv[1]
     
@@ -70,12 +68,12 @@ user_list = data_dict.get('user_list', [])
 name_id_map = {}
 
 for username in user_list:
-    data_string = urllib.quote(json.dumps({'id': username.lower() }))
+    data_string = urllib.parse.quote(json.dumps({'id': username.lower() }))
     user_dict = {}
     try:
-        request = urllib2.Request(site_url + '/api/3/action/user_show')
+        request = urllib.request.Request(site_url + '/api/3/action/user_show')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         # Use the json module to load CKAN's response into a dictionary.
@@ -84,7 +82,7 @@ for username in user_list:
 
         user_dict = response_dict['result']
     except:
-        print 'Username %s does not exist.' % username
+        print('Username %s does not exist.' % username)
         pass
     
 #3.b) Add the user id to the map
@@ -97,10 +95,10 @@ for username in user_list:
 #4.a) Get the list of organizations :
 
 all_orgs = []
-data_string = urllib.quote(json.dumps({'all_fields': True }))
+data_string = urllib.parse.quote(json.dumps({'all_fields': True }))
 try:
-    request = urllib2.Request(site_url + '/api/3/action/organization_list')
-    response = urllib2.urlopen(request, data_string)
+    request = urllib.request.Request(site_url + '/api/3/action/organization_list')
+    response = urllib.request.urlopen(request, data_string)
     assert response.code == 200
 
     # Use the json module to load CKAN's response into a dictionary.
@@ -119,10 +117,10 @@ for org in all_orgs :
     members = []
     try:
         member_dict = {'id': org.get('id'), 'object_type': 'user'}
-        data_string = urllib.quote(json.dumps(member_dict))
-        request = urllib2.Request(site_url + '/api/3/action/member_list')
+        data_string = urllib.parse.quote(json.dumps(member_dict))
+        request = urllib.request.Request(site_url + '/api/3/action/member_list')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         response_dict = json.loads(response.read())
         assert response_dict['success'] is True
 
@@ -137,6 +135,6 @@ for org in all_orgs :
     for username in user_list :
         user_id = name_id_map.get(username)
         if user_id in members :
-            print 'Removing user %s from organization %s' %(username, org.get('name'))
+            print('Removing user %s from organization %s' %(username, org.get('name')))
             remove_user_from_org(username, org.get('name'))
     

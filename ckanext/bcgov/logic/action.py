@@ -6,6 +6,7 @@ import ckan.plugins.toolkit as toolkit
 import logging
 import datetime
 import sqlalchemy
+import json
 
 import ckan.logic as logic
 import ckan.plugins as plugins
@@ -13,13 +14,14 @@ import ckan.plugins as plugins
 import smtplib
 from time import time
 import ckan.lib as lib
-from email import Utils
+from email import utils
 from email.mime.text import MIMEText
 from email.header import Header
-from pylons import config
+from ckan.plugins.toolkit import config
 from ckan.common import _, c, g
 import ckan.lib.plugins as lib_plugins
 import ckan.lib.dictization.model_save as model_save
+import ckan.lib.dictization.model_dictize as model_dictize
 
 import ckan.lib.uploader as uploader
 import ckan.lib.helpers as h
@@ -29,7 +31,7 @@ import paste.deploy.converters
 from ckan.lib.mailer import MailerException
 import ckan.model as model
 
-from ckanext.bcgov.logic.get import (_group_or_org_list)
+from ckanext.bcgov.util.util import (get_organization_branches, get_parent_orgs)
 
 import pprint
 
@@ -60,152 +62,10 @@ def whoami(context, data_dict):
 
     return toolkit.c.user
 
-@toolkit.side_effect_free
-def organization_list_related(context, data_dict):
-    '''Return a list of the names of the site's organizations.
-
-    :param all_fields: return full group dictionaries instead of just names 
-
-    (optional, default: ``False``) 
-
-    :type all_fields: boolean 
-
-    :rtype: list of strings'''
-
-    model = context["model"]
-
-    org_query_result = model.Session.execute("""
-
-        select g2.name as parent_org, g1.id, g1.name, g1.revision_id, g1.title,
-               g1.title display_name, -- duplicating functionality of organization_show_related, but don't know why this field is needed
-               g1.image_url, g1.is_organization, g1.description, 'organization' as type,
-               case when g1.image_url <> '' then concat('/uploads/group/', g1.image_url) else '' end as image_display_url,
-               g1.state, coalesce(url.value, '') as url
-
-        from "group" g1
-
-        left join member
-        on member.group_id = g1.id and
-           member.state = 'active' and
-           member.table_name = 'group'
-
-        left join "group" g2
-        on member.table_id = g2.id and
-           g2.is_organization = true and
-           g2.state = 'active' and
-           g2.approval_status = 'approved'
-
-        left join "group_extra" url
-        on g1.id = url.group_id and
-           url.key = 'url' and
-           url.state = 'active'
-
-        where g1.is_organization = true and
-              g1.state = 'active' and
-              g1.approval_status = 'approved';
-
-    """)
-
-    all_orgs = {}
-
-    # gather all organizations, add default values
-    for org in org_query_result:
-        all_orgs[org.name] = dict(org)
-        all_orgs[org.name][u"parent_of"] = []
-        all_orgs[org.name][u"child_of"] = []
-        all_orgs[org.name][u"package_count"] = 0
-
-    # query for facets to get counts
-    orgs_in_search_results = toolkit.get_action("package_search")(
-        context,
-        { "q": "", "rows": "0", "facet.field": ["organization"]}) \
-    .get("search_facets", {}) \
-    .get("organization", {}) \
-    .get("items", [])
-
-    # associate base counts to all orgs list. Does not include aggregate counts
-    # for parent orgs.
-    for org in orgs_in_search_results:
-        all_orgs[org["name"]][u"package_count"] = org["count"]
-
-    # Add all the other fields that organization_show provides.
-    # To optimize this further, could probably use inner joins in the
-    # original SQL query, but that would mean lose the ability to use plugins to
-    # mutate the result.
-    # 
-    # Most of the speed gain comes from disabling include_dataset_count, as that's
-    # what triggers additional solr searches.
-    if data_dict.get('all_fields', 'False') == 'True':
-        organization_show = toolkit.get_action("organization_show")
-        for org in all_orgs.values():
-            try:
-                result = organization_show(context, {
-                        "id": org["id"],
-                        "include_datasets": False,
-                        "include_dataset_count": False,
-                        "include_tags": False,
-                        "include_users": False,
-                        "include_groups": False,
-                        "include_extras": True,
-                        "include_followers": False
-                    })
-                for k, v in result.items():
-                    org[k] = v
-            except Exception:
-                pass
-
-    # set parent and children orgs & update counts
-    for org_name, org in all_orgs.items():
-        if org[u"parent_org"]:
-            parent = all_orgs.get(org[u"parent_org"], None)
-            if parent:
-                parent[u"parent_of"].append({ "title": org[u"title"], "name": org[u"name"] })
-                org[u"child_of"].append({ "title": parent[u"title"], "name": parent[u"name"] })
-                parents = [{ u"name": parent[u"name"] }]
-                while parents:
-                    o = parents.pop(0)
-                    parents.extend(all_orgs[o[u"name"]][u"child_of"])
-                    all_orgs[o[u"name"]][u"package_count"] += org[u"package_count"]
-
-    return all_orgs.values()
-
-
-@toolkit.side_effect_free
-def organization_list(context, data_dict):
-    '''
-    Overriding the `organization_list` action,
-    See github issue #353
-    To replace the bcgov ckan fork modification from https://github.com/bcgov/ckan/pull/16
-    '''
-
-    toolkit.check_access('organization_list', context, data_dict)
-    groups = data_dict.get('organizations', 'None')
-
-
-    try:
-        import ast
-        data_dict['groups'] = ast.literal_eval(groups)
-    except Exception as e:
-        from ckan.lib.navl.dictization_functions import DataError
-        raise DataError('organizations is not parsable, each value must have double or single quotes.')
-
-    data_dict.setdefault('type', 'organization')
-    return _group_or_org_list(context, data_dict, is_org=True)
-
-@toolkit.side_effect_free
-def group_list(context, data_dict):
-    '''
-        This is being overridden from core so we can use our own _group_or_org_list, probs a better way to do this but
-        this needed to be done timely and this is minimally impactful
-    '''
-    _check_access('group_list', context, data_dict)
-    return _group_or_org_list(context, data_dict, is_org=False)
-
 
 '''
 Checking package status and sending a notification if the state is changed.
 '''
-
 
 def get_msg_content(msg_dict):
 
@@ -292,23 +152,23 @@ def send_state_change_notifications(members, email_dict, sender_name, sender_url
                 msg = MIMEText(body.encode('utf-8'), 'html', 'utf-8')
                 msg['Subject'] = subject
                 msg['From'] = "%s <%s>" % (sender_name, mail_from)
-                msg['Date'] = Utils.formatdate(time())
+                msg['Date'] = utils.formatdate(time())
                 recipient_email = member.email
                 recipient_name = member.fullname or member.name
                 body = add_msg_niceties(
                     recipient_name, body, sender_name, sender_url)
-                recipient = u"%s <%s>" % (recipient_name, recipient_email)
+                recipient = "%s <%s>" % (recipient_name, recipient_email)
                 msg['To'] = Header(recipient, 'utf-8')
                 try:
                     smtp_connection.sendmail(
                         mail_from, [recipient_email], msg.as_string())
                     log.info("Sent state change email to user {0} with email {1}".format(
                         recipient_name, recipient_email))
-                except Exception, e:
+                except Exception as e:
                     log.error('Failed to send notification to user {0} email address : {1}'.format(
                         recipient_email, recipient_email))
 
-    except smtplib.SMTPException, e:
+    except smtplib.SMTPException as e:
         msg = '%r' % e
         log.exception(msg)
         log.error('Failed to connect to smtp server')
@@ -424,7 +284,7 @@ def edc_package_update(context, input_data_dict):
         # Use package_search to filter the list
         query = get_action('package_search')(context, data_dict)
 
-    except SearchError, se:
+    except SearchError as se:
         log.error('Search error : %s', str(se))
         raise SearchError(str(se))
 
@@ -481,7 +341,7 @@ def edc_package_update(context, input_data_dict):
                 new_imap_link, package_dict.get('title')))
             package_dict['link_to_imap'] = new_imap_link
             update = get_action('package_update')(context, package_dict)
-    except Exception, ue:
+    except Exception as ue:
         log.error('Error raised when updating dataset imap_link for dataset {0}.'.format(
             package_dict.get('name')))
         raise Exception(str(ue))
@@ -505,7 +365,6 @@ def edc_package_update_bcgw(context, input_data_dict):
     '''
     Fixed unicode characters decoding problem.
     '''
-    import json
     input_dict_str = json.dumps(input_data_dict, ensure_ascii=False)
     input_data_dict = json.loads(input_dict_str, encoding="cp1252")
 
@@ -527,7 +386,7 @@ def edc_package_update_bcgw(context, input_data_dict):
 
         # Use package_search to filter the list
         query = get_action('resource_search')(context, data_dict)
-    except SearchError, se:
+    except SearchError as se:
         log.error('Search error : %s', str(se))
         raise SearchError(str(se))
 
@@ -609,55 +468,9 @@ def edc_package_update_bcgw(context, input_data_dict):
     response_dict['results'] = update
     return response_dict
 
-
-def package_update(context, data_dict):
-    '''Update a dataset (package).
-
-    You must be authorized to edit the dataset and the groups that it belongs
-    to.
-
-    Plugins may change the parameters of this function depending on the value
-    of the dataset's ``type`` attribute, see the ``IDatasetForm`` plugin
-    interface.
-
-    For further parameters see ``package_create()``.
-
-    :param id: the name or id of the dataset to update
-    :type id: string
-
-    :returns: the updated dataset (if 'return_package_dict' is True in the
-              context, which is the default. Otherwise returns just the
-              dataset id)
-    :rtype: dictionary
-
-    '''
-
-    model = context['model']
-    user = context['user']
-    name_or_id = data_dict.get("id") or data_dict['name']
-
-    pkg = model.Package.get(name_or_id)
-
-    if pkg is None:
-        raise NotFound(_('Package was not found.'))
-    context["package"] = pkg
-    package_plugin = lib_plugins.lookup_package_plugin(pkg.type)
-    if 'schema' in context:
-        schema = context['schema']
-    else:
-        schema = package_plugin.update_package_schema()
-    data_dict["id"] = pkg.id
-
-    # FIXME: first modifications to package_updade begin here:
-    # tag strings are reconstructed because validators are stripping
-    # tags passed and only taking tags as tag_string values
-    # image upload support has also been added here
-    old_data = get_action('package_show')(context, {'id': pkg.id})
-
-    for key, value in old_data.iteritems():
-        if key not in data_dict:
-            data_dict[key] = value
-
+@toolkit.chained_action
+def package_update(original_action, context, data_dict):
+    log.debug('Updating package %s' % data_dict['name'])
     # Set the package last modified date
     data_dict['record_last_modified'] = str(datetime.date.today())
 
@@ -673,98 +486,26 @@ def package_update(context, data_dict):
     if data_dict['publish_state'] == 'ARCHIVED' and not data_dict.get('record_archive_date'):
         data_dict['record_archive_date'] = str(datetime.date.today())
 
-    _check_access('package_update', context, data_dict)
-
-    data, errors = lib_plugins.plugin_validate(
-        package_plugin, context, data_dict, schema, 'package_update')
-    log.debug('package_update validate_errs=%r user=%s package=%s data=%r',
-              errors, context.get('user'),
-              context.get('package').name if context.get('package') else '',
-              data)
-
-    if errors:
-        model.Session.rollback()
-        raise ValidationError(errors)
-
-    rev = model.repo.new_revision()
-    rev.author = user
-    if 'message' in context:
-        rev.message = context['message']
+    if data_dict['metadata_visibility'] == 'IDIR':
+        data_dict['private'] = True;
     else:
-        rev.message = _(u'REST API: Update object %s') % data.get("name")
-
-    # avoid revisioning by updating directly
-    model.Session.query(model.Package).filter_by(id=pkg.id).update(
-        {"metadata_modified": datetime.datetime.utcnow()})
-    model.Session.refresh(pkg)
-
-    pkg = model_save.package_dict_save(data, context)
-
-    context_org_update = context.copy()
-    context_org_update['ignore_auth'] = True
-    context_org_update['defer_commit'] = True
-    _get_action('package_owner_org_update')(context_org_update,
-                                            {'id': pkg.id,
-                                             'organization_id': pkg.owner_org})
-
-    for item in plugins.PluginImplementations(plugins.IPackageController):
-        item.edit(pkg)
-
-        item.after_update(context, data)
-
-    # TODO the next two blocks are copied from ckan/ckan/logic/action/update.py
-    # This codebase is currently hard to maintain because large chunks of the
-    # CKAN action API and the CKAN controllers are simply overriden. This is
-    # probably worse than just forking CKAN would have been, because in that
-    # case at least we could track changes. - @deniszgonjanin
-
-    # Needed to let extensions know the new resources ids
-    model.Session.flush()
-    if data.get('resources'):
-        for index, resource in enumerate(data['resources']):
-            resource['id'] = pkg.resources[index].id
-
-    # Create default views for resources if necessary
-    if data.get('resources'):
-        logic.get_action('package_create_default_resource_views')(
-            {'model': context['model'], 'user': context['user'],
-             'ignore_auth': True},
-            {'package': data})
-
-    if not context.get('defer_commit'):
-        model.repo.commit()
-
-    log.debug('Updated object %s' % pkg.name)
-
-    return_id_only = context.get('return_id_only', False)
-
-    # Make sure that a user provided schema is not used on package_show
-    context.pop('schema', None)
-
-    # we could update the dataset so we should still be able to read it.
-    context['ignore_auth'] = True
-    output = data_dict['id'] if return_id_only \
-        else _get_action('package_show')(context, {'id': data_dict['id'], 'include_tracking':True})
+        data_dict['private'] = False;
 
     '''
     Send state change notifications if required; Added by Khalegh Mamakani
     Using a thread to run the job in the background so that package_update will not wait for notifications sending.
     '''
-
+    old_data = get_action('package_show')(context, {'id': data_dict['id']})
     old_state = old_data.get('publish_state')
 
-    context = {'model': model, 'session': model.Session,
-               'user': c.user or c.author, 'auth_user_obj': c.userobj}
-
-    dataset_url = config.get(
-        'ckan.site_url') + h.url_for(controller='package', action="read", id=data_dict['id'])
+    dataset_url = config.get('ckan.site_url') + h.url_for('dataset.read', id=data_dict['id'])
     import threading
 
     notify_thread = threading.Thread(target=check_record_state, args=(
         context, old_state, data_dict, g.site_title, g.site_url, dataset_url))
     notify_thread.start()
 
-    return output
+    return original_action(context, data_dict)
 
 
 @toolkit.side_effect_free
@@ -893,3 +634,152 @@ def update_resource_refresh_timestamp(context, input_data_dict):
 
     return resource_dict
     
+    
+@toolkit.side_effect_free
+def organization_or_group_list_related(context, data_dict):
+    '''Return a list of the names of the site's organizations or groups.
+
+    :param is_organization: return organizations list if true otherwise return groups list
+
+    (default: ``False``)
+
+    :type is_organization: boolean 
+
+    :param all_fields: return full dictionaries instead of just names of organizations or groups
+
+    (optional, default: ``False``) 
+
+    :type all_fields: boolean 
+
+    :rtype: list of strings'''
+
+    model = context["model"]
+
+    is_organization = (data_dict.get('is_organization', 'false')).lower() == 'true'
+    query_result = {}
+
+    if is_organization:
+        query_result = model.Session.execute("""
+
+        select g2.name as parent_org, g1.id, g1.name, g1.title,
+               g1.title display_name, -- duplicating functionality of organization_show_related, but don't know why this field is needed
+               g1.image_url, g1.is_organization, g1.description, 'organization' as type,
+               case when g1.image_url <> '' then concat('/uploads/group/', g1.image_url) else '' end as image_display_url,
+               g1.state, coalesce(url.value, '') as url
+
+        from "group" g1
+
+        left join member
+        on member.group_id = g1.id and
+           member.state = 'active' and
+           member.table_name = 'group'
+
+        left join "group" g2
+        on member.table_id = g2.id and
+           g2.is_organization = true and
+           g2.state = 'active' and
+           g2.approval_status = 'approved'
+
+        left join "group_extra" url
+        on g1.id = url.group_id and
+           url.key = 'url' and
+           url.state = 'active'
+
+        where g1.is_organization = true and
+              g1.state = 'active' and
+              g1.approval_status = 'approved';
+
+    """)
+    else:
+        query_result = model.Session.execute("""
+            SELECT g1.id, g1.name, g1.title,
+                   g1.title display_name, g1.image_url, g1.is_organization, g1.description,
+                   CASE WHEN g1.image_url <> '' THEN CONCAT('/uploads/group/', g1.image_url) ELSE '' END AS image_display_url,
+                   g1.state
+            FROM "group" g1
+            LEFT JOIN "group_extra" url ON g1.id = url.group_id AND
+                                         url.key = 'url' AND
+                                         url.state = 'active'
+            WHERE g1.is_organization = FALSE AND
+                  g1.state = 'active' AND
+                  g1.approval_status = 'approved';
+        """)
+
+    model.Session.remove()
+
+    # groups and oganizations are listed as groups in database
+    all_groups = {}
+
+    # gather all groups or organizations, add default values
+    for grp in query_result:
+        all_groups[grp.name] = dict(grp)
+        
+        if is_organization:
+            all_groups[grp.name]["parent_of"] = []
+            all_groups[grp.name]["child_of"] = []
+        else:
+            all_groups[grp.name]["type"] = "group"
+        
+        all_groups[grp.name]["package_count"] = 0
+
+
+    # query for facets to get counts
+    facet_field = "organization" if is_organization else "groups"
+    package_search_results = toolkit.get_action("package_search")(
+        context,
+        { "q": "", "rows": "0", "facet.field": [facet_field]}) \
+    .get("search_facets", {}) \
+    .get(facet_field, {}) \
+    .get("items", [])
+
+   # associate base counts to all_groups list. Does not include aggregate counts
+    # for parent orgs.
+    for grp in package_search_results:
+        if grp["name"] in all_groups:
+            all_groups[grp["name"]]["package_count"] = grp["count"]
+
+    # Add all the other fields that organization_show or group_show provides.
+    # To optimize this further, could probably use inner joins in the
+    # original SQL query, but that would mean lose the ability to use plugins to
+    # mutate the result.
+    # 
+    # Most of the speed gain comes from disabling include_dataset_count, as that's
+    # what triggers additional solr searches.
+    if (data_dict.get('all_fields', 'false')).lower() == 'true':
+        show_function = (
+            toolkit.get_action("organization_show")
+            if is_organization
+            else toolkit.get_action("group_show")
+        )
+        for grp in all_groups.values():
+            try:
+                result = show_function(context, {
+                    "id": grp["id"],
+                    "include_datasets": False,
+                    "include_dataset_count": False,
+                    "include_tags": False,
+                    "include_users": False,
+                    "include_groups": False,
+                    "include_extras": True,
+                    "include_followers": False
+                })
+                for k, v in result.items():
+                    grp[k] = v
+            except Exception:
+                pass
+
+    # Set parent and children orgs & update counts
+    if is_organization:
+        for org_name, org in all_groups.items():
+            if org["parent_org"]:
+                parent = all_groups.get(org["parent_org"], None)
+                if parent:
+                    parent["parent_of"].append({ "title": org["title"], "name": org["name"] })
+                    org["child_of"].append({ "title": parent["title"], "name": parent["name"] })
+                    parents = [{ "name": parent["name"] }]
+                    while parents:
+                        o = parents.pop(0)
+                        parents.extend(all_groups[o["name"]]["child_of"])
+                        all_groups[o["name"]]["package_count"] += org["package_count"]
+
+    return list(all_groups.values())

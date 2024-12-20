@@ -1,7 +1,11 @@
 import ckan.logic as logic
 import ckan.plugins.toolkit as toolkit
+from ckan.logic.auth import get_package_object
 
 from ckan.logic import NotFound
+
+from ckanext.bcgov.util.helpers import record_is_viewable
+
 
 @logic.auth_allow_anonymous_access
 def group_show(context, data_dict=None):

@@ -7,7 +7,7 @@ def update_resource(env,res_id,api_key):
 
 	action='resource_update'
 	demo = ckanapi.RemoteCKAN(domain, api_key)
-	print res_id
+	print(res_id)
 	rec = demo.action.package_show(id=res_id)
 
 	types = ['Geographic.csv', 'Dataset.csv', 'Application.csv', 'WebService.csv']
@@ -15,7 +15,7 @@ def update_resource(env,res_id,api_key):
 	for t in types:
 	    for res in rec['resources']:
 	        if t == res['url'].split('/')[-1]:
-	            print res['name']
+	            print(res['name'])
 	            demo.call_action(action,
 	              {'package_id': rec['id'],'resource_storage_location':"EDC Data Store","edc_resource_type": res['edc_resource_type'],"format": res['format'],"resource_update_cycle": res["resource_update_cycle"],"resource_storage_access_method": res["resource_storage_access_method"],"name":res["name"],"id":res['id']},
 	                files={'upload': open(res['url'].split('/')[-1])})

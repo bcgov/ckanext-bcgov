@@ -2,13 +2,11 @@
 # License: https://github.com/bcgov/ckanext-bcgov/blob/master/license 
  
 import json
-import urllib2
-import urllib
-
-import pprint
+import urllib.request, urllib.error, urllib.parse
 
 
-from base import (site_url, api_key) 
+
+from .base import (site_url, api_key) 
 
 org_filename = './data/orgs_list.json'
 
@@ -17,9 +15,9 @@ data_string = json.dumps({'all_fields' : True})
 org_list = []
 
 try :
-    request = urllib2.Request(site_url + '/api/3/action/organization_list')
+    request = urllib.request.Request(site_url + '/api/3/action/organization_list')
     request.add_header('Authorization', api_key)
-    response = urllib2.urlopen(request, data_string)
+    response = urllib.request.urlopen(request, data_string)
     assert response.code == 200
 
     response_dict = json.loads(response.read())
@@ -27,7 +25,7 @@ try :
 
     org_list = response_dict['result']
 #    pprint.pprint(user_list)
-except Exception, e:
+except Exception as e:
     pass
 
 #Create a dictionary of org_name : org_id
@@ -38,11 +36,11 @@ for org in org_list :
     
     members = []
     data_dict = {'id' : org['id'], 'object_type' : 'user'}
-    data_string = urllib.quote(json.dumps(data_dict))
+    data_string = urllib.parse.quote(json.dumps(data_dict))
     try :
-        request = urllib2.Request(site_url + '/api/3/action/member_list')
+        request = urllib.request.Request(site_url + '/api/3/action/member_list')
         request.add_header('Authorization', api_key)
-        response = urllib2.urlopen(request, data_string)
+        response = urllib.request.urlopen(request, data_string)
         assert response.code == 200
 
         response_dict = json.loads(response.read())
@@ -50,7 +48,7 @@ for org in org_list :
 
         members = response_dict['result']
 #        pprint.pprint(user_list)
-    except Exception, e:
+    except Exception as e:
         pass
     org_dict = {'id' : org['id'], 'members' : members}
     orgs_dict[org['name']] = org_dict
